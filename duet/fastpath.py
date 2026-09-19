@@ -1,0 +1,565 @@
+"""Understanding a turn without a model, in under a millisecond.
+
+Two jobs, both on the critical path for the 800ms latency target:
+
+  1. Classify a repair. "Wait, make it New York" and "actually, never mind"
+     and "and make it a window seat" all look like interruptions, but they
+     demand opposite responses. A CORRECTION invalidates in-flight work; a
+     REFINEMENT must NOT, because cancelling a still-valid call throws away
+     the task points it would have earned.
+
+  2. Extract values structurally, never from a list. The kit's baseline
+     recognises seven cities and dies on the eighth; hidden scenarios are
+     explicitly re-skinned with different cities, names and tools. So values
+     are found by grammar - prepositions, appositives, identifier shapes -
+     and typed into roles the tool layer can bind.
+
+Design constraint that shapes everything here: audio turns arrive as raw
+speech, and a transcript may be entirely lowercase with no punctuation.
+Capitalisation is therefore treated as corroborating evidence, never as the
+primary signal. Every pattern below works on "book a flight to boston" as
+well as on "Book a flight to Boston."
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Sequence, Set, Tuple
+
+from . import contract
+from .tools import (
+    ROLE_DATE, ROLE_ID, ROLE_NUMBER, ROLE_PERSON, ROLE_PLACE, ROLE_TEXT,
+)
+
+# ---------------------------------------------------------------------------
+# Repair kinds
+# ---------------------------------------------------------------------------
+REPAIR_NONE = "none"
+REPAIR_CORRECTION = "correction"          # replace a value, re-plan
+REPAIR_RETRACTION = "retraction"          # abandon the request entirely
+REPAIR_INTENT_CHANGE = "intent_change"    # abandon the domain, not just a slot
+REPAIR_REFINEMENT = "refinement"          # add a constraint, keep the work
+REPAIR_UNDO = "undo"                      # revert the previous correction (M6)
+
+# Ordered by specificity: the first matching family wins, so "forget the
+# flight, my TV is broken" is an intent change rather than a bare retraction.
+_RETRACTION_TRIGGERS = (
+    "never mind", "nevermind", "forget it", "forget that", "cancel that",
+    "drop it", "drop that", "leave it", "skip it", "don't bother",
+    "do not bother", "no thanks", "not any more", "not anymore",
+    "stop that", "stop it", "abandon that",
+)
+
+_UNDO_TRIGGERS = (
+    "go back", "undo that", "undo it", "as i said before", "like i said before",
+    "what i said before", "revert that", "back to what i said",
+)
+
+_INTENT_CHANGE_TRIGGERS = (
+    "forget the", "never mind the", "instead of the", "change of plan",
+    "different question", "something else", "new question", "unrelated",
+)
+
+_CORRECTION_TRIGGERS = (
+    "actually", "wait", "hold on", "make it", "make that", "change it to",
+    "change that to", "change to", "switch to", "switch it to", "instead",
+    "i meant", "i mean", "sorry", "no sorry", "rather", "correction",
+    "scratch that", "let's say", "lets say", "on second thought",
+    "on second thoughts",
+)
+
+_REFINEMENT_TRIGGERS = (
+    "also", "as well", "and add", "plus", "additionally", "in addition",
+    "and make it", "can you also", "one more thing", "while you're at it",
+    "while you are at it",
+)
+
+# Bare negation at the start of a barge-in ("no, Chicago") is a correction.
+_LEADING_NEGATION = re.compile(r"^\s*(no|nope|nah)\b[,\s]", re.I)
+
+
+@dataclass
+class Candidate:
+    """One extracted value, with where it came from and how sure we are."""
+
+    value: str
+    role: str
+    confidence: float = 0.7
+    span: Optional[Tuple[int, int]] = None
+    evidence: str = ""
+
+
+@dataclass
+class Repair:
+    kind: str
+    trigger: Optional[str] = None
+    remainder: str = ""          # the text after the trigger
+    confidence: float = 0.0
+
+    @property
+    def invalidates(self) -> bool:
+        """Does this repair make in-flight work stale?
+
+        A refinement does not: "and make it a window seat" leaves the flight
+        search perfectly valid, and cancelling it would cost us the result.
+        """
+        return self.kind in (REPAIR_CORRECTION, REPAIR_RETRACTION,
+                             REPAIR_INTENT_CHANGE, REPAIR_UNDO)
+
+
+def _find_trigger(low: str, triggers: Sequence[str]) -> Optional[Tuple[str, int]]:
+    best: Optional[Tuple[str, int]] = None
+    for trigger in triggers:
+        idx = low.find(trigger)
+        if idx < 0:
+            continue
+        # Prefer the earliest trigger, and the longest at the same position.
+        if best is None or idx < best[1] or (idx == best[1] and len(trigger) > len(best[0])):
+            best = (trigger, idx)
+    return best
+
+
+def classify_repair(text: str) -> Repair:
+    """Work out what kind of course correction this is.
+
+    Order matters. An intent change is a retraction plus a new topic, and a
+    retraction is a correction with nothing to correct to, so the most
+    specific family is tested first.
+    """
+    raw = str(text or "")
+    low = contract.norm(raw)
+    if not low:
+        return Repair(REPAIR_NONE)
+
+    hit = _find_trigger(low, _UNDO_TRIGGERS)
+    if hit:
+        return Repair(REPAIR_UNDO, hit[0], raw[hit[1] + len(hit[0]):].strip(), 0.8)
+
+    hit = _find_trigger(low, _INTENT_CHANGE_TRIGGERS)
+    if hit:
+        remainder = raw[hit[1] + len(hit[0]):].strip()
+        return Repair(REPAIR_INTENT_CHANGE, hit[0], remainder, 0.75)
+
+    hit = _find_trigger(low, _RETRACTION_TRIGGERS)
+    if hit:
+        remainder = raw[hit[1] + len(hit[0]):].strip()
+        # "never mind the flight, what's the weather" retracts AND redirects.
+        if _has_new_content(remainder):
+            return Repair(REPAIR_INTENT_CHANGE, hit[0], remainder, 0.7)
+        return Repair(REPAIR_RETRACTION, hit[0], remainder, 0.85)
+
+    hit = _find_trigger(low, _REFINEMENT_TRIGGERS)
+    correction_hit = _find_trigger(low, _CORRECTION_TRIGGERS)
+    if hit and (correction_hit is None or hit[1] < correction_hit[1]):
+        return Repair(REPAIR_REFINEMENT, hit[0], raw[hit[1] + len(hit[0]):].strip(), 0.6)
+
+    if correction_hit:
+        remainder = raw[correction_hit[1] + len(correction_hit[0]):].strip()
+        return Repair(REPAIR_CORRECTION, correction_hit[0], remainder, 0.8)
+
+    if _LEADING_NEGATION.match(raw):
+        return Repair(REPAIR_CORRECTION, "no", _LEADING_NEGATION.sub("", raw).strip(), 0.7)
+
+    # An interruption with no trigger word at all is still a correction: the
+    # user barged in for a reason.
+    return Repair(REPAIR_CORRECTION, None, raw.strip(), 0.4)
+
+
+def _has_new_content(remainder: str) -> bool:
+    """Is there a fresh request after the retraction, or just the retraction?
+
+    Counting raw tokens is not enough: "Actually, never mind. Forget it."
+    leaves "forget it" behind, which is more retraction, not a new request.
+    So other trigger phrases are stripped first and only content words are
+    counted - grammar words and filler cannot signal a change of topic.
+    """
+    text = contract.norm(remainder)
+    for trigger in (_RETRACTION_TRIGGERS + _CORRECTION_TRIGGERS
+                    + _INTENT_CHANGE_TRIGGERS + _UNDO_TRIGGERS):
+        text = text.replace(trigger, " ")
+    tokens = [t for t in re.findall(r"[a-z'0-9]+", text)
+              if t not in _FILLER_WORDS and t not in _NON_VALUE]
+    return len(tokens) >= 2
+
+
+# ---------------------------------------------------------------------------
+# Value extraction
+# ---------------------------------------------------------------------------
+_FILLER_WORDS = frozenset("""
+uh um er ah erm hmm like you know i mean sort of kind of well so okay ok right
+just really actually basically literally please thanks thank
+""".split())
+
+# Words that can never be the head of an extracted value. Deliberately generic
+# grammar words rather than any domain vocabulary.
+_NON_VALUE = frozenset("""
+it that this those these them there here one ones thing things something
+anything me you us him her he she they we i my your our their his its
+a an the and or but if then than so to for in on at from into of with by
+is are was were be been being do does did doing have has had having
+please thanks thank sorry okay ok yes no not
+what which who whom whose when where why how
+tomorrow today tonight now soon later
+flight flights hotel hotels car cars ticket tickets booking bookings
+""".split())
+
+# Identifier shapes: FL-DEN-8AM, BK-0001, TK-0001, RC-7781, HT-0001.
+_ID_RE = re.compile(r"\b([A-Z][A-Z0-9]{0,4}(?:-[A-Z0-9]+){1,3})\b")
+_ID_RE_LOWER = re.compile(r"\b([a-z][a-z0-9]{0,4}(?:-[a-z0-9]+){1,3})\b")
+
+# Clock times: "8 AM", "8am", "2 pm", "14:00", "08:00".
+_TIME_RE = re.compile(r"\b(\d{1,2}\s*(?::\s*\d{2})?\s*(?:am|pm)|\d{1,2}:\d{2})\b", re.I)
+
+_WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday",
+             "saturday", "sunday")
+_DATE_WORDS = ("today", "tomorrow", "tonight", "overnight", "next week",
+               "this week", "weekend", "this evening", "this afternoon",
+               "this morning")
+_DATE_RE = re.compile(
+    r"\b(" + "|".join(_WEEKDAYS + _DATE_WORDS) + r"|\d{4}-\d{2}-\d{2}"
+    r"|(?:next|this|last)\s+\w+)\b", re.I)
+
+# A place follows a spatial preposition; a person follows a benefactive one.
+_PLACE_PREPS = ("to", "in", "at", "from", "into", "toward", "towards", "for")
+_PERSON_PREPS = ("for", "under", "name is", "name's", "names", "passenger",
+                 "traveller", "traveler", "i'm", "i am", "its for", "it's for")
+
+_NUMBER_RE = re.compile(r"\b(\d+(?:\.\d+)?)\b")
+
+
+# A captured span ends at the first of these: "to Chicago for Friday" is the
+# place "Chicago", not the phrase "Chicago for Friday". Trailing-only trimming
+# is not enough, because the junk sits in the middle.
+_SPAN_BOUNDARY = frozenset("""
+for on at in to from with and or but please next this last by of about
+tomorrow today tonight monday tuesday wednesday thursday friday saturday sunday
+right now just currently again soon later asap immediately quickly actually
+maybe perhaps then also too instead rather already still
+""".split())
+
+
+def _clean_value(raw: str) -> str:
+    """Trim a captured span down to the value itself."""
+    text = re.sub(r"[\s,.;:!?]+$", "", str(raw or "").strip())
+    text = re.sub(r"^[\s,.;:]+", "", text)
+    tokens = text.split()
+    # Drop leading grammar words: "it New York" -> "New York".
+    while tokens and contract.norm(tokens[0]) in _NON_VALUE:
+        tokens.pop(0)
+    # Cut at the first internal boundary word.
+    cut = len(tokens)
+    for i, token in enumerate(tokens):
+        if contract.norm(token).strip(",.;:") in _SPAN_BOUNDARY:
+            cut = i
+            break
+    tokens = tokens[:cut]
+    # Drop trailing grammar words: "Boston for" -> "Boston".
+    while tokens and contract.norm(tokens[-1]) in _NON_VALUE:
+        tokens.pop()
+    return " ".join(tokens[:4]).strip()
+
+
+def _is_date_like(value: str) -> bool:
+    """Guard against a weekday being read as a person: 'for Friday'."""
+    return bool(_DATE_RE.fullmatch(str(value or "").strip()))
+
+
+def _title(value: str) -> str:
+    """Normalise casing for a proper noun arriving from lowercase ASR.
+
+    Tool arguments are matched case-insensitively by the scorer, so this is
+    about what we say aloud rather than what we send.
+    """
+    if not value:
+        return value
+    if any(c.isupper() for c in value):
+        return value
+    return " ".join(w.capitalize() for w in value.split())
+
+
+def _after_preposition(text: str, preps: Sequence[str]) -> List[Tuple[str, int]]:
+    """Capture up to three tokens following each preposition."""
+    found: List[Tuple[str, int]] = []
+    for prep in preps:
+        for match in re.finditer(r"\b" + re.escape(prep) + r"\s+([\w'\-]+(?:\s+[\w'\-]+){0,2})",
+                                 text, re.I):
+            value = _clean_value(match.group(1))
+            if value:
+                found.append((value, match.start(1)))
+    return found
+
+
+def extract_ids(text: str) -> List[Candidate]:
+    out: List[Candidate] = []
+    for match in _ID_RE.finditer(text):
+        out.append(Candidate(match.group(1), ROLE_ID, 0.95,
+                             match.span(1), "identifier shape"))
+    if not out:
+        for match in _ID_RE_LOWER.finditer(text):
+            token = match.group(1)
+            if "-" not in token:
+                continue
+            out.append(Candidate(token.upper(), ROLE_ID, 0.8,
+                                 match.span(1), "identifier shape (lowercase)"))
+    return out
+
+
+def extract_dates(text: str) -> List[Candidate]:
+    """Date expressions.
+
+    Deliberately does NOT use _clean_value: that strips tokens in _NON_VALUE,
+    which contains "tomorrow", "today" and the weekdays on purpose so that
+    "to Recife tomorrow" yields the place "Recife" rather than the phrase
+    "Recife tomorrow". Correct for places, fatal for dates - the two need
+    different vocabularies, so dates get a light trim only.
+    """
+    out: List[Candidate] = []
+    for match in _DATE_RE.finditer(text):
+        value = re.sub(r"[\s,.;:!?]+$", "", match.group(1).strip())
+        if value:
+            out.append(Candidate(value, ROLE_DATE, 0.8, match.span(1), "date expression"))
+    return out
+
+
+def extract_times(text: str) -> List[Candidate]:
+    out: List[Candidate] = []
+    for match in _TIME_RE.finditer(text):
+        raw = re.sub(r"\s+", " ", match.group(1).strip())
+        out.append(Candidate(raw.upper().replace(" ", ""), ROLE_TEXT, 0.85,
+                             match.span(1), "clock time"))
+    return out
+
+
+def extract_places(text: str) -> List[Candidate]:
+    out: List[Candidate] = []
+    for value, pos in _after_preposition(text, ("to", "in", "at", "from", "into",
+                                                "toward", "towards")):
+        if _looks_like_value(value):
+            out.append(Candidate(_title(value), ROLE_PLACE, 0.8, (pos, pos + len(value)),
+                                 "after spatial preposition"))
+    return out
+
+
+def extract_people(text: str) -> List[Candidate]:
+    out: List[Candidate] = []
+    # Patterns whose cue names a person explicitly work in any case; patterns
+    # relying on "for X" must NOT be case-insensitive, or [A-Z] matches
+    # lowercase and "for friday" becomes a passenger called Friday.
+    cased_patterns = (
+        r"\bfor\s+([A-Z][\w'\-]*(?:\s+[A-Z][\w'\-]*)?)",
+        r"\b(?:I'm|I am)\s+([A-Z][\w'\-]*(?:\s+[A-Z][\w'\-]*)?)",
+        r"\bunder\s+([A-Z][\w'\-]*(?:\s+[A-Z][\w'\-]*)?)",
+    )
+    explicit_patterns = (
+        r"\bname(?:'s| is)\s+([\w'\-]+(?:\s+[\w'\-]+)?)",
+        r"\bpassenger(?:\s+is)?\s+([\w'\-]+(?:\s+[\w'\-]+)?)",
+        r"\btravell?er(?:\s+is)?\s+([\w'\-]+(?:\s+[\w'\-]+)?)",
+    )
+    for pattern in cased_patterns:
+        for match in re.finditer(pattern, text):
+            _offer_person(out, match)
+    for pattern in explicit_patterns:
+        for match in re.finditer(pattern, text, re.I):
+            _offer_person(out, match)
+    return out
+
+
+def _offer_person(out: List[Candidate], match) -> None:
+    value = _clean_value(match.group(1))
+    if not _looks_like_value(value) or _is_date_like(value):
+        return
+    out.append(Candidate(_title(value), ROLE_PERSON, 0.75,
+                         match.span(1), "benefactive phrase"))
+
+
+def extract_capitalised(text: str) -> List[Candidate]:
+    """Proper-noun spans, as corroboration only.
+
+    Absent from lowercase ASR output, so this can never be the sole route to a
+    value - but when punctuation and casing survive, it disambiguates.
+    """
+    out: List[Candidate] = []
+    for match in re.finditer(r"\b([A-Z][a-z'\-]+(?:\s+[A-Z][a-z'\-]+)*)\b", text):
+        value = match.group(1)
+        if contract.norm(value) in _NON_VALUE:
+            continue
+        if len(value) < 3:
+            continue
+        out.append(Candidate(value, ROLE_TEXT, 0.5, match.span(1), "capitalised span"))
+    return out
+
+
+def _looks_like_value(value: str) -> bool:
+    if not value or len(value) < 2:
+        return False
+    low = contract.norm(value)
+    if low in _NON_VALUE or low in _FILLER_WORDS:
+        return False
+    return bool(re.search(r"[A-Za-z]", value))
+
+
+def extract_values(text: str, *, expect: Optional[Sequence[str]] = None
+                   ) -> Dict[str, Candidate]:
+    """Extract a role -> value map from an utterance.
+
+    `expect` lists roles the caller is hoping for (usually the required
+    argument roles of the tool it is considering). It resolves the genuine
+    ambiguity between a place and a person: "for Alice" and "for Denver" have
+    identical grammar, and the schema is the only thing that can break the tie.
+    """
+    text = str(text or "")
+    wanted: Set[str] = set(expect or ())
+    found: Dict[str, Candidate] = {}
+
+    def offer(cand: Candidate) -> None:
+        existing = found.get(cand.role)
+        # Later mentions win: in a self-repair the corrected value comes last.
+        if existing is None or cand.confidence >= existing.confidence:
+            found[cand.role] = cand
+
+    for cand in extract_ids(text):
+        offer(cand)
+    for cand in extract_dates(text):
+        offer(cand)
+    for cand in extract_places(text):
+        offer(cand)
+    for cand in extract_people(text):
+        offer(cand)
+
+    # NOTE: clock times are deliberately NOT offered as values. A time is a
+    # selector over results ("the 8 AM one"), not a slot. Treating "8AM" as a
+    # free-text value made a manual-search tool look fully satisfiable for
+    # "find a flight to Denver and book the 8 AM one", which flipped the
+    # ranking away from flight_search. extract_selector() handles times.
+
+    # Disambiguate place vs person when both matched the same span.
+    place = found.get(ROLE_PLACE)
+    person = found.get(ROLE_PERSON)
+    if place and person and contract.norm(place.value) == contract.norm(person.value):
+        if ROLE_PLACE in wanted and ROLE_PERSON not in wanted:
+            found.pop(ROLE_PERSON, None)
+        elif ROLE_PERSON in wanted and ROLE_PLACE not in wanted:
+            found.pop(ROLE_PLACE, None)
+        else:
+            found.pop(ROLE_PERSON, None)
+
+    # "for X" is genuinely ambiguous between a benefactive person and a
+    # destination: "book it for Alice" and "find something for Recife" have
+    # identical grammar. Only the schema can break the tie, so when the caller
+    # wants one role and we produced the other from that pattern, reassign it.
+    for wanted_role, other in ((ROLE_PLACE, ROLE_PERSON), (ROLE_PERSON, ROLE_PLACE)):
+        if wanted_role in wanted and wanted_role not in found and other not in wanted:
+            spare = found.get(other)
+            if spare is not None and spare.evidence == "benefactive phrase":
+                found.pop(other)
+                found[wanted_role] = Candidate(
+                    spare.value, wanted_role, spare.confidence * 0.9, spare.span,
+                    "reassigned from ambiguous 'for'")
+
+    # Capitalised spans fill a wanted role nothing else reached. A span
+    # already claimed by another role is skipped: "book a flight to Boston"
+    # must not also yield a passenger called Boston just because a person is
+    # wanted and none was found.
+    claimed = {contract.norm(c.value) for c in found.values()}
+    for cand in extract_capitalised(text):
+        if contract.norm(cand.value) in claimed:
+            continue
+        for role in (ROLE_PLACE, ROLE_PERSON):
+            if role in wanted and role not in found:
+                found[role] = Candidate(cand.value, role, 0.45, cand.span,
+                                        "capitalised fallback")
+                claimed.add(contract.norm(cand.value))
+                break
+
+    for cand in _numbers(text):
+        if ROLE_NUMBER in wanted and ROLE_NUMBER not in found:
+            found[ROLE_NUMBER] = cand
+
+    return found
+
+
+def _numbers(text: str) -> List[Candidate]:
+    out = []
+    for match in _NUMBER_RE.finditer(text):
+        out.append(Candidate(match.group(1), ROLE_NUMBER, 0.6, match.span(1), "numeral"))
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Result selectors
+# ---------------------------------------------------------------------------
+@dataclass
+class Selector:
+    """How the user picked among results: "the 8 AM one", "the cheapest"."""
+
+    time: Optional[str] = None
+    superlative: Optional[str] = None
+    ordinal: Optional[int] = None
+
+    @property
+    def is_empty(self) -> bool:
+        return self.time is None and self.superlative is None and self.ordinal is None
+
+
+_SUPERLATIVES = {
+    "cheapest": "min_price", "least expensive": "min_price",
+    "lowest": "min_price", "best price": "min_price", "cheaper": "min_price",
+    "most expensive": "max_price", "priciest": "max_price",
+    "earliest": "min_time", "first": "min_time", "soonest": "min_time",
+    "latest": "max_time", "last": "max_time",
+}
+
+_ORDINALS = {"first": 0, "second": 1, "third": 2, "1st": 0, "2nd": 1, "3rd": 2}
+
+
+def extract_selector(text: str) -> Selector:
+    """Which of several results the user meant.
+
+    conf_06 turns on this: "the cheapest one" is the $99 2 PM flight, not
+    flights[0]. Taking the first row is the easy wrong answer.
+    """
+    low = contract.norm(text)
+    selector = Selector()
+
+    times = extract_times(text)
+    if times:
+        selector.time = times[-1].value
+
+    for phrase, kind in _SUPERLATIVES.items():
+        if phrase in low:
+            selector.superlative = kind
+            break
+
+    for word, index in _ORDINALS.items():
+        if re.search(r"\b" + re.escape(word) + r"\b", low):
+            if selector.superlative is None:
+                selector.ordinal = index
+            break
+
+    return selector
+
+
+def looks_like_capability_question(text: str) -> bool:
+    """Is the user asking what we can do, rather than asking us to do it?
+
+    pub_04 makes this a scored routing decision: calling any tool there loses
+    half the task score. The test is narrow on purpose - it must not swallow
+    real requests.
+    """
+    low = contract.norm(text).rstrip("?.! ")
+    if not low:
+        return False
+    patterns = (
+        "what can you", "what do you do", "what are you able",
+        "what else can you", "how can you help", "what can i ask",
+        "who are you", "what are you", "can you help me with",
+        "what kind of things", "what sort of things", "what all can you",
+    )
+    return any(p in low for p in patterns)
+
+
+def looks_like_greeting(text: str) -> bool:
+    low = contract.norm(text).rstrip("?.! ")
+    return low in ("hi", "hello", "hey", "yo", "good morning", "good evening",
+                   "good afternoon", "thanks", "thank you", "cheers")

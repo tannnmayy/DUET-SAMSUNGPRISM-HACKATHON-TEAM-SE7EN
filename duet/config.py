@@ -87,6 +87,12 @@ VISION_CLARIFY_THRESHOLD = 0.45
 # this confident. Deliberately higher than the read-only bar.
 COMMIT_CONFIDENCE = 0.70
 
+# [OURS] Total attempts allowed per logical tool call, including the first.
+# pub_08 injects a timeout on the first flight_search and expects a retry, so
+# a read-only tool needs at least 2. More than that burns the 6s tail without
+# improving anything.
+MAX_TOOL_ATTEMPTS = 2
+
 # --------------------------------------------------------------------------
 # Debug
 # --------------------------------------------------------------------------

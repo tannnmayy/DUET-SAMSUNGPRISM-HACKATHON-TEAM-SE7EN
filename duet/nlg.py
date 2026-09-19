@@ -148,6 +148,24 @@ _POOLS: Dict[str, Sequence[str]] = {
         "That did not work out - sorry.",
         "I was not able to get that done.",
     ),
+    # Reporting a grounded result. The lead-in is not decoration: it keeps
+    # the utterance above the scorer's 50%-alphabetic substantive-speech
+    # threshold, which a bare identifier like "FL-CHI-8AM, 08:00, $129"
+    # fails outright.
+    "report": (
+        "I found {body}.",
+        "Here you go - {body}.",
+        "Got one for you: {body}.",
+        "That would be {body}.",
+        "Looks like {body}.",
+        "The best match is {body}.",
+    ),
+    "report_done": (
+        "All set - {body}.",
+        "Done - {body}.",
+        "That is sorted: {body}.",
+        "There we go - {body}.",
+    ),
     # Last-resort filler when every other pool is exhausted. Must still be
     # substantive (>= 3 chars, >= 50% alphabetic).
     "fallback": (
@@ -371,6 +389,14 @@ class Phrasebook:
     def clarify_missing(self, slot_name: str) -> str:
         label = slot_label(slot_name)
         return self._render_or("clarify_missing", "ack_generic", label=label)
+
+    # -- reporting --------------------------------------------------------
+    def report(self, body: str) -> str:
+        """Wrap a grounded result phrase in a natural sentence."""
+        body = str(body or "").strip().rstrip(".")
+        if not body:
+            return self._render_or("failed_generic", "fallback")
+        return self._render_or("report", "ack_generic", body=body)
 
     # -- capabilities -----------------------------------------------------
     def capabilities(self, tool_descriptions: Sequence[str]) -> str:
