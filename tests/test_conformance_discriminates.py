@@ -1,0 +1,155 @@
+"""Testing the tests.
+
+Our conformance scenarios exist to catch agents that fail to cancel stale
+work. That claim is only true if the timing arithmetic in
+tools/make_conformance.py is right: an uncancelled call must PROVABLY complete
+more than CANCEL_GRACE_MS after the interruption that invalidated it.
+
+So we run two probe agents that differ in exactly one respect - whether they
+cancel on interruption - and assert the scenarios separate them. If they score
+the same, the scenario is vacuous and would give us false confidence on the
+hidden set.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import glob
+import json
+import os
+import sys
+
+import pytest
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+
+from harness.runner import EvaluationHarness  # noqa: E402
+from harness.scorer import CANCEL_GRACE_MS, score_scenario  # noqa: E402
+from tests.probes import CancellingProbe, NaiveProbe  # noqa: E402
+
+CONF_DIR = os.path.join(ROOT, "tests", "conformance")
+
+# The scenarios whose whole point is cancellation of invalidated work.
+INTERRUPTION_SCENARIOS = [
+    "conf_01_double_interrupt",
+    "conf_02_retraction",
+    "conf_03_intent_change",
+    "conf_04_interrupt_during_booking",
+]
+
+
+def _load(scenario_id: str):
+    with open(os.path.join(CONF_DIR, scenario_id + ".json"), "r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def _run(scenario, cls, time_scale=8.0):
+    async def go():
+        h = EvaluationHarness(scenario, lambda a, b: cls(a, b),
+                              time_scale=time_scale, verbose=False)
+        await h.prepare()
+        return await h.run()
+    return asyncio.run(go())
+
+
+def _recovery_fraction(scenario, trace):
+    result = score_scenario(scenario, trace)
+    rec = result["breakdown"].get("recovery")
+    return None if rec is None else rec["fraction"]
+
+
+def _stale_checks(scenario, trace):
+    """Just the 'invalidated:<tool>' half of the recovery score."""
+    result = score_scenario(scenario, trace)
+    rec = result["breakdown"].get("recovery")
+    if rec is None:
+        return []
+    return [c for c in rec["detail"]["checks"] if c["check"].startswith("invalidated:")]
+
+
+# ---------------------------------------------------------------- structure
+def test_all_conformance_scenarios_are_wellformed():
+    paths = sorted(glob.glob(os.path.join(CONF_DIR, "*.json")))
+    assert len(paths) >= 8, "expected at least 8 conformance scenarios"
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as fh:
+            scenario = json.load(fh)
+        assert scenario.get("scenario_id"), path
+        assert scenario.get("events"), path
+        gt = scenario.get("ground_truth") or {}
+        cps = gt.get("checkpoints") or []
+        assert cps, "no checkpoints in " + path
+        total = sum(float(c.get("weight", 1.0)) for c in cps)
+        assert abs(total - 1.0) < 1e-6, (
+            path + " checkpoint weights sum to " + str(total) + ", expected 1.0")
+        # event timestamps must be non-decreasing or the harness replays oddly
+        stamps = [e.get("timestamp_ms", 0) for e in scenario["events"]]
+        assert stamps == sorted(stamps), path
+
+
+# ------------------------------------------------------- the discrimination
+@pytest.mark.parametrize("scenario_id", INTERRUPTION_SCENARIOS)
+def test_scenario_penalises_an_agent_that_never_cancels(scenario_id):
+    scenario = _load(scenario_id)
+    trace = _run(scenario, NaiveProbe)
+    checks = _stale_checks(scenario, trace)
+    assert checks, "no invalidated-call checks in " + scenario_id
+    failed = [c for c in checks if not c["passed"]]
+    assert failed, (
+        scenario_id + " did NOT penalise an agent that never cancels - the "
+        "scenario is vacuous. Checks: " + repr(checks))
+
+
+@pytest.mark.parametrize("scenario_id", INTERRUPTION_SCENARIOS)
+def test_scenario_rewards_an_agent_that_cancels(scenario_id):
+    scenario = _load(scenario_id)
+    trace = _run(scenario, CancellingProbe)
+    checks = _stale_checks(scenario, trace)
+    failed = [c for c in checks if not c["passed"]]
+    assert not failed, (
+        scenario_id + " penalised an agent that DID cancel - the scenario is "
+        "unfair or the margins are wrong: " + repr(failed))
+
+
+@pytest.mark.parametrize("scenario_id", INTERRUPTION_SCENARIOS)
+def test_cancelling_beats_not_cancelling(scenario_id):
+    """End to end: the recovery subscore must actually move."""
+    scenario = _load(scenario_id)
+    naive = _recovery_fraction(scenario, _run(scenario, NaiveProbe))
+    good = _recovery_fraction(scenario, _run(scenario, CancellingProbe))
+    assert naive is not None and good is not None
+    assert good > naive, (
+        scenario_id + ": cancelling scored " + str(good) + " vs naive "
+        + str(naive) + " - no discrimination")
+
+
+# ------------------------------------------------------------- the margins
+@pytest.mark.parametrize("scenario_id", INTERRUPTION_SCENARIOS)
+def test_uncancelled_stale_call_really_does_land_past_the_grace_window(scenario_id):
+    """Verify the arithmetic directly in the trace rather than trusting the
+    comment in the generator: with a non-cancelling agent, at least one
+    invalidated call must complete more than CANCEL_GRACE_MS after its
+    invalidation timestamp."""
+    scenario = _load(scenario_id)
+    trace = _run(scenario, NaiveProbe)
+    rec = scenario["ground_truth"]["recovery"]
+
+    completions = [e for e in trace if e.get("kind") == "tool_completed"]
+    late = []
+    for inv in rec["invalidated_calls"]:
+        deadline = float(inv["invalid_after_ms"]) + CANCEL_GRACE_MS
+        for comp in completions:
+            if comp.get("api_name") != inv["tool"]:
+                continue
+            args = comp.get("args", {})
+            subset = inv.get("args_subset") or {}
+            if not all(str(args.get(k, "")).lower() in [str(x).lower() for x in v]
+                       for k, v in subset.items()):
+                continue
+            if comp["t_ms"] > deadline:
+                late.append((inv["tool"], comp["t_ms"], deadline))
+    assert late, (
+        scenario_id + ": no invalidated call completed past its grace window, so "
+        "the scenario cannot detect a missing cancel. Completions: "
+        + repr([(c.get("api_name"), c.get("args"), c["t_ms"]) for c in completions]))
