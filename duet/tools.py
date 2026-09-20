@@ -97,6 +97,7 @@ UNSATISFIABLE_PENALTY = 0.9  # required arguments we cannot supply
 READ_ONLY_PREFERENCE = 0.3  # M2: free to cancel, free to abandon
 SELECTION_THRESHOLD = 0.0   # best() requires a score above this
 TEXT_FALLBACK_CREDIT = 0.35  # a catch-all query arg is weak evidence, not strong
+COMMIT_BONUS = 0.8          # user asked to act AND we can act
 
 
 def _tokens(text: Any) -> List[str]:
@@ -368,6 +369,7 @@ class ToolRegistry:
         *,
         has_frame: bool = False,
         available_values: Optional[Dict[str, Any]] = None,
+        commit_intent: bool = False,
     ) -> List[Tuple[ToolSpec, float]]:
         """Score every tool against the utterance. Highest first.
 
@@ -405,15 +407,21 @@ class ToolRegistry:
             # not actionable now - book_flight before any flight_id exists is
             # the canonical case, and preferring it would start a chain we
             # cannot complete.
-            score += SATISFIABLE_BONUS * self._fillable_fraction(spec, values, utterance)
-            score -= UNSATISFIABLE_PENALTY * (
-                1.0 - self._fillable_fraction(spec, values, utterance))
+            fillable = self._fillable_fraction(spec, values, utterance)
+            score += SATISFIABLE_BONUS * fillable
+            score -= UNSATISFIABLE_PENALTY * (1.0 - fillable)
 
             # Reversibility (M2). On otherwise equal evidence prefer the tool
             # that is free to cancel and free to abandon. Small enough never to
             # override real lexical evidence for a state-modifying tool.
             if not spec.is_state_modifying:
                 score += READ_ONLY_PREFERENCE
+            elif commit_intent and fillable >= 1.0:
+                # The user asked for the irreversible thing AND every argument
+                # is already in hand. Deliberately gated on full satisfiability:
+                # without that, "find a flight to Denver and book the 8 AM one"
+                # would promote booking before any flight id exists.
+                score += COMMIT_BONUS
 
             scored.append((spec, score))
 
@@ -487,6 +495,7 @@ class ToolRegistry:
         *,
         utterance: str = "",
         extras: Optional[Dict[str, Any]] = None,
+        by_name: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Dict[str, Any], List[str]]:
         """Bind role->value pairs onto a tool's schema.
 
@@ -497,10 +506,17 @@ class ToolRegistry:
         args: Dict[str, Any] = {}
         missing: List[str] = []
         extras = extras or {}
+        by_name = by_name or {}
 
         for name, aspec in spec.args.items():
             if name in extras:
                 args[name] = extras[name]
+                continue
+            # An exact name match beats a role match. Roles collapse distinct
+            # things: flight_id and booking_id are both ROLE_ID, so binding by
+            # role alone lets a booking reference end up in a flight argument.
+            if name in by_name and by_name[name] is not None:
+                args[name] = self._coerce(aspec, by_name[name])
                 continue
             value = self._value_for(aspec, values, utterance)
             if value is not None:

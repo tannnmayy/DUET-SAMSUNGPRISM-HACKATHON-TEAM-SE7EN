@@ -143,6 +143,16 @@ _POOLS: Dict[str, Sequence[str]] = {
         "That one is not coming back - sorry about {subject}.",
         "I was not able to complete {subject}.",
     ),
+    # A successful call that returned nothing. Distinct from a failure:
+    # the tool worked, there simply are no hits, and inventing a citation
+    # here is the failure mode docs/TOOLS.md warns about.
+    "no_results": (
+        "I could not find anything about that.",
+        "Nothing came back for that one, sorry.",
+        "Sorry, there is nothing on that in what I can search.",
+        "No results for that, I am afraid.",
+        "I do not have anything covering that.",
+    ),
     "failed_generic": (
         "Sorry, I could not complete that.",
         "That did not work out - sorry.",
@@ -397,6 +407,10 @@ class Phrasebook:
         if not body:
             return self._render_or("failed_generic", "fallback")
         return self._render_or("report", "ack_generic", body=body)
+
+    def no_results(self) -> str:
+        """A successful search that found nothing."""
+        return self._render_or("no_results", "failed_generic")
 
     # -- capabilities -----------------------------------------------------
     def capabilities(self, tool_descriptions: Sequence[str]) -> str:

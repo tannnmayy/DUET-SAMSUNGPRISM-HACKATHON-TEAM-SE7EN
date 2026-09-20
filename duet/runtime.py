@@ -33,7 +33,9 @@ from .fastpath import (
 )
 from .nlg import Phrasebook
 from .planner import Plan, Planner
-from .planner.rules import PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL
+from .planner.rules import (
+    PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection,
+)
 from .state import ConversationState
 from .tools import ToolRegistry
 
@@ -72,6 +74,10 @@ class DuetAgent:
 
         self._ended = False
         self._final_sent = False
+        # State-modifying calls held behind the post-correction quiet
+        # window. They are not yet in the coordinator's pending list, but
+        # they are outstanding work, so scenario_end must wait for them.
+        self._deferred = 0
 
     # ------------------------------------------------------------------
     # lifecycle
@@ -172,7 +178,7 @@ class DuetAgent:
     def on_user_audio_chunk(self, payload: Dict[str, Any]) -> None:
         # Acknowledge first, perceive behind the acknowledgment. Transcription
         # takes hundreds of milliseconds; the latency clock does not wait.
-        self.emit.filler(self.say.ack_listen())
+        self._speak_floored(lambda: self.emit.filler(self.say.ack_listen()))
         telemetry.log("audio", ref=payload.get("audio_ref"),
                       end_of_turn=payload.get("end_of_turn"))
         # Phase 2 attaches the ASR job here.
@@ -199,7 +205,8 @@ class DuetAgent:
             # flight is still the work the user wants.
             self.planner.harvest(text, now_ms=self.now_ms,
                                  has_frame=self.last_frame is not None)
-            self.emit.filler(self.say.ack_correction(None))
+            text = self.say.ack_correction(None)
+            self._speak_floored(lambda: self.emit.filler(text))
             return
 
         self.state.bump_epoch("interruption:" + repair.kind, at_ms=self.now_ms)
@@ -215,27 +222,38 @@ class DuetAgent:
         if repair.kind == REPAIR_RETRACTION:
             self.coord.cancel_all(now_ms=self.now_ms, reason="retraction")
             self.state.set_intent("cancelled")
-            self.emit.filler(self.say.ack_retraction())
+            text = self.say.ack_retraction()
+            self._speak_floored(lambda: self.emit.filler(text))
             self.planner.goal_text = ""
             return
 
         if repair.kind == REPAIR_INTENT_CHANGE:
             self.coord.cancel_all(now_ms=self.now_ms, reason="intent_change")
             self.state.reset_for_intent_change(None)
-            self.emit.filler(self.say.ack_intent_change())
+            text = self.say.ack_intent_change()
+            self._speak_floored(lambda: self.emit.filler(text))
             self._on_turn(repair.remainder or text, announce=False)
             return
 
         # CORRECTION: harvest the new value, cancel what it invalidated, then
         # acknowledge by name so the user hears that it landed.
+        #
+        # A correction has two forms. It can re-value a slot ("make it New
+        # York"), or it can re-select a row of results we already hold ("make
+        # it the 2 PM flight"). The second changes no slot by extraction -
+        # times and superlatives are selectors, not values - so without
+        # reselect() it produces no state change, nothing is invalidated, and
+        # the in-flight booking survives.
         before = {name: slot.value for name, slot in self.state.slots.items()}
         self.planner.harvest(repair.remainder or text, now_ms=self.now_ms,
                              has_frame=self.last_frame is not None)
+        self.planner.reselect(repair.remainder or text, now_ms=self.now_ms)
         changed = self.state.changed_since(self.state.epoch)
         self.coord.invalidate(changed, now_ms=self.now_ms, reason="correction")
 
         new_value, old_value = self._describe_change(before, changed)
-        self.emit.filler(self.say.ack_correction(new_value, old=old_value))
+        ack = self.say.ack_correction(new_value, old=old_value)
+        self._speak_floored(lambda: self.emit.filler(ack))
         self._replan(self.planner.goal_text or text)
 
     def _describe_change(self, before: Dict[str, Any],
@@ -274,6 +292,10 @@ class DuetAgent:
             if self._issue(follow_up, turn_ended=True):
                 return
 
+        if row is None and has_empty_collection(result):
+            self._send_final(self.say.no_results())
+            return
+
         body = self.planner.describe(spec, result, row)
         if not body:
             # A successful call with nothing in it - an empty pages list is a
@@ -286,8 +308,9 @@ class DuetAgent:
     def on_scenario_end(self, payload: Dict[str, Any]) -> None:
         self._ended = True
         telemetry.log("scenario_end", at_ms=self.now_ms)
-        if self.coord.pending():
-            # Work is still running and its result will produce the answer.
+        if self.coord.pending() or self._deferred:
+            # Work is still running (or held behind the commitment gate)
+            # and its result will produce the answer.
             # Guard against it never arriving with a scaled timer.
             self.spawn(self._tail_flush(), "tail_flush")
             return
@@ -329,27 +352,86 @@ class DuetAgent:
             self.state.set_intent(plan.intent)
 
         if plan.kind == PLAN_SPEAK:
-            self._send_final(self.say.capabilities(self.registry.descriptions()))
+            self._speak_floored(
+                lambda: self._send_final(
+                    self.say.capabilities(self.registry.descriptions())))
             return
 
         if plan.kind == PLAN_CLARIFY:
-            self.emit.clarify(self.say.clarify_missing(
-                plan.clarify_slot or "detail"))
+            text = self.say.clarify_missing(plan.clarify_slot or "detail")
+            self._speak_floored(lambda: self.emit.clarify(text))
             return
 
         if plan.is_tool:
             if announce:
-                self.emit.filler(self.say.ack_lookup(plan.subject))
+                text = self.say.ack_lookup(plan.subject)
+                self._speak_floored(lambda: self.emit.filler(text))
+            # The tool call itself goes out immediately: it does not stop
+            # the latency clock, and earlier is strictly better.
             self._issue(plan, turn_ended=True)
 
     def _issue(self, plan: Plan, *, turn_ended: bool) -> bool:
         if not plan.is_tool:
             return False
+
+        allowed, reason = self.coord.may_issue(
+            plan.tool, plan.args, now_ms=self.now_ms,
+            turn_ended=turn_ended, confidence=plan.confidence)
+        if not allowed and reason.startswith("too_soon_after_correction"):
+            # The gate holds irreversible work for a moment after a correction,
+            # because the user may still be mid-correction ("the 2 PM... no,
+            # the 6 PM"). Deferring is right; dropping is not - nothing else
+            # would ever re-trigger this plan.
+            self._deferred += 1
+            self.spawn(self._deferred_commit(plan, self.state.epoch),
+                       "deferred_commit")
+            return True
+
         call_id = self.coord.issue(
             plan.tool, plan.args, now_ms=self.now_ms,
             depends_on=plan.depends_on, turn_ended=turn_ended,
             confidence=plan.confidence, purpose=plan.subject)
         return call_id is not None
+
+    async def _deferred_commit(self, plan: Plan, epoch: int) -> None:
+        """Issue a state-modifying call once the post-correction quiet window
+        has passed, unless a further correction superseded it."""
+        elapsed = self.now_ms - self.state.last_bump_at_ms
+        remaining_ms = max(config.COMMITMENT_QUIET_MS - elapsed, 0.0) + 20.0
+        try:
+            await asyncio.sleep(remaining_ms / max(self._scale, 0.05) / 1000.0)
+            if self.state.epoch != epoch:
+                telemetry.log("deferred_commit.superseded", tool=plan.tool.name,
+                              born_epoch=epoch, now_epoch=self.state.epoch)
+                return
+            settled_ms = self.state.last_bump_at_ms + config.COMMITMENT_QUIET_MS + 1.0
+            self.coord.issue(plan.tool, plan.args,
+                             now_ms=max(settled_ms, self.now_ms),
+                             depends_on=plan.depends_on, turn_ended=True,
+                             confidence=plan.confidence, purpose=plan.subject)
+        finally:
+            self._deferred = max(0, self._deferred - 1)
+
+    def _speak_floored(self, produce) -> None:
+        """Emit a latency-critical utterance after the speech floor.
+
+        `produce` is a zero-argument callable that does the actual emit. It is
+        run from a task, so the handler itself stays synchronous and Invariant
+        1 still holds. If an interruption lands inside the floor window the
+        epoch moves and we stay silent here - the interruption handler will
+        speak its own acknowledgment, and saying both would be redundant.
+        """
+        epoch = self.state.epoch
+        self.spawn(self._floored(produce, epoch), "floored_speech")
+
+    async def _floored(self, produce, epoch: int) -> None:
+        await asyncio.sleep(
+            config.SPEECH_FLOOR_MS / max(self._scale, 0.05) / 1000.0)
+        if self.state.epoch != epoch:
+            telemetry.log("floored_speech.superseded", epoch=epoch,
+                          now_epoch=self.state.epoch)
+            return
+        produce()
 
     def _send_final(self, text: str) -> None:
         if self.emit.final(text):

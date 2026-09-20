@@ -138,8 +138,17 @@ def classify_repair(text: str) -> Repair:
 
     hit = _find_trigger(low, _INTENT_CHANGE_TRIGGERS)
     if hit:
-        remainder = raw[hit[1] + len(hit[0]):].strip()
-        return Repair(REPAIR_INTENT_CHANGE, hit[0], remainder, 0.75)
+        tail = raw[hit[1] + len(hit[0]):].strip()
+        # "forget the FLIGHT. my TV is broken" - the trigger consumes only up
+        # to "the", leaving the abandoned domain's own noun at the front of
+        # the remainder. That one word is enough to pull tool ranking straight
+        # back to the domain we were just told to drop, so the abandoned noun
+        # phrase is cut at the first clause boundary.
+        remainder = _after_first_boundary(tail)
+        if _has_new_content(remainder):
+            return Repair(REPAIR_INTENT_CHANGE, hit[0], remainder, 0.75)
+        # Nothing follows the abandoned noun: this is a plain retraction.
+        return Repair(REPAIR_RETRACTION, hit[0], tail, 0.8)
 
     hit = _find_trigger(low, _RETRACTION_TRIGGERS)
     if hit:
@@ -164,6 +173,12 @@ def classify_repair(text: str) -> Repair:
     # An interruption with no trigger word at all is still a correction: the
     # user barged in for a reason.
     return Repair(REPAIR_CORRECTION, None, raw.strip(), 0.4)
+
+
+def _after_first_boundary(text: str) -> str:
+    """Text following the first clause boundary, or empty if there is none."""
+    match = re.search(r"[.,;!?]", text)
+    return text[match.end():].strip() if match else ""
 
 
 def _has_new_content(remainder: str) -> bool:
@@ -358,19 +373,23 @@ def extract_people(text: str) -> List[Candidate]:
     )
     for pattern in cased_patterns:
         for match in re.finditer(pattern, text):
-            _offer_person(out, match)
+            _offer_person(out, match, "benefactive phrase", 0.75)
     for pattern in explicit_patterns:
         for match in re.finditer(pattern, text, re.I):
-            _offer_person(out, match)
+            # An explicit cue ("name's Alice", "passenger Alice") is not
+            # ambiguous with a place, so it is tagged differently and the
+            # reassignment in extract_values must never touch it.
+            _offer_person(out, match, "explicit person cue", 0.9)
     return out
 
 
-def _offer_person(out: List[Candidate], match) -> None:
+def _offer_person(out: List[Candidate], match, evidence: str,
+                  confidence: float) -> None:
     value = _clean_value(match.group(1))
     if not _looks_like_value(value) or _is_date_like(value):
         return
-    out.append(Candidate(_title(value), ROLE_PERSON, 0.75,
-                         match.span(1), "benefactive phrase"))
+    out.append(Candidate(_title(value), ROLE_PERSON, confidence,
+                         match.span(1), evidence))
 
 
 def extract_capitalised(text: str) -> List[Candidate]:
@@ -538,6 +557,29 @@ def extract_selector(text: str) -> Selector:
             break
 
     return selector
+
+
+# Generic English verbs of commitment. Not domain vocabulary: these are how
+# a speaker of any language-domain signals "do the irreversible thing now",
+# and they are what lets "put me on the cheapest one" read as a booking
+# despite containing no booking noun at all.
+_COMMIT_CUES = (
+    "book", "reserve", "buy", "purchase", "order", "schedule", "confirm",
+    "put me on", "get me on", "sign me up", "take it", "go ahead", "do it",
+    "make it happen", "proceed", "submit", "file", "open a", "raise a",
+    "cancel", "delete", "remove", "send", "apply",
+)
+
+
+def wants_commit(text: str) -> bool:
+    """Does the user want an irreversible action taken now?
+
+    Used only to break ties among tools we can ALREADY satisfy - never to
+    promote an unsatisfiable one, or "find a flight and book the 8 AM"
+    would try to book before any flight id exists.
+    """
+    low = contract.norm(text)
+    return any(cue in low for cue in _COMMIT_CUES)
 
 
 def looks_like_capability_question(text: str) -> bool:

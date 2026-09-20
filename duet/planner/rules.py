@@ -30,7 +30,7 @@ from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 from .. import contract, telemetry
 from ..fastpath import (
     Selector, extract_selector, extract_values, looks_like_capability_question,
-    looks_like_greeting,
+    looks_like_greeting, wants_commit,
 )
 from ..state import ConversationState, SRC_TEXT
 from ..tools import (
@@ -128,6 +128,19 @@ def _result_rows(result: Dict[str, Any]) -> Tuple[Optional[str], List[Dict[str, 
         if isinstance(value, list) and value and isinstance(value[0], dict):
             return key, value
     return None, []
+
+
+def has_empty_collection(result: Dict[str, Any]) -> bool:
+    """True if the tool succeeded but returned an empty collection.
+
+    docs/TOOLS.md: "An empty pages list is a *successful* call with no hits -
+    handle it gracefully." Without this the describe path falls through to
+    whatever scalar remains and reports the search mode as if it were the
+    answer, which is both useless and faintly dishonest.
+    """
+    if not isinstance(result, dict):
+        return False
+    return any(isinstance(v, list) and len(v) == 0 for v in result.values())
 
 
 def _field_matching(row: Dict[str, Any], hints: Sequence[str]) -> Optional[str]:
@@ -228,6 +241,11 @@ class Planner:
         # re-planned against the original intent.
         self.goal_text: str = ""
         self.goal_selector: Selector = Selector()
+        # The most recent successful result set, retained so a later
+        # correction can re-select a different row from it without
+        # re-running the search (see reselect).
+        self.last_result: Dict[str, Any] = {}
+        self.last_spec: Optional[ToolSpec] = None
 
     def set_registry(self, registry: ToolRegistry) -> None:
         self.registry = registry
@@ -264,6 +282,16 @@ class Planner:
                 self.state.set_slot(slot, cand.value, confidence=cand.confidence,
                                     source=SRC_TEXT, at_ms=now_ms, span=cand.span)
         return values
+
+    def values_by_slot(self) -> Dict[str, Any]:
+        """Canonical slot name -> value, for exact-name argument binding.
+
+        Roles are lossy: flight_id and booking_id are both ROLE_ID. An
+        argument literally called flight_id should receive the flight_id slot,
+        not whichever identifier happened to be written last.
+        """
+        return {name: slot.value for name, slot in self.state.slots.items()
+                if slot.value is not None}
 
     def current_values(self) -> Dict[str, Any]:
         """Role -> value for everything we currently hold."""
@@ -344,7 +372,8 @@ class Planner:
                          extras: Optional[Dict[str, Any]]) -> Plan:
         values = self.current_values()
         spec = self.registry.best(text, has_frame=has_frame,
-                                  available_values=values)
+                                  available_values=values,
+                                  commit_intent=wants_commit(text))
 
         if spec is None:
             # Lexical retrieval cannot bridge a symptom description to a
@@ -356,8 +385,9 @@ class Planner:
                 return Plan(PLAN_SPEAK, intent="chitchat", subject="capabilities",
                             confidence=0.4)
 
-        args, missing = self.registry.build_args(spec, values, utterance=text,
-                                                 extras=extras or {})
+        args, missing = self.registry.build_args(
+            spec, values, utterance=text, extras=extras or {},
+            by_name=self.values_by_slot())
         depends_on = self._depends_on(spec, args, values)
 
         if missing:
@@ -432,6 +462,40 @@ class Planner:
         return head
 
     # ------------------------------------------------------------------
+    def reselect(self, utterance: str, *, now_ms: float) -> bool:
+        """Apply a new selector to results we already hold.
+
+        A correction does not always re-value a slot. "Wait, make it the 2 PM
+        flight instead" changes WHICH ROW of an existing result set the user
+        wants - the destination, the passenger and the search are all still
+        correct. Clock times and superlatives are deliberately not extracted
+        as slot values (a time is a selector, not a slot), so without this the
+        correction produces no state change at all: nothing is invalidated,
+        the in-flight booking survives, and the acknowledgment has no value to
+        name.
+
+        Returns True if the selection actually moved.
+        """
+        if not self.last_result:
+            return False
+        selector = extract_selector(utterance)
+        if selector.is_empty:
+            return False
+        row = select_item(self.last_result, selector)
+        if not row:
+            return False
+        ident = _row_identifier(row)
+        if ident is None:
+            return False
+        slot = slot_for_identifier(ident)
+        if self.state.get(slot) == ident:
+            return False
+        self.goal_selector = selector
+        self.state.set_slot(slot, ident, source="tool", at_ms=now_ms)
+        telemetry.log("planner.reselect", slot=slot, value=ident,
+                      selector=str(selector))
+        return True
+
     def adopt_result(self, spec: Optional[ToolSpec], result: Dict[str, Any],
                      *, now_ms: float) -> Optional[Dict[str, Any]]:
         """Record what a successful result tells us, and return the chosen row.
@@ -441,6 +505,10 @@ class Planner:
         """
         if not isinstance(result, dict):
             return None
+
+        if _result_rows(result)[1]:
+            self.last_result = dict(result)
+            self.last_spec = spec
 
         for key, value in result.items():
             if key == "status" or not isinstance(value, (str, int, float)):
