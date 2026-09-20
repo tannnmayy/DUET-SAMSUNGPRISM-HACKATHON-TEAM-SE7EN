@@ -268,3 +268,27 @@ def test_every_final_response_carries_a_snapshot(path):
               if e.get("kind") == "action" and e.get("action") == "final_response"]
     for entry in finals:
         assert isinstance(entry.get("state_snapshot"), dict), entry
+
+
+# ------------------------------------------------------------ Invariant 7
+def test_agent_survives_with_every_model_disabled():
+    """The insurance policy, asserted rather than assumed.
+
+    The largest unhedged risk here is that the evaluation machine differs from
+    ours - a dependency that will not install, a checkpoint that cannot be
+    fetched, a busy GPU - and with no leaderboard we would never find out. So
+    duet/ treats every model as optional, and this checks that the fallback
+    actually works end to end rather than only in principle.
+
+    Perception is disabled via the environment, which is read inside
+    duet.perception.base at load time, so this runs the real agent through the
+    real harness with genuinely nothing behind it.
+    """
+    import subprocess
+
+    result = subprocess.run(
+        [sys.executable, os.path.join(ROOT, "tools", "killswitch.py"),
+         "--floor", "55"],
+        capture_output=True, text=True, cwd=ROOT, timeout=900)
+    assert "DEGRADES GRACEFULLY" in result.stdout, (
+        result.stdout[-2000:] + "\n" + result.stderr[-2000:])

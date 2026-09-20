@@ -1,5 +1,21 @@
-team: "your-team-name"
+# Samsung PRISM GenAI Hackathon 3.0 - Theme 05: Interruptible Real-Time Agents
+#
+# TODO(team): replace with CollegeName_TeamName before the final tag.
+team: "CollegeName_TeamName"
+
 entry_point: "agent.agent:ParticipantAgent"   # module:Class
-python: "3.12"                                 # 3.10–3.12
-requirements: []                               # extra pip packages, public PyPI only
-env: []                                        # e.g. SECRET_GEMINI_API_KEY (registered on the portal)
+python: "3.12"                                 # 3.10-3.12 supported
+
+# Public PyPI only. Kept in step with requirements.txt; the microphone and
+# sandbox dependencies live in requirements-app.txt and are deliberately NOT
+# listed here, because duet/ never imports app/ and a failure to install one
+# must not be able to affect the scored run.
+requirements:
+  - faster-whisper>=1.0,<2
+  - pillow>=10
+  - numpy>=1.24
+  - sentence-transformers>=3.0
+
+# No secrets are read. Every model is loaded from a public checkpoint, so
+# there is no API key to register and no network dependency at scoring time.
+env: []
