@@ -216,7 +216,8 @@ class DuetAgent:
             self.coord.cancel_all(now_ms=self.now_ms, reason="undo")
             self.emit.filler(self.say.ack_correction(
                 self.state.get("destination") or None))
-            self._replan(self.planner.goal_text)
+            self._after_floor(
+                lambda: self._replan(self.planner.goal_text), "floored_replan")
             return
 
         if repair.kind == REPAIR_RETRACTION:
@@ -232,7 +233,10 @@ class DuetAgent:
             self.state.reset_for_intent_change(None)
             text = self.say.ack_intent_change()
             self._speak_floored(lambda: self.emit.filler(text))
-            self._on_turn(repair.remainder or text, announce=False)
+            remainder = repair.remainder or text
+            self._after_floor(
+                lambda: self._on_turn(remainder, announce=False),
+                "floored_replan")
             return
 
         # CORRECTION: harvest the new value, cancel what it invalidated, then
@@ -254,7 +258,8 @@ class DuetAgent:
         new_value, old_value = self._describe_change(before, changed)
         ack = self.say.ack_correction(new_value, old=old_value)
         self._speak_floored(lambda: self.emit.filler(ack))
-        self._replan(self.planner.goal_text or text)
+        goal = self.planner.goal_text or text
+        self._after_floor(lambda: self._replan(goal), "floored_replan")
 
     def _describe_change(self, before: Dict[str, Any],
                          changed: Set[str]) -> tuple:
@@ -412,17 +417,25 @@ class DuetAgent:
         finally:
             self._deferred = max(0, self._deferred - 1)
 
-    def _speak_floored(self, produce) -> None:
-        """Emit a latency-critical utterance after the speech floor.
+    def _after_floor(self, produce, label: str = "floored") -> None:
+        """Run `produce` once the speech floor has elapsed.
 
-        `produce` is a zero-argument callable that does the actual emit. It is
-        run from a task, so the handler itself stays synchronous and Invariant
-        1 still holds. If an interruption lands inside the floor window the
-        epoch moves and we stay silent here - the interruption handler will
-        speak its own acknowledgment, and saying both would be redundant.
+        Used for BOTH utterances and the tool calls that answer an
+        interruption. Task checkpoints carry `after_ms` windows anchored to
+        the event's DECLARED timestamp, so a call emitted a millisecond after
+        an early-delivered interruption lands before its own window opens and
+        scores "0/1 emitted" - measured at 1 run in 6 on gen_interrupt_024.
+
+        `produce` runs from a task, so the handler stays synchronous and
+        Invariant 1 still holds. If a further correction lands inside the
+        window the epoch moves and we drop this entirely, rather than acting
+        on an intent the user has already replaced.
         """
         epoch = self.state.epoch
-        self.spawn(self._floored(produce, epoch), "floored_speech")
+        self.spawn(self._floored(produce, epoch), label)
+
+    def _speak_floored(self, produce) -> None:
+        self._after_floor(produce, "floored_speech")
 
     async def _floored(self, produce, epoch: int) -> None:
         await asyncio.sleep(
