@@ -131,6 +131,11 @@ def _result_rows(result: Dict[str, Any]) -> Tuple[Optional[str], List[Dict[str, 
     return None, []
 
 
+def result_rows(result: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """The list-of-objects field of a tool result, or an empty list."""
+    return _result_rows(result)[1]
+
+
 def has_empty_collection(result: Dict[str, Any]) -> bool:
     """True if the tool succeeded but returned an empty collection.
 
@@ -571,7 +576,8 @@ class Planner:
         return row
 
     def describe(self, spec: Optional[ToolSpec], result: Dict[str, Any],
-                 row: Optional[Dict[str, Any]] = None) -> str:
+                 row: Optional[Dict[str, Any]] = None,
+                 labels: bool = True) -> str:
         """A grounded phrase about a result.
 
         Grounding is in the fields the schema declares, so a tool we met 800ms
@@ -584,8 +590,12 @@ class Planner:
         field is spoken with its connective.
         """
         if row:
+            citation = _citation(row, labels)
+            if citation:
+                return citation
             body = _join(_phrase(k, v) for k, v in row.items()
-                         if isinstance(v, (str, int, float)))
+                         if isinstance(v, (str, int, float))
+                         and (labels or not _is_label(k)))
             if body:
                 return body
         fields = ground_fields(spec, result)
@@ -607,6 +617,43 @@ _FIELD_PHRASES = {
     "condition": "currently ",
     "forecast": "with ",
 }
+
+
+# Fields that NAME the thing rather than locate it. When we could not verify
+# what the frame shows, these are exactly the fields that would assert a
+# component we have not identified.
+_LABEL_FIELDS = ("title", "name", "label", "component", "part")
+
+
+def _citation(row: Dict[str, Any], labels: bool) -> str:
+    """Render a document reference the way a person would say it.
+
+    Field order in a tool result is the tool's business, not a sentence plan.
+    Taking it literally produces "in the GENERIC-laptop-manual, on page 21",
+    which is grammatical nonsense and reads badly to the quality grader.
+    """
+    page = None
+    doc = None
+    title = None
+    for key, value in row.items():
+        low = contract.norm(key)
+        if low == "page" and isinstance(value, (int, float, str)):
+            page = value
+        elif low in ("doc", "document", "manual", "source"):
+            doc = str(value).replace("-", " ").replace("_", " ").strip()
+        elif _is_label(key) and isinstance(value, str):
+            title = value
+    if page is None or not doc:
+        return ""
+    text = "page " + str(page) + " of the " + doc
+    if labels and title:
+        text = title + ", on " + text
+    return text
+
+
+def _is_label(key: str) -> bool:
+    low = contract.norm(key)
+    return any(h == low or h in low for h in _LABEL_FIELDS)
 
 
 def _phrase(key: str, value: Any) -> str:

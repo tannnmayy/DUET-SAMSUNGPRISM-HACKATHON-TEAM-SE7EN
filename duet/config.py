@@ -122,6 +122,18 @@ ASR_CLARIFY_THRESHOLD = 0.50
 ASR_AMBIGUITY_MARGIN = 0.25
 VISION_CLARIFY_THRESHOLD = 0.45
 
+# Minimum CLIP margin (top similarity minus second) before the frame is
+# allowed to override a tool's own result ordering.
+#
+# Measured on pub_07: CLIP scores USB Ports 0.300 against HDMI Output 0.268 on
+# a frame whose subject IS an HDMI port - it cannot read the printed label and
+# the panel genuinely contains several connector types, so the margins are
+# noise. Overriding on a 0.03 gap would substitute one wrong answer for
+# another. Re-ranking therefore only fires when the image discriminates
+# clearly, which it does when the candidates are visually distinct (a washing
+# machine against a television) rather than four sockets in a row.
+CLIP_RERANK_MARGIN = 0.05
+
 # A state-modifying tool may only fire when every required slot is at least
 # this confident. Deliberately higher than the read-only bar.
 COMMIT_CONFIDENCE = 0.70

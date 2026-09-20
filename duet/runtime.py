@@ -39,7 +39,7 @@ from .perception.asr import merge as asr_merge
 from .perception.asr import value_confidence as asr_value_confidence
 from .planner import Plan, Planner
 from .planner.rules import (
-    PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection,
+    PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection, result_rows,
 )
 from .state import ConversationState, SRC_AUDIO
 from .tools import ToolRegistry
@@ -476,6 +476,54 @@ class DuetAgent:
                       query=reading.query, confidence=round(reading.confidence, 3),
                       embedding_dims=len(embedding))
 
+    async def _ground_visually(self, spec, result: Dict[str, Any],
+                              epoch: int) -> None:
+        """Choose which returned row the frame actually depicts."""
+        from .perception.embed import describe_row
+
+        rows = result_rows(result)
+        path = resolve_media((self.last_frame or {}).get("image_ref"))
+        chosen = None
+        reranked = False
+        if path and rows:
+            texts = [describe_row(r) for r in rows]
+            ranked = await self.embed.rank_texts(path, texts)
+            if self.state.epoch != epoch:
+                telemetry.log("visual_rerank.discarded", why="stale_epoch")
+                return
+            if ranked:
+                index, score = ranked[0]
+                runner_up = ranked[1][1] if len(ranked) > 1 else 0.0
+                margin = score - runner_up
+                if margin >= config.CLIP_RERANK_MARGIN:
+                    chosen = rows[index]
+                    reranked = True
+                    telemetry.log("visual_rerank.chosen", score=round(score, 4),
+                                  margin=round(margin, 4), text=texts[index])
+                else:
+                    telemetry.log("visual_rerank.declined",
+                                  margin=round(margin, 4),
+                                  why="image_does_not_discriminate")
+
+        if chosen is None:
+            chosen = self.planner.adopt_result(spec, result, now_ms=self.now_ms)
+
+        # Only assert a label we can actually stand behind. Without a
+        # confident visual identification we know the manual has a relevant
+        # page but not which connector the user means, so we cite the page
+        # and stay silent about its title - naming the wrong component is
+        # worse than naming none.
+        # `chosen` is non-None either way once the fallback runs, so it is
+        # not evidence of anything. We have identified the subject only if a
+        # vision model read it or the image discriminated decisively.
+        identified = bool(self._frame_reading()) or reranked
+        body = self.planner.describe(spec, result, chosen,
+                                     labels=identified)
+        if not body:
+            self._send_final(self.say.no_results())
+            return
+        self._send_final(self.say.report(body))
+
     def _current_frame_id(self) -> Optional[str]:
         if not self.last_frame:
             return None
@@ -605,6 +653,21 @@ class DuetAgent:
             return
 
         row = self.planner.adopt_result(spec, result, now_ms=self.now_ms)
+
+        # Visual re-ranking. A question about a frame ("what is THIS port?")
+        # produces a text query that matches every comparable row equally, so
+        # the tool's own ordering is close to arbitrary and answering from the
+        # first row names the wrong thing. The frame is what disambiguates,
+        # and the tool has already proposed the candidates - so we let the
+        # image choose between them rather than inventing a label vocabulary.
+        #
+        # Gated on the schema: only tools that advertise they can consume a
+        # frame get re-ranked.
+        if (spec is not None and spec.wants_visual() and self.last_frame
+                and self.embed is not None and result_rows(result)):
+            self.spawn(self._ground_visually(spec, result, self.state.epoch),
+                       "visual_rerank")
+            return
 
         # Chaining: re-plan the original request now that new values exist. A
         # tool that was unsatisfiable before may be satisfiable now.

@@ -235,9 +235,15 @@ _WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday",
 _DATE_WORDS = ("today", "tomorrow", "tonight", "overnight", "next week",
                "this week", "weekend", "this evening", "this afternoon",
                "this morning")
+# Nouns a determiner like "next" / "this" / "last" may legitimately precede in
+# a date expression. Without this restriction the pattern matched "this port"
+# and recorded a question about a connector as a date.
+_DATE_NOUNS = ("week", "weekend", "month", "year", "morning", "afternoon",
+               "evening", "night", "day", "time") + _WEEKDAYS
+
 _DATE_RE = re.compile(
     r"\b(" + "|".join(_WEEKDAYS + _DATE_WORDS) + r"|\d{4}-\d{2}-\d{2}"
-    r"|(?:next|this|last)\s+\w+)\b", re.I)
+    r"|(?:next|this|last)\s+(?:" + "|".join(_DATE_NOUNS) + r"))\b", re.I)
 
 # A place follows a spatial preposition; a person follows a benefactive one.
 _PLACE_PREPS = ("to", "in", "at", "from", "into", "toward", "towards", "for")
