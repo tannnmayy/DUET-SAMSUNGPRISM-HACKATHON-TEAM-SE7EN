@@ -124,6 +124,16 @@ _POOLS: Dict[str, Sequence[str]] = {
         "I did not catch that clearly. Did you mean {options}?",
         "Quick check: was that {options}?",
     ),
+    # We could not make out the audio at all. Distinct from a missing slot:
+    # there is no specific value to ask about, so the honest move is to ask
+    # for confirmation of the whole request. This is also simply the natural
+    # English register for "I did not hear you".
+    "clarify_unheard": (
+        "Sorry, I did not catch that - could you confirm what you need?",
+        "I missed that one. Can you confirm what you would like?",
+        "That did not come through clearly - could you confirm that for me?",
+        "Sorry, did you say that again? I did not quite catch it.",
+    ),
     # A required value is missing entirely.
     "clarify_missing": (
         "Which {label} did you want?",
@@ -395,6 +405,10 @@ class Phrasebook:
         if not joined:
             return self.clarify_missing("detail")
         return self._render_or("clarify_choice", "ack_generic", options=joined)
+
+    def clarify_unheard(self) -> str:
+        """Ask for the whole request again when nothing was intelligible."""
+        return self._render_or("clarify_unheard", "clarify_missing", label="detail")
 
     def clarify_missing(self, slot_name: str) -> str:
         label = slot_label(slot_name)

@@ -1,0 +1,18 @@
+# Graded agent dependencies ONLY.
+#
+# These are installed by the evaluation portal and must resolve on public
+# PyPI (docs/SUBMISSION.md). Anything the live-microphone adapter or the
+# sandbox UI needs lives in requirements-app.txt instead: duet/ never imports
+# app/, so a missing app dependency can never affect the scored run.
+#
+# faster-whisper is doing two jobs. It is the speech backend - CTranslate2
+# int8 is fast enough to be practical on CPU as well as GPU, and it exposes
+# WORD-LEVEL probabilities, which is what M5's confidence gate is built on.
+# It also brings a decoder that reads MP3 without a system ffmpeg, which
+# matters because the evaluation machine is not guaranteed to have one.
+faster-whisper>=1.0,<2
+
+# Frame embeddings for the hybrid-search argument, and the vision backend.
+# Both degrade to a clarification if absent (see duet/perception/base.py).
+pillow>=10
+numpy>=1.24

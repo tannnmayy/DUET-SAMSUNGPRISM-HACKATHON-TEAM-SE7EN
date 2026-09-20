@@ -93,10 +93,32 @@ TAIL_FLUSH_MS = 4200.0
 # --------------------------------------------------------------------------
 # Confidence thresholds (tuned in Phase 2 against the public audio clips)
 # --------------------------------------------------------------------------
-# Below this, a perceived slot value triggers a clarification instead of an act.
-ASR_CLARIFY_THRESHOLD = 0.55
-# If the top-2 ASR hypotheses disagree on the slot token and the margin is
-# under this, treat it as genuinely ambiguous and name both candidates.
+# M5 gates on the SLOT word, not the sentence. Measured on the kit's clips
+# with `base`: pub_06 must be ACTED on at sentence confidence 0.40 because
+# "New York" was heard at 0.77/1.00, while pub_05_turn1 must be QUESTIONED at
+# 0.38 because no city survives at all. A single sentence-level threshold
+# cannot separate those two, so there are two numbers.
+#
+# Minimum probability of the words forming an extracted value before we are
+# willing to act on it.
+#
+# 0.65 sits in a real gap measured on the kit's clips with `base`: the garbage
+# transcript of pub_05_turn1 yields "Question" at 0.55, while pub_06's
+# "New York" is heard at 0.77/1.00 and pub_05_turn2's "Boston" at 0.95.
+# Erring high is the safe direction - pub_05 rewards asking and penalises
+# acting on a guess. Re-check against the production model on the A100, where
+# probabilities should be uniformly higher.
+ASR_SLOT_CONFIDENCE = 0.65
+
+# Fallback when nothing was extracted at all: below this we admit we did not
+# catch it rather than proceeding on an empty understanding.
+ASR_UTTERANCE_CONFIDENCE = 0.45
+
+# Retained for compatibility with callers that want one number.
+ASR_CLARIFY_THRESHOLD = 0.50
+
+# If two hypotheses disagree on the slot token and the margin is under this,
+# treat it as genuine ambiguity and name both candidates aloud.
 ASR_AMBIGUITY_MARGIN = 0.25
 VISION_CLARIFY_THRESHOLD = 0.45
 

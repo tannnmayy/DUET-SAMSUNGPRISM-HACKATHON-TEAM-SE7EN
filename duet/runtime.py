@@ -35,6 +35,8 @@ from .nlg import Phrasebook
 from .perception import (
     FrameReading, Transcript, load_asr, load_embed, load_vision, resolve_media,
 )
+from .perception.asr import merge as asr_merge
+from .perception.asr import value_confidence as asr_value_confidence
 from .planner import Plan, Planner
 from .planner.rules import (
     PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection,
@@ -94,6 +96,11 @@ class DuetAgent:
 
         self._ended = False
         self._final_sent = False
+        # True between asking a question and getting an answer. The reply
+        # to "which city?" is a fragment - it carries the missing value
+        # but none of the context - so it is planned together with the
+        # request that prompted the question.
+        self._awaiting_answer = False
         # State-modifying calls held behind the post-correction quiet
         # window. They are not yet in the coordinator's pending list, but
         # they are outstanding work, so scenario_end must wait for them.
@@ -281,19 +288,103 @@ class DuetAgent:
         options = self._ambiguous_values(parts)
         if options:
             question = self.say.clarify_choice(options)
+            self._awaiting_answer = True
             self._speak_floored(lambda: self.emit.clarify(question))
             telemetry.log("asr.clarify", options=options, why="competing_values")
             return
 
-        if not text or confidence < config.ASR_CLARIFY_THRESHOLD:
-            slot = self._expected_slot()
+        merged = asr_merge(parts)
+        values = self._effective_values(text)
+
+        if values:
+            # Gate on the PRIMARY slot, not the sentence and not every role
+            # that happened to be extracted.
+            #
+            # The sentence score is too coarse: pub_06 must be acted on at
+            # utterance confidence 0.40 because "New York" was heard at
+            # 0.77/1.00. But taking the minimum across all roles is too harsh
+            # in the other direction - a capitalised span incidentally read as
+            # a passenger name scored 0.16 there and blocked a search whose
+            # destination was perfectly clear.
+            #
+            # The question this gate answers is "did I understand the
+            # request?", which turns on the content value. A shaky passenger
+            # name is M2's problem at commit time, where the commitment gate
+            # already refuses to book on low-confidence slots.
+            primary_role, primary_value = self._primary_value(values)
+            slot_confidence = (asr_value_confidence(merged, str(primary_value))
+                               if primary_value is not None else None)
+
+            # A backend that does not expose word-level probabilities leaves
+            # slot_confidence unknown. Falling through would mean acting on
+            # an utterance we barely trust, so the sentence score is the
+            # fallback judge rather than no judge at all.
+            too_weak = (slot_confidence < config.ASR_SLOT_CONFIDENCE
+                        if slot_confidence is not None
+                        else confidence < config.ASR_UTTERANCE_CONFIDENCE)
+            if too_weak:
+                telemetry.log("asr.clarify", why="low_slot_confidence",
+                              slot=primary_role,
+                              slot_confidence=slot_confidence,
+                              utterance_confidence=round(confidence, 3))
+                self._awaiting_answer = True
+                self._speak_floored(lambda: self.emit.clarify(
+                    self.say.clarify_missing(primary_role)))
+                return
+
+            effective = slot_confidence if slot_confidence is not None else confidence
+            self._on_turn(text, source=SRC_AUDIO, confidence=effective)
+            return
+
+        if not text or confidence < config.ASR_UTTERANCE_CONFIDENCE:
+            # Keep whatever we did make out as the pending request. It may be
+            # mostly noise, but a partially-heard "book a flight to ..." is
+            # exactly the context the user's next answer needs - without it,
+            # a reply of "I said Boston" names a city and no domain at all.
+            if text:
+                self.planner.goal_text = text
+            self._awaiting_answer = True
             self._speak_floored(lambda: self.emit.clarify(
-                self.say.clarify_missing(slot)))
-            telemetry.log("asr.clarify", why="low_confidence",
+                self.say.clarify_unheard()))
+            telemetry.log("asr.clarify", why="nothing_understood",
                           confidence=round(confidence, 3))
             return
 
         self._on_turn(text, source=SRC_AUDIO, confidence=confidence)
+
+    def _primary_value(self, values: Dict[str, Any]):
+        """The extracted value the request actually turns on.
+
+        Ordered by how much a mishearing would change what we do: a wrong
+        place or identifier sends the whole request somewhere else, while a
+        wrong date or free-text fragment is recoverable.
+        """
+        from .tools import ROLE_DATE, ROLE_ID, ROLE_PERSON, ROLE_PLACE
+        for role in (ROLE_PLACE, ROLE_ID, ROLE_PERSON, ROLE_DATE):
+            if values.get(role) is not None:
+                return role, values[role]
+        for role, value in values.items():
+            if value is not None:
+                return role, value
+        return "detail", None
+
+    def _effective_values(self, text: str) -> Dict[str, Any]:
+        """The values the planner will end up with for this turn.
+
+        Mirrors the planner's two-pass harvest, including the intra-turn
+        self-repair, so the confidence gate judges the value we will actually
+        act on rather than the one the repair abandoned.
+        """
+        from .fastpath import REPAIR_CORRECTION, classify_repair, extract_values
+
+        wanted = sorted(self.planner.wanted_roles(
+            text, has_frame=self.last_frame is not None))
+        found = extract_values(text, expect=wanted)
+        repair = classify_repair(text)
+        if (repair.kind == REPAIR_CORRECTION and repair.trigger
+                and repair.remainder.strip()):
+            found.update(extract_values(repair.remainder, expect=wanted))
+        return {role: cand.value for role, cand in found.items()}
 
     def _ambiguous_values(self, parts: List[Transcript]) -> List[str]:
         """Distinct slot values the competing hypotheses disagree about.
@@ -563,6 +654,16 @@ class DuetAgent:
         if not turn:
             return
         self._final_sent = False
+
+        # "I said Boston." answers a question we asked; on its own it names no
+        # domain at all and would route to whatever tool absorbs free text.
+        # Planned together with the request that prompted the question, it is
+        # the missing slot of that request.
+        if self._awaiting_answer and self.planner.goal_text:
+            turn = (self.planner.goal_text + " " + turn).strip()
+            telemetry.log("turn.merged_with_pending_question", text=turn)
+        self._awaiting_answer = False
+
         plan = self.planner.plan_turn(
             self._ground_in_frame(turn), now_ms=self.now_ms,
             has_frame=self.last_frame is not None,
@@ -597,6 +698,7 @@ class DuetAgent:
 
         if plan.kind == PLAN_CLARIFY:
             text = self.say.clarify_missing(plan.clarify_slot or "detail")
+            self._awaiting_answer = True
             self._speak_floored(lambda: self.emit.clarify(text))
             return
 

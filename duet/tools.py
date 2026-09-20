@@ -391,11 +391,21 @@ class ToolRegistry:
 
             visual = has_frame and spec.wants_visual()
 
-            # A tool is only a candidate if something in the request points at
-            # it: lexical evidence, or a camera frame plus a schema that
-            # advertises it can consume one. Without that we would happily
-            # call a tool with no required arguments in response to "hello".
-            if lexical <= 0.0 and not visual:
+            # A tool whose every required argument is filled by a value we
+            # actually extracted is evidence in its own right: the user has
+            # just supplied precisely what it needs. This matters most when
+            # perception is imperfect - a transcript of "look up light to
+            # Boston" shares no word with "search flights to a destination
+            # city", but it does hand us a destination, and the tool that
+            # wants exactly a destination is the one being asked for.
+            supplied = self._strong_fill_fraction(spec, values) >= 1.0
+
+            # Otherwise a tool is only a candidate if something in the request
+            # points at it: lexical evidence, or a camera frame plus a schema
+            # that advertises it can consume one. Without any of the three we
+            # would happily call a tool with no required arguments in response
+            # to "hello".
+            if lexical <= 0.0 and not visual and not supplied:
                 scored.append((spec, NO_MATCH))
                 continue
 
@@ -427,6 +437,22 @@ class ToolRegistry:
 
         scored.sort(key=lambda pair: (-pair[1], pair[0].name))
         return scored
+
+    def _strong_fill_fraction(self, spec: ToolSpec, values: Dict[str, Any]) -> float:
+        """Fraction of required arguments fillable from REAL extracted values.
+
+        Deliberately excludes the free-text fallback and the enum default:
+        both would make almost any tool look fully supplied for almost any
+        sentence, which is the opposite of evidence.
+        """
+        required = spec.required_args()
+        if not required:
+            return 0.0
+        filled = 0
+        for arg in required:
+            if arg.role() in values and values[arg.role()] is not None:
+                filled += 1
+        return filled / len(required)
 
     def _fillable_fraction(self, spec: ToolSpec, values: Dict[str, Any],
                            utterance: str) -> float:

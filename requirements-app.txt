@@ -1,0 +1,6 @@
+# Live-microphone adapter and judge sandbox. NOT part of the graded
+# submission: duet/ must import and run cleanly without any of these, which
+# tests/test_invariants.py enforces.
+sounddevice>=0.4
+webrtcvad>=2.0
+websockets>=12

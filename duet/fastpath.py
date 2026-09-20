@@ -217,6 +217,10 @@ please thanks thank sorry okay ok yes no not
 what which who whom whose when where why how
 tomorrow today tonight now soon later
 flight flights hotel hotels car cars ticket tickets booking bookings
+question questions thing things way ways place places problem problems
+issue issues idea ideas point moment minute second hour hours day days
+week weeks month months year years morning evening afternoon night
+number answer reason detail details information info matter subject
 """.split())
 
 # Identifier shapes: FL-DEN-8AM, BK-0001, TK-0001, RC-7781, HT-0001.
