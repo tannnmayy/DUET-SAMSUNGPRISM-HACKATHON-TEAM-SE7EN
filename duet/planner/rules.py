@@ -29,8 +29,9 @@ from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
 from .. import contract, telemetry
 from ..fastpath import (
-    Selector, extract_selector, extract_values, looks_like_capability_question,
-    looks_like_greeting, wants_commit,
+    REPAIR_CORRECTION, Selector, classify_repair, extract_selector,
+    extract_values, looks_like_capability_question, looks_like_greeting,
+    wants_commit,
 )
 from ..state import ConversationState, SRC_TEXT
 from ..tools import (
@@ -262,8 +263,14 @@ class Planner:
         return roles or {ROLE_PLACE, ROLE_PERSON, ROLE_DATE, ROLE_ID, ROLE_TEXT}
 
     def harvest(self, utterance: str, *, now_ms: float,
-                has_frame: bool = False) -> Dict[str, Any]:
-        """Extract values from a turn and record them as slots with provenance."""
+                has_frame: bool = False, source: str = SRC_TEXT,
+                confidence_scale: float = 1.0) -> Dict[str, Any]:
+        """Extract values from a turn and record them as slots with provenance.
+
+        `confidence_scale` carries perception uncertainty into the slot: a
+        value heard at 0.6 confidence must not later satisfy the commitment
+        gate as though it had been typed. This is what connects M5 to M2.
+        """
         wanted = self.wanted_roles(utterance, has_frame=has_frame)
         found = extract_values(utterance, expect=sorted(wanted))
         values: Dict[str, Any] = {}
@@ -279,8 +286,9 @@ class Planner:
             slot = (slot_for_identifier(cand.value) if role == ROLE_ID
                     else _ROLE_TO_SLOT.get(role))
             if slot:
-                self.state.set_slot(slot, cand.value, confidence=cand.confidence,
-                                    source=SRC_TEXT, at_ms=now_ms, span=cand.span)
+                self.state.set_slot(slot, cand.value,
+                                    confidence=cand.confidence * confidence_scale,
+                                    source=source, at_ms=now_ms, span=cand.span)
         return values
 
     def values_by_slot(self) -> Dict[str, Any]:
@@ -316,7 +324,9 @@ class Planner:
     # ------------------------------------------------------------------
     def plan_turn(self, utterance: str, *, now_ms: float,
                   has_frame: bool = False,
-                  extras: Optional[Dict[str, Any]] = None) -> Plan:
+                  extras: Optional[Dict[str, Any]] = None,
+                  source: str = SRC_TEXT, confidence_scale: float = 1.0,
+                  visual_embedding: Optional[List[float]] = None) -> Plan:
         """Decide what to do about a complete user turn."""
         text = str(utterance or "").strip()
         if not text:
@@ -331,13 +341,34 @@ class Planner:
 
         self.goal_text = text
         self.goal_selector = extract_selector(text)
-        self.harvest(text, now_ms=now_ms, has_frame=has_frame)
+
+        # A self-repair does not always arrive as an interruption event. In
+        # pub_06 it is INSIDE one turn - "uh, book a flight to Boston -
+        # actually, make that New York" - so the turn text carries both the
+        # abandoned value and the repaired one, and plain extraction takes
+        # whichever the grammar happens to favour.
+        #
+        # Harvest the whole turn first, then re-harvest everything after the
+        # repair trigger. The second pass overwrites only the slots the user
+        # actually corrected, so "book a flight to Boston for Alice, actually
+        # New York" keeps Alice and moves only the destination.
+        self.harvest(text, now_ms=now_ms, has_frame=has_frame, source=source,
+                     confidence_scale=confidence_scale)
+        repair = classify_repair(text)
+        if (repair.kind == REPAIR_CORRECTION and repair.trigger
+                and repair.remainder.strip()):
+            telemetry.log("planner.intra_turn_repair", trigger=repair.trigger,
+                          remainder=repair.remainder)
+            self.harvest(repair.remainder, now_ms=now_ms, has_frame=has_frame,
+                         source=source, confidence_scale=confidence_scale)
         return self._plan_from_state(text, now_ms=now_ms, has_frame=has_frame,
-                                     extras=extras)
+                                     extras=extras,
+                                     visual_embedding=visual_embedding)
 
     def replan(self, utterance: str, *, now_ms: float,
                has_frame: bool = False,
-               extras: Optional[Dict[str, Any]] = None) -> Plan:
+               extras: Optional[Dict[str, Any]] = None,
+               visual_embedding: Optional[List[float]] = None) -> Plan:
         """Re-plan after a correction, WITHOUT re-reading the old utterance.
 
         This distinction is the whole scenario in pub_02. The corrected value
@@ -353,11 +384,13 @@ class Planner:
         if not text:
             return Plan(PLAN_NONE)
         return self._plan_from_state(text, now_ms=now_ms, has_frame=has_frame,
-                                     extras=extras)
+                                     extras=extras,
+                                     visual_embedding=visual_embedding)
 
     def plan_after_result(self, *, now_ms: float,
                           has_frame: bool = False,
-                          extras: Optional[Dict[str, Any]] = None) -> Plan:
+                          extras: Optional[Dict[str, Any]] = None,
+                          visual_embedding: Optional[List[float]] = None) -> Plan:
         """Re-plan the original request now that new values exist.
 
         This is how chaining happens: the utterance has not changed, but a
@@ -366,10 +399,12 @@ class Planner:
         if not self.goal_text:
             return Plan(PLAN_NONE)
         return self._plan_from_state(self.goal_text, now_ms=now_ms,
-                                     has_frame=has_frame, extras=extras)
+                                     has_frame=has_frame, extras=extras,
+                                     visual_embedding=visual_embedding)
 
     def _plan_from_state(self, text: str, *, now_ms: float, has_frame: bool,
-                         extras: Optional[Dict[str, Any]]) -> Plan:
+                         extras: Optional[Dict[str, Any]],
+                         visual_embedding: Optional[List[float]] = None) -> Plan:
         values = self.current_values()
         spec = self.registry.best(text, has_frame=has_frame,
                                   available_values=values,
@@ -385,8 +420,17 @@ class Planner:
                 return Plan(PLAN_SPEAK, intent="chitchat", subject="capabilities",
                             confidence=0.4)
 
+        # Bind the frame embedding to whatever this tool calls it. The arg
+        # name is schema-specific (image_embedding, frame_embedding, ...), so
+        # it can only be resolved once a tool has been chosen.
+        bound_extras = dict(extras or {})
+        if visual_embedding:
+            visual_arg = spec.visual_arg()
+            if visual_arg is not None:
+                bound_extras[visual_arg.name] = list(visual_embedding)
+
         args, missing = self.registry.build_args(
-            spec, values, utterance=text, extras=extras or {},
+            spec, values, utterance=text, extras=bound_extras,
             by_name=self.values_by_slot())
         depends_on = self._depends_on(spec, args, values)
 

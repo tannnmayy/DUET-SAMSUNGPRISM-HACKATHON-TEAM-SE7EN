@@ -32,11 +32,14 @@ from .fastpath import (
     REPAIR_RETRACTION, REPAIR_UNDO, classify_repair,
 )
 from .nlg import Phrasebook
+from .perception import (
+    FrameReading, Transcript, load_asr, load_embed, load_vision, resolve_media,
+)
 from .planner import Plan, Planner
 from .planner.rules import (
     PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection,
 )
-from .state import ConversationState
+from .state import ConversationState, SRC_AUDIO
 from .tools import ToolRegistry
 
 
@@ -60,6 +63,23 @@ class DuetAgent:
 
         self._buffer: List[str] = []
         self.last_frame: Optional[Dict[str, Any]] = None
+
+        # Perception backends, loaded once per process in setup().
+        self.asr = None
+        self.vision = None
+        self.embed = None
+
+        # Audio turn assembly. Chunks are transcribed concurrently and may
+        # finish out of order, so parts are keyed by arrival index and the
+        # turn is only assembled once every part up to the end marker is in.
+        self._audio_parts: Dict[int, Transcript] = {}
+        self._audio_next: int = 0
+        self._audio_end: Optional[int] = None
+
+        # Frame-ahead cache (M4): what we saw, keyed by frame id, computed
+        # when the frame arrived rather than when it was asked about.
+        self._frame_readings: Dict[str, FrameReading] = {}
+        self._frame_embeddings: Dict[str, List[float]] = {}
         self._tasks: Set[asyncio.Task] = set()
 
         # Virtual clock, taken from event timestamps rather than wall time so
@@ -90,6 +110,16 @@ class DuetAgent:
         """
         telemetry.reset()
         telemetry.log("setup.begin")
+        # Loaded here, before the virtual clock starts and under the separate
+        # 300s setup budget. A lazy load on the first user turn would be
+        # charged to our latency instead (PROTOCOL.md section 5.3).
+        self.asr = await load_asr()
+        self.vision = await load_vision()
+        self.embed = await load_embed()
+        telemetry.log("setup.done",
+                      asr=getattr(self.asr, "name", "none"),
+                      vision=getattr(self.vision, "name", "none"),
+                      embed=getattr(self.embed, "name", "none"))
 
     async def run(self) -> None:
         self._wall0 = time.monotonic()
@@ -177,19 +207,215 @@ class DuetAgent:
 
     def on_user_audio_chunk(self, payload: Dict[str, Any]) -> None:
         # Acknowledge first, perceive behind the acknowledgment. Transcription
-        # takes hundreds of milliseconds; the latency clock does not wait.
+        # takes hundreds of milliseconds; the latency clock does not wait, and
+        # an acknowledgment that does not pretend to have understood anything
+        # is both honest and enough to hold the floor.
         self._speak_floored(lambda: self.emit.filler(self.say.ack_listen()))
-        telemetry.log("audio", ref=payload.get("audio_ref"),
+
+        index = self._audio_next
+        self._audio_next += 1
+        if payload.get("end_of_turn"):
+            self._audio_end = index
+
+        telemetry.log("audio", ref=payload.get("audio_ref"), index=index,
                       end_of_turn=payload.get("end_of_turn"))
-        # Phase 2 attaches the ASR job here.
+        self.spawn(self._transcribe(index, payload, self.state.epoch),
+                   "asr")
+
+    async def _transcribe(self, index: int, payload: Dict[str, Any],
+                          epoch: int) -> None:
+        path = resolve_media(payload.get("audio_ref"))
+        duration = float(payload.get("duration_ms") or 0.0)
+        if path is None or self.asr is None:
+            result = Transcript(duration_ms=duration, error="missing_media")
+        else:
+            result = await self.asr.transcribe(path, duration)
+
+        if self.state.epoch != epoch:
+            telemetry.log("asr.discarded", index=index, why="stale_epoch")
+            return
+
+        self._audio_parts[index] = result
+        telemetry.log("asr.part", index=index, text=result.text,
+                      confidence=round(result.confidence, 3),
+                      backend=result.backend)
+        self._maybe_close_audio_turn(epoch)
+
+    def _maybe_close_audio_turn(self, epoch: int) -> None:
+        """Assemble the turn once every chunk up to the end marker is in.
+
+        Chunks are transcribed concurrently and can finish out of order, so
+        the turn is only complete when no index below the end marker is
+        missing. Acting on a partial turn would mean acting on the abandoned
+        half of a self-repair.
+        """
+        if self._audio_end is None:
+            return
+        needed = range(self._audio_end + 1)
+        if any(i not in self._audio_parts for i in needed):
+            return
+
+        parts = [self._audio_parts[i] for i in needed]
+        self._audio_parts = {}
+        self._audio_next = 0
+        self._audio_end = None
+
+        text = " ".join(p.text.strip() for p in parts if p.text.strip()).strip()
+        confidence = min((p.confidence for p in parts), default=0.0)
+        self.state.utterance_id += 1
+        telemetry.log("asr.turn", text=text, confidence=round(confidence, 3))
+        self._on_audio_turn(text, confidence, parts, epoch)
+
+    def _on_audio_turn(self, text: str, confidence: float,
+                       parts: List[Transcript], epoch: int) -> None:
+        """Decide whether we heard well enough to act (M5).
+
+        Acting on a shaky slot is worse than asking. docs/SCORING.md makes
+        that explicit, and it is also the accessibility case the theme names:
+        a user with a stutter or an unusual accent is failed by an agent that
+        confidently does the wrong thing.
+        """
+        if self.state.epoch != epoch:
+            return
+
+        options = self._ambiguous_values(parts)
+        if options:
+            question = self.say.clarify_choice(options)
+            self._speak_floored(lambda: self.emit.clarify(question))
+            telemetry.log("asr.clarify", options=options, why="competing_values")
+            return
+
+        if not text or confidence < config.ASR_CLARIFY_THRESHOLD:
+            slot = self._expected_slot()
+            self._speak_floored(lambda: self.emit.clarify(
+                self.say.clarify_missing(slot)))
+            telemetry.log("asr.clarify", why="low_confidence",
+                          confidence=round(confidence, 3))
+            return
+
+        self._on_turn(text, source=SRC_AUDIO, confidence=confidence)
+
+    def _ambiguous_values(self, parts: List[Transcript]) -> List[str]:
+        """Distinct slot values the competing hypotheses disagree about.
+
+        Whole-utterance alternatives are not useful to a person. What they
+        need named is the word we could not settle: "did you say Austin or
+        Boston?" - so the hypotheses are parsed and the DIFFERING extracted
+        values are what we ask about.
+        """
+        from .fastpath import extract_values
+        from .tools import ROLE_PLACE, ROLE_PERSON, ROLE_ID
+
+        for part in parts:
+            rivals = part.competing(config.ASR_AMBIGUITY_MARGIN)
+            if len(rivals) < 2:
+                continue
+            for role in (ROLE_PLACE, ROLE_PERSON, ROLE_ID):
+                values = []
+                for hypothesis in rivals:
+                    found = extract_values(hypothesis, expect=[role])
+                    candidate = found.get(role)
+                    if candidate is not None:
+                        label = str(candidate.value).strip()
+                        if label and label.lower() not in [v.lower() for v in values]:
+                            values.append(label)
+                if len(values) >= 2:
+                    return values[:3]
+        return []
+
+    def _expected_slot(self) -> str:
+        """Which value we were most likely missing, for a natural question."""
+        ranked = self.registry.rank(self.planner.goal_text or "")
+        for spec, score in ranked:
+            if score <= 0:
+                continue
+            for arg in spec.required_args():
+                return arg.name
+        return "detail"
 
     def on_video_frame(self, payload: Dict[str, Any]) -> None:
-        # A frame is context, not a question (M4): we stay silent and start
-        # perceiving immediately, so the answer is in hand before it is asked.
+        # M4, perception-ahead scheduling. A frame is context, not a question:
+        # the user's NEXT utterance refers to it. So we stay silent and start
+        # looking immediately. In pub_07 the frame lands 500ms before the
+        # question, which is 500ms of vision we get for free - the alternative
+        # is stacking model latency on top of reasoning latency after the
+        # question arrives.
         self.last_frame = dict(payload)
-        telemetry.log("frame", ref=payload.get("image_ref"),
-                      frame_id=payload.get("frame_id"))
-        # Phase 2 attaches the vision job here.
+        frame_id = str(payload.get("frame_id")
+                       or payload.get("image_ref") or "frame")
+        telemetry.log("frame", ref=payload.get("image_ref"), frame_id=frame_id)
+        self.spawn(self._read_frame(frame_id, dict(payload)), "vision")
+
+    async def _read_frame(self, frame_id: str, payload: Dict[str, Any]) -> None:
+        """Describe the frame and embed it, concurrently.
+
+        Deliberately NOT epoch-guarded. A frame is an observation about the
+        world, not a plan derived from an intent: if the user changes their
+        mind, what is in front of the camera has not changed, and throwing the
+        reading away would only mean paying for it again.
+        """
+        path = resolve_media(payload.get("image_ref"))
+        if path is None:
+            self._frame_readings[frame_id] = FrameReading(error="missing_media")
+            return
+
+        hint = payload.get("device_hint")
+        reading = FrameReading(device_hint=hint, error="no_vision_backend")
+        embedding: List[float] = []
+        try:
+            jobs = []
+            if self.vision is not None:
+                jobs.append(self.vision.read_frame(path, hint))
+            if self.embed is not None:
+                jobs.append(self.embed.embed_image(path))
+            results = await asyncio.gather(*jobs, return_exceptions=True)
+            for item in results:
+                if isinstance(item, FrameReading):
+                    reading = item
+                elif isinstance(item, list):
+                    embedding = item
+        except Exception as exc:  # noqa: BLE001
+            telemetry.log("vision.error",
+                          error=type(exc).__name__ + ": " + str(exc))
+
+        self._frame_readings[frame_id] = reading
+        if embedding:
+            self._frame_embeddings[frame_id] = embedding
+        telemetry.log("vision.done", frame_id=frame_id, focus=reading.focus,
+                      query=reading.query, confidence=round(reading.confidence, 3),
+                      embedding_dims=len(embedding))
+
+    def _current_frame_id(self) -> Optional[str]:
+        if not self.last_frame:
+            return None
+        return str(self.last_frame.get("frame_id")
+                   or self.last_frame.get("image_ref") or "frame")
+
+    def _frame_reading(self) -> Optional[FrameReading]:
+        frame_id = self._current_frame_id()
+        if frame_id is None:
+            return None
+        reading = self._frame_readings.get(frame_id)
+        return reading if reading is not None and reading.ok else None
+
+    def _frame_embedding(self) -> Optional[List[float]]:
+        frame_id = self._current_frame_id()
+        if frame_id is None:
+            return None
+        return self._frame_embeddings.get(frame_id) or None
+
+    def _ground_in_frame(self, turn: str) -> str:
+        """Fold what we saw into the words we plan with.
+
+        "What is this port used for?" names nothing searchable - the answer is
+        in the pixels. Appending the vision query both steers tool selection
+        and gives a free-text argument something worth searching for, without
+        either layer needing to know the tool is a manual lookup.
+        """
+        reading = self._frame_reading()
+        if reading is None or not reading.query.strip():
+            return turn
+        return (turn + " " + reading.query).strip()
 
     def on_interruption(self, payload: Dict[str, Any]) -> None:
         text = str(payload.get("text") or "")
@@ -292,7 +518,8 @@ class DuetAgent:
         # Chaining: re-plan the original request now that new values exist. A
         # tool that was unsatisfiable before may be satisfiable now.
         follow_up = self.planner.plan_after_result(
-            now_ms=self.now_ms, has_frame=self.last_frame is not None)
+            now_ms=self.now_ms, has_frame=self.last_frame is not None,
+            visual_embedding=self._frame_embedding())
         if follow_up.is_tool and follow_up.tool.name != record.api_name:
             if self._issue(follow_up, turn_ended=True):
                 return
@@ -331,12 +558,16 @@ class DuetAgent:
     # ------------------------------------------------------------------
     # turn handling
     # ------------------------------------------------------------------
-    def _on_turn(self, turn: str, *, announce: bool = True) -> None:
+    def _on_turn(self, turn: str, *, announce: bool = True,
+                 source: str = "text", confidence: float = 1.0) -> None:
         if not turn:
             return
         self._final_sent = False
-        plan = self.planner.plan_turn(turn, now_ms=self.now_ms,
-                                      has_frame=self.last_frame is not None)
+        plan = self.planner.plan_turn(
+            self._ground_in_frame(turn), now_ms=self.now_ms,
+            has_frame=self.last_frame is not None,
+            source=source, confidence_scale=confidence,
+            visual_embedding=self._frame_embedding())
         self._execute(plan, announce=announce)
 
     def _replan(self, turn: str) -> None:
@@ -348,8 +579,10 @@ class DuetAgent:
         """
         if not turn:
             return
-        plan = self.planner.replan(turn, now_ms=self.now_ms,
-                                   has_frame=self.last_frame is not None)
+        plan = self.planner.replan(
+            self._ground_in_frame(turn), now_ms=self.now_ms,
+            has_frame=self.last_frame is not None,
+            visual_embedding=self._frame_embedding())
         self._execute(plan, announce=False)
 
     def _execute(self, plan: Plan, *, announce: bool = True) -> None:
