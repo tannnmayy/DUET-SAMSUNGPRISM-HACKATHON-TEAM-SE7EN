@@ -299,3 +299,29 @@ def test_spoken_numbers_fill_number_arguments(text, expected):
 def test_pronoun_one_and_clock_times_are_not_quantities(text):
     from duet.tools import ROLE_NUMBER
     assert ROLE_NUMBER not in extract_values(text, expect=[ROLE_NUMBER])
+
+
+# ---------------------------------------------------------------- adversarial timing rules
+def test_a_rejected_value_is_never_extracted():
+    """"It's for Priya, not Alice" once made Alice the DESTINATION."""
+    from duet.tools import ROLE_PERSON, ROLE_PLACE
+    found = extract_values("Oh, and it's for Priya, not Alice.",
+                           expect=[ROLE_PLACE, ROLE_PERSON])
+    assert found[ROLE_PERSON].value == "Priya"
+    assert ROLE_PLACE not in found
+    assert _place("not to Recife but to Lagos") == "Lagos"
+    assert _place("fly me to Lagos instead of Recife") == "Lagos"
+
+
+@pytest.mark.parametrize("text", [
+    "Actually, never mind. Don't book anything.",
+    "Never mind, do not send it.",
+    "Forget it, no need to check.",
+])
+def test_a_negated_command_is_a_retraction_not_a_new_request(text):
+    assert classify_repair(text).kind == REPAIR_RETRACTION, classify_repair(text)
+
+
+def test_a_retraction_followed_by_a_real_request_is_still_an_intent_change():
+    repair = classify_repair("Never mind the flight, what's the weather in Oslo?")
+    assert repair.kind == REPAIR_INTENT_CHANGE, repair

@@ -36,6 +36,15 @@ INTERRUPTION_SCENARIOS = [
     "conf_02_retraction",
     "conf_03_intent_change",
     "conf_04_interrupt_during_booking",
+    # adversarial timing. conf_20 is deliberately absent: its interruption is
+    # 15 ms after the turn, below the ~15.6 ms timer granularity of Windows
+    # (notes/FINDINGS.md F8), so on this platform the turn is sometimes
+    # delivered after the interruption's declared time and ANY agent's first
+    # call reads as a re-issue - the probes cannot be judged fairly. It is
+    # still scored for the real agent, which issues its call synchronously.
+    "conf_21_retract_during_booking",
+    "conf_22_three_corrections",
+    "conf_23_correction_inside_commit_hold",
 ]
 
 
@@ -44,7 +53,20 @@ def _load(scenario_id: str):
         return json.load(fh)
 
 
-def _run(scenario, cls, time_scale=8.0):
+def _scale_for(scenario) -> float:
+    """Scale 8 compresses the probe's own processing time by 8x in virtual
+    terms; with user events only 15-150 ms apart that alone moved a probe's
+    ORIGINAL call past the interruption, where the scorer reads it as a
+    re-issue. Scenarios that tight are replayed at real speed."""
+    stamps = [e.get("timestamp_ms", 0) for e in scenario.get("events", [])]
+    gaps = [b - a for a, b in zip(stamps, stamps[1:]) if b > a]
+    return 1.0 if gaps and min(gaps) < 200 else 8.0
+
+
+def _run(scenario, cls, time_scale=None):
+    if time_scale is None:
+        time_scale = _scale_for(scenario)
+
     async def go():
         h = EvaluationHarness(scenario, lambda a, b: cls(a, b),
                               time_scale=time_scale, verbose=False)
@@ -153,3 +175,21 @@ def test_uncancelled_stale_call_really_does_land_past_the_grace_window(scenario_
         scenario_id + ": no invalidated call completed past its grace window, so "
         "the scenario cannot detect a missing cancel. Completions: "
         + repr([(c.get("api_name"), c.get("args"), c["t_ms"]) for c in completions]))
+
+
+# ------------------------------------------------- a race cancellation cannot win
+def test_a_stale_result_that_beats_the_cancel_is_never_spoken():
+    """conf_19: the stale search returns ~40 ms after the interruption, so
+    cancelling or not makes no difference to the recovery score - the result
+    is inside the grace window either way. What the scenario tests is the
+    other half of the contract: a result from superseded work must never be
+    spoken. An agent that grounds whatever comes back says FL-REC."""
+    from harness.scorer import _eval_checkpoint
+
+    scenario = _load("conf_19_interrupt_just_before_result")
+    check = next(c for c in scenario["ground_truth"]["checkpoints"]
+                 if c["id"] == "stale_result_never_spoken")
+    naive = _eval_checkpoint(_run(scenario, NaiveProbe), check)
+    good = _eval_checkpoint(_run(scenario, CancellingProbe), check)
+    assert not naive["passed"], "naive probe was not caught speaking the stale result"
+    assert good["passed"], good

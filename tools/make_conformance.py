@@ -596,9 +596,209 @@ CONF_18 = {
 }
 
 
+# ---------------------------------------------------------------------------
+# conf_19..conf_23 - adversarial timing
+# ---------------------------------------------------------------------------
+# WALKTHROUGH.md: "interruptions during chained calls, during a tool that is
+# about to return, twice in one scenario". Each delay below is pinned so the
+# failure being tested is forced, and the margin is written next to it.
+
+# conf_19 - interruption 30-45 ms before the stale search returns.
+# search(Recife) issued ~800, pinned 1130 -> returns ~1930-1945.
+# Interruption at 1900. Whether the cancel or the result wins the race, the
+# stale result must never be spoken: FL-REC after 1900 is the failure.
+CONF_19 = {
+    "scenario_id": "conf_19_interrupt_just_before_result",
+    "metadata": {"modality": "text", "difficulty": "L3",
+                 "description": "Interruption lands ~40ms before the stale call returns."},
+    "_design_notes": {"stale_returns_ms": 1935, "interrupt_ms": 1900},
+    "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1130},
+                                         {"call_index": 1, "delay_ms": 1200}]},
+    "events": [chunk(100, "Can you find flights to "),
+               chunk(800, "Recife on Monday?", end=True),
+               interrupt(1900, "Actually, make it Lagos.")],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "searched_new_city", "type": "tool_called", "tool": "flight_search",
+             "args_subset": {"destination": ["lagos"]}, "after_ms": 1900,
+             "must_complete": True, "weight": 0.4},
+            {"id": "final_new_city", "type": "final_response_contains",
+             "any_of": ["lagos", "fl-lag"], "weight": 0.25},
+            {"id": "stale_result_never_spoken", "type": "spoken_not_contains",
+             "any_of": ["fl-rec"], "after_ms": 1900, "weight": 0.35},
+        ],
+        "recovery": {"interrupt_at_ms": 1900,
+                     "invalidated_calls": [{"tool": "flight_search",
+                                            "args_subset": {"destination": ["recife"]},
+                                            "invalid_after_ms": 1900}],
+                     "required_state_after_interrupt": {"slots.destination": ["lagos"]}},
+        "latency": latency(1, 2),
+    },
+}
+
+# conf_20 - interruption 15 ms after the turn ends: inside the 20 ms speech
+# floor, before the turn's own acknowledgment has been spoken.
+# search(Porto) issued ~800, pinned 1800 -> ~2600 > 815 + 800 grace.
+# The turn's pending "Looking up flights to Porto" must be dropped, not
+# spoken after the user has already changed it.
+CONF_20 = {
+    "scenario_id": "conf_20_interrupt_inside_speech_floor",
+    "metadata": {"modality": "text", "difficulty": "L3",
+                 "description": "Interruption 15ms after the turn ends, before its ack."},
+    "_design_notes": {"stale_completes_ms": 2600, "deadline_ms": 1615},
+    "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1800},
+                                         {"call_index": 1, "delay_ms": 1400}]},
+    "events": [chunk(100, "Find flights to "),
+               chunk(800, "Porto for Sunday.", end=True),
+               interrupt(815, "No wait, Oslo.")],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "searched_new_city", "type": "tool_called", "tool": "flight_search",
+             "args_subset": {"destination": ["oslo"]}, "after_ms": 815,
+             "must_complete": True, "weight": 0.35},
+            {"id": "final_new_city", "type": "final_response_contains",
+             "any_of": ["oslo", "fl-osl"], "weight": 0.25},
+            {"id": "no_reissue_old_city", "type": "tool_not_called", "tool": "flight_search",
+             "args_subset": {"destination": ["porto"]}, "after_ms": 815, "weight": 0.25},
+            {"id": "stale_ack_dropped", "type": "spoken_not_contains",
+             "any_of": ["flights to porto"], "after_ms": 815, "weight": 0.15},
+        ],
+        "recovery": {"interrupt_at_ms": 815,
+                     "invalidated_calls": [{"tool": "flight_search",
+                                            "args_subset": {"destination": ["porto"]},
+                                            "invalid_after_ms": 815}],
+                     "required_state_after_interrupt": {"slots.destination": ["oslo"]}},
+        "latency": latency(1, 2),
+    },
+}
+
+# conf_21 - retraction while a BOOKING is in flight.
+# search issued ~900, pinned 1300 -> ~2200; book(2PM, Omar) issued ~2200,
+# pinned 1400 -> would complete ~3600 > 2500 + 800 = 3300. An uncancelled
+# booking completes after the grace window AND books a flight the user just
+# declined. "Don't book anything" is a negated command, not a new request.
+CONF_21 = {
+    "scenario_id": "conf_21_retract_during_booking",
+    "metadata": {"modality": "text", "difficulty": "L4",
+                 "description": "Retraction while the state-modifying call is in flight."},
+    "_design_notes": {"stale_booking_completes_ms": 3600, "deadline_ms": 3300},
+    "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1300}],
+                       "book_flight": [{"call_index": 0, "delay_ms": 1400}]},
+    "events": [chunk(100, "Find a flight to Lima and "),
+               chunk(900, "book the 2 PM one for Omar.", end=True),
+               interrupt(2500, "Actually, never mind. Don't book anything.")],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "no_booking_after_retraction", "type": "tool_not_called",
+             "tool": "book_flight", "after_ms": 2500, "weight": 0.3},
+            {"id": "acknowledged", "type": "spoken_contains",
+             "any_of": ["no problem", "okay", "sure", "understood", "fine", "dropping",
+                        "leave it", "stopping", "cancel"],
+             "after_ms": 2500, "before_ms": 3700, "weight": 0.3},
+            {"id": "never_claims_booking", "type": "spoken_not_contains",
+             "any_of": ["booked", "all set", "bk-"], "after_ms": 2500, "weight": 0.4},
+        ],
+        "recovery": {"interrupt_at_ms": 2500,
+                     "invalidated_calls": [{"tool": "book_flight",
+                                            "args_subset": {"flight_id": ["fl-lim-2pm"]},
+                                            "invalid_after_ms": 2500}]},
+        "latency": latency(1, 2),
+        "safety": {"max_fillers": 4},
+    },
+}
+
+# conf_22 - three corrections in 800 ms.
+# Each search pinned 1600 so every one is still in flight at the next
+# correction: Accra ~2300 > 2100, Lagos ~2920 > 2500, Dakar ~3320 > 2900.
+# Four acknowledgments (the turn + three) exactly meet the filler budget.
+CONF_22 = {
+    "scenario_id": "conf_22_three_corrections",
+    "metadata": {"modality": "text", "difficulty": "L4",
+                 "description": "Three corrections 400ms apart; each supersedes the last."},
+    "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1600},
+                                         {"call_index": 1, "delay_ms": 1600},
+                                         {"call_index": 2, "delay_ms": 1600},
+                                         {"call_index": 3, "delay_ms": 1200}]},
+    "events": [chunk(100, "Flights to Accra "),
+               chunk(700, "for Tuesday please.", end=True),
+               interrupt(1300, "Make it Lagos."),
+               interrupt(1700, "No wait, Dakar."),
+               interrupt(2100, "Actually, Nairobi.")],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "searched_final_city", "type": "tool_called", "tool": "flight_search",
+             "args_subset": {"destination": ["nairobi"]}, "after_ms": 2100,
+             "must_complete": True, "weight": 0.35},
+            {"id": "final_names_final_city", "type": "final_response_contains",
+             "any_of": ["nairobi", "fl-nai"], "weight": 0.2},
+            {"id": "no_accra_after_first", "type": "tool_not_called", "tool": "flight_search",
+             "args_subset": {"destination": ["accra"]}, "after_ms": 1300, "weight": 0.15},
+            {"id": "no_lagos_after_second", "type": "tool_not_called", "tool": "flight_search",
+             "args_subset": {"destination": ["lagos"]}, "after_ms": 1700, "weight": 0.15},
+            {"id": "no_dakar_after_third", "type": "tool_not_called", "tool": "flight_search",
+             "args_subset": {"destination": ["dakar"]}, "after_ms": 2100, "weight": 0.15},
+        ],
+        "recovery": {"interrupt_at_ms": 2100,
+                     "invalidated_calls": [
+                         {"tool": "flight_search", "args_subset": {"destination": ["accra"]},
+                          "invalid_after_ms": 1300},
+                         {"tool": "flight_search", "args_subset": {"destination": ["lagos"]},
+                          "invalid_after_ms": 1700},
+                         {"tool": "flight_search", "args_subset": {"destination": ["dakar"]},
+                          "invalid_after_ms": 2100}],
+                     "required_state_after_interrupt": {"slots.destination": ["nairobi"]}},
+        "latency": latency(1, 2, 3, 4),
+        "safety": {"max_fillers": 4},
+    },
+}
+
+# conf_23 - a second correction INSIDE the commit quiet window.
+# search ~900 pinned 1200 -> ~2100; book(8AM, Alice) ~2100 pinned 1500 ->
+# would complete ~3600 > 2500 + 800. The first correction (2500) holds the
+# 2PM booking for 250 ms; the second (2650) lands inside that hold, so the
+# held booking for ALICE must be dropped and only 2PM for PRIYA issued.
+CONF_23 = {
+    "scenario_id": "conf_23_correction_inside_commit_hold",
+    "metadata": {"modality": "text", "difficulty": "L4",
+                 "description": "Second correction arrives while the corrected booking is "
+                                "still held behind the commitment gate."},
+    "_design_notes": {"stale_booking_completes_ms": 3600, "hold_ends_ms": 2770},
+    "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1200}],
+                       "book_flight": [{"call_index": 0, "delay_ms": 1500},
+                                       {"call_index": 1, "delay_ms": 1000}]},
+    "events": [chunk(100, "Find a flight to Denver and "),
+               chunk(900, "book the 8 AM one for Alice.", end=True),
+               interrupt(2500, "Wait, make it the 2 PM flight instead."),
+               interrupt(2650, "Oh, and it's for Priya, not Alice.")],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "booked_final_version", "type": "tool_called", "tool": "book_flight",
+             "args_subset": {"flight_id": ["fl-den-2pm"], "passenger_name": ["priya"]},
+             "must_complete": True, "weight": 0.4},
+            {"id": "held_booking_dropped", "type": "tool_not_called", "tool": "book_flight",
+             "args_subset": {"flight_id": ["fl-den-2pm"], "passenger_name": ["alice"]},
+             "weight": 0.25},
+            {"id": "no_8am_after_correction", "type": "tool_not_called", "tool": "book_flight",
+             "args_subset": {"flight_id": ["fl-den-8am"]}, "after_ms": 2500, "weight": 0.15},
+            {"id": "final_confirms", "type": "final_response_contains",
+             "any_of": ["bk-", "priya"], "weight": 0.2},
+        ],
+        "recovery": {"interrupt_at_ms": 2650,
+                     "invalidated_calls": [{"tool": "book_flight",
+                                            "args_subset": {"flight_id": ["fl-den-8am"]},
+                                            "invalid_after_ms": 2500}],
+                     "required_state_after_interrupt": {
+                         "slots.passenger_name": ["priya"],
+                         "slots.flight_id": ["fl-den-2pm"]}},
+        "latency": latency(1, 2, 3),
+        "safety": {"max_fillers": 4},
+    },
+}
+
+
 ALL = [CONF_01, CONF_02, CONF_03, CONF_04, CONF_05, CONF_06, CONF_07, CONF_08,
        CONF_09, CONF_10, CONF_11, CONF_12, CONF_13, CONF_14, CONF_15, CONF_16,
-       CONF_17, CONF_18]
+       CONF_17, CONF_18, CONF_19, CONF_20, CONF_21, CONF_22, CONF_23]
 
 
 def main() -> int:

@@ -175,6 +175,30 @@ def classify_repair(text: str) -> Repair:
     return Repair(REPAIR_CORRECTION, None, raw.strip(), 0.4)
 
 
+# "don't book anything", "do not send it", "no need to check", "stop the
+# search" - a whole clause that withdraws an action.
+_NEGATED_COMMAND = re.compile(
+    r"\b(?:please\s+)?(?:don'?t|do not|dont|no need to|there'?s no need to|stop)\b[^.,;!?]*")
+
+# A value the user is REJECTING: "for Priya, not Alice", "instead of Boston".
+# It must never be extracted - it once became the destination.
+# Keywords match in any case; a multi-word name continues only while its
+# words are capitalised (case-SENSITIVE), so "not to Boston but to Chicago"
+# rejects Boston and nothing after it.
+_REJECTED_VALUE = re.compile(
+    r"(?i:\b(?:not|instead of|rather than|except))\s+"
+    r"(?i:(?:to|for|in|at|on|the)\s+)?"
+    r"([A-Za-z][\w'\-]*(?:\s+[A-Z][\w'\-]*)*)")
+
+
+def _rejected_spans(text: str) -> List[Tuple[int, int]]:
+    return [m.span(1) for m in _REJECTED_VALUE.finditer(text)]
+
+
+def _inside(span: Optional[Tuple[int, int]], spans: List[Tuple[int, int]]) -> bool:
+    return span is not None and any(a <= span[0] < b for a, b in spans)
+
+
 def _after_first_boundary(text: str) -> str:
     """Text following the first clause boundary, or empty if there is none."""
     match = re.search(r"[.,;!?]", text)
@@ -190,6 +214,10 @@ def _has_new_content(remainder: str) -> bool:
     counted - grammar words and filler cannot signal a change of topic.
     """
     text = contract.norm(remainder)
+    # A negated command is more retraction, not a new request: "never mind.
+    # Don't book anything." was re-planned as a fresh request and answered
+    # "Sure, let me switch to that - which flight id did you want?".
+    text = _NEGATED_COMMAND.sub(" ", text)
     for trigger in (_RETRACTION_TRIGGERS + _CORRECTION_TRIGGERS
                     + _INTENT_CHANGE_TRIGGERS + _UNDO_TRIGGERS):
         text = text.replace(trigger, " ")
@@ -464,8 +492,11 @@ def extract_values(text: str, *, expect: Optional[Sequence[str]] = None
     text = str(text or "")
     wanted: Set[str] = set(expect or ())
     found: Dict[str, Candidate] = {}
+    rejected = _rejected_spans(text)
 
     def offer(cand: Candidate) -> None:
+        if _inside(cand.span, rejected):
+            return                      # "not Alice" is what the user rejects
         existing = found.get(cand.role)
         # Later mentions win: in a self-repair the corrected value comes last.
         if existing is None or cand.confidence >= existing.confidence:
@@ -516,7 +547,7 @@ def extract_values(text: str, *, expect: Optional[Sequence[str]] = None
     # wanted and none was found.
     claimed = {contract.norm(c.value) for c in found.values()}
     for cand in extract_capitalised(text):
-        if contract.norm(cand.value) in claimed:
+        if contract.norm(cand.value) in claimed or _inside(cand.span, rejected):
             continue
         for role in (ROLE_PLACE, ROLE_PERSON):
             if role in wanted and role not in found:

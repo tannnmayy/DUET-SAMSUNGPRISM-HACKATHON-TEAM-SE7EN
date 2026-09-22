@@ -19,6 +19,9 @@ from typing import Any, Dict, List, Optional
 _CITIES = {
     "boston": "Boston", "new york": "New York", "chicago": "Chicago",
     "miami": "Miami", "denver": "Denver", "seattle": "Seattle",
+    # cities used by the adversarial-timing scenarios (conf_19-conf_23)
+    "recife": "Recife", "lagos": "Lagos", "porto": "Porto", "oslo": "Oslo",
+    "lima": "Lima", "accra": "Accra", "dakar": "Dakar", "nairobi": "Nairobi",
 }
 
 
@@ -96,6 +99,8 @@ class _BaseProbe:
         await self.emit("filler_speech", {"text": "Let me look that up."})
         if "book" in low or "put me on" in low:
             self.want_book = True
+        if "2 pm" in low:
+            self.want_afternoon = True
         if "tv" in low or "blinking" in low or "manual" in low or "toaster" in low:
             self.intent = "lookup_manual"
             await self.call("lookup_manual", {"query": turn})

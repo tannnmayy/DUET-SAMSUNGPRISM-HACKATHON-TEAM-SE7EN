@@ -136,9 +136,12 @@ def lint(scenario: Dict[str, Any], trace: List[Dict[str, Any]]) -> List[str]:
                             % (len(inside), start,
                                " | ".join(repr(_text(f)) for f in inside)))
 
-    # 4. Two utterances on top of each other (naturalness, non-redundancy).
+    # 4. Two utterances on top of each other (naturalness, non-redundancy) -
+    #    the agent talking over itself, i.e. with no user input in between.
+    #    Two quick acknowledgments of two quick interruptions are correct.
     for a, b in zip(spoken, spoken[1:]):
-        if b["t_ms"] - a["t_ms"] < STACKED_MS:
+        user_between = any(a["t_ms"] < t <= b["t_ms"] for t in boundaries)
+        if b["t_ms"] - a["t_ms"] < STACKED_MS and not user_between:
             problems.append("stacked speech %dms apart: %r then %r"
                             % (b["t_ms"] - a["t_ms"], _text(a), _text(b)))
 
@@ -189,8 +192,9 @@ def transcript_lines(trace: List[Dict[str, Any]]) -> List[str]:
                         if not isinstance(v, list)}
                 lines.append(t + "  CALL    " + str(e.get("api_name")) + " "
                              + json.dumps(args))
-            elif a == "cancel_tool":
-                lines.append(t + "  CANCEL  " + str(p.get("call_id")))
+        elif kind == "tool_cancelled":
+            # The harness records a cancel as its effect, not as an action.
+            lines.append(t + "  CANCEL  " + str(e.get("call_id")))
     return lines
 
 
