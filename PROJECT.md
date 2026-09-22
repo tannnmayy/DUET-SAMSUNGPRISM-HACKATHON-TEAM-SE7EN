@@ -828,7 +828,7 @@ investigating any regression, confirm it reproduces.
 - No tool name, no city list, no `ground_truth` read inside `duet/`.
 - **If a change improves the public set but worsens the chaos distribution, it
   is a hardcode and it gets reverted.**
-- Commits: no AI attribution anywhere (verified: `git log --format='%B' | grep -i claude` is empty).
+- Commits: no co-author or tool attribution anywhere (verified: `git log --format='%B' | grep -i co-authored` is empty).
 
 ---
 
@@ -1095,7 +1095,7 @@ with the final model set.
 - [ ] Checklist against `WALKTHROUGH.md` §6 (*"mistakes that cost the most points"*)
 - [ ] Checklist against `docs/SUBMISSION.md` pre-submit list
 - [ ] `submission.yaml` team name is real, entry point spelled correctly
-- [ ] No secrets; `git log --format='%B' | grep -i claude` returns nothing
+- [ ] No secrets; `git log --format='%B' | grep -i co-authored` returns nothing
 - [ ] Tag and push:
 ```bash
 git tag -a PRISM_GENAI_HACKATHON_Y2026 -m "PRISM Gen AI Hackathon Y2026 Final Submission"
