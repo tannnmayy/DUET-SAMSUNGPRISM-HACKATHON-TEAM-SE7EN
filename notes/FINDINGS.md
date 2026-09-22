@@ -153,3 +153,99 @@ scale-invariant; latency is not.
 **Consequence.** Use scale 8 for "did it crash", scale 1 for any number we
 intend to believe. Our invariant tests run at scale 8 deliberately, because
 what they assert does not depend on it.
+
+---
+
+*F10-F14 are summarised in PROJECT.md Part IV. Entries below were added on
+22 September 2026 (Phases 3b.1-3b.4).*
+
+## F15. scenario_end arrives in the same instant as the last event
+
+`harness/runner.py` enqueues `scenario_end` immediately after the last scripted
+event, with no gap. When that event triggers deferred work - a re-plan behind
+the 20 ms speech floor, a transcription, a frame read - the agent saw "nothing
+pending" and spoke the capabilities list as a final answer: "Wait, actually
+make it New York" was answered with "I can help you search flights to, book a
+specific, ...". It happened in 6 of 17 scenarios, all of which scored 100.
+
+**Fix.** Every spawned task counts as outstanding work; the tail flush waits for
+it. **Lesson.** The automated score cannot hear the agent; `tools/quality.py`
+now lints every transcript.
+
+## F16. PyPI torch >= 2.11 is CUDA 13; the speech engine is CUDA 12
+
+`torch` 2.11-2.14 on PyPI depend on `nvidia-*-cu13`. CTranslate2 4.8.2 (under
+faster-whisper) links `libcublas.so.12`. Unpinned, the grading box gets CUDA 13
+torch and a speech engine with no cuBLAS 12 - and the failure appears only at
+the first transcription: locally, `cublas64_12.dll is not found` surfaced on
+inference, after the model had "loaded" successfully.
+
+**Fix.** Pin `torch==2.10.0` (the last CUDA 12 build, which brings cuBLAS 12 and
+cuDNN 9 as dependencies), make those pip libraries visible to CTranslate2
+(`duet/perception/cuda.py`), and run a trial transcription in `setup()` with a
+CPU fallback. Only the driver version now matters.
+
+## F17. The production speech model takes a different M5 branch
+
+Thresholds were tuned with `base` on CPU. `large-v3-turbo` on GPU hears
+pub_05's deliberately indistinct first clip as "I broke off my head to Austin",
+with Austin at 0.47 - a value below the bar, where `base` heard no city at all.
+The agent then asked "Which place did you want?", which matches none of the
+checkpoint's phrasings: pub_05 fell from 100 to 81.5. It also heard pub_06's
+"New York" as New 0.70 / York 0.99, against a 0.65 bar.
+
+**Fix.** A value heard at >= 0.35 is confirmed by name ("Sorry, did you say
+Austin?") and a bare "yes" confirms it; the slot label comes from the canonical
+slot ("city", not "place"); value confidence is the mean over the value's
+words. Both models now score 100 on both audio scenarios.
+
+## F18. A 3B vision-language model cannot identify pub_07's port
+
+`tools/vision_bench.py`: Qwen2.5-VL-3B named the HDMI port "USB-C port" on the
+full frame, a lower-half crop and the mirror image (1 of 4 variants right),
+under three prompts - and invented a matching printed label ("TEXT: USB-C").
+A wrong reading costs more than none (the USB page is retrieved and the answer
+names USB: 81.5 -> about 66).
+
+**Decision.** Vision-model reading is off by default (`DUET_VISION=1` enables
+it) until a model passes the bench on real GPU hardware. The frame barrier and
+an honest "I could not tell which one - pages 21, 23 and 25 cover the likely
+candidates" answer ship instead.
+
+## F19. Claim patterns are keyed by public tool names, not by meaning
+
+`scorer.CLAIM_PATTERNS` attributes "reserved" and "booked" to `book_flight`.
+A sentence about an unseen tool - "the table is reserved" - is therefore a
+premature flight-booking claim whenever no flight has been booked. Our guard
+mirrors the scorer and replaced the whole final answer with "Still on it."
+
+**Fix.** Completed actions of tools whose natural past tense trips a pattern
+are reported neutrally ("All set - that went through, reservation reference
+RS-0042").
+
+## F20. A pinned-by-name model repository was renamed
+
+faster-whisper's built-in `large-v3-turbo` alias points at
+`mobiuslabsgmbh/faster-whisper-large-v3-turbo`, which now only answers with a
+redirect to `dropbox-dash/...`. Scoring happens after the deadline; every model
+is now pinned by repository AND commit (`duet/perception/checkpoints.py`).
+
+## F21. Known gap: a self-repair whose trigger word is lost
+
+Found while writing the WAV test. With audio degraded enough that "Actually make
+that New York" is heard as "Hathory Migrate, New York", no repair trigger is
+detected and the abandoned city - backed by a preposition ("to Boston") - beats
+the repaired one, which only has casing. **Not fixed**: the candidate fixes
+("the last place mentioned wins") also change behaviour for legitimate
+two-place sentences, and there is no evidence yet that the hidden audio is this
+degraded.
+
+## F22. The paraphrase pack found three extraction gaps
+
+conf_09-conf_18 (fragments, "what flies to", "need to get to", a date
+self-repair, apology padding, disfluent text, lowercase multi-word cities,
+number words, an unseen state-modifying tool) scored 7/10 at 100 on first run.
+All three failures were structural: an infinitive read as a destination (and
+non-overlapping regex matches hiding the real one), clock times accepted as
+places, and number words never reaching argument binding. After structural
+fixes: 10/10 at 100, no phrase added to any trigger list.

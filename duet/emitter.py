@@ -76,6 +76,17 @@ class Emitter:
         """Extra completion-claim patterns for tools we met at runtime."""
         self.extra_claim_patterns.update(patterns or {})
 
+    def would_claim(self, text: str) -> bool:
+        """Would this text trip the truthfulness guard right now?
+
+        Lets a producer choose a different wording up front instead of having
+        its sentence replaced by a generic progress line at emit time.
+        """
+        return bool(contract.find_completion_claims(
+            text, succeeded_tools=self.succeeded_tools,
+            extra_patterns=self.extra_claim_patterns,
+            any_state_modifying_pending=self.pending_state_modifying > 0))
+
     # ------------------------------------------------------------------
     # spoken actions
     # ------------------------------------------------------------------

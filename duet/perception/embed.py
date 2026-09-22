@@ -30,13 +30,12 @@ Two jobs, one model.
 from __future__ import annotations
 
 import asyncio
-import os
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from .. import telemetry
+from . import checkpoints
 from .base import EmbedBackend
 
-_MODEL_ID = os.environ.get("DUET_CLIP_MODEL", "clip-ViT-B-32")
 _MODEL: Any = None
 
 
@@ -59,20 +58,31 @@ class ClipEmbed(EmbedBackend):
             self.model = _MODEL
             return True
 
+        ckpt = checkpoints.get("CLIP")
+
         def _load():
+            from PIL import Image
             from sentence_transformers import SentenceTransformer
-            return SentenceTransformer(_MODEL_ID)
+            model = SentenceTransformer(ckpt.repo, revision=ckpt.revision)
+            # One real encode, off the clock. The first inference in a
+            # process is several times slower than the rest, and in pub_07
+            # it was slow enough that the embedding missed the 500 ms
+            # between the frame and the question - dropping the hybrid-search
+            # checkpoint in one run out of three.
+            model.encode(Image.new("RGB", (224, 224)), convert_to_numpy=True)
+            model.encode(["warm up"], convert_to_numpy=True)
+            return model
 
         try:
             model = await asyncio.to_thread(_load)
         except Exception as exc:  # noqa: BLE001
-            telemetry.log("embed.load_failed", model=_MODEL_ID,
+            telemetry.log("embed.load_failed", model=ckpt.repo,
                           error=type(exc).__name__ + ": " + str(exc))
             return False
 
         _MODEL = model
         self.model = model
-        telemetry.log("embed.loaded", model=_MODEL_ID)
+        telemetry.log("embed.loaded", model=ckpt.repo, revision=ckpt.revision)
         return True
 
     # -- embeddings ------------------------------------------------------

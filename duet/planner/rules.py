@@ -269,9 +269,19 @@ class Planner:
         # re-running the search (see reselect).
         self.last_result: Dict[str, Any] = {}
         self.last_spec: Optional[ToolSpec] = None
+        # Values whose role has no slot in the snapshot vocabulary - today,
+        # numbers ("three nights", "a party of four"). Kept here rather than
+        # invented as snapshot slots, but offered to argument binding exactly
+        # like slot values. Without this, "three" was extracted and then
+        # silently dropped, and the agent asked how many nights.
+        self.extra_values: Dict[str, Any] = {}
 
     def set_registry(self, registry: ToolRegistry) -> None:
         self.registry = registry
+
+    def forget_extras(self) -> None:
+        """Drop slot-less values when the user abandons the request."""
+        self.extra_values = {}
 
     # ------------------------------------------------------------------
     def wanted_roles(self, utterance: str, has_frame: bool = False) -> Set[str]:
@@ -304,6 +314,9 @@ class Planner:
             # satisfiable for every request. It is recorded only once it
             # is actually bound to a tool argument.
             if role == ROLE_TEXT:
+                continue
+            if role == ROLE_NUMBER:
+                self.extra_values[ROLE_NUMBER] = cand.value
                 continue
             slot = (slot_for_identifier(cand.value) if role == ROLE_ID
                     else _ROLE_TO_SLOT.get(role))
@@ -341,6 +354,8 @@ class Planner:
                 values[ROLE_ENUM] = holder.value
             elif slot == SLOT_ISSUE_SUMMARY:
                 values.setdefault(ROLE_TEXT, holder.value)
+        for role, value in self.extra_values.items():
+            values.setdefault(role, value)
         return values
 
     # ------------------------------------------------------------------
@@ -613,11 +628,11 @@ class Planner:
         return ""
 
     def describe_commit(self, spec: Optional[ToolSpec], args: Dict[str, Any],
-                        result: Dict[str, Any]) -> str:
+                        result: Dict[str, Any], neutral: bool = False) -> str:
         """What an irreversible call did, once its tool has reported success."""
         if spec is None:
             return ""
-        return commit_body(spec, args, result)
+        return commit_body(spec, args, result, neutral=neutral)
 
 
 # How a result field is spoken. Anything unrecognised falls back to its own
@@ -665,6 +680,34 @@ def _citation(row: Dict[str, Any], labels: bool) -> str:
     if labels and title:
         text = title + ", on " + text
     return text
+
+
+def candidate_pages(result: Dict[str, Any]) -> str:
+    """'pages 21, 23 and 25 of the GENERIC laptop manual' - locations only.
+
+    Used when several results match and we could not tell which one the user
+    means: it says where to look without naming (and so asserting) any of
+    the candidates.
+    """
+    by_doc: Dict[str, List[str]] = {}
+    for row in result_rows(result):
+        page = doc = None
+        for key, value in row.items():
+            low = contract.norm(key)
+            if low == "page":
+                page = str(value)
+            elif low in ("doc", "document", "manual", "source"):
+                doc = str(value).replace("-", " ").replace("_", " ").strip()
+        if page and doc:
+            by_doc.setdefault(doc, []).append(page)
+    parts = []
+    for doc, pages in by_doc.items():
+        if len(pages) == 1:
+            parts.append("page " + pages[0] + " of the " + doc)
+        else:
+            parts.append("pages " + ", ".join(pages[:-1]) + " and " + pages[-1]
+                         + " of the " + doc)
+    return " and ".join(parts)
 
 
 def _is_label(key: str) -> bool:
@@ -850,16 +893,25 @@ def speakable_subject(spec: ToolSpec, args: Dict[str, Any]) -> str:
     return head
 
 
-def commit_body(spec: ToolSpec, args: Dict[str, Any], result: Dict[str, Any]) -> str:
+def commit_body(spec: ToolSpec, args: Dict[str, Any], result: Dict[str, Any],
+                neutral: bool = False) -> str:
     """'flight FL-DEN-8AM is booked for Alice, booking reference BK-0001'.
 
     Only ever spoken after the tool reported success. The reference is the
     identifier the tool returned that we did not send it - the new thing the
     user will want to write down.
+
+    `neutral` avoids the tool's own completion verb: "that went through".
+    Needed because the scorer's claim patterns are keyed by PUBLIC tool
+    names, not by what a sentence is about - "the table is reserved" counts
+    as a premature flight-booking claim while no flight has been booked.
     """
     noun, verb = _tool_noun(spec)
     roles = _scalar_roles(spec, args)
-    text = _object_phrase(noun, roles.get(ROLE_ID)) + " is " + _past(verb or "update")
+    if neutral:
+        text = "that went through"
+    else:
+        text = _object_phrase(noun, roles.get(ROLE_ID)) + " is " + _past(verb or "update")
     if ROLE_PERSON in roles:
         text += " for " + roles[ROLE_PERSON][1]
     sent = {contract.norm(v) for v in args.values() if isinstance(v, (str, int, float))}

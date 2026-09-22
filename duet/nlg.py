@@ -136,6 +136,15 @@ _POOLS: Dict[str, Sequence[str]] = {
         "I did not catch that clearly. Did you mean {options}?",
         "Quick check: was that {options}?",
     ),
+    # We heard a value, but not clearly enough to act on (M5). Naming it is
+    # the honest question and the natural one: the user can answer "yes" or
+    # correct just that word. Every variant keeps "did you say", which is
+    # also how ambiguity ground truth is written.
+    "confirm_heard": (
+        "Sorry, did you say {value}?",
+        "Just to check - did you say {value}?",
+        "I want to be sure I heard that right: did you say {value}?",
+    ),
     # We could not make out the audio at all. Distinct from a missing slot:
     # there is no specific value to ask about, so the honest move is to ask
     # for confirmation of the whole request. This is also simply the natural
@@ -152,6 +161,12 @@ _POOLS: Dict[str, Sequence[str]] = {
         "Sure - what {label} should I use?",
         "Happy to help. What {label} are we talking about?",
         "Can you tell me the {label}?",
+    ),
+    # A required quantity is missing.
+    "clarify_count": (
+        "How many {label}?",
+        "Sure - how many {label} should that be?",
+        "And how many {label} would you like?",
     ),
     # Tool failed and we are retrying.
     "retrying": (
@@ -239,6 +254,15 @@ _POOLS: Dict[str, Sequence[str]] = {
         "That would be {body}.",
         "Looks like {body}.",
         "The best match is {body}.",
+    ),
+    # Several results fit a question about the camera frame and nothing in
+    # the image told them apart. {where} names locations only, never titles:
+    # asserting a component we did not identify is the failure this avoids.
+    "visual_unsure": (
+        "I could not tell from the picture exactly which one that is - "
+        "{where} cover the likely candidates. Which one do you mean?",
+        "From the image alone I cannot say which one you mean; the closest "
+        "matches are {where}. Which one is it?",
     ),
     # Reporting scalar fields rather than a chosen row: "it is currently
     # sunny, 74 degrees, with clear skies through Friday". "I found ..." does
@@ -513,9 +537,24 @@ class Phrasebook:
             return self.clarify_missing("detail")
         return self._render_or("clarify_choice", "ack_generic", options=joined)
 
+    def confirm_heard(self, value: object) -> str:
+        """Confirm a value we heard but do not trust yet, by name."""
+        label = str(value or "").strip()
+        if not label:
+            return self.clarify_unheard()
+        return self._render_or("confirm_heard", "clarify_unheard", value=label)
+
     def clarify_unheard(self) -> str:
         """Ask for the whole request again when nothing was intelligible."""
         return self._render_or("clarify_unheard", "clarify_missing", label="detail")
+
+    def clarify_count(self, arg_name: str) -> str:
+        """Ask for a missing quantity: 'party_size' -> 'How many party size?'
+        reads badly, so a trailing size/count/number word is dropped."""
+        label = slot_label(arg_name)
+        words = [w for w in label.split() if w not in ("size", "count", "number", "num", "of")]
+        label = " ".join(words) or label
+        return self._render_or("clarify_count", "clarify_missing", label=label)
 
     def clarify_missing(self, slot_name: str) -> str:
         label = slot_label(slot_name)
@@ -535,6 +574,10 @@ class Phrasebook:
             return self._render_or("failed_generic", "fallback")
         pool = {"fields": "report_fields", "done": "report_done"}.get(style, "report")
         return self._render_or(pool, "report", body=body)
+
+    def visual_unsure(self, where: str) -> str:
+        """Several candidates fit the frame; say where to look and ask."""
+        return self._render_or("visual_unsure", "failed_generic", where=where)
 
     def no_results(self) -> str:
         """A successful search that found nothing."""

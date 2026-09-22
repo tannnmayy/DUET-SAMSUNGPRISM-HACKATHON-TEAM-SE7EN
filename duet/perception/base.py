@@ -113,6 +113,15 @@ class EmbedBackend:
     async def embed_image(self, path: str) -> List[float]:
         raise NotImplementedError
 
+    async def rank_texts(self, path: str,
+                         texts: Sequence[str]) -> List[Tuple[int, float]]:
+        """Score candidate descriptions against a frame, best first. The
+        default - and the null backend's - is "cannot judge": an empty list,
+        which keeps the tool's own ordering. Without this, grounding a visual
+        result with no embedding model raised inside a task and the scenario
+        ended with no answer."""
+        return []
+
 
 # ---------------------------------------------------------------------------
 # Null backends - the bottom of the degradation ladder
@@ -220,7 +229,11 @@ async def load_vision() -> VisionBackend:
     global _VISION
     if _VISION is not None:
         return _VISION
-    if _env_disabled("DUET_NO_VISION"):
+    if _env_disabled("DUET_NO_VISION") or not config.VISION_MODEL_ENABLED:
+        # Off by default: see config.VISION_MODEL_ENABLED for the measurement.
+        telemetry.log("perception.vision_disabled",
+                      why="no_validated_model" if not config.VISION_MODEL_ENABLED
+                      else "DUET_NO_VISION")
         _VISION = NullVision()
         return _VISION
     try:

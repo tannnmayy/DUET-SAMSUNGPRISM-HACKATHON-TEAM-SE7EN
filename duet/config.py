@@ -90,6 +90,13 @@ TAIL_MS = 6000.0
 # tool cannot push us past the window.
 TAIL_FLUSH_MS = 4200.0
 
+# [OURS] How long a question about a camera frame may wait for that frame's
+# reading before planning without it. The acknowledgment is spoken first, so
+# this costs no latency credit; it delays only the tool call. Bounded so that
+# wait + the slowest declared tool (2.5 s for a manual lookup) still lands
+# inside TAIL_FLUSH_MS when the question is the scenario's last event.
+FRAME_WAIT_MS = 1500.0
+
 # [OURS] How often the tail flush re-checks whether our own outstanding work
 # (tool calls, floored re-plans, transcription, frame reads) has finished.
 TAIL_POLL_MS = 50.0
@@ -114,6 +121,15 @@ TAIL_POLL_MS = 50.0
 # probabilities should be uniformly higher.
 ASR_SLOT_CONFIDENCE = 0.65
 
+# Below ASR_SLOT_CONFIDENCE but at or above this, we heard a value and ask
+# about IT by name ("Sorry, did you say Austin?") rather than asking an open
+# question. Measured with large-v3-turbo on pub_05's deliberately indistinct
+# first clip: "Austin" at 0.47 - a real candidate worth naming, not noise.
+# Below this floor the "value" is more likely an artifact than a word the
+# user said, and naming it would sound absurd, so the question is open
+# ("Which city did you want?").
+ASR_CONFIRM_FLOOR = 0.35
+
 # Fallback when nothing was extracted at all: below this we admit we did not
 # catch it rather than proceeding on an empty understanding.
 ASR_UTTERANCE_CONFIDENCE = 0.45
@@ -125,6 +141,20 @@ ASR_CLARIFY_THRESHOLD = 0.50
 # treat it as genuine ambiguity and name both candidates aloud.
 ASR_AMBIGUITY_MARGIN = 0.25
 VISION_CLARIFY_THRESHOLD = 0.45
+
+# Whether to load a vision-language model at all. OFF unless DUET_VISION=1.
+#
+# Measured, not assumed (tools/vision_bench.py, 22 Sep, RTX 3060): the pinned
+# Qwen2.5-VL-3B named pub_07's HDMI port "USB-C port" on the full frame, on a
+# lower-half crop and on the mirror image - 1 of 4 variants right - under
+# three different prompts, and it invented a matching printed label ("TEXT:
+# USB-C") that is not in the photo, so label agreement cannot vouch for it
+# either. A wrong reading is worse than none: the query then retrieves the
+# USB page, the answer names USB, and pub_07-style scenarios lose BOTH the
+# grounding checkpoint and the no-hedging one (81.5 -> about 66). The 7B
+# model does not fit this machine; enable only after it passes the bench on
+# real GPU hardware.
+VISION_MODEL_ENABLED = os.environ.get("DUET_VISION", "") not in ("", "0", "false", "False")
 
 # Minimum CLIP margin (top similarity minus second) before the frame is
 # allowed to override a tool's own result ordering.

@@ -30,6 +30,7 @@ from .emitter import Emitter
 from .fastpath import (
     REPAIR_CORRECTION, REPAIR_INTENT_CHANGE, REPAIR_REFINEMENT,
     REPAIR_RETRACTION, REPAIR_UNDO, classify_repair,
+    looks_like_affirmation, looks_like_bare_negation,
 )
 from .nlg import Phrasebook
 from .perception import (
@@ -39,7 +40,8 @@ from .perception.asr import merge as asr_merge
 from .perception.asr import value_confidence as asr_value_confidence
 from .planner import Plan, Planner
 from .planner.rules import (
-    PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, has_empty_collection, result_rows,
+    PLAN_CLARIFY, PLAN_SPEAK, PLAN_TOOL, candidate_pages, canonical_slot,
+    has_empty_collection, result_rows,
 )
 from .state import ConversationState, SRC_AUDIO
 from .tools import ToolRegistry
@@ -82,6 +84,9 @@ class DuetAgent:
         # when the frame arrived rather than when it was asked about.
         self._frame_readings: Dict[str, FrameReading] = {}
         self._frame_embeddings: Dict[str, List[float]] = {}
+        # Set when a frame's reading and embedding are both in (or failed),
+        # so a question about the frame can wait for them (see _on_turn).
+        self._frame_done: Dict[str, asyncio.Event] = {}
         self._tasks: Set[asyncio.Task] = set()
 
         # Virtual clock, taken from event timestamps rather than wall time so
@@ -101,6 +106,9 @@ class DuetAgent:
         # but none of the context - so it is planned together with the
         # request that prompted the question.
         self._awaiting_answer = False
+        # The utterance behind a "did you say X?" question, kept so that a
+        # bare "yes" can confirm it (M5).
+        self._pending_confirm: Optional[str] = None
         # State-modifying calls held behind the post-correction quiet
         # window. They are not yet in the coordinator's pending list, but
         # they are outstanding work, so scenario_end must wait for them.
@@ -307,6 +315,14 @@ class DuetAgent:
         if self.state.epoch != epoch:
             return
 
+        if self._pending_confirm is not None and text and (
+                looks_like_affirmation(text) or looks_like_bare_negation(text)):
+            # An answer to our "did you say X?" carries no value of its own,
+            # so the value gate below has nothing to judge; the reply is
+            # resolved against the question instead.
+            self._on_turn(text, source=SRC_AUDIO, confidence=confidence)
+            return
+
         options = self._ambiguous_values(parts)
         if options:
             question = self.say.clarify_choice(options)
@@ -346,12 +362,20 @@ class DuetAgent:
                         else confidence < config.ASR_UTTERANCE_CONFIDENCE)
             if too_weak:
                 telemetry.log("asr.clarify", why="low_slot_confidence",
-                              slot=primary_role,
+                              slot=primary_role, value=primary_value,
                               slot_confidence=slot_confidence,
                               utterance_confidence=round(confidence, 3))
                 self._awaiting_answer = True
-                self._speak_floored(lambda: self.emit.clarify(
-                    self.say.clarify_missing(primary_role)))
+                if (slot_confidence is not None
+                        and slot_confidence >= config.ASR_CONFIRM_FLOOR):
+                    # We did hear something: ask about it by name, and keep
+                    # the utterance so a plain "yes" can confirm it.
+                    self._pending_confirm = text
+                    question = self.say.confirm_heard(primary_value)
+                else:
+                    question = self.say.clarify_missing(
+                        canonical_slot(primary_role, primary_role))
+                self._speak_floored(lambda: self.emit.clarify(question))
                 return
 
             effective = slot_confidence if slot_confidence is not None else confidence
@@ -457,6 +481,7 @@ class DuetAgent:
         frame_id = str(payload.get("frame_id")
                        or payload.get("image_ref") or "frame")
         telemetry.log("frame", ref=payload.get("image_ref"), frame_id=frame_id)
+        self._frame_done[frame_id] = asyncio.Event()
         self.spawn(self._read_frame(frame_id, dict(payload)), "vision")
 
     async def _read_frame(self, frame_id: str, payload: Dict[str, Any]) -> None:
@@ -467,6 +492,16 @@ class DuetAgent:
         mind, what is in front of the camera has not changed, and throwing the
         reading away would only mean paying for it again.
         """
+        try:
+            await self._read_frame_now(frame_id, payload)
+        finally:
+            # Released whatever happened - success, failure or cancellation -
+            # so a question waiting on this frame is never left hanging.
+            done = self._frame_done.get(frame_id)
+            if done is not None:
+                done.set()
+
+    async def _read_frame_now(self, frame_id: str, payload: Dict[str, Any]) -> None:
         path = resolve_media(payload.get("image_ref"))
         if path is None:
             self._frame_readings[frame_id] = FrameReading(error="missing_media")
@@ -539,6 +574,17 @@ class DuetAgent:
         # not evidence of anything. We have identified the subject only if a
         # vision model read it or the image discriminated decisively.
         identified = bool(self._frame_reading()) or reranked
+        if not identified and len(rows) > 1:
+            # Several results fit and nothing in the frame told them apart.
+            # Citing the first as if it were the answer would point the user
+            # at a page about something else (pub_07's first hit is the
+            # headphone jack). Say what we could not tell, where to look, and
+            # ask - the reply ("the HDMI one") is planned with this question.
+            where = candidate_pages(result)
+            if where:
+                self._awaiting_answer = True
+                self._send_final(self.say.visual_unsure(where))
+                return
         body = self.planner.describe(spec, result, chosen,
                                      labels=identified)
         if not body:
@@ -621,6 +667,7 @@ class DuetAgent:
         if repair.kind == REPAIR_INTENT_CHANGE:
             self.coord.cancel_all(now_ms=self.now_ms, reason="intent_change")
             self.state.reset_for_intent_change(None)
+            self.planner.forget_extras()
             text = self.say.ack_intent_change()
             self._speak_floored(lambda: self.emit.filler(text))
             remainder = repair.remainder or text
@@ -718,6 +765,11 @@ class DuetAgent:
             # Reported only now, from a confirmed success, and in the
             # register of something done rather than something found.
             body = self.planner.describe_commit(spec, record.args, result)
+            if body and self.emit.would_claim(body):
+                # The natural past tense ("reserved") matches a claim pattern
+                # the scorer attributes to a DIFFERENT tool that has not run.
+                body = self.planner.describe_commit(spec, record.args, result,
+                                                    neutral=True)
             if body:
                 self._send_final(self.say.report(body, style="done"))
                 return
@@ -772,11 +824,66 @@ class DuetAgent:
         # domain at all and would route to whatever tool absorbs free text.
         # Planned together with the request that prompted the question, it is
         # the missing slot of that request.
-        if self._awaiting_answer and self.planner.goal_text:
+        pending, self._pending_confirm = self._pending_confirm, None
+        if pending is not None and looks_like_affirmation(turn):
+            # "Did you say Austin?" - "Yes." The user has vouched for the
+            # value we doubted, so it is planned at full confidence.
+            turn = (pending + " " + turn).strip()
+            confidence = 1.0
+            telemetry.log("turn.confirmed", text=turn)
+        elif pending is not None and looks_like_bare_negation(turn):
+            # "No." - and nothing to replace it with. Ask openly rather than
+            # guess, and keep waiting for the value.
+            self._awaiting_answer = True
+            role, _value = self._primary_value(self._effective_values(pending))
+            question = self.say.clarify_missing(canonical_slot(role, role))
+            self._speak_floored(lambda: self.emit.clarify(question))
+            return
+        elif self._awaiting_answer and self.planner.goal_text:
             turn = (self.planner.goal_text + " " + turn).strip()
             telemetry.log("turn.merged_with_pending_question", text=turn)
         self._awaiting_answer = False
 
+        if self._frame_pending():
+            # M4's other half. Perception-ahead starts reading a frame the
+            # moment it lands, but "what is THIS port?" can still arrive
+            # before the reading is done - and planning without it sends the
+            # manual a query that names nothing, which comes back with the
+            # wrong pages (the mock ranks by keywords; "port" alone matches
+            # every connector). So hold the PLAN, not the voice: acknowledge
+            # now, and plan once the frame is read or a deadline passes.
+            if announce:
+                ack = self.say.ack_look()
+                self._speak_floored(lambda: self.emit.filler(ack))
+            self.spawn(self._plan_when_seen(turn, source, confidence,
+                                            self.state.epoch), "frame_barrier")
+            return
+        self._plan_and_execute(turn, announce=announce, source=source,
+                               confidence=confidence)
+
+    def _frame_pending(self) -> bool:
+        frame_id = self._current_frame_id()
+        done = self._frame_done.get(frame_id) if frame_id else None
+        return done is not None and not done.is_set()
+
+    async def _plan_when_seen(self, turn: str, source: str, confidence: float,
+                              epoch: int) -> None:
+        done = self._frame_done.get(self._current_frame_id() or "")
+        if done is not None and not done.is_set():
+            timeout_s = config.FRAME_WAIT_MS / max(self._scale, 0.05) / 1000.0
+            try:
+                await asyncio.wait_for(done.wait(), timeout_s)
+            except asyncio.TimeoutError:
+                telemetry.log("frame_barrier.timeout", waited_ms=config.FRAME_WAIT_MS)
+        if self.state.epoch != epoch:
+            telemetry.log("frame_barrier.superseded", born_epoch=epoch,
+                          now_epoch=self.state.epoch)
+            return
+        self._plan_and_execute(turn, announce=False, source=source,
+                               confidence=confidence)
+
+    def _plan_and_execute(self, turn: str, *, announce: bool, source: str,
+                          confidence: float) -> None:
         plan = self.planner.plan_turn(
             self._ground_in_frame(turn), now_ms=self.now_ms,
             has_frame=self.last_frame is not None,
@@ -810,7 +917,12 @@ class DuetAgent:
             return
 
         if plan.kind == PLAN_CLARIFY:
-            text = self.say.clarify_missing(plan.clarify_slot or "detail")
+            missing = plan.tool.args.get(plan.missing[0]) if (plan.tool and plan.missing) else None
+            if missing is not None and missing.type == "number":
+                # "How many nights?", not "Which nights did you want?"
+                text = self.say.clarify_count(missing.name)
+            else:
+                text = self.say.clarify_missing(plan.clarify_slot or "detail")
             self._awaiting_answer = True
             self._speak_floored(lambda: self.emit.clarify(text))
             return

@@ -65,8 +65,12 @@ CANONICAL_SLOTS = (
 # argument name and its description, so unseen names like `pickup_city` or
 # `drop_off_location` still bind correctly.
 _ROLE_HINTS: Dict[str, Tuple[str, ...]] = {
+    # Venues are places: "Restaurant name." names where, not who. Without
+    # them the word "name" in the description made a restaurant a person.
     ROLE_PLACE: ("city", "destination", "location", "place", "town", "airport",
-                 "origin", "pickup", "dropoff", "drop_off", "where"),
+                 "origin", "pickup", "dropoff", "drop_off", "where",
+                 "restaurant", "venue", "hotel", "store", "shop", "clinic",
+                 "branch", "office", "station", "address", "cafe"),
     ROLE_PERSON: ("passenger", "name", "customer", "guest", "traveller",
                   "traveler", "person", "who"),
     ROLE_DATE: ("date", "day", "when", "departure", "checkin", "check_in",
@@ -147,6 +151,11 @@ class ArgSpec:
             return ROLE_ENUM
         if self.type == "number":
             return ROLE_NUMBER
+        # An argument NAMED as an identifier is one, whatever else its words
+        # suggest: hotel_id is an id, not a hotel.
+        name_words = [w for w in re.split(r"[_\W]+", contract.norm(self.name)) if w]
+        if name_words and name_words[-1] in ("id", "code", "reference", "ref"):
+            return ROLE_ID
         haystack = contract.norm(self.name) + " " + contract.norm(self.description)
         # Longest hint wins, so 'destination' beats a bare 'to'.
         best_role, best_len = ROLE_TEXT, 0

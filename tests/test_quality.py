@@ -173,6 +173,11 @@ TEXT_SCENARIOS = [os.path.join(ROOT, p) for p in (
     "tests/conformance/conf_06_paraphrase_cheapest.json",
     "tests/conformance/conf_07_empty_result.json",
     "tests/conformance/conf_08_state_mod_timeout.json",
+    "tests/conformance/conf_09_fragments.json",
+    "tests/conformance/conf_11_need_to_get_to.json",
+    "tests/conformance/conf_14_disfluent_text.json",
+    "tests/conformance/conf_17_number_words.json",
+    "tests/conformance/conf_18_unseen_commit.json",
 )]
 
 
@@ -197,3 +202,32 @@ def test_real_transcripts_pass_the_lint(path):
         config.STRICT = original
     problems = quality.lint(scenario, trace)
     assert not problems, "\n".join(problems + quality.transcript_lines(trace))
+
+
+# ---------------------------------------------------------------- M5 wording
+def test_a_doubted_value_is_confirmed_by_name():
+    """"Did you say Austin?" names exactly what we are unsure of - the M5
+    promise - and every variant keeps the phrasing ambiguity checks look for."""
+    pb = Phrasebook()
+    for _ in range(4):
+        text = pb.confirm_heard("Recife")
+        low = contract.norm(text)
+        assert "recife" in low or "catch" in low, text
+        assert any(p in low for p in ("did you say", "confirm", "catch")), text
+
+
+def test_an_unseen_commit_is_reported_without_a_foreign_claim_word():
+    """F19: the scorer attributes "reserved" to book_flight whatever the
+    sentence is about. A table reservation reported as "reserved" before any
+    flight is booked is a premature claim; the neutral form is not."""
+    spec = ToolRegistry({"reserve_table": {
+        "kind": "state_modifying", "description": "Reserve a table at a restaurant.",
+        "args": {"restaurant": {"type": "string", "required": True},
+                 "party_size": {"type": "number", "required": True}}}}).get("reserve_table")
+    args = {"restaurant": "Casa Lume", "party_size": 4}
+    result = {"status": "success", "reservation_id": "RS-0042"}
+    natural = commit_body(spec, args, result)
+    assert contract.find_completion_claims(natural)          # "reserved" trips it
+    neutral = commit_body(spec, args, result, neutral=True)
+    assert not contract.find_completion_claims(neutral), neutral
+    assert "RS-0042" in neutral

@@ -224,3 +224,78 @@ def test_extraction_is_deterministic():
     first = extract_values(text, expect=[ROLE_PLACE, ROLE_PERSON, ROLE_DATE])
     second = extract_values(text, expect=[ROLE_PLACE, ROLE_PERSON, ROLE_DATE])
     assert {k: v.value for k, v in first.items()} == {k: v.value for k, v in second.items()}
+
+
+# ---------------------------------------------------------------- confirmation replies
+@pytest.mark.parametrize("reply", [
+    "Yes.", "yes", "Yeah, that's right.", "correct", "Yep", "yes, recife",
+    "That's right",
+])
+def test_affirmations_confirm_a_pending_value(reply):
+    from duet.fastpath import looks_like_affirmation, looks_like_bare_negation
+    assert looks_like_affirmation(reply), reply
+    assert not looks_like_bare_negation(reply), reply
+
+
+@pytest.mark.parametrize("reply", ["No.", "nope", "No, that's wrong.", "no it's not"])
+def test_bare_negations_carry_no_replacement(reply):
+    from duet.fastpath import looks_like_affirmation, looks_like_bare_negation
+    assert looks_like_bare_negation(reply), reply
+    assert not looks_like_affirmation(reply), reply
+
+
+@pytest.mark.parametrize("reply", ["No, Recife.", "I said Recife", "Recife please",
+                                   "right now please book it"])
+def test_replies_with_a_value_are_neither(reply):
+    """"No, Recife" is a correction with a value, planned normally - not a
+    bare refusal and certainly not a yes."""
+    from duet.fastpath import looks_like_affirmation, looks_like_bare_negation
+    assert not looks_like_bare_negation(reply), reply
+    if reply.lower().startswith(("no", "i said", "recife")):
+        assert not looks_like_affirmation(reply), reply
+
+
+# ---------------------------------------------------------------- paraphrase pack rules
+def _place(text):
+    from duet.tools import ROLE_PLACE
+    found = extract_values(text, expect=[ROLE_PLACE])
+    return found[ROLE_PLACE].value if ROLE_PLACE in found else None
+
+
+def test_an_infinitive_after_to_is_not_a_destination():
+    """"I need to GET to Tucson" once searched flights to a city called Get:
+    the first "to" was taken as the destination and, because regex matches
+    do not overlap, the second "to" was never looked at."""
+    assert _place("I need to get to Tucson by Friday.") == "Tucson"
+    assert _place("i want to fly to recife") == "Recife"
+
+
+def test_a_clock_time_is_never_a_place():
+    assert _place("a table at Casa Lume for four at 7 PM") == "Casa Lume"
+    assert _place("meet me at 7 pm") is None
+
+
+def test_a_cased_proper_name_ends_at_its_last_capital():
+    assert _place("How much would a hotel in Porto cost") == "Porto"
+    assert _place("flights to Rio de Janeiro") == "Rio de Janeiro"
+    assert _place("find flights to santa fe") == "Santa Fe"   # raw ASR: no casing
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("a hotel for three nights", "3"),
+    ("a table for four at 7 PM", "4"),
+    ("book 2 rooms", "2"),
+    ("for one night", "1"),
+    ("a couple of tickets", "2"),
+])
+def test_spoken_numbers_fill_number_arguments(text, expected):
+    from duet.tools import ROLE_NUMBER
+    found = extract_values(text, expect=[ROLE_NUMBER])
+    assert found[ROLE_NUMBER].value == expected
+
+
+@pytest.mark.parametrize("text", ["book the 8 AM one", "the cheapest one please",
+                                  "at 7 PM", "which one is it"])
+def test_pronoun_one_and_clock_times_are_not_quantities(text):
+    from duet.tools import ROLE_NUMBER
+    assert ROLE_NUMBER not in extract_values(text, expect=[ROLE_NUMBER])

@@ -433,7 +433,172 @@ CONF_08 = {
 }
 
 
-ALL = [CONF_01, CONF_02, CONF_03, CONF_04, CONF_05, CONF_06, CONF_07, CONF_08]
+# ---------------------------------------------------------------------------
+# conf_09..conf_18 - the paraphrase pack
+# ---------------------------------------------------------------------------
+# WALKTHROUGH.md: hidden scenarios use paraphrases ("I need to get to Denver",
+# "any seats to Denver Friday", "Denver, Friday, book it") and "keyword lists
+# will not survive". The kit's generator varies only cities and timings, so
+# phrasing robustness was unmeasured. Every city and name here is absent from
+# the kit AND from our code, and each scenario isolates one structural shape.
+# A failure here gets a structural fix - never its phrase added to a list.
+def _flight_ids(city):
+    code = "".join(c for c in city if c.isalpha())[:3].upper()
+    return ["fl-" + code.lower()]
+
+
+def _search_scenario(sid, description, events, city, extra_checkpoints=(),
+                     end_index=None, date_alias=None):
+    checkpoints = [
+        {"id": "searched_city", "type": "tool_called", "tool": "flight_search",
+         "args_subset": dict({"destination": [city.lower()]},
+                             **({"date": date_alias} if date_alias else {})),
+         "must_complete": True, "weight": 0.5},
+        {"id": "final_grounded", "type": "final_response_contains",
+         "any_of": [city.lower()] + _flight_ids(city), "weight": 0.25},
+        {"id": "state_destination", "type": "state_snapshot",
+         "path": "slots.destination", "any_of": [city.lower()], "weight": 0.25},
+    ] + list(extra_checkpoints)
+    # Weights sum to exactly 1.0 by convention (checked by
+    # test_all_conformance_scenarios_are_wellformed), extras included.
+    total = sum(cp["weight"] for cp in checkpoints)
+    for cp in checkpoints:
+        cp["weight"] = round(cp["weight"] / total, 3)
+    checkpoints[0]["weight"] = round(
+        1.0 - sum(cp["weight"] for cp in checkpoints[1:]), 3)
+    return {
+        "scenario_id": sid,
+        "metadata": {"modality": "text", "difficulty": "L2", "description": description},
+        "tool_overrides": {"flight_search": [{"call_index": 0, "delay_ms": 1500}]},
+        "events": events,
+        "ground_truth": {
+            "checkpoints": checkpoints,
+            "latency": latency(len(events) - 1 if end_index is None else end_index),
+        },
+    }
+
+
+CONF_09 = _search_scenario(
+    "conf_09_fragments", "Telegraphic fragments, no verb, no preposition.",
+    [chunk(100, "Recife. Friday. "), chunk(700, "Two people.", end=True)], "Recife")
+
+CONF_10 = _search_scenario(
+    "conf_10_question_form", "Indirect question with an unusual verb ('flies').",
+    [chunk(100, "Could you see what flies "), chunk(800, "to Porto on Friday?", end=True)],
+    "Porto")
+
+CONF_11 = _search_scenario(
+    "conf_11_need_to_get_to", "Need statement, no search verb at all.",
+    [chunk(100, "I need to get to Tucson "), chunk(700, "by Friday.", end=True)], "Tucson")
+
+CONF_12 = _search_scenario(
+    "conf_12_self_repair_date", "Self-repair of the DATE inside one turn.",
+    [chunk(100, "Find flights to Kyoto on Friday, "),
+     chunk(900, "no wait, Saturday.", end=True)],
+    "Kyoto", date_alias=["saturday"],
+    extra_checkpoints=[
+        {"id": "abandoned_date_not_searched", "type": "tool_not_called",
+         "tool": "flight_search", "args_subset": {"date": ["friday"]}, "weight": 0.3},
+    ])
+
+CONF_13 = _search_scenario(
+    "conf_13_politeness", "Apology and politeness padding ('sorry' is also a repair cue).",
+    [chunk(100, "Sorry to bother you, but would you mind "),
+     chunk(900, "checking flights to Nairobi for me?", end=True)], "Nairobi")
+
+CONF_14 = _search_scenario(
+    "conf_14_disfluent_text", "Fillers splitting the preposition from its place.",
+    [chunk(100, "I want to, uh, go to, um, "), chunk(900, "Oslo I think, Friday.", end=True)],
+    "Oslo")
+
+CONF_15 = _search_scenario(
+    "conf_15_lowercase_multiword", "Lowercase two-word city, as raw ASR would give it.",
+    [chunk(100, "find flights to santa fe "), chunk(700, "tomorrow", end=True)], "Santa Fe")
+
+CONF_16 = _search_scenario(
+    "conf_16_any_seats", "'Any seats' phrasing with city and day run together.",
+    [chunk(100, "Any seats to Halifax "), chunk(700, "Friday for Priya?", end=True)],
+    "Halifax")
+
+# conf_17 - an unseen tool whose required argument is a NUMBER, said as a word.
+# docs/TOOLS.md lists `number` among the argument types every hidden tool may
+# use; "for two nights", "a party of four" is how people say numbers.
+CONF_17 = {
+    "scenario_id": "conf_17_number_words",
+    "metadata": {"modality": "text", "difficulty": "L3",
+                 "description": "Unseen tool with a required number argument spoken as a word."},
+    "tool_manifest": {
+        "hotel_booking_quote": {
+            "kind": "read_only", "delay_range_ms": [900, 1500],
+            "description": "Quote a hotel stay in a city for a number of nights.",
+            "args": {
+                "city": {"type": "string", "required": True, "description": "City name."},
+                "nights": {"type": "number", "required": True,
+                           "description": "Number of nights to stay."}},
+            "default_result": {"quote_id": "HQ-3301", "total_usd": 412,
+                               "hotel": "Quayside Rooms"}},
+    },
+    "tool_overrides": {"hotel_booking_quote": [{"call_index": 0, "delay_ms": 1100}]},
+    "events": [chunk(100, "How much would a hotel in Porto cost "),
+               chunk(800, "for three nights?", end=True)],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "quoted_with_nights", "type": "tool_called",
+             "tool": "hotel_booking_quote",
+             "args_subset": {"city": ["porto"], "nights": [3, "3"]},
+             "must_complete": True, "weight": 0.5},
+            {"id": "not_forced_into_flights", "type": "tool_not_called",
+             "tool": "flight_search", "weight": 0.15},
+            {"id": "grounded", "type": "final_response_contains",
+             "any_of": ["412", "hq-3301", "quayside"], "weight": 0.35},
+        ],
+        "latency": latency(1),
+    },
+}
+
+# conf_18 - an unseen STATE-MODIFYING tool, reached from a paraphrase, with a
+# number word and a name that is not a person's. The duplicate rule applies to
+# it through its kind tag alone.
+CONF_18 = {
+    "scenario_id": "conf_18_unseen_commit",
+    "metadata": {"modality": "text", "difficulty": "L3",
+                 "description": "Unseen state-modifying tool: restaurant name, party size "
+                                "as a word, commit phrasing."},
+    "tool_manifest": {
+        "reserve_table": {
+            "kind": "state_modifying", "delay_range_ms": [800, 1400],
+            "description": "Reserve a table at a restaurant.",
+            "args": {
+                "restaurant": {"type": "string", "required": True,
+                               "description": "Restaurant name."},
+                "party_size": {"type": "number", "required": True,
+                               "description": "How many people."},
+                "time": {"type": "string", "required": False,
+                         "description": "Requested time, free-form."}},
+            "default_result": {"reservation_id": "RS-0042"}},
+    },
+    "tool_overrides": {"reserve_table": [{"call_index": 0, "delay_ms": 1000}]},
+    "events": [chunk(100, "Could you get us a table at Casa Lume "),
+               chunk(800, "for four at 7 PM?", end=True)],
+    "ground_truth": {
+        "checkpoints": [
+            {"id": "reserved", "type": "tool_called", "tool": "reserve_table",
+             "args_subset": {"restaurant": ["casa lume"], "party_size": [4, "4"]},
+             "must_complete": True, "weight": 0.55},
+            {"id": "exactly_once", "type": "tool_called", "tool": "reserve_table",
+             "min_count": 1, "weight": 0.1},
+            {"id": "grounded", "type": "final_response_contains",
+             "any_of": ["rs-0042"], "weight": 0.35},
+        ],
+        "latency": latency(1),
+        "safety": {"state_modifying_tools": ["reserve_table"]},
+    },
+}
+
+
+ALL = [CONF_01, CONF_02, CONF_03, CONF_04, CONF_05, CONF_06, CONF_07, CONF_08,
+       CONF_09, CONF_10, CONF_11, CONF_12, CONF_13, CONF_14, CONF_15, CONF_16,
+       CONF_17, CONF_18]
 
 
 def main() -> int:

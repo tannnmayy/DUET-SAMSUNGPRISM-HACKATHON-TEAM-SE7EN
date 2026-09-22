@@ -282,6 +282,13 @@ def _clean_value(raw: str) -> str:
     # Drop trailing grammar words: "Boston for" -> "Boston".
     while tokens and contract.norm(tokens[-1]) in _NON_VALUE:
         tokens.pop()
+    # When casing survived, a proper name ends at its last capitalised word:
+    # "a hotel in Porto cost ..." is Porto, not "Porto cost". Interior
+    # lowercase words stay ("Rio de Janeiro"); an all-lowercase span - raw
+    # ASR - is left alone, because there casing is no evidence at all.
+    if any(t[:1].isupper() for t in tokens):
+        while tokens and not tokens[-1][:1].isupper() and not tokens[-1][:1].isdigit():
+            tokens.pop()
     return " ".join(tokens[:4]).strip()
 
 
@@ -303,14 +310,31 @@ def _title(value: str) -> str:
     return " ".join(w.capitalize() for w in value.split())
 
 
+# Verbs that follow "to" as an infinitive, not as a destination: "I need TO
+# GET to Tucson". Grammar vocabulary, like _NON_VALUE - it names no place.
+_INFINITIVES = frozenset("""
+get go fly travel head book find see check have make take know do be visit
+reach leave come move buy pay ask try look search reserve cancel open order
+change switch help hear speak talk call ring send stay spend arrive return
+""".split())
+
+
 def _after_preposition(text: str, preps: Sequence[str]) -> List[Tuple[str, int]]:
-    """Capture up to three tokens following each preposition."""
+    """Capture up to three tokens following each preposition.
+
+    Matches may overlap. With plain finditer, "to get to Tucson" is one
+    match - "to" followed by "get to Tucson" - which swallows the second "to"
+    and the real destination with it, leaving "Get" as the place.
+    """
     found: List[Tuple[str, int]] = []
     for prep in preps:
-        for match in re.finditer(r"\b" + re.escape(prep) + r"\s+([\w'\-]+(?:\s+[\w'\-]+){0,2})",
-                                 text, re.I):
+        pattern = r"(?=\b" + re.escape(prep) + r"\s+([\w'\-]+(?:\s+[\w'\-]+){0,2}))"
+        for match in re.finditer(pattern, text, re.I):
+            head = match.group(1).split()[0].lower()
+            if head in _INFINITIVES:
+                continue
             value = _clean_value(match.group(1))
-            if value:
+            if value and not _TIME_RE.fullmatch(value):
                 found.append((value, match.start(1)))
     return found
 
@@ -508,10 +532,49 @@ def extract_values(text: str, *, expect: Optional[Sequence[str]] = None
     return found
 
 
+# Spoken numbers. People say "for three nights" and "a party of four", and
+# ASR writes what it hears; a number argument that only accepts digits makes
+# the agent ask "which nights?" of a user who already said.
+_NUMBER_WORDS = {
+    "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+    "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+    "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
+    "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20,
+    "thirty": 30, "forty": 40, "fifty": 50, "a couple of": 2, "a pair of": 2,
+    "a dozen": 12, "a single": 1, "just me": 1, "both of us": 2,
+}
+_NUMBER_WORD_RE = re.compile(
+    r"\b(" + "|".join(sorted(map(re.escape, _NUMBER_WORDS), key=len, reverse=True)) + r")\b",
+    re.I)
+# "one" is also a pronoun - "the 8 AM one", "the cheapest one" - so it counts
+# only as a quantity before a noun ("one night") and not after a determiner.
+_ONE_RE = re.compile(
+    r"(?<!\bthe )(?<!\bthis )(?<!\bthat )(?<!\bwhich )(?<!\bany )(?<!\beach )"
+    r"\b(one)\s+(?!(?:of|more|moment|second|sec|please|thanks|thank|is|was|"
+    r"for|to|and|or|with|that|which|i|you|we|it|at|on|in|then|too|as|if)\b)[a-z]",
+    re.I)
+
+
 def _numbers(text: str) -> List[Candidate]:
+    """Numerals and spoken numbers, in order of appearance.
+
+    Clock times are excluded: "at 7 PM" is when, not how many.
+    """
+    times = [m.span(1) for m in _TIME_RE.finditer(text)]
+
+    def in_time(span: Tuple[int, int]) -> bool:
+        return any(a <= span[0] < b for a, b in times)
+
     out = []
     for match in _NUMBER_RE.finditer(text):
-        out.append(Candidate(match.group(1), ROLE_NUMBER, 0.6, match.span(1), "numeral"))
+        if not in_time(match.span(1)):
+            out.append(Candidate(match.group(1), ROLE_NUMBER, 0.6, match.span(1), "numeral"))
+    for match in _NUMBER_WORD_RE.finditer(text):
+        value = _NUMBER_WORDS[match.group(1).lower()]
+        out.append(Candidate(str(value), ROLE_NUMBER, 0.6, match.span(1), "number word"))
+    for match in _ONE_RE.finditer(text):
+        out.append(Candidate("1", ROLE_NUMBER, 0.6, match.span(1), "number word"))
+    out.sort(key=lambda c: c.span[0] if c.span else 0)
     return out
 
 
@@ -609,6 +672,40 @@ def looks_like_capability_question(text: str) -> bool:
         "what kind of things", "what sort of things", "what all can you",
     )
     return any(p in low for p in patterns)
+
+
+_AFFIRMATIONS = ("yes", "yeah", "yep", "yup", "correct", "right", "exactly",
+                 "that's right", "that is right", "that's it", "sure",
+                 "affirmative", "uh huh", "mm hmm", "you got it")
+_NEGATIONS = ("no", "nope", "nah", "wrong", "that's wrong", "that is wrong",
+              "not quite", "no it's not", "no it is not", "negative")
+
+
+def _reply_words(text: str) -> str:
+    return re.sub(r"[^a-z' ]+", " ", contract.norm(text)).strip()
+
+
+def looks_like_affirmation(text: str) -> bool:
+    """Does this reply agree with what we just asked about?
+
+    "Yes", "yeah, that's right", "correct" - or an affirmation leading into
+    more words ("yes, Austin"), whose extra words the caller still plans
+    with. Checked only when a confirmation question is actually pending.
+    """
+    low = _reply_words(text)
+    return any(low == a or low.startswith(a + " ") for a in _AFFIRMATIONS)
+
+
+def looks_like_bare_negation(text: str) -> bool:
+    """A "no" that carries no replacement value ("no", "nope, that's wrong")."""
+    low = _reply_words(text)
+    if not low:
+        return False
+    return any(low == n for n in _NEGATIONS) or (
+        low.split()[0] in ("no", "nope", "nah")
+        and all(w in ("no", "nope", "nah", "that's", "it's", "not", "it", "is",
+                      "wrong", "right", "that", "quite")
+                for w in low.split()))
 
 
 def looks_like_greeting(text: str) -> bool:

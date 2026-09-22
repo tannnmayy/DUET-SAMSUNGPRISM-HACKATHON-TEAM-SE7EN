@@ -41,13 +41,16 @@ import unicodedata
 from typing import Any, Dict, List, Optional, Tuple
 
 from .. import telemetry
+from . import checkpoints, cuda
 from .base import ASRBackend, Transcript
 
 # Model preference. A GPU gets the accurate turbo model; CPU gets something
 # that actually finishes, because a 5-second transcription would eat the
-# scenario budget even though the acknowledgment has already gone out.
-_GPU_MODEL = os.environ.get("DUET_ASR_MODEL", "large-v3-turbo")
-_CPU_MODEL = os.environ.get("DUET_ASR_MODEL_CPU", "base")
+# scenario budget even though the acknowledgment has already gone out. Both
+# are pinned to exact revisions in checkpoints.py.
+#
+# DUET_ASR_DEVICE=cpu|cuda forces a device (default: auto).
+_DEVICE_OVERRIDE = os.environ.get("DUET_ASR_DEVICE", "auto").strip().lower()
 
 _MODEL: Any = None
 _MODEL_NAME: str = ""
@@ -72,15 +75,48 @@ def _to_ascii(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _select_device() -> Tuple[str, str, str]:
-    """(device, compute_type, model_name), preferring CUDA when present."""
+def _cuda_devices() -> int:
+    """GPUs visible to CTranslate2 itself.
+
+    Asked of CTranslate2, not torch: the two ship separate CUDA builds, and
+    torch seeing a GPU says nothing about whether the speech engine can use
+    it (and vice versa - this machine's CPU-only torch hid a GPU CTranslate2
+    could see).
+    """
     try:
-        import torch
-        if torch.cuda.is_available():
-            return "cuda", "float16", _GPU_MODEL
+        import ctranslate2
+        return int(ctranslate2.get_cuda_device_count())
     except Exception:  # noqa: BLE001
-        pass
-    return "cpu", "int8", _CPU_MODEL
+        return 0
+
+
+def _plans() -> List[Tuple[str, str, str]]:
+    """(device, compute_type, role) to try, best first."""
+    cpu = ("cpu", "int8", "ASR_CPU")
+    gpu = ("cuda", "float16", "ASR_GPU")
+    if _DEVICE_OVERRIDE == "cpu":
+        return [cpu]
+    if _DEVICE_OVERRIDE == "cuda":
+        return [gpu, cpu]
+    cuda.prepare()
+    return [gpu, cpu] if _cuda_devices() > 0 else [cpu]
+
+
+def _trial(model: Any) -> None:
+    """Run real inference once, or raise.
+
+    Loading is not proof of anything on a GPU: missing cuBLAS or cuDNN
+    libraries surface only on the first encode, which would otherwise be the
+    user's first audio turn. One second of silence exercises feature
+    extraction, the encoder and the decoder, and doubles as warm-up so the
+    first real transcription is not also the slowest.
+    """
+    import numpy as np
+    segments, _info = model.transcribe(np.zeros(16000, dtype=np.float32),
+                                       language="en", beam_size=1,
+                                       without_timestamps=True,
+                                       condition_on_previous_text=False)
+    list(segments)
 
 
 class FasterWhisperASR(ASRBackend):
@@ -106,26 +142,32 @@ class FasterWhisperASR(ASRBackend):
             self.model, self.model_name = _MODEL, _MODEL_NAME
             return True
 
-        device, compute_type, model_name = _select_device()
-        self.device = device
+        for device, compute_type, role in _plans():
+            ckpt = checkpoints.get(role)
 
-        def _load():
-            from faster_whisper import WhisperModel
-            return WhisperModel(model_name, device=device,
-                                compute_type=compute_type)
+            def _load(ckpt=ckpt, device=device, compute_type=compute_type):
+                from faster_whisper import WhisperModel
+                model = WhisperModel(ckpt.repo, device=device,
+                                     compute_type=compute_type,
+                                     revision=ckpt.revision)
+                _trial(model)
+                return model
 
-        try:
-            model = await asyncio.to_thread(_load)
-        except Exception as exc:  # noqa: BLE001
-            telemetry.log("asr.load_failed", model=model_name, device=device,
-                          error=type(exc).__name__ + ": " + str(exc))
-            return False
+            try:
+                model = await asyncio.to_thread(_load)
+            except Exception as exc:  # noqa: BLE001
+                # A GPU failure here costs us accuracy, not the scenario: the
+                # CPU model is next in line.
+                telemetry.log("asr.load_failed", model=ckpt.repo, device=device,
+                              error=type(exc).__name__ + ": " + str(exc)[:300])
+                continue
 
-        _MODEL, _MODEL_NAME = model, model_name
-        self.model, self.model_name = model, model_name
-        telemetry.log("asr.loaded", model=model_name, device=device,
-                      compute_type=compute_type)
-        return True
+            _MODEL, _MODEL_NAME = model, ckpt.repo
+            self.model, self.model_name, self.device = model, ckpt.repo, device
+            telemetry.log("asr.loaded", model=ckpt.repo, revision=ckpt.revision,
+                          device=device, compute_type=compute_type)
+            return True
+        return False
 
     async def transcribe(self, path: str, duration_ms: float = 0.0) -> Transcript:
         if self.model is None:
@@ -201,7 +243,14 @@ def value_confidence(transcript: Transcript, value: str) -> Optional[float]:
             probs.append(best)
     if not probs:
         return None
-    return min(probs)
+    # The MEAN over the value's words, not the minimum. Measured with the
+    # production model (large-v3-turbo) on pub_06: "New" 0.70, "York" 0.99.
+    # The first word of a multi-word name is routinely the least certain -
+    # "new" is ambiguous as an ordinary word - while the rest, given it, is
+    # near-certain. The minimum let that one word veto a clearly heard city
+    # (0.70 against a 0.65 bar); the mean (0.85) reflects the span. Single-
+    # word values - the ambiguous case pub_05 tests - are unaffected.
+    return sum(probs) / len(probs)
 
 
 def merge(parts: List[Transcript]) -> Transcript:

@@ -83,13 +83,22 @@ def _text(entry) -> str:
     return str((entry.get("payload") or {}).get("text") or "")
 
 
+# A tool name read aloud is only unnatural when it contains its own verb:
+# "flight search", "lookup manual", "weather lookup". An all-noun name such as
+# "hotel booking quote" is ordinary English and saying it is fine.
+_ACTION_WORDS = {"search", "lookup", "look", "find", "get", "fetch", "list",
+                 "check", "book", "create", "cancel", "open", "set", "query",
+                 "retrieve", "reserve", "update", "delete", "send", "run"}
+
+
 def _tool_names(scenario, trace) -> List[str]:
     names = set()
     for e in trace:
         if e.get("kind") == "event" and e.get("event_type") == "tool_manifest":
             names.update((e.get("payload") or {}).get("tools") or [])
     names.update((scenario.get("tool_manifest") or {}).keys())
-    return sorted(n for n in names if isinstance(n, str) and "_" in n)
+    return sorted(n for n in names if isinstance(n, str) and "_" in n
+                  and set(n.lower().split("_")) & _ACTION_WORDS)
 
 
 def lint(scenario: Dict[str, Any], trace: List[Dict[str, Any]]) -> List[str]:

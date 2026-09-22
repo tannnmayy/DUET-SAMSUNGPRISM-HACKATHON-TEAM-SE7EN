@@ -406,3 +406,12 @@ def test_text_sink_absent_when_no_tool_takes_free_text():
 def test_text_sink_is_deterministic():
     reg = mixed()
     assert reg.text_sink("x") is reg.text_sink("x")
+
+
+def test_a_venue_name_is_a_place_and_an_id_is_an_id():
+    """"Restaurant name." once read as a PERSON because of the word "name",
+    and an argument named hotel_id must stay an identifier."""
+    from duet.tools import ArgSpec, ROLE_ID, ROLE_PLACE
+    assert ArgSpec("restaurant", description="Restaurant name.").role() == ROLE_PLACE
+    assert ArgSpec("hotel_id", description="Hotel identifier.").role() == ROLE_ID
+    assert ArgSpec("venue", description="Where to meet.").role() == ROLE_PLACE
