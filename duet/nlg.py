@@ -25,6 +25,7 @@ Every public method returns a plain string. Nothing here touches the queue.
 
 from __future__ import annotations
 
+import re
 from typing import Dict, List, Optional, Sequence, Set
 
 from . import contract
@@ -56,6 +57,17 @@ _POOLS: Dict[str, Sequence[str]] = {
         "Working on it.",
         "Just a sec.",
         "Right, let me look.",
+    ),
+    # Starting irreversible work. A promise, never a claim: every line names
+    # what is about to happen in the progressive ("booking ... now"), which
+    # is truthful before the tool reports back and says nothing about the
+    # outcome. {subject} is a gerund phrase: "booking flight FL-DEN-8AM for
+    # Alice".
+    "ack_commit": (
+        "Okay, {subject} now.",
+        "On it - {subject} now.",
+        "Great, {subject} right away.",
+        "Alright, {subject} now.",
     ),
     # Acknowledging a correction. MUST name the new value: the scorer checks
     # for a spoken action containing it inside a short window after the
@@ -147,11 +159,59 @@ _POOLS: Dict[str, Sequence[str]] = {
         "Hit a snag there, giving it another go.",
         "One more attempt on that.",
     ),
-    # Tool failed terminally.
+    # A read-only tool failed terminally. {subject} is a noun phrase:
+    # "flights to Seattle".
     "failed": (
         "Sorry, I could not get {subject} just now.",
-        "That one is not coming back - sorry about {subject}.",
-        "I was not able to complete {subject}.",
+        "I was not able to pull up {subject}, sorry.",
+        "Sorry, I had trouble getting {subject}.",
+    ),
+    # An irreversible call failed in a way that does NOT tell us whether it
+    # took effect upstream (a timeout, typically). Truthfulness decides the
+    # wording: we cannot say it failed, and we must not say it worked. So we
+    # say exactly what we know, and that we will not blindly resend it.
+    # {subject} is a gerund phrase, capitalised by the renderer.
+    "commit_unknown": (
+        "{subject} timed out, so I cannot tell whether it went through. "
+        "I will not send it again without checking with you first.",
+        "{subject} did not come back in time, so I cannot tell if it went "
+        "through - I will hold off on retrying until you say so.",
+    ),
+    # Fallback for the same situation once the specific lines are spent. It
+    # must keep the same meaning: "I could not complete that" would assert a
+    # failure we cannot know happened.
+    "commit_unknown_generic": (
+        "I cannot tell whether that went through, so I will not repeat it "
+        "without checking with you.",
+        "The outcome of that one is unclear - I will hold off rather than risk "
+        "doing it twice.",
+        "No clear answer came back on that, so I am not going to send it again "
+        "on my own.",
+    ),
+    # An irreversible call was rejected before it could take effect.
+    "commit_rejected": (
+        "Sorry, {subject} did not go through - the request was not accepted.",
+        "{subject} was turned down, so nothing has changed.",
+    ),
+    # The thing the irreversible call referred to does not exist.
+    "commit_not_found": (
+        "Sorry, I could not find that - {subject} did not go through.",
+        "That reference does not seem to exist, so {subject} did not go through.",
+    ),
+    # The environment reports it was already done by an earlier request.
+    "commit_duplicate": (
+        "That already went through earlier, so I have not made a second one.",
+        "It looks like that was already in place, so I did not repeat it.",
+    ),
+    # The scenario is ending and a tool never came back. Honest, and still
+    # specific about what we were waiting for.
+    "still_waiting": (
+        "Sorry, I am still waiting on {subject}, so I do not have an answer yet.",
+        "That is taking longer than usual - still no answer on {subject}.",
+    ),
+    "still_waiting_generic": (
+        "Sorry, that is taking longer than expected, so I do not have an answer yet.",
+        "That is running long - I do not have an answer for you yet.",
     ),
     # A successful call that returned nothing. Distinct from a failure:
     # the tool worked, there simply are no hits, and inventing a citation
@@ -180,6 +240,18 @@ _POOLS: Dict[str, Sequence[str]] = {
         "Looks like {body}.",
         "The best match is {body}.",
     ),
+    # Reporting scalar fields rather than a chosen row: "it is currently
+    # sunny, 74 degrees, with clear skies through Friday". "I found ..." does
+    # not fit a reading, so these lead-ins are neutral.
+    "report_fields": (
+        "Okay, {body}.",
+        "Here is what I have: {body}.",
+        "Alright - {body}.",
+        "So, {body}.",
+    ),
+    # Reporting an irreversible action AFTER its tool reported success. Only
+    # ever rendered from a confirmed result; the emitter's claim guard would
+    # substitute a progress line if it were not.
     "report_done": (
         "All set - {body}.",
         "Done - {body}.",
@@ -354,6 +426,12 @@ class Phrasebook:
             return self._render_or("ack_lookup", "ack_generic", subject=subject)
         return self._render_or("ack_generic", "fallback")
 
+    def ack_commit(self, subject: Optional[str] = None) -> str:
+        """Announce irreversible work as it starts - a promise, not a claim."""
+        if subject:
+            return self._render_or("ack_commit", "ack_generic", subject=subject)
+        return self._render_or("ack_generic", "fallback")
+
     def ack_correction(self, value: object, old: object = None) -> str:
         """Acknowledge a correction, naming the new value.
 
@@ -394,6 +472,35 @@ class Phrasebook:
             return self._render_or("failed", "failed_generic", subject=subject)
         return self._render_or("failed_generic", "fallback")
 
+    def failed_commit(self, subject: Optional[str], error: Optional[str]) -> str:
+        """An irreversible call did not succeed. Say only what we know.
+
+        The error code decides what that is. `invalid_args` and
+        `unknown_tool` prove nothing happened; `not_found` and
+        `duplicate_booking` are definite answers; anything else - a timeout
+        above all - leaves the outcome unknown, and the honest sentence is
+        the one that says so.
+        """
+        code = str(error or "")
+        if code == "duplicate_booking":
+            return self._render_or("commit_duplicate", "failed_generic")
+        pool = {"not_found": "commit_not_found",
+                "invalid_args": "commit_rejected",
+                "unknown_tool": "commit_rejected"}.get(code, "commit_unknown")
+        text = self._render(pool, subject=subject or "that request")
+        if text is None and pool == "commit_unknown":
+            text = self._render("commit_unknown_generic")
+        if text is None:
+            return self._render_or("failed_generic", "fallback")
+        return _capitalise(text)
+
+    def still_waiting(self, subject: Optional[str] = None) -> str:
+        """The scenario is ending and work never came back."""
+        if subject:
+            return self._render_or("still_waiting", "still_waiting_generic",
+                                   subject=subject)
+        return self._render_or("still_waiting_generic", "fallback")
+
     # -- clarifications ---------------------------------------------------
     def clarify_choice(self, options: Sequence[str]) -> str:
         """Ask between competing hypotheses (M5 - calibrated abstention).
@@ -415,12 +522,19 @@ class Phrasebook:
         return self._render_or("clarify_missing", "ack_generic", label=label)
 
     # -- reporting --------------------------------------------------------
-    def report(self, body: str) -> str:
-        """Wrap a grounded result phrase in a natural sentence."""
+    def report(self, body: str, style: str = "found") -> str:
+        """Wrap a grounded result phrase in a natural sentence.
+
+        `style` picks the register: "found" for a chosen result row ("I found
+        flight FL-CHI-8AM ..."), "fields" for a reading ("Okay, it is currently
+        sunny ..."), "done" for an irreversible action whose tool has
+        reported success ("All set - flight FL-DEN-8AM is booked ...").
+        """
         body = str(body or "").strip().rstrip(".")
         if not body:
             return self._render_or("failed_generic", "fallback")
-        return self._render_or("report", "ack_generic", body=body)
+        pool = {"fields": "report_fields", "done": "report_done"}.get(style, "report")
+        return self._render_or(pool, "report", body=body)
 
     def no_results(self) -> str:
         """A successful search that found nothing."""
@@ -439,33 +553,91 @@ class Phrasebook:
             phrase = _summarise_description(desc)
             if phrase and phrase not in phrases:
                 phrases.append(phrase)
+        # A spoken answer, not a catalogue: past five items a listener stops
+        # hearing individual entries.
+        extra = len(phrases) > _MAX_CAPABILITIES
+        phrases = phrases[:_MAX_CAPABILITIES]
         if not phrases:
             text = "I can help with whatever tools I have been given - just tell me what you need."
         elif len(phrases) == 1:
-            text = "I can help you " + phrases[0] + "."
+            text = "I can help you " + phrases[0] + ". What would you like to do?"
         else:
-            text = "I can help you " + ", ".join(phrases[:-1]) + ", and " + phrases[-1] + "."
+            tail = (", " + phrases[-1] + ", and a few other things") if extra \
+                else (", and " + phrases[-1])
+            text = ("I can help you " + ", ".join(phrases[:-1]) + tail
+                    + ". What would you like to do?")
         self._used.add(contract.norm(text))
         return text
+
+
+_MAX_CAPABILITIES = 5
+
+# Verbs a capability phrase may start with. Anything else ("Current weather
+# and a short forecast") is a noun phrase and gets "get" in front of it.
+_CAPABILITY_VERBS = frozenset("""
+search find book cancel open create file look check get retrieve list show
+set schedule reserve order buy send track report update change add remove
+delete start stop run turn play quote estimate compare convert translate
+call pay lock unlock arm disarm dim adjust control monitor locate reset
+""".split())
+
+# Prepositions that always begin detail we do not need in a spoken summary.
+_HARD_STOPS = frozenset(("to", "for", "on", "by", "with", "at", "returned",
+                         "that", "which", "via", "using", "into", "per"))
+# Prepositions that begin detail only when followed by a determiner:
+# "pages FROM device manuals" is the substance, "hotels IN A city" is not.
+_SOFT_STOPS = frozenset(("in", "from", "of", "about", "across", "within"))
+_DETERMINERS = frozenset(("a", "an", "the", "any", "some", "each", "every",
+                          "your", "their", "its", "given"))
+# Adjectives that carry no meaning once the detail they qualify is gone.
+_VAGUE = frozenset(("specific", "given", "existing", "particular", "indexed",
+                    "unresolved", "certain", "relevant"))
 
 
 def _summarise_description(description: str) -> str:
     """Turn a tool description into a short capability phrase.
 
-    'Search flights to a destination city on a given date.' -> 'search flights'
-    Intentionally crude: this is spoken filler, not documentation, and it must
-    work on descriptions we have never seen.
+        'Search flights to a destination city on a given date.' -> 'search flights'
+        'Book a specific flight returned by flight_search.'     -> 'book a flight'
+        'Retrieve pages from indexed device manuals. ...'       -> 'retrieve pages from device manuals'
+        'Current weather and a short forecast for a city.'      -> 'get current weather and a short forecast'
+
+    Works on descriptions we have never seen: it keeps the leading clause up
+    to the first preposition that starts incidental detail, drops adjectives
+    that only made sense with that detail, and fixes the article left behind.
     """
-    text = str(description or "").strip().rstrip(".")
-    if not text:
+    first = re.split(r"[.;:!?]", str(description or ""), maxsplit=1)[0]
+    tokens = re.findall(r"[A-Za-z0-9'\-]+", first)
+    if not tokens:
         return ""
-    words = text.split()
-    # Keep the leading verb plus its object, which is where the useful noun is.
-    clipped = " ".join(words[:3])
-    for stop in (" to ", " for ", " in ", " on ", " from ", " with ", " by "):
-        idx = clipped.find(stop)
-        if idx > 0:
-            clipped = clipped[:idx]
+    kept: List[str] = []
+    for i, token in enumerate(tokens):
+        low = token.lower()
+        nxt = tokens[i + 1].lower() if i + 1 < len(tokens) else ""
+        if i > 0 and low in _HARD_STOPS:
             break
-    out = clipped.strip().rstrip(",").lower()
-    return out
+        if i > 0 and low in _SOFT_STOPS and nxt in _DETERMINERS:
+            break
+        if "_" in token:
+            break
+        kept.append(low)
+        if len(kept) >= 7:
+            break
+    kept = [t for t in kept if t not in _VAGUE]
+    # "an existing booking" -> "an booking" -> "a booking"
+    for i in range(len(kept) - 1):
+        if kept[i] == "an" and kept[i + 1][:1] not in "aeiou":
+            kept[i] = "a"
+        elif kept[i] == "a" and kept[i + 1][:1] in "aeiou":
+            kept[i] = "an"
+    while kept and kept[-1] in _DETERMINERS | {"and", "or"}:
+        kept.pop()
+    if not kept:
+        return ""
+    if kept[0] not in _CAPABILITY_VERBS:
+        kept.insert(0, "get")
+    return " ".join(kept)
+
+
+def _capitalise(text: str) -> str:
+    return text[:1].upper() + text[1:] if text else text

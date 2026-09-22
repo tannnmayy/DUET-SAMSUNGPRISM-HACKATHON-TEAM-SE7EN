@@ -90,6 +90,10 @@ TAIL_MS = 6000.0
 # tool cannot push us past the window.
 TAIL_FLUSH_MS = 4200.0
 
+# [OURS] How often the tail flush re-checks whether our own outstanding work
+# (tool calls, floored re-plans, transcription, frame reads) has finished.
+TAIL_POLL_MS = 50.0
+
 # --------------------------------------------------------------------------
 # Confidence thresholds (tuned in Phase 2 against the public audio clips)
 # --------------------------------------------------------------------------

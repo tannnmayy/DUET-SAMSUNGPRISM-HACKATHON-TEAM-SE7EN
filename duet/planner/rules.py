@@ -113,7 +113,22 @@ class Plan:
 # ---------------------------------------------------------------------------
 _PRICE_HINTS = ("price", "cost", "usd", "fare", "amount", "rate", "daily")
 _TIME_HINTS = ("depart", "time", "start", "when", "hour")
-_ID_HINTS = ("_id", "id", "code", "reference", "number")
+
+# A field is an identifier when its LAST word says so: flight_id, ticket_id,
+# confirmation_code, booking_reference. Substring matching on "id" was wrong
+# in exactly the way unseen schemas punish - "humidity", "provider" and
+# "valid_until" all contain it, and a weather reading's humidity ended up in
+# the snapshot as a flight id.
+_ID_WORDS = frozenset(("id", "code", "reference", "ref", "number", "no"))
+
+
+def _key_words(key: Any) -> List[str]:
+    return [w for w in re.split(r"[_\W]+", contract.norm(key)) if w]
+
+
+def _is_id_key(key: Any) -> bool:
+    words = _key_words(key)
+    return bool(words) and words[-1] in _ID_WORDS
 
 
 def _result_rows(result: Dict[str, Any]) -> Tuple[Optional[str], List[Dict[str, Any]]]:
@@ -158,8 +173,10 @@ def _field_matching(row: Dict[str, Any], hints: Sequence[str]) -> Optional[str]:
 
 
 def _row_identifier(row: Dict[str, Any]) -> Optional[Any]:
-    key = _field_matching(row, _ID_HINTS)
-    return row.get(key) if key else None
+    for key in row:
+        if _is_id_key(key):
+            return row.get(key)
+    return None
 
 
 def select_item(result: Dict[str, Any],
@@ -501,14 +518,7 @@ class Planner:
 
     def _subject(self, spec: ToolSpec, args: Dict[str, Any]) -> str:
         """A short phrase naming what we are doing, for the acknowledgment."""
-        head = spec.name.replace("_", " ")
-        for arg_name, value in args.items():
-            arg = spec.args.get(arg_name)
-            if arg is None or arg.is_array or arg.is_object:
-                continue
-            if arg.role() in (ROLE_PLACE, ROLE_ID) and value:
-                return head + " for " + str(value)
-        return head
+        return speakable_subject(spec, args)
 
     # ------------------------------------------------------------------
     def reselect(self, utterance: str, *, now_ms: float) -> bool:
@@ -562,8 +572,7 @@ class Planner:
         for key, value in result.items():
             if key == "status" or not isinstance(value, (str, int, float)):
                 continue
-            low = contract.norm(key)
-            if any(h in low for h in _ID_HINTS):
+            if _is_id_key(key):
                 self.state.set_slot(slot_for_identifier(value), value,
                                     source="tool", at_ms=now_ms)
 
@@ -593,7 +602,7 @@ class Planner:
             citation = _citation(row, labels)
             if citation:
                 return citation
-            body = _join(_phrase(k, v) for k, v in row.items()
+            body = _join(_phrase(k, v) for k, v in _speaking_order(row)
                          if isinstance(v, (str, int, float))
                          and (labels or not _is_label(k)))
             if body:
@@ -602,6 +611,13 @@ class Planner:
         if fields:
             return _join(_phrase(k, v) for k, v in fields)
         return ""
+
+    def describe_commit(self, spec: Optional[ToolSpec], args: Dict[str, Any],
+                        result: Dict[str, Any]) -> str:
+        """What an irreversible call did, once its tool has reported success."""
+        if spec is None:
+            return ""
+        return commit_body(spec, args, result)
 
 
 # How a result field is spoken. Anything unrecognised falls back to its own
@@ -614,7 +630,7 @@ _FIELD_PHRASES = {
     "page": "on page ",
     "doc": "in the ",
     "title": "under ",
-    "condition": "currently ",
+    "condition": "it is currently ",
     "forecast": "with ",
 }
 
@@ -652,21 +668,209 @@ def _citation(row: Dict[str, Any], labels: bool) -> str:
 
 
 def _is_label(key: str) -> bool:
-    low = contract.norm(key)
-    return any(h == low or h in low for h in _LABEL_FIELDS)
+    # By word, not substring: "part" is inside "depart", and a departure
+    # time spoken as if it were the result's name opened every flight answer
+    # with "I found 08:00, ...".
+    return bool(set(_key_words(key)) & set(_LABEL_FIELDS))
+
+
+def _speaking_order(row: Dict[str, Any]) -> List[Tuple[str, Any]]:
+    """Name first, then everything else in the tool's own order.
+
+    "Harbor Inn, hotel HT-0001, for $189" is how a person says it; the
+    schema's order ("hotel HT-0001, Harbor Inn, ...") is not.
+    """
+    items = list(row.items())
+    named = [(k, v) for k, v in items if _is_label(k) and isinstance(v, str)]
+    rest = [(k, v) for k, v in items if not (_is_label(k) and isinstance(v, str))]
+    return named + rest
+
+
+# Field words that mark a money amount, and the period it is charged over.
+_MONEY_WORDS = frozenset(("price", "cost", "usd", "fare", "amount", "fee",
+                          "total", "rate"))
+_PER_DAY = frozenset(("daily", "day", "perday"))
+_PER_NIGHT = frozenset(("nightly", "night", "pernight"))
 
 
 def _phrase(key: str, value: Any) -> str:
+    """Speak one result field with its connective, derived from its name.
+
+    Name-driven rather than tool-driven, so an unseen schema reads naturally:
+    temp_f -> "74 degrees", daily_usd -> "for $58 a day", quote_id ->
+    "quote RC-7781".
+    """
     low = contract.norm(key)
-    if any(h in low for h in _PRICE_HINTS):
-        return "for $" + str(value)
-    if any(h in low for h in _ID_HINTS):
+    words = _key_words(key)
+    wordset = set(words)
+    if _is_label(key) and isinstance(value, str):
         return str(value)
+    if wordset & _MONEY_WORDS:
+        period = (" a day" if wordset & _PER_DAY
+                  else " a night" if wordset & _PER_NIGHT else "")
+        return "for $" + str(value) + period
+    if any(w.startswith("temp") for w in words):
+        return str(value) + " degrees"
+    if _is_id_key(key):
+        label = " ".join(words[:-1])
+        return (label + " " + str(value)).strip()
     for prefix, phrase in _FIELD_PHRASES.items():
         if low == prefix or low.startswith(prefix):
             return phrase + str(value)
     label = str(key).replace("_", " ").strip()
     return (label + " " + str(value)).strip()
+
+
+# ---------------------------------------------------------------------------
+# Speaking about a tool without saying its name
+# ---------------------------------------------------------------------------
+# Words in a tool name that say what it DOES rather than what it is about.
+# Stripping them leaves the subject ("flight_search" -> "flight"); the first
+# one is the verb of an irreversible action ("cancel_booking" -> "cancel").
+# Reading the tool's own name aloud ("Looking up flight search for Chicago")
+# is the most obviously machine-generated thing an agent can say.
+_ACTION_WORDS = frozenset("""
+search find lookup look list get fetch retrieve query check show browse
+book reserve cancel create open file submit send make set update change add
+remove delete schedule order buy purchase start stop run apply issue
+""".split())
+_SEARCH_WORDS = frozenset(("search", "find", "list", "browse"))
+_TO_WORDS = frozenset(("destination", "dest", "to", "arrival"))
+_FROM_WORDS = frozenset(("origin", "from", "source", "departure"))
+
+_GERUNDS = {"cancel": "cancelling", "set": "setting", "stop": "stopping",
+            "run": "running", "get": "getting", "submit": "submitting",
+            "shop": "shopping", "plan": "planning"}
+_PASTS = {"cancel": "cancelled", "set": "set", "stop": "stopped", "run": "run",
+          "get": "retrieved", "submit": "submitted", "buy": "bought",
+          "send": "sent", "make": "made", "find": "found", "pay": "paid",
+          "issue": "issued", "file": "filed", "plan": "planned"}
+
+
+def _gerund(verb: str) -> str:
+    if verb in _GERUNDS:
+        return _GERUNDS[verb]
+    if verb.endswith("ie"):
+        return verb[:-2] + "ying"
+    if verb.endswith("e") and not verb.endswith("ee"):
+        return verb[:-1] + "ing"
+    return verb + "ing"
+
+
+def _past(verb: str) -> str:
+    if verb in _PASTS:
+        return _PASTS[verb]
+    if verb.endswith("e"):
+        return verb + "d"
+    if verb.endswith("y") and len(verb) > 1 and verb[-2] not in "aeiou":
+        return verb[:-1] + "ied"
+    return verb + "ed"
+
+
+def _plural(noun: str) -> str:
+    if noun.endswith(("s", "ing")):
+        return noun
+    if noun.endswith("y") and len(noun) > 1 and noun[-2] not in "aeiou":
+        return noun[:-1] + "ies"
+    if noun.endswith(("ch", "sh", "x", "z")):
+        return noun + "es"
+    return noun + "s"
+
+
+def _tool_noun(spec: ToolSpec) -> Tuple[str, Optional[str]]:
+    """(subject noun, action verb) read off a tool's name."""
+    words = _key_words(spec.name)
+    verbs = [w for w in words if w in _ACTION_WORDS]
+    nouns = [w for w in words if w not in _ACTION_WORDS]
+    return " ".join(nouns), (verbs[0] if verbs else None)
+
+
+def _scalar_roles(spec: ToolSpec, args: Dict[str, Any]) -> Dict[str, Tuple[str, str]]:
+    """role -> (argument name, value) for the scalar arguments of a call."""
+    found: Dict[str, Tuple[str, str]] = {}
+    for name, value in args.items():
+        arg = spec.args.get(name)
+        if arg is None or arg.is_array or arg.is_object:
+            continue
+        if value is None or str(value).strip() == "":
+            continue
+        found.setdefault(arg.role(), (name, str(value)))
+    return found
+
+
+def _object_phrase(noun: str, ident: Optional[Tuple[str, str]]) -> str:
+    """'flight FL-DEN-8AM' when the id argument names the tool's own noun."""
+    if ident is not None:
+        arg_name, value = ident
+        id_words = [w for w in _key_words(arg_name) if w not in _ID_WORDS]
+        if noun and " ".join(id_words) == noun:
+            return noun + " " + value
+        return value
+    return ("the " + noun) if noun else "that"
+
+
+def speakable_subject(spec: ToolSpec, args: Dict[str, Any]) -> str:
+    """What a call is about, the way a person would say it.
+
+        flight_search {destination: Chicago, date: Friday} -> "flights to Chicago for Friday"
+        weather_lookup {city: Denver}                     -> "the weather in Denver"
+        book_flight {flight_id, passenger_name}           -> "booking flight FL-DEN-8AM for Alice"
+
+    Built from the tool's name and its arguments' roles, never from a list of
+    known tools, so an unseen schema gets the same treatment.
+    """
+    noun, verb = _tool_noun(spec)
+    roles = _scalar_roles(spec, args)
+
+    if spec.is_state_modifying:
+        head = _gerund(verb or "update") + " " + _object_phrase(noun, roles.get(ROLE_ID))
+        if ROLE_PERSON in roles:
+            head += " for " + roles[ROLE_PERSON][1]
+        return head
+
+    words = _key_words(spec.name)
+    if noun and " " not in noun and any(w in _SEARCH_WORDS for w in words):
+        head = _plural(noun)
+    elif noun:
+        head = "the " + noun
+    else:
+        head = "that"
+    if ROLE_PLACE in roles:
+        arg_name, value = roles[ROLE_PLACE]
+        arg_words = set(_key_words(arg_name))
+        prep = ("to" if arg_words & _TO_WORDS
+                else "from" if arg_words & _FROM_WORDS else "in")
+        head += " " + prep + " " + value
+    if ROLE_ID in roles:
+        head += " for " + roles[ROLE_ID][1]
+    if ROLE_DATE in roles:
+        date = roles[ROLE_DATE][1]
+        if contract.norm(date) != "now":
+            head += " for " + date
+    return head
+
+
+def commit_body(spec: ToolSpec, args: Dict[str, Any], result: Dict[str, Any]) -> str:
+    """'flight FL-DEN-8AM is booked for Alice, booking reference BK-0001'.
+
+    Only ever spoken after the tool reported success. The reference is the
+    identifier the tool returned that we did not send it - the new thing the
+    user will want to write down.
+    """
+    noun, verb = _tool_noun(spec)
+    roles = _scalar_roles(spec, args)
+    text = _object_phrase(noun, roles.get(ROLE_ID)) + " is " + _past(verb or "update")
+    if ROLE_PERSON in roles:
+        text += " for " + roles[ROLE_PERSON][1]
+    sent = {contract.norm(v) for v in args.values() if isinstance(v, (str, int, float))}
+    for key, value in (result or {}).items():
+        if key == "status" or not isinstance(value, (str, int, float)):
+            continue
+        if _is_id_key(key) and contract.norm(value) not in sent:
+            label = " ".join(_key_words(key)[:-1])
+            text += ", " + ((label + " reference ") if label else "reference ") + str(value)
+            break
+    return text
 
 
 def _join(parts) -> str:

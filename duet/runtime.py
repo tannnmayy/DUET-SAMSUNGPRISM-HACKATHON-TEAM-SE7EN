@@ -185,10 +185,26 @@ class DuetAgent:
             self._scale = max(0.05, min(64.0, self.now_ms / wall_ms))
 
     def spawn(self, coro: "Awaitable[Any]", label: str = "task") -> asyncio.Task:
-        task = asyncio.create_task(_guard(coro, label))
+        task = asyncio.create_task(_guard(coro, label), name=label)
         self._tasks.add(task)
         task.add_done_callback(self._tasks.discard)
         return task
+
+    def _busy(self) -> bool:
+        """Is anything we started still going to produce an action?
+
+        Pending tool calls are not the only outstanding work. A re-plan held
+        behind the speech floor, a transcription, a frame read or a deferred
+        commit will all still speak or call a tool - and the harness sends
+        scenario_end in the SAME instant as the last scripted event, so at
+        that moment the answer to the user's final turn is almost always one
+        of these. Treating them as idle is what made the agent announce its
+        capabilities in reply to "wait, actually make it New York".
+        """
+        if self.coord.pending() or self._deferred:
+            return True
+        return any(not task.done() and task.get_name() != "tail_flush"
+                   for task in self._tasks)
 
     # ------------------------------------------------------------------
     # handlers
@@ -217,7 +233,13 @@ class DuetAgent:
         # takes hundreds of milliseconds; the latency clock does not wait, and
         # an acknowledgment that does not pretend to have understood anything
         # is both honest and enough to hold the floor.
-        self._speak_floored(lambda: self.emit.filler(self.say.ack_listen()))
+        #
+        # Only at the END of a turn, exactly as for text. A chunk without the
+        # end marker means the user is still talking: answering it is talking
+        # over them, and it spends a filler from a budget of about four. The
+        # scorer times the end of the turn, not its first clip (pub_06).
+        if payload.get("end_of_turn"):
+            self._speak_floored(lambda: self.emit.filler(self.say.ack_listen()))
 
         index = self._audio_next
         self._audio_next += 1
@@ -589,7 +611,10 @@ class DuetAgent:
             self.coord.cancel_all(now_ms=self.now_ms, reason="retraction")
             self.state.set_intent("cancelled")
             text = self.say.ack_retraction()
-            self._speak_floored(lambda: self.emit.filler(text))
+            # The acknowledgment IS the answer: nothing more is coming, so it
+            # goes out as the final response. As a filler it was followed by
+            # a second, differently-worded acknowledgment at scenario end.
+            self._speak_floored(lambda: self._send_final(text))
             self.planner.goal_text = ""
             return
 
@@ -649,7 +674,13 @@ class DuetAgent:
             if retry_id is not None:
                 self.emit.filler(self.say.retrying())
                 return
-            self._send_final(self.say.failed(record.purpose or None))
+            if record.is_state_modifying:
+                # What we may truthfully say depends on the error: a timeout
+                # means we do not know whether it went through.
+                self._send_final(self.say.failed_commit(record.purpose or None,
+                                                        record.error))
+            else:
+                self._send_final(self.say.failed(record.purpose or None))
             return
 
         row = self.planner.adopt_result(spec, result, now_ms=self.now_ms)
@@ -676,6 +707,19 @@ class DuetAgent:
             visual_embedding=self._frame_embedding())
         if follow_up.is_tool and follow_up.tool.name != record.api_name:
             if self._issue(follow_up, turn_ended=True):
+                # Progress narration for the step the user cannot see: the
+                # search came back and we are now doing the irreversible part.
+                # A promise in the progressive, never a claim.
+                if follow_up.tool.is_state_modifying:
+                    self.emit.filler(self.say.ack_commit(follow_up.subject))
+                return
+
+        if record.is_state_modifying:
+            # Reported only now, from a confirmed success, and in the
+            # register of something done rather than something found.
+            body = self.planner.describe_commit(spec, record.args, result)
+            if body:
+                self._send_final(self.say.report(body, style="done"))
                 return
 
         if row is None and has_empty_collection(result):
@@ -689,25 +733,31 @@ class DuetAgent:
             # inventing a citation.
             self._send_final(self.say.failed(None))
             return
-        self._send_final(self.say.report(body))
+        self._send_final(self.say.report(body, style="found" if row else "fields"))
 
     def on_scenario_end(self, payload: Dict[str, Any]) -> None:
         self._ended = True
-        telemetry.log("scenario_end", at_ms=self.now_ms)
-        if self.coord.pending() or self._deferred:
-            # Work is still running (or held behind the commitment gate)
-            # and its result will produce the answer.
-            # Guard against it never arriving with a scaled timer.
+        telemetry.log("scenario_end", at_ms=self.now_ms, busy=self._busy())
+        if self._busy():
+            # Work we started is still going to answer the last turn. Wait
+            # for it, with a deadline inside the tail window in case it never
+            # arrives.
             self.spawn(self._tail_flush(), "tail_flush")
             return
-        self._ensure_final()
+        self._ensure_final(timed_out=False)
 
     async def _tail_flush(self) -> None:
-        delay_s = (config.TAIL_FLUSH_MS / max(self._scale, 0.05)) / 1000.0
-        await asyncio.sleep(delay_s)
-        if not self._final_sent:
-            telemetry.log("tail_flush.forced", pending=len(self.coord.pending()))
-            self._ensure_final()
+        scale = max(self._scale, 0.05)
+        deadline_s = config.TAIL_FLUSH_MS / scale / 1000.0
+        step_s = config.TAIL_POLL_MS / scale / 1000.0
+        waited = 0.0
+        while self._busy() and waited < deadline_s:
+            await asyncio.sleep(step_s)
+            waited += step_s
+        timed_out = self._busy()
+        if timed_out:
+            telemetry.log("tail_flush.deadline", pending=len(self.coord.pending()))
+        self._ensure_final(timed_out=timed_out)
 
     # ------------------------------------------------------------------
     # turn handling
@@ -767,7 +817,9 @@ class DuetAgent:
 
         if plan.is_tool:
             if announce:
-                text = self.say.ack_lookup(plan.subject)
+                text = (self.say.ack_commit(plan.subject)
+                        if plan.tool.is_state_modifying
+                        else self.say.ack_lookup(plan.subject))
                 self._speak_floored(lambda: self.emit.filler(text))
             # The tool call itself goes out immediately: it does not stop
             # the latency clock, and earlier is strictly better.
@@ -848,18 +900,27 @@ class DuetAgent:
         if self.emit.final(text):
             self._final_sent = True
 
-    def _ensure_final(self) -> None:
-        """Never end a scenario silent.
+    def _ensure_final(self, *, timed_out: bool = False) -> None:
+        """Close the conversation truthfully - and only if there is a reason to.
 
-        The no-participation gate scores a flat 0 for an agent that neither
-        spoke nor called a tool, whatever the negative checkpoints say.
+        Two reasons exist. The no-participation gate scores a flat 0 for an
+        agent that neither spoke nor called a tool, so total silence is never
+        acceptable. And if work is still outstanding at the deadline, the
+        user deserves to hear that rather than nothing.
+
+        Otherwise we have already said what there is to say - an answer, a
+        question still awaiting a reply, an acknowledged retraction - and a
+        final response would only be noise. The quality judge reads it.
         """
         if self._final_sent:
             return
-        if self.state.intent == "cancelled":
-            self._send_final(self.say.ack_retraction())
+        if not self.emit.spoken and not self.coord.calls:
+            self._send_final(self.say.capabilities(self.registry.descriptions()))
             return
-        self._send_final(self.say.capabilities(self.registry.descriptions()))
+        if timed_out:
+            subject = next((r.purpose for r in self.coord.pending() if r.purpose),
+                           None)
+            self._send_final(self.say.still_waiting(subject))
 
     _HANDLERS = {
         "tool_manifest": on_tool_manifest,
