@@ -367,9 +367,27 @@ def test_chaining_flips_the_choice_once_an_id_exists():
                       available_values={ROLE_PLACE: "Denver", ROLE_PERSON: "Alice"})
     after = reg.best(utterance,
                      available_values={ROLE_PLACE: "Denver", ROLE_PERSON: "Alice",
-                                       ROLE_ID: "FL-DEN-8AM"})
+                                       ROLE_ID: "FL-DEN-8AM"},
+                     named_values={"flight_id": "FL-DEN-8AM"})
     assert before.name == "flight_search"
     assert after.name == "book_flight"
+
+
+def test_an_identifier_only_fills_an_argument_of_its_own_kind():
+    """A flight id once made cancel_booking look fully satisfiable - flight_id
+    and booking_id share a role - and after a flight search for "please BOOK a
+    flight" the agent issued cancel_booking(booking_id=FL-NYC-8AM): an
+    irreversible call with a nonsense argument, scored 100 because it errored.
+    An argument named after a canonical id slot accepts only that slot."""
+    reg = public()
+    utterance = "Please book a flight to Boston for tomorrow."
+    held = {ROLE_PLACE: "New York", ROLE_ID: "FL-NYC-8AM"}
+    best = reg.best(utterance, available_values=held,
+                    named_values={"flight_id": "FL-NYC-8AM"})
+    assert best is None or best.name != "cancel_booking", best
+    args, missing = reg.build_args(reg.get("cancel_booking"), held,
+                                   by_name={"flight_id": "FL-NYC-8AM"})
+    assert "booking_id" not in args and missing == ["booking_id"]
 
 
 # ----------------------------------------------------------- the text sink

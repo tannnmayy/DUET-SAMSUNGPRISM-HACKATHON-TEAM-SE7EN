@@ -11,17 +11,20 @@ the repo or is a number produced by a command recorded alongside it.
 | **Competition** | Samsung PRISM GenAI Hackathon 3.0, Theme 05: Interruptible Real-Time Agents |
 | **Repo root** | `E:\HACKATHONPRISM` (repo root **is** the submission root) |
 | **Entry point** | `agent.agent:ParticipantAgent` |
-| **Last updated** | 20 September 2026, end of Day 2 |
+| **Last updated** | 22 September 2026 (Phases 3b.1–3b.6 and first packaging) |
+| **Team** | SE7EN, SRM — `SRM_SE7EN` in `submission.yaml` |
 | **Submission deadline** | 25 September 2026, 23:59 |
-| **Current official score** | **97.4 weighted** (`eval_submission.py . --time-scale 1`) |
+| **Current official score** | **97.4 weighted** on the pinned GPU stack (`eval_submission.py . --time-scale 1`) |
 
 Companion documents, all still current:
 
 | File | Contents |
 |---|---|
+| `README.md` | Judge-facing overview: architecture, results, setup, honest limits |
 | `notes/THEME5_MASTER_ANALYSIS.md` | Problem analysis, verified scorer mechanics, constraints, competitive positioning |
 | `notes/BUILD_PLAN.md` | The seven-phase plan this document reports against |
-| `notes/FINDINGS.md` | Numbered findings F1–F9 with evidence |
+| `notes/FINDINGS.md` | Numbered findings F1–F9 and F15–F22 with evidence (F10–F14 in Part IV here) |
+| `notes/ORGANIZER_CLARIFICATIONS.md` | The organizers' binding answers on the evaluation environment |
 | `PROJECT.md` | **this file** — state of the build and what happens next |
 
 ---
@@ -88,10 +91,10 @@ because it ignores `user_audio_chunk` entirely.
 |---|---|---|
 | 19 Sep | Day 1 — Phases 0, 1a | done |
 | 20 Sep | Day 2 — Phases 1b, 1c, 1-gate, 2a, 2b, 2c, 3a | done |
-| 21 Sep | Day 3 — Phase 3b (hardening, quality) | **next** |
-| 22 Sep | Day 4 — Phase 3c, **A100 session #1** | blocked on booking |
-| 23 Sep | Day 5 — Phase 4 (application) | |
-| 24 Sep | Day 6 — Phase 5 (packaging), **A100 session #2** | blocked on booking |
+| 21 Sep | Day 3 — context review; organizer questions answered | done |
+| 22 Sep | Day 4 — Phases 3b.1–3b.6, GPU stack pinned, README + Dockerfile | done (see §3.10–3.14) |
+| 23 Sep | Day 5 — Docker build on a GPU host, deck, timeline viewer for the video | **next** |
+| 24 Sep | Day 6 — video, final A100/Kaggle validation, PROJECT/README numbers | |
 | 25 Sep | Day 7 — Phase 6 (freeze at noon, tag, submit) | |
 | 9 Oct | Top 15 announced | |
 | 15 Oct | Live demo round | |
@@ -525,6 +528,89 @@ Wired into the build gate as **Invariant 7**.
 
 ---
 
+## 3.10 Phase 3b.1 — What the agent says (`25158c7`)
+
+The automated score cannot hear the agent. A read-through of every transcript
+found a garbled capabilities list spoken as a **final answer** in 6 of 17
+scenarios that all scored 100: the harness enqueues `scenario_end` in the same
+instant as the last event, and the re-plan answering that event was still
+behind the speech floor (F15). `tools/quality.py` now lints every transcript
+(repeats, tool names read aloud, stacked answers, cut-off clauses) and was
+proven first on the old agent (17/17 flagged). Also fixed: capabilities read as
+complete clauses; acknowledgments name the request, not the tool ("Looking up
+flights to Chicago for Friday"); bookings reported only from confirmed success
+("All set - flight FL-DEN-8AM is booked for Alice, booking reference
+BK-0001"); a state-modifying timeout reported as outcome-unknown; audio
+acknowledged at end of turn only; two substring bugs ("part" in "depart",
+"id" in "humidity").
+
+## 3.11 Phase 3b.2 — The grading machine (`88cc2f7`)
+
+PyPI torch ≥ 2.11 is a CUDA 13 build; CTranslate2 4.8.2 links cuBLAS 12, and
+the failure appears only at the first transcription (F16). `torch==2.10.0` is
+pinned (last CUDA 12 build, brings cuBLAS 12/cuDNN 9); `perception/cuda.py`
+makes them visible; `setup()` runs a trial transcription and falls back to CPU —
+proven locally both ways. Every graded dependency is pinned exactly, mirrored in
+`submission.yaml` (tested). Every model is pinned by repo **and commit**
+(`perception/checkpoints.py`) — one repo had already been renamed (F20).
+`tools/prefetch.py` downloads the pinned set. WAV input (48 k stereo, 44.1 k,
+16 k) and same-process repetition are tested.
+
+**Calibration under the production model (F17).** On GPU, `large-v3-turbo` hears
+pub_05's indistinct clip as "…to Austin" (0.47) and the agent asked "Which place
+did you want?" — 100 → 81.5. A value heard at ≥ 0.35 is now confirmed by name
+("Sorry, did you say Austin?"), "yes" confirms it, and value confidence is the
+mean over a name's words. Both speech models score 100 on both audio scenarios.
+
+## 3.12 Phase 3b.3 — Vision, decided by measurement (`88cc2f7`)
+
+`tools/vision_bench.py`: Qwen2.5-VL-3B named pub_07's HDMI port "USB-C" on 3 of 4
+variants under three prompts and invented a matching label (F18). **Vision-model
+reading ships off** (`DUET_VISION=1` enables it). Shipped instead: a barrier that
+holds a frame question's plan (not its acknowledgment) until the frame is read —
+which also fixed a race that dropped the image embedding — and an honest answer
+("I could not tell … pages 21, 23 and 25 … cover the likely candidates. Which
+one do you mean?") instead of citing the headphone page. A latent crash with no
+embedding model is fixed.
+
+## 3.13 Phase 3b.4 — The paraphrase pack (`88cc2f7`)
+
+`conf_09`–`conf_18`: fragments, "what flies to", "need to get to", date
+self-repair, apology padding, disfluent text, lowercase multi-word city, number
+words, an unseen state-modifying tool. First run 7/10. Structural fixes only:
+infinitives after "to" and non-overlapping regex matches ("to get to Tucson"
+searched "Get"); clock times as places; number words never reaching binding;
+"Restaurant name." read as a person; proper names ending at their last capital;
+and the scorer attributing "reserved" to `book_flight` whatever the sentence is
+about (F19) — unseen commits are reported neutrally. Now 10/10.
+
+## 3.14 Phases 3b.5–3b.6 — Adversarial timing (`0c65ce7`) and wider chaos
+
+`conf_19`–`conf_23`: interruption 40 ms before a stale result, inside the 20 ms
+speech floor, a retraction during a booking, three corrections in 800 ms, a
+second correction inside the commitment hold. All scored 100; the transcript
+lint still found two real bugs — "Don't book anything" re-planned as a new
+request, and "for Priya, not Alice" making Alice the **destination**. Rejected
+values are never extracted; negated commands are retractions. Four of the five
+are proven to separate a cancelling probe from a naive one.
+
+`tools/scenario_templates.py` adds five randomized templates to `tools/chaos.py`
+(paraphrase, retraction, pivot, chained booking, unseen commit). First run
+(seed 101): **mean 88.1, 23/100 below 75** — the kit's own templates had never
+shown it. Six general causes, all fixed without phrase lists: time-of-day
+selectors ("the afternoon flight"); "for Leeds" read as a person when no tool
+fits; an incidental argument-description word ("airport **code**") outranking
+the right tool — lexical evidence is now field-weighted; "scratch the trip"
+not read as abandoning a topic; a sentence's first capitalised word taken as a
+name ("Could", "Scratch"); and role selection that required a tool to be
+satisfied before extraction could satisfy it.
+
+On a seed never used before (202, all eight templates): **mean 99.7**,
+119/120 at 100; the one miss ("The Olive Room" stripped to "Olive Room") is
+fixed and tested. Recorded as F23.
+
+---
+
 # PART IV — FINDINGS
 
 Consolidated from `notes/FINDINGS.md` plus Phase 2. Each is something we
@@ -621,11 +707,21 @@ Whole-frame similarity cannot isolate "the one the user means".
 `pub_06` (act at 0.40) vs `pub_05_turn1` (ask at 0.38) is unresolvable at
 sentence level. Gate on the **primary slot word's** probability.
 
+## F15–F22 — see `notes/FINDINGS.md`
+F15 `scenario_end` in the same instant as the last event (phantom final) ·
+F16 PyPI torch is CUDA 13, the speech engine CUDA 12 · F17 the production
+speech model takes a different M5 branch · F18 a 3B VLM cannot identify
+pub_07's port · F19 claim patterns are keyed by public tool names · F20 a
+model repository was renamed · F21 known gap: a self-repair whose trigger word
+is lost · F22 the paraphrase pack's three extraction gaps.
+
 ---
 
 # PART V — CURRENT MEASUREMENTS
 
 All produced by commands in this repo, at `--time-scale 1` unless stated.
+Updated 22 September on the pinned GPU stack (RTX 3060, torch 2.10.0+cu128,
+large-v3-turbo on CUDA, vision-language model off).
 
 ```
 OFFICIAL DRY RUN          python eval_submission.py . --time-scale 1 --reps 1
@@ -633,30 +729,37 @@ OFFICIAL DRY RUN          python eval_submission.py . --time-scale 1 --reps 1
   by modality             text=100.0   audio=100.0   visual=81.5
   WEIGHTED SCORE          97.4
 
-PUBLIC SET (9)            8 at 100.0 · pub_07 at 81.5
-CONFORMANCE (8, ours)     7 at 100.0 · conf_05 at 81.5
+PUBLIC + CONFORMANCE      python tools/quality.py            (32 scenarios)
+  30 at 100.0 · pub_07 and conf_05 at 81.5 · lint: 0 flagged (speech + failed irreversible calls)
 
-CHAOS (unseen seeds)      python tools/chaos.py --n 60 --seed <s>
-  seed 4242               mean 99.1  min 82.6   (pre-floor-fix)
-  seed 9001               mean 100.0 min 100.0
-  seed 31337              mean 100.0 min 100.0
+CHAOS - kit templates     python tools/chaos.py --n 60 --seed <s>
+  seeds 2026, 7331        120/120 at 100.0
+CHAOS - all 8 templates   python tools/chaos.py --templates all --n 120 --seed <s>
+  seed 101 (diagnostic)   ours only: mean 88.1, 23/100 below 75  -> six general fixes
+  seed 202 (fresh)        mean 99.7, 119/120 at 100, min 66.2 (fixed: "The Olive Room")
+  seed 303 (fresh)        120/120 at 100.0 (after the typed-id fix, F24)
   protocol errors / crashes / abandoned calls: 0 / 0 / 0
 
 KILL SWITCH               python tools/killswitch.py
   no ASR, no vision, no embeddings: 89.1 average, 0 crashes
 
+SPEECH, both models       pub_05 and pub_06 at 100 with large-v3-turbo (GPU) AND base (CPU)
+WAV INPUT                 pub_06 as 48k stereo / 44.1k / 16k WAV: >= 95 each (tests)
+
 DISPATCHER                python tools/bench.py
-  worst handler           0.469 ms   (budget 20 ms — 42x headroom)
+  worst handler           0.469 ms   (budget 20 ms)
 
 UNIT TESTS                python -m pytest tests/ -q
-  266 passing
+  373 passing
 ```
 
 **Trajectory:** 55.0 (no task logic) → 82.6 (Phase 1b) → 86.0 (Phase 1c) →
-97.9 (Phase 2). Kit baseline for reference: ~57.
+97.9 (Phase 2) → 97.9 on the pinned GPU stack with the transcript defects,
+calibration and paraphrase gaps fixed (Phase 3b). Kit baseline: ~57.
 
-**The only unmet checkpoint anywhere** is `final_grounded_hdmi` (and its
-`conf_05` twin) — naming what is in a photograph. Requires the VLM on GPU.
+**The only unmet checkpoint anywhere** is naming what is in a photograph
+(`final_grounded_hdmi`, and its `conf_05` twin). The 3B vision model was
+measured and rejected (F18); a larger model needs a bigger GPU to test.
 
 ---
 
@@ -730,6 +833,15 @@ investigating any regression, confirm it reproduces.
 ---
 
 # PART VII — NEXT IMPLEMENTATION PLAN
+
+> **Status, 22 September.** Phase 3b is complete (§3.10–3.14): 3b.1 quality,
+> 3b.2 paraphrases (as conf_09–18), 3b.3 adversarial timing (as conf_19–23),
+> 3b.4 chaos at volume (now with our own templates), and 3b.5's decision
+> stands - no LLM planner. Of Phase 3c, the parts that did not need an A100 are
+> done on the local RTX 3060: the pinned GPU stack runs, large-v3-turbo is
+> calibrated (3c.3), and the VLM question is answered for the 3B model (3c.4:
+> **no**, F18). What still needs a Linux GPU host is listed under IMMEDIATE
+> ACTIONS at the end. The plan text below is kept as written for the record.
 
 Granular, ordered, with acceptance criteria. Each task states *why*, *how to
 verify*, and *what could go wrong*.
@@ -1002,15 +1114,18 @@ git push origin PRISM_GENAI_HACKATHON_Y2026
 | R1 | Blocking call in the dispatcher | Critical | **Mitigated** | Invariant 1; worst 0.469 ms |
 | R2 | Network/API blocked in eval env | Critical | **Eliminated** | Zero network dependency; all models from public checkpoints |
 | R3 | Model unavailable on grading box | High | **Mitigated** | Kill switch: 89.1 with no models |
-| R4 | Model download exceeds 300 s cap | Medium | **Open** | Measure on A100 (3c.3/3c.4); pre-seed Docker cache |
-| R5 | A100 unavailable | High | **OPEN — BLOCKING** | Book 22nd and 24th |
-| R6 | Hardcoding creeps in | High | **Mitigated** | Grep invariants + auto-revert rule |
-| R7 | Quality multiplier drags score | Med | **Open** | Phase 3b.1 |
-| R8 | Paraphrase brittleness | Med | **Open** | Phase 3b.2 |
-| R9 | Clock artifact on Linux | Low | **Open** | Re-measure (3c.2) |
-| R10 | Packaging error at submission | Critical | **Mitigated** | Dry run passes; Phase 6 checklist |
+| R4 | Model download exceeds 300 s cap | Medium | **Retired** | Organizers: download time is not charged to setup(); Dockerfile pre-seeds models anyway |
+| R5 | No GPU validation host | High | **Open** | Local RTX 3060 now runs the pinned GPU stack; Docker build + 3-rep run still need a Linux GPU host (A100 or Kaggle) |
+| R6 | Hardcoding creeps in | High | **Mitigated** | Grep invariants + auto-revert rule; chaos now uses our own templates too |
+| R7 | Quality multiplier drags score | Med | **Mitigated** | Phase 3b.1: transcript lint, 0 flagged across 32 scenarios |
+| R8 | Paraphrase brittleness | Med | **Mitigated** | conf_09–18 at 100; randomized paraphrase template in chaos |
+| R9 | Clock artifact on Linux | Low | **Open** | Re-measure with tools/clockcheck.py on the Linux host |
+| R10 | Packaging error at submission | Critical | **Mitigated** | Dry run passes; pins tested; Dockerfile written (not yet built) |
 | R11 | App work regresses the score | Med | **Mitigated** | Import isolation test + re-run after every app commit |
-| R12 | Team name placeholder ships | Low | **OPEN** | `submission.yaml` says `CollegeName_TeamName` |
+| R12 | Team name placeholder ships | Low | **Closed** | `submission.yaml`: `SRM_SE7EN` |
+| R13 | GPU speech stack fails at inference on the grading box | High | **Mitigated** | torch 2.10.0 (CUDA 12) pinned; trial transcription in setup() with CPU fallback (F16) |
+| R14 | A model repository changes after the deadline | Med | **Mitigated** | Every model pinned by repo + commit (F20) |
+| R15 | Vision model names the wrong component | Med | **Mitigated** | Vision-model reading off by default until it passes vision_bench (F18) |
 
 ---
 
@@ -1135,11 +1250,16 @@ Queries: prism@samsung.com
 ## IMMEDIATE ACTIONS
 
 **Blocking, owner = team:**
-1. **Book A100 slots for 22 and 24 September.** Gates the VLM (the last unmet
-   checkpoint), full-size Whisper, and the Linux clock re-measurement.
-2. **Supply `CollegeName_TeamName`.** Needed in `submission.yaml`, the deck
-   filename, and before the release tag.
+1. **A Linux GPU host for one session** (A100 slot or a Kaggle GPU notebook):
+   `docker build` + `docker run --gpus all duet` (the Dockerfile is written but
+   has never been built - there is no Docker on the dev laptop), then
+   `tools/clockcheck.py` (F8/R9), and optionally `tools/vision_bench.py --model
+   Qwen/Qwen2.5-VL-7B-Instruct --variants` to decide whether a larger vision
+   model clears the bar (F18).
+2. **Send the follow-up to the organizers** (draft in
+   `notes/ORGANIZER_CLARIFICATIONS.md`): CUDA 12.x + cuDNN 9, how download time
+   is excluded, Linux/Python 3.12, and whether the 15 Oct demo may use app code
+   added after the tag.
 
-**Next engineering task:** Phase 3b.1 — transcript quality self-grading. It is
-the largest unmeasured quantity remaining (±20% on the final score, more than
-every outstanding checkpoint combined).
+**Next engineering tasks:** deck (`SRM_SE7EN.pdf`), a trace-timeline viewer for
+the demo video (Phase 4, cut down), the video itself, then Phase 6.

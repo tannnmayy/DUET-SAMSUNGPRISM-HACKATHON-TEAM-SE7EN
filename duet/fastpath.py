@@ -59,6 +59,10 @@ _UNDO_TRIGGERS = (
 _INTENT_CHANGE_TRIGGERS = (
     "forget the", "never mind the", "instead of the", "change of plan",
     "different question", "something else", "new question", "unrelated",
+    # Ordinary verbs of abandoning a topic: "scratch the trip - my phone
+    # won't charge" once became a flight search to a city called Scratch.
+    # "cancel the" is deliberately absent: "cancel the booking" is a request.
+    "scratch the", "ditch the", "drop the", "skip the", "forget about the",
 )
 
 _CORRECTION_TRIGGERS = (
@@ -200,8 +204,12 @@ def _inside(span: Optional[Tuple[int, int]], spans: List[Tuple[int, int]]) -> bo
 
 
 def _after_first_boundary(text: str) -> str:
-    """Text following the first clause boundary, or empty if there is none."""
-    match = re.search(r"[.,;!?]", text)
+    """Text following the first clause boundary, or empty if there is none.
+
+    A spaced dash is a boundary too: "scratch the trip - my phone won't
+    charge" is two clauses.
+    """
+    match = re.search(r"[.,;!?]|\s[-]+\s", text)
     return text[match.end():].strip() if match else ""
 
 
@@ -297,8 +305,12 @@ def _clean_value(raw: str) -> str:
     text = re.sub(r"[\s,.;:!?]+$", "", str(raw or "").strip())
     text = re.sub(r"^[\s,.;:]+", "", text)
     tokens = text.split()
-    # Drop leading grammar words: "it New York" -> "New York".
+    # Drop leading grammar words: "it New York" -> "New York". Except a
+    # capitalised "The" that opens a capitalised name - "at The Olive Room",
+    # "to The Hague" - which is part of the name, not grammar.
     while tokens and contract.norm(tokens[0]) in _NON_VALUE:
+        if (tokens[0] == "The" and len(tokens) > 1 and tokens[1][:1].isupper()):
+            break
         tokens.pop(0)
     # Cut at the first internal boundary word.
     cut = len(tokens)
@@ -467,8 +479,30 @@ def extract_capitalised(text: str) -> List[Candidate]:
             continue
         if len(value) < 3:
             continue
+        if _sentence_initial_word(text, match):
+            continue
         out.append(Candidate(value, ROLE_TEXT, 0.5, match.span(1), "capitalised span"))
     return out
+
+
+def _sentence_initial_word(text: str, match) -> bool:
+    """A single capitalised word that merely starts a sentence.
+
+    "Could you get us a table", "Scratch the trip": capitalised because they
+    begin a sentence, not because they are names - one became a passenger
+    called Could, the other a destination called Scratch. A lone capitalised
+    word at a sentence start, followed by a lowercase word, is treated as
+    ordinary. "Recife. Friday." keeps Recife: nothing lowercase follows it.
+    """
+    value = match.group(1)
+    if " " in value:
+        return False
+    before = text[:match.start(1)].rstrip()
+    at_start = not before or before[-1] in ".!?-"
+    if not at_start:
+        return False
+    after = text[match.end(1):]
+    return bool(re.match(r"\s+[a-z]", after))
 
 
 def _looks_like_value(value: str) -> bool:
@@ -619,10 +653,13 @@ class Selector:
     time: Optional[str] = None
     superlative: Optional[str] = None
     ordinal: Optional[int] = None
+    # (from_hour, to_hour) for "the afternoon flight", "a morning one".
+    daypart: Optional[Tuple[float, float]] = None
 
     @property
     def is_empty(self) -> bool:
-        return self.time is None and self.superlative is None and self.ordinal is None
+        return (self.time is None and self.superlative is None
+                and self.ordinal is None and self.daypart is None)
 
 
 _SUPERLATIVES = {
@@ -660,7 +697,20 @@ def extract_selector(text: str) -> Selector:
                 selector.ordinal = index
             break
 
+    for word, hours in _DAYPARTS.items():
+        if re.search(r"\b" + word + r"\b", low):
+            selector.daypart = hours
+            break
+
     return selector
+
+
+# Parts of the day, as hour ranges matched against a result's own time field.
+_DAYPARTS = {
+    "afternoon": (12.0, 17.0), "morning": (5.0, 12.0), "evening": (17.0, 21.0),
+    "night": (19.0, 24.0), "noon": (11.0, 14.0), "midday": (11.0, 14.0),
+    "lunchtime": (11.0, 14.0), "late": (18.0, 24.0), "early": (0.0, 9.0),
+}
 
 
 # Generic English verbs of commitment. Not domain vocabulary: these are how

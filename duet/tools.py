@@ -232,6 +232,35 @@ class ToolSpec:
             doc += _stems(key)
         return doc
 
+    def weighted_document(self) -> Dict[str, float]:
+        """Token -> how strongly its presence says "this tool is meant".
+
+        What a tool IS - its name and description - is strong evidence. What
+        its arguments are called is weaker, and a word that appears only in
+        one argument's description is weakest: "Destination city name or
+        airport CODE" once pulled "what does this washer error code mean" to
+        the flight search.
+        """
+        weights: Dict[str, float] = {}
+
+        def add(tokens: Iterable[str], weight: float) -> None:
+            for token in tokens:
+                if weights.get(token, 0.0) < weight:
+                    weights[token] = weight
+
+        add(_stems(self.name.replace("_", " ")) + _stems(self.description), 1.0)
+        for arg in self.args.values():
+            add(_stems(arg.name.replace("_", " ")), 0.7)
+            for value in arg.enum or []:
+                add(_stems(value), 0.7)
+            add(_stems(arg.description), 0.35)
+            for sub in arg.properties.values():
+                add(_stems(sub.name.replace("_", " ")), 0.5)
+                add(_stems(sub.description), 0.35)
+        for key in self.default_result:
+            add(_stems(key.replace("_", " ")), 0.5)
+        return weights
+
     def wants_visual(self) -> bool:
         """True if this tool accepts an image/visual embedding argument.
 
@@ -379,6 +408,7 @@ class ToolRegistry:
         has_frame: bool = False,
         available_values: Optional[Dict[str, Any]] = None,
         commit_intent: bool = False,
+        named_values: Optional[Dict[str, Any]] = None,
     ) -> List[Tuple[ToolSpec, float]]:
         """Score every tool against the utterance. Highest first.
 
@@ -388,12 +418,13 @@ class ToolRegistry:
         """
         query = set(_stems(utterance))
         values = available_values or {}
+        named = named_values or {}
         scored: List[Tuple[ToolSpec, float]] = []
 
         for spec in self.tools.values():
-            doc = set(spec.document())
-            overlap = query & doc
-            lexical = sum(self._idf.get(t, 1.0) for t in overlap)
+            weights = spec.weighted_document()
+            overlap = query & set(weights)
+            lexical = sum(self._idf.get(t, 1.0) * weights[t] for t in overlap)
             # Normalise by query length so long utterances do not dominate.
             if query:
                 lexical /= math.sqrt(len(query))
@@ -407,7 +438,7 @@ class ToolRegistry:
             # Boston" shares no word with "search flights to a destination
             # city", but it does hand us a destination, and the tool that
             # wants exactly a destination is the one being asked for.
-            supplied = self._strong_fill_fraction(spec, values) >= 1.0
+            supplied = self._strong_fill_fraction(spec, values, named) >= 1.0
 
             # Otherwise a tool is only a candidate if something in the request
             # points at it: lexical evidence, or a camera frame plus a schema
@@ -426,7 +457,7 @@ class ToolRegistry:
             # not actionable now - book_flight before any flight_id exists is
             # the canonical case, and preferring it would start a chain we
             # cannot complete.
-            fillable = self._fillable_fraction(spec, values, utterance)
+            fillable = self._fillable_fraction(spec, values, utterance, named)
             score += SATISFIABLE_BONUS * fillable
             score -= UNSATISFIABLE_PENALTY * (1.0 - fillable)
 
@@ -447,7 +478,8 @@ class ToolRegistry:
         scored.sort(key=lambda pair: (-pair[1], pair[0].name))
         return scored
 
-    def _strong_fill_fraction(self, spec: ToolSpec, values: Dict[str, Any]) -> float:
+    def _strong_fill_fraction(self, spec: ToolSpec, values: Dict[str, Any],
+                              named: Optional[Dict[str, Any]] = None) -> float:
         """Fraction of required arguments fillable from REAL extracted values.
 
         Deliberately excludes the free-text fallback and the enum default:
@@ -459,12 +491,15 @@ class ToolRegistry:
             return 0.0
         filled = 0
         for arg in required:
-            if arg.role() in values and values[arg.role()] is not None:
+            if _typed_id(arg):
+                filled += 1 if (named or {}).get(arg.name) is not None else 0
+            elif arg.role() in values and values[arg.role()] is not None:
                 filled += 1
         return filled / len(required)
 
     def _fillable_fraction(self, spec: ToolSpec, values: Dict[str, Any],
-                           utterance: str) -> float:
+                           utterance: str,
+                           named: Optional[Dict[str, Any]] = None) -> float:
         """How well we could supply this tool's required arguments right now.
 
         An argument filled from a value we actually extracted (a place, a
@@ -480,7 +515,9 @@ class ToolRegistry:
             return 1.0
         total = 0.0
         for arg in required:
-            if self._value_for(arg, values, "") is not None:
+            if _typed_id(arg):
+                total += 1.0 if (named or {}).get(arg.name) is not None else 0.0
+            elif self._value_for(arg, values, "") is not None:
                 total += 1.0
             elif self._value_for(arg, values, utterance) is not None:
                 total += TEXT_FALLBACK_CREDIT
@@ -552,6 +589,11 @@ class ToolRegistry:
             # role alone lets a booking reference end up in a flight argument.
             if name in by_name and by_name[name] is not None:
                 args[name] = self._coerce(aspec, by_name[name])
+                continue
+            if _typed_id(aspec):
+                # A booking_id is a booking id, never "whatever id we hold".
+                if aspec.required:
+                    missing.append(name)
                 continue
             value = self._value_for(aspec, values, utterance)
             if value is not None:
@@ -629,6 +671,19 @@ class ToolRegistry:
         if aspec.type == "string":
             return str(value)
         return value
+
+
+def _typed_id(arg: ArgSpec) -> bool:
+    """An identifier argument named after a known kind of id.
+
+    flight_id and booking_id share one role, and role binding once passed a
+    flight id to cancel_booking's booking_id - an irreversible call with a
+    nonsense argument, issued as a "follow-up" to a flight search. An argument
+    whose name IS a canonical id slot only accepts that exact slot. Ids of
+    kinds we have never seen (reservation_id, hotel_id) keep the role
+    fallback, because there is nothing better to go on.
+    """
+    return arg.role() == ROLE_ID and arg.name in CANONICAL_SLOTS
 
 
 def ground_fields(spec: Optional[ToolSpec], result: Dict[str, Any]) -> List[Tuple[str, Any]]:

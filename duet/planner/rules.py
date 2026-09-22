@@ -35,10 +35,10 @@ from ..fastpath import (
 )
 from ..state import ConversationState, SRC_TEXT
 from ..tools import (
-    CANONICAL_SLOTS, ROLE_DATE, ROLE_ENUM, ROLE_ID, ROLE_NUMBER, ROLE_PERSON,
-    ROLE_PLACE, ROLE_TEXT, SLOT_BOOKING_ID, SLOT_DATE, SLOT_DESTINATION,
-    SLOT_DEVICE_MODEL, SLOT_FLIGHT_ID, SLOT_ISSUE_SUMMARY, SLOT_PASSENGER,
-    ToolRegistry, ToolSpec, ground_fields,
+    CANONICAL_SLOTS, NO_MATCH, ROLE_DATE, ROLE_ENUM, ROLE_ID, ROLE_NUMBER,
+    ROLE_PERSON, ROLE_PLACE, ROLE_TEXT, SLOT_BOOKING_ID, SLOT_DATE,
+    SLOT_DESTINATION, SLOT_DEVICE_MODEL, SLOT_FLIGHT_ID, SLOT_ISSUE_SUMMARY,
+    SLOT_PASSENGER, ToolRegistry, ToolSpec, ground_fields,
 )
 
 # Plan kinds
@@ -210,6 +210,17 @@ def select_item(result: Dict[str, Any],
                     if _to_hour(row.get(time_key)) == hour:
                         return row
 
+    if selector.daypart:
+        # "the afternoon flight": the first result whose own time field falls
+        # in that part of the day. Located by field-name hints, like the rest.
+        time_key = _field_matching(rows[0], _TIME_HINTS)
+        if time_key:
+            lo, hi = selector.daypart
+            for row in rows:
+                hour = _to_hour(row.get(time_key))
+                if hour is not None and lo <= hour < hi:
+                    return row
+
     if selector.superlative:
         kind = selector.superlative
         hints = _PRICE_HINTS if "price" in kind else _TIME_HINTS
@@ -286,10 +297,17 @@ class Planner:
     # ------------------------------------------------------------------
     def wanted_roles(self, utterance: str, has_frame: bool = False) -> Set[str]:
         """Roles the plausible tools would need, used to steer extraction."""
+        # Any tool the request points at counts - including one that scores
+        # below zero only because its required arguments are not filled YET.
+        # Filling them is what extraction is for: requiring a positive score
+        # here was circular, and "a table at Saffron House for four, around
+        # 7 PM" never looked for a number because the table tool had not been
+        # satisfied before anything was extracted.
         roles: Set[str] = set()
-        for spec, score in self.registry.rank(utterance, has_frame=has_frame)[:3]:
-            if score <= 0:
-                continue
+        candidates = [(spec, score) for spec, score
+                      in self.registry.rank(utterance, has_frame=has_frame)
+                      if score > NO_MATCH]
+        for spec, _score in candidates[:3]:
             for arg in spec.args.values():
                 roles.add(arg.role())
         return roles or {ROLE_PLACE, ROLE_PERSON, ROLE_DATE, ROLE_ID, ROLE_TEXT}
@@ -443,9 +461,33 @@ class Planner:
                          extras: Optional[Dict[str, Any]],
                          visual_embedding: Optional[List[float]] = None) -> Plan:
         values = self.current_values()
+        named = self.values_by_slot()
         spec = self.registry.best(text, has_frame=has_frame,
                                   available_values=values,
-                                  commit_intent=wants_commit(text))
+                                  commit_intent=wants_commit(text),
+                                  named_values=named)
+
+        if spec is None and ROLE_PERSON in values and ROLE_PLACE not in values:
+            # "What have you got for Leeds?" - "for X" is grammatically a
+            # person OR a place, and with no tool named in the request there
+            # was nothing to break the tie, so Leeds became a passenger. When
+            # no tool fits the person reading, try the place reading; keep it
+            # only if a tool is then genuinely supplied.
+            as_place = dict(values)
+            as_place[ROLE_PLACE] = as_place.pop(ROLE_PERSON)
+            spec = self.registry.best(text, has_frame=has_frame,
+                                      available_values=as_place,
+                                      commit_intent=wants_commit(text),
+                                      named_values=named)
+            if spec is not None:
+                person = self.state.get_slot(SLOT_PASSENGER)
+                self.state.drop_slot(SLOT_PASSENGER)
+                self.state.set_slot(SLOT_DESTINATION, as_place[ROLE_PLACE],
+                                    confidence=person.confidence if person else 0.6,
+                                    source=person.source if person else SRC_TEXT,
+                                    at_ms=now_ms)
+                values = self.current_values()
+                telemetry.log("planner.person_read_as_place", value=as_place[ROLE_PLACE])
 
         if spec is None:
             # Lexical retrieval cannot bridge a symptom description to a

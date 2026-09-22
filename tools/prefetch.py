@@ -30,14 +30,21 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cpu-only", action="store_true")
+    ap.add_argument("--all", action="store_true",
+                    help="also fetch models that are disabled by configuration")
     args = ap.parse_args()
 
     from huggingface_hub import snapshot_download
+    from duet import config
 
     failures = 0
     for role, _pinned in sorted(checkpoints.all_pinned().items()):
         if args.cpu_only and role in GPU_ONLY:
             print("skip   %-8s (GPU only)" % role)
+            continue
+        if role == "VLM" and not (config.VISION_MODEL_ENABLED or args.all):
+            # 7.5 GB for a model the agent will not load (config.py explains).
+            print("skip   %-8s (vision model disabled; --all to fetch)" % role)
             continue
         ckpt = checkpoints.get(role)
         started = time.monotonic()

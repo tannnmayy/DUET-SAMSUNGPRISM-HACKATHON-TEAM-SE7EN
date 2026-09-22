@@ -11,3 +11,4 @@ models/
 .DS_Store
 results/*.json
 !results/.gitkeep
+node_modules/

@@ -33,7 +33,13 @@ sys.path.insert(0, ROOT)
 
 from duet import config  # noqa: E402
 from harness.runner import EvaluationHarness  # noqa: E402
-from harness.scenario_gen import TEMPLATES  # noqa: E402
+from harness.scenario_gen import TEMPLATES as KIT_TEMPLATES  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scenario_templates import TEMPLATES as OUR_TEMPLATES  # noqa: E402
+
+# The kit's three templates, plus ours (tools/scenario_templates.py): paraphrases,
+# retractions, topic changes, chained bookings and unseen state-modifying tools.
+TEMPLATES = dict(KIT_TEMPLATES, **OUR_TEMPLATES)
 from harness.scorer import score_scenario  # noqa: E402
 
 
@@ -67,6 +73,20 @@ def run_one(scenario: Dict[str, Any], cls, time_scale: float) -> Dict[str, Any]:
     result["protocol_errors"] = sum(1 for e in trace if e.get("kind") == "protocol_error")
     result["crashes"] = sum(1 for e in trace if e.get("kind") == "agent_crash")
     result["abandoned"] = sum(1 for e in trace if e.get("kind") == "tool_abandoned")
+    # Irreversible calls that failed without the scenario injecting a failure:
+    # the score does not charge for them, but each one is an action sent with
+    # wrong arguments (a flight id once went to cancel_booking this way).
+    from harness.mock_env import TOOL_REGISTRY
+    kinds = {n: s.get("kind") for n, s in TOOL_REGISTRY.items()}
+    kinds.update({n: (s or {}).get("kind")
+                  for n, s in (scenario.get("tool_manifest") or {}).items()})
+    injected = {n for n, ovs in (scenario.get("tool_overrides") or {}).items()
+                if any("error" in ov for ov in ovs)}
+    result["failed_commits"] = sum(
+        1 for e in trace if e.get("kind") == "tool_completed"
+        and e.get("status") != "success"
+        and kinds.get(e.get("api_name")) == "state_modifying"
+        and e.get("api_name") not in injected)
     return result
 
 
@@ -86,13 +106,17 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=4242,
                     help="use a seed you have NOT tuned against")
     ap.add_argument("--time-scale", type=float, default=1.0)
-    ap.add_argument("--templates", default=",".join(sorted(TEMPLATES)))
+    ap.add_argument("--templates", default=",".join(sorted(KIT_TEMPLATES)),
+                    help="comma list, or 'kit', 'ours', 'all'")
     ap.add_argument("--out", default="")
     args = ap.parse_args()
 
     config.STRICT = False
     cls = load_agent(args.agent)
-    templates = [t.strip() for t in args.templates.split(",") if t.strip() in TEMPLATES]
+    alias = {"kit": sorted(KIT_TEMPLATES), "ours": sorted(OUR_TEMPLATES),
+             "all": sorted(TEMPLATES)}
+    names = alias.get(args.templates.strip(), args.templates.split(","))
+    templates = [t.strip() for t in names if t.strip() in TEMPLATES]
     scenarios = build_scenarios(args.n, args.seed, templates)
 
     rows: List[Dict[str, Any]] = []
@@ -126,6 +150,7 @@ def main() -> int:
     print("  protocol errors : " + str(sum(r.get("protocol_errors", 0) for r in rows)))
     print("  crashes         : " + str(sum(r.get("crashes", 0) for r in rows)))
     print("  abandoned calls : " + str(sum(r.get("abandoned", 0) for r in rows)))
+    print("  failed commits  : " + str(sum(r.get("failed_commits", 0) for r in rows)))
 
     worst = sorted(rows, key=lambda r: r["total"])[:5]
     if worst and worst[0]["total"] < 100.0:

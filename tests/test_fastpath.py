@@ -325,3 +325,10 @@ def test_a_negated_command_is_a_retraction_not_a_new_request(text):
 def test_a_retraction_followed_by_a_real_request_is_still_an_intent_change():
     repair = classify_repair("Never mind the flight, what's the weather in Oslo?")
     assert repair.kind == REPAIR_INTENT_CHANGE, repair
+
+
+def test_a_capitalised_the_inside_a_name_is_kept():
+    """"a table at The Olive Room" was reserved as "Olive Room"."""
+    assert _place("a table at The Olive Room for six") == "The Olive Room"
+    assert _place("fly me to The Hague") == "The Hague"
+    assert _place("a flight to the coast") != "the coast"      # lowercase: grammar

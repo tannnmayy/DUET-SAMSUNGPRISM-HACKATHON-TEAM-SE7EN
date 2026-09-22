@@ -155,6 +155,27 @@ def lint(scenario: Dict[str, Any], trace: List[Dict[str, Any]]) -> List[str]:
         if not text.isascii():
             problems.append("non-ASCII speech: %r" % text)
 
+    # 7. Silent action mistakes the score does not charge for. An irreversible
+    #    call that fails without the scenario injecting that failure means we
+    #    sent it with wrong arguments - found when a flight id was passed to
+    #    cancel_booking as a "follow-up" and scored 100 because it errored.
+    from harness.mock_env import TOOL_REGISTRY
+    kinds = {n: s.get("kind") for n, s in TOOL_REGISTRY.items()}
+    kinds.update({n: (s or {}).get("kind") for n, s in (scenario.get("tool_manifest") or {}).items()})
+    injected = {n for n, ovs in (scenario.get("tool_overrides") or {}).items()
+                if any("error" in ov for ov in ovs)}
+    calls = {e.get("call_id"): e for e in trace
+             if e.get("kind") == "action" and e.get("action") == "tool_call"}
+    for e in trace:
+        if e.get("kind") != "tool_completed" or e.get("status") == "success":
+            continue
+        api = e.get("api_name")
+        call = calls.get(e.get("call_id")) or {}
+        args = {k: v for k, v in (call.get("args") or e.get("args") or {}).items()
+                if not isinstance(v, list)}
+        if kinds.get(api) == "state_modifying" and api not in injected:
+            problems.append("state-modifying call failed: %s(%s)" % (api, args))
+
     # 6. Filler budget (safety, and the judge's non-redundancy).
     budget = int(((scenario.get("ground_truth") or {}).get("safety") or {})
                  .get("max_fillers", 4))

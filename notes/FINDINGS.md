@@ -249,3 +249,50 @@ All three failures were structural: an infinitive read as a destination (and
 non-overlapping regex matches hiding the real one), clock times accepted as
 places, and number words never reaching argument binding. After structural
 fixes: 10/10 at 100, no phrase added to any trigger list.
+
+## F23. The kit's templates cannot see paraphrase, pivot or unseen-commit failures
+
+The kit's three generator templates scored 100.0 on every seed for days. Our
+own five templates (`tools/scenario_templates.py`) - drawn from city, name,
+phrasing and timing pools absent from the engine - scored **88.1 with 23/100
+below 75** on their first run (seed 101). Six general causes, none phrase-
+specific:
+
+1. Time-of-day selectors ("the afternoon flight") did not exist.
+2. "What have you got for Leeds?" - with no tool named, "for X" read as a
+   person; nothing tried the place reading when no tool fit.
+3. "what does the drum error CODE mean" matched the flight search through
+   "airport code" in one argument's description. Lexical evidence is now
+   field-weighted: name/description 1.0, argument names 0.7, argument
+   descriptions 0.35.
+4. "Scratch the trip - ..." was not a topic change, " - " was not a clause
+   boundary, and "Scratch" became a destination.
+5. A sentence's first capitalised word ("Could", "Scratch") was taken as a
+   name when a lowercase word followed it.
+6. Which roles to extract was decided from tools that were already
+   satisfied - before extraction could satisfy them - so "for four" was never
+   looked for when the phrasing diluted the lexical score.
+
+A seed never used before (202, all eight templates) then scored **99.7**, with
+119/120 at 100; the one miss ("The Olive Room" stripped to "Olive Room") is
+fixed. **Lesson:** a generator that only varies values measures value
+extraction; phrasing needs its own.
+
+## F24. A silent irreversible call, found only by drawing the timeline
+
+While rendering pub_02 with `tools/timeline.py`, a third tool bar appeared:
+after answering, the agent issued `cancel_booking(booking_id=FL-NYC-8AM)` - an
+irreversible call with a flight id in a booking-id argument. It errored, so it
+cost nothing: pub_02 still scored 100 and the transcript lint (which reads only
+speech) saw nothing. Cause: after a result, the original request ("please BOOK
+a flight") is re-planned; flight_id and booking_id share one role, so
+cancel_booking looked fully satisfiable and the word "book" gave it the
+commit bonus.
+
+**Fix: typed identifiers.** An argument named after a canonical id slot
+(`flight_id`, `booking_id`) accepts only that exact slot - in ranking,
+satisfiability and binding. Ids of kinds we have never seen keep the role
+fallback. **Detection:** the lint and the chaos harness now both flag any
+state-modifying call that fails without the scenario injecting the failure.
+**Lesson:** a failed irreversible call is invisible to the score; it has to be
+looked for.

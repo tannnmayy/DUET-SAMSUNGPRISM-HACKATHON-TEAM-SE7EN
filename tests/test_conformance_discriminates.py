@@ -60,7 +60,16 @@ def _scale_for(scenario) -> float:
     re-issue. Scenarios that tight are replayed at real speed."""
     stamps = [e.get("timestamp_ms", 0) for e in scenario.get("events", [])]
     gaps = [b - a for a, b in zip(stamps, stamps[1:]) if b > a]
-    return 1.0 if gaps and min(gaps) < 200 else 8.0
+    if gaps and min(gaps) < 200:
+        return 1.0
+    # A race between an interruption and a tool result tens of milliseconds
+    # apart (conf_19) is decided by real milliseconds; compressed 8x, the
+    # result sometimes overtakes the interruption and the test measures noise.
+    notes = scenario.get("_design_notes") or {}
+    if "stale_returns_ms" in notes and "interrupt_ms" in notes and \
+            abs(notes["stale_returns_ms"] - notes["interrupt_ms"]) < 200:
+        return 1.0
+    return 8.0
 
 
 def _run(scenario, cls, time_scale=None):
