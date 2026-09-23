@@ -514,6 +514,9 @@ Never cut: H1-H4, H10, the app's talk-and-barge-in loop, gates.
 | F22 | Tagged commit misses a referenced file | pre-tag script checks every README link and artefact exists at the tag |
 | F23 | Large files in git (models, recordings) | `.gitignore`; size check before commit; APK < 20 MB is fine |
 | F24 | Hardcoding review | no names/cities/tools in `duet/`; router prototypes and cue words are generic English and documented |
+| F25 | Android WebView has no Web Speech API: the agent would be silent inside the APK | one speech abstraction in the client; native TTS via a Capacitor plugin in the APK, Web Speech in browsers |
+| F26 | Downloads fail on Windows certificate-revocation checks, and the link is slow (~100 KB/s) | `curl --ssl-no-revoke`; resumable downloads; toolchain and caches on E:; start long downloads early |
+| F27 | The session usage limit stops every agent at once | small commits after each working piece; agents resumed from their transcripts after the reset |
 
 ---
 
