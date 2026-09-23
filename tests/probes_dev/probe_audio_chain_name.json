@@ -1,0 +1,75 @@
+{
+ "scenario_id": "probe_audio_chain_name",
+ "metadata": {
+  "modality": "audio",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_audio_chunk",
+   "payload": {
+    "audio_ref": "tests/probes_dev/audio/a_chain_part1.wav",
+    "duration_ms": 1800,
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 2000,
+   "event_type": "user_audio_chunk",
+   "payload": {
+    "audio_ref": "tests/probes_dev/audio/a_chain_part2.wav",
+    "duration_ms": 2000,
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "searched",
+    "type": "tool_called",
+    "tool": "flight_search",
+    "args_subset": {
+     "destination": [
+      "phoenix",
+      "pho"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.3
+   },
+   {
+    "id": "booked",
+    "type": "tool_called",
+    "tool": "book_flight",
+    "args_subset": {
+     "flight_id": [
+      "fl-pho-8am"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.45
+   },
+   {
+    "id": "confirms",
+    "type": "final_response_contains",
+    "any_of": [
+     "bk-",
+     "book"
+    ],
+    "weight": 0.25
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

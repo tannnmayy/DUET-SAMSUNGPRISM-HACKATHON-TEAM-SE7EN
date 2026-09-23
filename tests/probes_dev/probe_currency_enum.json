@@ -1,0 +1,113 @@
+{
+ "scenario_id": "probe_currency_enum",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_manifest": {
+  "convert_currency": {
+   "kind": "read_only",
+   "delay_range_ms": [
+    600,
+    1200
+   ],
+   "description": "Convert an amount of money between currencies.",
+   "args": {
+    "amount": {
+     "type": "number",
+     "required": true,
+     "description": "Amount to convert."
+    },
+    "from_currency": {
+     "type": "string",
+     "required": true,
+     "enum": [
+      "USD",
+      "EUR",
+      "GBP",
+      "INR",
+      "JPY"
+     ],
+     "description": "Currency to convert from."
+    },
+    "to_currency": {
+     "type": "string",
+     "required": true,
+     "enum": [
+      "USD",
+      "EUR",
+      "GBP",
+      "INR",
+      "JPY"
+     ],
+     "description": "Currency to convert to."
+    }
+   },
+   "default_result": {
+    "converted_amount": 20875.5,
+    "rate": 83.5
+   }
+  }
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "How much is 250 US dollars ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 700,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "in Indian rupees?",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "called",
+    "type": "tool_called",
+    "tool": "convert_currency",
+    "args_subset": {
+     "amount": [
+      250,
+      "250"
+     ],
+     "from_currency": [
+      "usd"
+     ],
+     "to_currency": [
+      "inr"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.55
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "20875",
+     "20,875",
+     "83.5"
+    ],
+    "weight": 0.45
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

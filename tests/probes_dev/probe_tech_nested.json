@@ -1,0 +1,111 @@
+{
+ "scenario_id": "probe_tech_nested",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_manifest": {
+  "schedule_technician": {
+   "kind": "state_modifying",
+   "delay_range_ms": [
+    900,
+    1600
+   ],
+   "description": "Schedule a technician visit for a device repair.",
+   "args": {
+    "device_model": {
+     "type": "string",
+     "required": true,
+     "description": "Model of the device to repair."
+    },
+    "visit": {
+     "type": "object",
+     "required": true,
+     "properties": {
+      "day": {
+       "type": "string",
+       "required": true
+      },
+      "window": {
+       "type": "string",
+       "required": true,
+       "enum": [
+        "morning",
+        "afternoon",
+        "evening"
+       ]
+      }
+     },
+     "description": "When the technician should come."
+    }
+   },
+   "default_result": {
+    "appointment_id": "AP-3310"
+   }
+  }
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Can you schedule a technician for my WF45 washer ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 900,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "on Monday afternoon?",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "called",
+    "type": "tool_called",
+    "tool": "schedule_technician",
+    "args_subset": {
+     "device_model": [
+      "wf45"
+     ],
+     "visit.day": [
+      "monday"
+     ],
+     "visit.window": [
+      "afternoon"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.55
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "ap-3310"
+    ],
+    "weight": 0.3
+   },
+   {
+    "id": "no_ticket",
+    "type": "tool_not_called",
+    "tool": "create_support_ticket",
+    "weight": 0.15
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

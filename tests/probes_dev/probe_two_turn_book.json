@@ -1,0 +1,89 @@
+{
+ "scenario_id": "probe_two_turn_book",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Show me flights to Portland.",
+    "end_of_turn": true
+   }
+  },
+  {
+   "timestamp_ms": 5200,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Book the cheaper one ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 5800,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "for Maria Lopez.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "searched",
+    "type": "tool_called",
+    "tool": "flight_search",
+    "args_subset": {
+     "destination": [
+      "portland"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.25
+   },
+   {
+    "id": "booked",
+    "type": "tool_called",
+    "tool": "book_flight",
+    "args_subset": {
+     "flight_id": [
+      "fl-por-2pm"
+     ],
+     "passenger_name": [
+      "maria lopez"
+     ]
+    },
+    "after_ms": 5800,
+    "must_complete": true,
+    "weight": 0.45
+   },
+   {
+    "id": "confirms",
+    "type": "final_response_contains",
+    "any_of": [
+     "bk-"
+    ],
+    "after_ms": 5800,
+    "weight": 0.3
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    },
+    {
+     "event_index": 2,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

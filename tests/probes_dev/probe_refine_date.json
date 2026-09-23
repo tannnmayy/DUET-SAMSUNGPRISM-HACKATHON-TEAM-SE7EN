@@ -1,0 +1,116 @@
+{
+ "scenario_id": "probe_refine_date",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_overrides": {
+  "flight_search": [
+   {
+    "call_index": 0,
+    "delay_ms": 2600
+   }
+  ]
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Find flights to Miami ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 700,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "on Thursday.",
+    "end_of_turn": true
+   }
+  },
+  {
+   "timestamp_ms": 1500,
+   "event_type": "interruption",
+   "payload": {
+    "text": "Oh, sorry - Saturday, not Thursday."
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "researched",
+    "type": "tool_called",
+    "tool": "flight_search",
+    "args_subset": {
+     "destination": [
+      "miami"
+     ],
+     "date": [
+      "saturday"
+     ]
+    },
+    "after_ms": 1500,
+    "must_complete": true,
+    "weight": 0.5
+   },
+   {
+    "id": "ack",
+    "type": "spoken_contains",
+    "any_of": [
+     "saturday"
+    ],
+    "after_ms": 1500,
+    "before_ms": 2700,
+    "weight": 0.2
+   },
+   {
+    "id": "final",
+    "type": "final_response_contains",
+    "any_of": [
+     "miami",
+     "fl-mia"
+    ],
+    "weight": 0.3
+   }
+  ],
+  "recovery": {
+   "interrupt_at_ms": 1500,
+   "invalidated_calls": [
+    {
+     "tool": "flight_search",
+     "args_subset": {
+      "date": [
+       "thursday"
+      ]
+     },
+     "invalid_after_ms": 1500
+    }
+   ],
+   "required_state_after_interrupt": {
+    "slots.date": [
+     "saturday"
+    ],
+    "slots.destination": [
+     "miami"
+    ]
+   }
+  },
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    },
+    {
+     "event_index": 2,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

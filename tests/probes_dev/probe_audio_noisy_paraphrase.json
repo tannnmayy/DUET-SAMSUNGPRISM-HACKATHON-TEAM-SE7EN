@@ -1,0 +1,61 @@
+{
+ "scenario_id": "probe_audio_noisy_paraphrase",
+ "metadata": {
+  "modality": "audio",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_audio_chunk",
+   "payload": {
+    "audio_ref": "tests/probes_dev/audio/a_denver_noisy.wav",
+    "duration_ms": 2200,
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "searched_or_asked",
+    "type": "clarification",
+    "any_of": [
+     "denver",
+     "did you",
+     "confirm",
+     "which"
+    ],
+    "weight": 0.2
+   },
+   {
+    "id": "not_wrong_city",
+    "type": "tool_not_called",
+    "tool": "book_flight",
+    "weight": 0.2
+   },
+   {
+    "id": "searched",
+    "type": "tool_called",
+    "tool": "flight_search",
+    "args_subset": {
+     "destination": [
+      "denver",
+      "den"
+     ]
+    },
+    "weight": 0.6
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

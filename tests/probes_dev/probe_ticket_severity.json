@@ -1,0 +1,70 @@
+{
+ "scenario_id": "probe_ticket_severity",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L2",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "My QN90 TV keeps blinking red. ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 900,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Please open a support ticket, it's urgent.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "ticket",
+    "type": "tool_called",
+    "tool": "create_support_ticket",
+    "args_subset": {
+     "device.model": [
+      "qn90"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.45
+   },
+   {
+    "id": "severity",
+    "type": "tool_called",
+    "tool": "create_support_ticket",
+    "args_subset": {
+     "issue.severity": [
+      "high"
+     ]
+    },
+    "weight": 0.2
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "tk-"
+    ],
+    "weight": 0.35
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

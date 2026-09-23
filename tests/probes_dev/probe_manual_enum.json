@@ -1,0 +1,59 @@
+{
+ "scenario_id": "probe_manual_enum",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L2",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "What does the dE code on my WF45 washer mean?",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "lookup",
+    "type": "tool_called",
+    "tool": "lookup_manual",
+    "args_subset": {
+     "device_model": [
+      "wf45"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.45
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "drum",
+     "page 12",
+     "wf45"
+    ],
+    "weight": 0.35
+   },
+   {
+    "id": "no_ticket",
+    "type": "tool_not_called",
+    "tool": "create_support_ticket",
+    "weight": 0.2
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

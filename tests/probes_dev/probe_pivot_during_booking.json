@@ -1,0 +1,118 @@
+{
+ "scenario_id": "probe_pivot_during_booking",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L4",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_overrides": {
+  "flight_search": [
+   {
+    "call_index": 0,
+    "delay_ms": 1500
+   }
+  ],
+  "book_flight": [
+   {
+    "call_index": 0,
+    "delay_ms": 1600
+   }
+  ]
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Find a flight to Denver and ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 900,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "book the 8 AM one for Alice.",
+    "end_of_turn": true
+   }
+  },
+  {
+   "timestamp_ms": 3000,
+   "event_type": "interruption",
+   "payload": {
+    "text": "Forget the flight - my washer is showing a dE error."
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "pivot",
+    "type": "tool_called",
+    "tool": "lookup_manual",
+    "args_present": [
+     "query"
+    ],
+    "after_ms": 3000,
+    "must_complete": true,
+    "weight": 0.4
+   },
+   {
+    "id": "no_new_booking",
+    "type": "tool_not_called",
+    "tool": "book_flight",
+    "after_ms": 3000,
+    "weight": 0.2
+   },
+   {
+    "id": "addresses",
+    "type": "final_response_contains",
+    "any_of": [
+     "drum",
+     "error",
+     "page 12",
+     "wf45"
+    ],
+    "after_ms": 3000,
+    "weight": 0.25
+   },
+   {
+    "id": "no_booked_claim",
+    "type": "spoken_not_contains",
+    "any_of": [
+     "is booked",
+     "bk-0001"
+    ],
+    "weight": 0.15
+   }
+  ],
+  "recovery": {
+   "interrupt_at_ms": 3000,
+   "invalidated_calls": [
+    {
+     "tool": "book_flight",
+     "args_subset": {
+      "flight_id": [
+       "fl-den-8am"
+      ]
+     },
+     "invalid_after_ms": 3000
+    }
+   ]
+  },
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    },
+    {
+     "event_index": 2,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

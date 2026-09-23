@@ -1,0 +1,54 @@
+{
+ "scenario_id": "probe_neg_03",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L1",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Hmm, let me think about it for a second.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "no_tools",
+    "type": "no_tool_calls",
+    "weight": 0.5
+   },
+   {
+    "id": "helpful",
+    "type": "final_response_contains",
+    "any_of": [
+     "help",
+     "flight",
+     "book",
+     "device",
+     "assist",
+     "welcome",
+     "glad",
+     "hear",
+     "fine",
+     "good",
+     "well"
+    ],
+    "weight": 0.5
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 600,
+     "zero_credit_ms": 1500
+    }
+   ]
+  }
+ }
+}

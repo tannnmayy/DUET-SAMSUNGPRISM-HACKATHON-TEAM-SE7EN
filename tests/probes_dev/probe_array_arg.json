@@ -1,0 +1,103 @@
+{
+ "scenario_id": "probe_array_arg",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L3",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_manifest": {
+  "send_message": {
+   "kind": "state_modifying",
+   "delay_range_ms": [
+    600,
+    1100
+   ],
+   "description": "Send a text message to one or more contacts.",
+   "args": {
+    "recipients": {
+     "type": "array",
+     "items": "string",
+     "required": true,
+     "description": "Contact names."
+    },
+    "body": {
+     "type": "string",
+     "required": true,
+     "description": "Message text."
+    }
+   },
+   "default_result": {
+    "message_id": "MS-0091",
+    "delivered": true
+   }
+  }
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Text Priya ",
+    "end_of_turn": false
+   }
+  },
+  {
+   "timestamp_ms": 700,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "that I'm running ten minutes late.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "called",
+    "type": "tool_called",
+    "tool": "send_message",
+    "args_present": [
+     "recipients",
+     "body"
+    ],
+    "must_complete": true,
+    "weight": 0.4
+   },
+   {
+    "id": "right_person",
+    "type": "tool_called",
+    "tool": "send_message",
+    "args_subset": {
+     "recipients": [
+      [
+       "Priya"
+      ],
+      [
+       "priya"
+      ]
+     ]
+    },
+    "weight": 0.3
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "priya",
+     "ms-0091",
+     "sent"
+    ],
+    "weight": 0.3
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 1,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

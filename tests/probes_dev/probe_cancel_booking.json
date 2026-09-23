@@ -1,0 +1,63 @@
+{
+ "scenario_id": "probe_cancel_booking",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L1",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Please cancel my booking BK-0007.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "called",
+    "type": "tool_called",
+    "tool": "cancel_booking",
+    "args_subset": {
+     "booking_id": [
+      "bk-0007"
+     ]
+    },
+    "weight": 0.5
+   },
+   {
+    "id": "no_retry_spam",
+    "type": "tool_called",
+    "tool": "cancel_booking",
+    "min_count": 1,
+    "weight": 0.1
+   },
+   {
+    "id": "honest",
+    "type": "final_response_contains",
+    "any_of": [
+     "could not find",
+     "not find",
+     "does not",
+     "doesn't",
+     "no booking",
+     "not exist",
+     "bk-0007"
+    ],
+    "weight": 0.4
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,63 @@
+{
+ "scenario_id": "probe_walkthrough_denver_book_it",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L2",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Denver, Friday, book it.",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "searched",
+    "type": "tool_called",
+    "tool": "flight_search",
+    "args_subset": {
+     "destination": [
+      "denver",
+      "den"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.5
+   },
+   {
+    "id": "asks_name",
+    "type": "clarification",
+    "any_of": [
+     "name",
+     "who",
+     "passenger"
+    ],
+    "weight": 0.25
+   },
+   {
+    "id": "state",
+    "type": "state_snapshot",
+    "path": "slots.destination",
+    "any_of": [
+     "denver"
+    ],
+    "weight": 0.25
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}

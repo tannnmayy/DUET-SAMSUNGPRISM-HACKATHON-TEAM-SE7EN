@@ -1,0 +1,73 @@
+{
+ "scenario_id": "probe_track_order",
+ "metadata": {
+  "modality": "text",
+  "difficulty": "L1",
+  "source": "audit 2026-09-23, written from WALKTHROUGH section 4 without reading duet/"
+ },
+ "tool_manifest": {
+  "track_order": {
+   "kind": "read_only",
+   "delay_range_ms": [
+    800,
+    1500
+   ],
+   "description": "Get the delivery status of an order.",
+   "args": {
+    "order_id": {
+     "type": "string",
+     "required": true,
+     "description": "The order id."
+    }
+   },
+   "default_result": {
+    "status_text": "out for delivery",
+    "eta": "6 PM today"
+   }
+  }
+ },
+ "events": [
+  {
+   "timestamp_ms": 100,
+   "event_type": "user_speech_chunk",
+   "payload": {
+    "text": "Where's my order OR-5521?",
+    "end_of_turn": true
+   }
+  }
+ ],
+ "ground_truth": {
+  "checkpoints": [
+   {
+    "id": "called",
+    "type": "tool_called",
+    "tool": "track_order",
+    "args_subset": {
+     "order_id": [
+      "or-5521"
+     ]
+    },
+    "must_complete": true,
+    "weight": 0.55
+   },
+   {
+    "id": "grounded",
+    "type": "final_response_contains",
+    "any_of": [
+     "out for delivery",
+     "6 pm"
+    ],
+    "weight": 0.45
+   }
+  ],
+  "latency": {
+   "respond_to": [
+    {
+     "event_index": 0,
+     "full_credit_ms": 800,
+     "zero_credit_ms": 2500
+    }
+   ]
+  }
+ }
+}
