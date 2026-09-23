@@ -23,7 +23,16 @@ commit.
 | Qwen3-VL-2B on `frames/pub_07_f017.png` | reads **HDMI** (full frame, 2 prompts agree) | the vision gap is closable with a newer model |
 | `app/` | empty | there is nothing a person can talk to |
 
-Expected hidden-set score today: roughly 80-88, not 97. The work below is
+**Held-out set #1** (`E:\duet_holdout\set1`, 60 scenarios written blind by the
+red-team agent, 30 text / 18 audio / 12 visual, 12 unseen tools, 9 proven-
+discriminating interruption scenarios) on `main` 84e0c93, speech on CPU:
+**mean 67.3** (text 66.4, audio 65.0, visual 73.0), 36/60 below 75. The largest
+cluster is unseen tools never called correctly - meaning, not keywords ("three
+hundred fifty dollars in euros", "I need someone out here urgently"). H6 is
+therefore raised to **P0**.
+
+Expected hidden-set score today: roughly 80-88, not 97 - and the held-out
+number says the lower end or below. The work below is
 ordered by how many hidden-set points it recovers per hour, then by what the
 jury sees.
 
@@ -266,7 +275,7 @@ pub_03, conf_06, conf_23 still 100.
 **Acceptance.** `probe_audio_*` ≥ 95; pub_05/pub_06 still 100 with both the GPU
 and the CPU speech model; filler count on audio scenarios ≤ 3.
 
-### H6. Semantic resolver - a small LLM where the rules must guess (agent H-C) · P1, flag-gated
+### H6. Semantic resolver - a small LLM where the rules must guess (agent H-C) · **P0** (raised 23 Sep after the held-out baseline), flag-gated
 
 **Why.** Unseen tools need meaning, not keywords: "rupees" → `INR`, "Celsius" →
 `metric`, "urgent" → `high`, "Is it going to rain?" → the weather tool. Tool
