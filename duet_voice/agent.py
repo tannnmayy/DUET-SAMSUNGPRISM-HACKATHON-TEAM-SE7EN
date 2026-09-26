@@ -49,7 +49,7 @@ from .coordinator import Coordinator, Superseded  # noqa: E402
 from .fdb_tools import FdbToolbox  # noqa: E402
 from .plugins import KokoroTTS, WhisperSTT  # noqa: E402
 from .prompts import THINKER_INSTRUCTIONS  # noqa: E402
-from .thinker import Thinker, encode_audio  # noqa: E402
+from .thinker import RESPOND_NOW_NOTE, Thinker, encode_audio  # noqa: E402
 
 log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
@@ -239,9 +239,7 @@ class DuetAgent(Agent):
                             return  # they resumed: the next turn re-reads everything
                         await asyncio.sleep(0.05)
                     await events.put("resumed_thinking")
-                    final_note = (note + "\n" if note else "") + (
-                        "The user has stopped talking. Respond now: act if the request can be "
-                        "carried out, otherwise ask briefly for exactly what is missing.")
+                    final_note = (note + "\n" if note else "") + RESPOND_NOW_NOTE
                     async for ev in self._thinker.run(text, self._toolbox, audio=audio,
                                                       note=final_note, allow_listen=False):
                         await events.put(ev)

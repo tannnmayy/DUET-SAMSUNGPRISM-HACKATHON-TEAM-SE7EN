@@ -48,7 +48,7 @@ def turn_audio(folder: Path, segments: List[Dict[str, Any]]):
 async def run_item(sem, args, item, text: str, segments) -> Dict[str, Any]:
     from duet_voice.coordinator import Coordinator
     from duet_voice.fdb_tools import FdbToolbox
-    from duet_voice.thinker import Thinker
+    from duet_voice.thinker import RESPOND_NOW_NOTE, Thinker
 
     async with sem:
         example_id, speaker, folder, meta = item
@@ -58,20 +58,29 @@ async def run_item(sem, args, item, text: str, segments) -> Dict[str, Any]:
         thinker = Thinker(model=args.model, thinking=args.thinking)
         audio = turn_audio(folder, segments) if args.audio and segments else None
         t = time.time()
-        final_text, error, steps = "", "", 0
+        final_text, error, steps, listened = "", "", 0, ""
         try:
-            async for ev in thinker.run(text, toolbox, audio=audio):
-                if ev.kind == "say":
-                    final_text = ev.text
-                elif ev.kind == "tool_start":
-                    steps += 1
-                elif ev.kind == "error":
-                    error = ev.text
+            # As in the live agent: if the first look decides the user has not
+            # finished, the user has in fact gone quiet (the recording is over),
+            # so the thinker looks again and must respond.
+            for allow_listen, note in ((True, ""), (False, RESPOND_NOW_NOTE)):
+                again = False
+                async for ev in thinker.run(text, toolbox, audio=audio, note=note, allow_listen=allow_listen):
+                    if ev.kind == "say":
+                        final_text = ev.text
+                    elif ev.kind == "tool_start":
+                        steps += 1
+                    elif ev.kind == "error":
+                        error = ev.text
+                    elif ev.kind == "listen":
+                        listened, again = ev.text or "yes", True
+                if not again:
+                    break
         except Exception as exc:  # keep going; the item scores as a failure
             error = "%s: %s" % (type(exc).__name__, exc)
         calls = [{"function": r.tool, "args": r.args} for r in coord.history if r.outcome == "ok"]
         return {"example_id": example_id, "folder": folder.name, "input": text, "calls": calls,
-                "final_text": final_text, "error": error, "tool_steps": steps,
+                "final_text": final_text, "error": error, "tool_steps": steps, "kept_listening": listened,
                 "seconds": round(time.time() - t, 2)}
 
 

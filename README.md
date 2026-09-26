@@ -181,6 +181,9 @@ python bench/offline_asr.py                 # what the agent's ears hear on all 
 python bench/offline_eval.py --judge        # the thinker alone on those transcripts, officially scored
 python bench/cost_report.py results/live/<run>   # Gemini tokens and dollars, from the traces
 python -m pytest tests -q
+python tests/fake_gemini.py &               # a scripted stand-in for the Gemini API (no key):
+GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:8765 GOOGLE_API_KEY=fake python bench/run_live.py --no-judge
+                                            #   exercises the model-driven path end to end
 ```
 
 ## Integrity and reproducibility
