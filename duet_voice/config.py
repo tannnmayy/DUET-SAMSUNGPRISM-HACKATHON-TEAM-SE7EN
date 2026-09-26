@@ -30,12 +30,9 @@ def _env_bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Config:
     # --- thinker (slow mind): plans and runs tool chains ---------------------
-    thinker_provider: str = field(default_factory=lambda: _env("DUET_THINKER_PROVIDER", "gemini"))
     thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-2.5-flash"))
     # low | medium | high | none - thinking budget of the thinker
     thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
-    # OpenAI-compatible endpoint for a local model (vLLM) when provider == "openai"
-    thinker_base_url: str = field(default_factory=lambda: _env("DUET_THINKER_BASE_URL", ""))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))
     # fixed sampling seed for every model call (the guide: "pin seeds and versions")
     seed: int = field(default_factory=lambda: _env_int("DUET_SEED", 7))

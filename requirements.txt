@@ -6,7 +6,7 @@
 livekit-agents[silero,turn-detector,google,openai]==1.8.3
 livekit-local-inference==0.2.7
 
-# Thinker and talker (Gemini API); an OpenAI-compatible endpoint is also supported
+# Thinker and talker (Gemini API); openai is the client of the offline proxy judge
 google-genai==2.25.0
 openai==2.54.0
 

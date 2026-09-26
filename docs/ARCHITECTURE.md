@@ -35,10 +35,7 @@ flowchart LR
 
 **Talker.** A fast model (no tools, no thinking) turns the user's words into
 one short sentence that shows they were understood ("Sure, checking flights to
-Oslo for Friday"). It speaks only when there is work to cover: if the thinker
-decides within 0.9 s that no tool is needed (a greeting, a question), the
-thinker's own answer is the only speech. It never states a result, because it
-has none.
+Oslo for Friday"). It never states a result, because it has none.
 
 **Thinker.** Gemini with the twelve tools, run by DUET's own loop rather than
 the framework's: every call goes through the coordinator. It keeps its own
@@ -50,6 +47,27 @@ Both start together when a turn ends, or earlier: LiveKit runs generation
 *preemptively* during a pause, so the plan is often ready by the time the turn
 closes. Planning early is safe because acting early is not allowed.
 
+## When the agent speaks, and when it keeps listening
+
+The end-of-turn detector closes a turn after about 0.8 s of silence. That is
+often too early: in our no-model run it closed turns after "Like, you know." and
+after "Could you track it for me?", with the order id still to come. So the
+thinker's first look at a turn decides whether the user has finished:
+
+| The thinker decides | What the user hears |
+|---|---|
+| **The user is not finished** (cut off mid-sentence, or announced a detail not yet given): it calls `keep_listening` | Nothing. Nothing is done or remembered. Once the user has been quiet for 2.5 s, the thinker looks again with `keep_listening` removed. It acts, or asks for exactly what is missing. If the user resumes first, the next turn re-reads everything. |
+| **Tools are needed** | The talker's acknowledgement at once, then the thinker's answer after the tool results. "Still working on it." every 3.5 s while a slow tool runs. |
+| **No tool is needed** (a greeting, a question, a clarification) | Only the thinker's answer. |
+| **Noise, not speech** (`<silent>`) | Nothing. |
+| **Not decided yet after 0.9 s** | The acknowledgement, but only once the user has been quiet for 1.6 s, never in a pause they may resume. |
+| **The thinker fails** (after retries) | "Sorry, something went wrong on my side. Could you say that once more?" The user is never left in silence. |
+
+Model calls retry rate limits and server errors (up to three times, with
+backoff), and the thinker asks once more after an empty or malformed reply.
+A request counts as answered only once a reply is actually spoken. A reply
+drafted during a pause and then discarded leaves the request open.
+
 ## The coordinator: when the agent may act
 
 | Mechanism | What it guarantees | Where |
@@ -58,7 +76,7 @@ closes. Planning early is safe because acting early is not allowed.
 | **Commit gate** | A tool runs only once the end-of-turn detector has closed the turn *and* the user has been quiet for a hold: 1.1 s normally, 1.8 s while they have been revising ("no wait", "actually", "instead"), 2.2 s when the last words leave a sentence open ("and", "um", "let me think"). A call that meets new speech at the gate is superseded: never executed, never logged. | `coordinator.py` |
 | **Idempotency ledger** | An identical call already made in this conversation is answered from the ledger (case, order and spacing ignored). A state-changing action is never performed twice. | `coordinator.py` |
 | **Failure policy** | A read-only call that fails is retried once. A state-changing call is never re-sent: if its outcome is unknown (timeout), the ledger remembers that and the user is told, with an offer of a human agent. | `coordinator.py` |
-| **Open request** | Everything the user said since the thinker last finished is re-read as one request, so a correction that arrives as a separate turn is read together with what it corrects. | `agent.py` |
+| **Open request** | Everything the user said since the last reply that was actually spoken is re-read as one request, so a correction that arrives as a separate turn is read together with what it corrects. | `agent.py` |
 
 ## Perception
 
@@ -94,5 +112,5 @@ voice agent:
 
 Everything local fits in about 4 GB of GPU memory (Whisper turbo in float16, and
 Kokoro); the 48 GB evaluation GPU is far more than needed. The thinker and
-talker run on the Gemini API; an OpenAI-compatible endpoint (for example a local
-vLLM) can replace them (`DUET_THINKER_PROVIDER=openai`, `DUET_THINKER_BASE_URL`).
+talker run on the Gemini API. They are Gemini-only today; serving an open-weight
+model on the same GPU would mean a second backend for the thinker's tool loop.

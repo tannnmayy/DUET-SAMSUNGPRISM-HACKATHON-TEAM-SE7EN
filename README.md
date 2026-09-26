@@ -87,9 +87,9 @@ realtime-provider presets.
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
 
 Local models use about 4 GB of GPU memory, far below the 48 GB evaluation GPU.
-An OpenAI-compatible endpoint (for example Gemma 4 on vLLM) can replace
-the Gemini models with `DUET_THINKER_PROVIDER=openai` and
-`DUET_THINKER_BASE_URL`, for a fully local run.
+The thinker and talker are Gemini-only today. A backend for open-weight models
+on the same GPU (for example Gemma served by vLLM) is future work: the
+thinker's tool loop is the only piece that would change.
 
 ## API keys: which ones, and where they go
 
