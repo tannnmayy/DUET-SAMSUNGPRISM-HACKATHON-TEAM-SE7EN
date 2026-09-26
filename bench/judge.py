@@ -83,7 +83,7 @@ def judge_label() -> str:
 
 
 def proxy_model() -> str:
-    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemini-2.5-flash")
+    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemini-3.5-flash")
 
 
 def install(*modules: Any) -> Optional[str]:

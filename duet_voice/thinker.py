@@ -103,7 +103,7 @@ class Thinker:
             parameters_json_schema={"type": "object", "properties": {
                 "reason": {"type": "string", "description": "What the user has not finished saying."}},
                 "required": ["reason"]})
-        from .gemini import thinking_config
+        from .gemini import sampling, thinking_config
         extra: Dict[str, Any] = {}
         tc = thinking_config(self.model, self.thinking)
         if tc is not None:
@@ -113,8 +113,7 @@ class Thinker:
             return types.GenerateContentConfig(
                 system_instruction=THINKER_INSTRUCTIONS,
                 tools=[types.Tool(function_declarations=decls + ([listen] if with_listen else []))],
-                temperature=0.0,
-                seed=CONFIG.seed,
+                **sampling(self.model),
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
                 **extra,
             )
@@ -173,20 +172,18 @@ class Thinker:
                 log.warning("thinker step %d: empty reply (%s), asking again", step,
                             getattr(resp.candidates[0], "finish_reason", None) if resp.candidates else "no candidate")
             log.debug("thinker step %d in %.2f s", step, time.time() - t)
-            calls = [p.function_call for p in parts if p.function_call]
+            every_call = [p.function_call for p in parts if p.function_call]
             words = " ".join(p.text for p in parts if getattr(p, "text", None) and not getattr(p, "thought", False)).strip()
-            listens = [c for c in calls if c.name == KEEP_LISTENING]
-            calls = [c for c in calls if c.name != KEEP_LISTENING]
+            listens = [c for c in every_call if c.name == KEEP_LISTENING]
+            calls = [c for c in every_call if c.name != KEEP_LISTENING]
             if listens and not calls and step == 1:
                 # The user has not finished: nothing is acted on and nothing is
                 # remembered; the caller waits and asks again once they go quiet.
                 yield ThinkEvent("listen", text=str((listens[0].args or {}).get("reason", "")), usage=usage)
                 return
-            if listens:
-                # keep_listening next to real work: the work stands; drop the stray
-                # control call so the transcript the model sees stays well-formed
-                parts = [p for p in parts if not (p.function_call and p.function_call.name == KEEP_LISTENING)]
-                content = types.Content(role=content.role, parts=parts)
+            # The model's turn is kept exactly as returned: Gemini 3 attaches thought
+            # signatures to function-call parts and rejects a follow-up request that
+            # lost one. A keep_listening next to real work is answered, not deleted.
             if content is not None:
                 contents.append(content)
             if step == 1:
@@ -195,7 +192,11 @@ class Thinker:
                 final_text = words
                 break
             responses = []
-            for fc in calls:
+            for fc in every_call:
+                if fc.name == KEEP_LISTENING:
+                    responses.append(types.Part.from_function_response(
+                        name=KEEP_LISTENING, response={"result": "not needed: the request is being acted on"}))
+                    continue
                 args = dict(fc.args or {})
                 yield ThinkEvent("tool_start", name=fc.name, args=args)
                 out = await toolbox.call(fc.name, args)

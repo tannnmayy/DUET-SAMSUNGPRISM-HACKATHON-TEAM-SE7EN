@@ -30,16 +30,22 @@ def _env_bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Config:
     # --- thinker (slow mind): plans and runs tool chains ---------------------
-    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-2.5-flash"))
-    # low | medium | high | none - thinking budget of the thinker
+    # Gemini 2.5 Flash-Lite and 2.5 Pro are "no longer available to new users" (the
+    # API's own words, Sep 2026), and a re-run uses a new key: the 3.5 generation,
+    # which Google names as their replacement, is what any key can reach.
+    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-3.5-flash"))
+    # minimal | low | medium | high: thinking level (a token budget on Gemini 2.5)
     thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))
     # fixed sampling seed for every model call (the guide: "pin seeds and versions")
     seed: int = field(default_factory=lambda: _env_int("DUET_SEED", 7))
+    # empty: the model family's recommended value (0 on Gemini 2.x; 1.0 on Gemini 3,
+    # where Google advises against lowering it: it can cause looping)
+    temperature: str = field(default_factory=lambda: _env("DUET_TEMPERATURE", ""))
 
     # --- talker (fast mind): acknowledgements, progress, never tools -----------
     talker_enabled: bool = field(default_factory=lambda: _env_bool("DUET_TALKER", True))
-    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", "gemini-2.5-flash-lite"))
+    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", "gemini-3.5-flash-lite"))
     talker_timeout_s: float = field(default_factory=lambda: _env_float("DUET_TALKER_TIMEOUT", 1.2))
 
     # --- perception ------------------------------------------------------------

@@ -55,8 +55,8 @@ flowchart LR
         TTS["TTS: Kokoro-82M"] --> O[Room audio out]
     end
     subgraph DUET["DUET: the brain"]
-        T["Talker: Gemini 2.5 Flash-Lite<br/>one truthful acknowledgement"]
-        K["Thinker: Gemini 2.5 Flash<br/>own tool loop"]
+        T["Talker: Gemini 3.5 Flash-Lite<br/>one truthful acknowledgement"]
+        K["Thinker: Gemini 3.5 Flash<br/>own tool loop"]
         C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
     end
     S --> K
@@ -78,13 +78,23 @@ realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Thinker (reasoning, tool calls) | Google `gemini-2.5-flash` (thinking budget 512, temperature 0, seed 7) | Gemini API (hosted) |
-| Talker (acknowledgements) | Google `gemini-2.5-flash-lite` (thinking off, temperature 0, seed 7) | Gemini API (hosted) |
+| Thinker (reasoning, tool calls) | Google `gemini-3.5-flash` (thinking level low, temperature 1.0, seed 7) | Gemini API (hosted) |
+| Talker (acknowledgements) | Google `gemini-3.5-flash-lite` (thinking level minimal, temperature 1.0, seed 7) | Gemini API (hosted) |
 | Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
 | Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
 | Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
 | End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
+
+**Why Gemini 3.5, not 2.5.** In September 2026 the Gemini API answers requests
+for `gemini-2.5-flash-lite` and `gemini-2.5-pro` with *"no longer available to
+new users"*, naming the 3.5 generation as the replacement. Samsung's re-run will
+use a key of its own, possibly a new one, so DUET declares models that any key
+can reach. Temperature stays at the Gemini 3 default (1.0), because Google
+advises that lowering it can cause looping; the seed is fixed. Every setting
+can be overridden (`DUET_THINKER_MODEL`, `DUET_TALKER_MODEL`, `DUET_TEMPERATURE`,
+`DUET_THINKER_THINKING`), and each run records the effective values in
+`run_config.json`.
 
 Local models use about 4 GB of GPU memory, far below the 48 GB evaluation GPU.
 The thinker and talker are Gemini-only today. A backend for open-weight models
@@ -99,7 +109,7 @@ repository.
 
 | Variable | Needed for | Required? |
 |---|---|---|
-| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Use a key from a project with billing enabled (Tier 1): one 100-item run makes a few hundred requests, more than the free tier's daily allowance for Gemini 2.5 Flash. Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
+| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Use a key from a project with billing enabled (Tier 1): one 100-item run makes a few hundred requests, while the free tier allows 5 requests per minute per model and serves them slowly (we measured 4-38 s per request). Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
 | `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | For judged scores |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) in dev mode | Optional |
 
@@ -164,7 +174,7 @@ Every run writes `results/live/<time>/`:
 
 | File | Content |
 |---|---|
-| `run_config.json` | Every `DUET_*`/`FDB_*` setting, the LiveKit target and the scoring ASR. |
+| `run_config.json` | The agent's effective settings (models, thinking level, temperature, seed, listening thresholds), any `DUET_*`/`FDB_*` overrides, the LiveKit target and the scoring ASR. |
 | `summary.json` | Headline metrics, plus what the agent did (thinker errors, keep-listening decisions, talker lines, tool calls) and the Gemini tokens and cost of the run. |
 | `duet_evaluation_report.json`, `duet_pass_rate_report.json`, `duet_latency_report.json` | The benchmark's own reports. |
 | `items/*.json` | The benchmark's per-item results: transcripts, tool calls, timings. |

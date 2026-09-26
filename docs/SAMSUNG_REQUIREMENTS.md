@@ -29,7 +29,7 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 |---|---|---|
 | README: architecture (one diagram), exact setup and run steps, extension marked | `README.md` | 🟡 results and extension sections pending |
 | One-command reproduction (install, configure, evaluate) | `reproduce.sh`: lock-file installs, Python 3.10-3.12 auto-picked (uv fallback), pinned benchmark, data and LiveKit. Both environments resolve for Linux on Python 3.10-3.12 (`docs/FINDINGS.md` §5) | 🟡 resolved for Linux; clean-machine run pending (`docs/CLEAN_MACHINE_TEST.md`) |
-| Declaration of model provider / custom agent | `README.md`, section "Models and providers" | ✅ |
+| Declaration of model provider / custom agent | `README.md`, section "Models and providers": custom LiveKit agent; Gemini `gemini-3.5-flash` and `gemini-3.5-flash-lite`, which a new key can reach (2.5 Flash-Lite and 2.5 Pro are closed to new users) | ✅ |
 | Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/` (`run_config.json`, `summary.json`, official reports, per-item JSON, traces, logs) | 🟡 pipeline ready, best run pending |
 | API keys documented, not included | `README.md`, section "API keys" | ✅ |
 | Demo video, 3-5 min | team | ⬜ |

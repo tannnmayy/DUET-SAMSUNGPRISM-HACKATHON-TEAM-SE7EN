@@ -21,6 +21,12 @@ from pathlib import Path
 from typing import Dict
 
 PRICES = {
+    # audio input is priced separately where the page lists it; otherwise as text
+    "gemini-3.5-flash": {"input": 1.50, "input_audio": 1.50, "output": 9.00},
+    "gemini-3.5-flash-lite": {"input": 0.30, "input_audio": 0.30, "output": 2.50},
+    "gemini-3.7-flash": {"input": 0.75, "input_audio": 0.75, "output": 3.75},   # to 31 Dec 2026
+    "gemini-3.6-flash": {"input": 0.75, "input_audio": 0.75, "output": 3.75},   # to 31 Dec 2026
+    "gemini-3.1-flash-lite": {"input": 0.25, "input_audio": 0.50, "output": 1.50},
     "gemini-2.5-flash": {"input": 0.30, "input_audio": 1.00, "output": 2.50},
     "gemini-2.5-flash-lite": {"input": 0.10, "input_audio": 0.30, "output": 0.40},
     "gemini-2.5-pro": {"input": 1.25, "input_audio": 1.25, "output": 10.00},

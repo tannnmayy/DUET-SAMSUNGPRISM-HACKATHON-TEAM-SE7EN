@@ -77,3 +77,33 @@ def test_a_completed_exchange_is_kept_as_text_only():
                               reply(types.Part(text="Out for delivery."))])
     # user turn, model call, tool result, model answer
     assert len(th.history) == 4 and th.history[0].parts[0].text == "track order XK42Q7"
+
+
+def test_a_keep_listening_next_to_real_work_is_answered_not_deleted():
+    """Gemini 3 signs function-call parts; the model's turn must go back unchanged,
+    and every call in it (keep_listening included) gets a response."""
+    signed = types.Part(function_call=types.FunctionCall(name="keep_listening", args={"reason": "x"}),
+                        thought_signature=b"sig")
+    evs, box, sent, th = run([reply(signed, call("track_order", order_id="XK42Q7")),
+                              reply(types.Part(text="Out for delivery."))])
+    assert box.calls == [("track_order", {"order_id": "XK42Q7"})]
+    model_turn, tool_turn = th.history[1], th.history[2]
+    assert model_turn.parts[0].thought_signature == b"sig" and len(model_turn.parts) == 2
+    assert [p.function_response.name for p in tool_turn.parts] == ["keep_listening", "track_order"]
+
+
+def test_sampling_follows_the_model_family(monkeypatch):
+    import dataclasses
+    from duet_voice import config, gemini
+    assert gemini.sampling("gemini-2.5-flash") == {"temperature": 0.0, "seed": 7}
+    assert gemini.sampling("gemini-3.5-flash") == {"temperature": 1.0, "seed": 7}
+    monkeypatch.setattr(config, "CONFIG", dataclasses.replace(config.CONFIG, temperature="0.3"))
+    assert gemini.sampling("gemini-3.5-flash")["temperature"] == 0.3
+
+
+def test_thinking_is_a_budget_on_2_5_and_a_level_on_3():
+    from duet_voice.gemini import thinking_config
+    assert thinking_config("gemini-2.5-flash", "low").thinking_budget == 512
+    assert thinking_config("gemini-2.5-flash", "minimal").thinking_budget == 0
+    assert str(thinking_config("gemini-3.5-flash", "low").thinking_level).lower().endswith("low")
+    assert str(thinking_config("gemini-3.5-flash-lite", "minimal").thinking_level).lower().endswith("minimal")

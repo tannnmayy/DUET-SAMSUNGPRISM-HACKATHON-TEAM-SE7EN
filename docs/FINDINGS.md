@@ -161,7 +161,34 @@ Still open: a real run on a clean Linux GPU machine (see
   The thinker now asks once more before giving up. `tests/test_voice_thinker.py`
   covers this, and the rest of the thinker's tool loop.
 
-## 7. Gaps in today's systems that DUET is built against
+## 7. Which Gemini models a re-run can actually reach (27 Sep 2026)
+
+With a newly created key:
+
+- `gemini-2.5-flash-lite` and `gemini-2.5-pro` are refused: *"no longer available
+  to new users. Please update your code to use models/gemini-3.5-flash-lite"*
+  (for Pro: `gemini-3.1-pro-preview`). `gemini-2.5-flash` still answers, but it
+  is the same generation.
+- Samsung's re-run uses a key of its own, possibly a new one. A declared model it
+  cannot call would make the re-run fail, and that part of the grade scores zero.
+  DUET therefore declares `gemini-3.5-flash` (thinker) and
+  `gemini-3.5-flash-lite` (talker), the generation Google names as the
+  replacement. The switch needed two changes for Gemini 3:
+  - **Thought signatures.** Gemini 3 attaches them to function-call parts and
+    rejects a follow-up request that lost one. The thinker used to delete a
+    `keep_listening` call that came next to real work. It now keeps the model's
+    turn exactly as returned and answers every call.
+  - **Temperature.** Google advises keeping Gemini 3 at its default of 1.0,
+    because lower values can cause looping. The seed stays fixed.
+- **The free tier is not enough to evaluate on.** It allows 5 requests per minute
+  per model and serves them slowly: 1-16 s for a one-sentence talker reply and
+  28 s for a thinker step, against about 1 s on the paid tier. The benchmark
+  needs a billing-enabled key.
+- **First real-model check.** On "…the ID is X-K-4-2-Q-7, no wait, X-K-4-2-Q-8",
+  `gemini-3.5-flash` made exactly one call, `track_order("XK42Q8")`, with the
+  corrected, joined id. The talker named the corrected id too.
+
+## 8. Gaps in today's systems that DUET is built against
 
 - **FDB-v3 paper.**
   - The best published system, GPT-Realtime, passes fewer than 59% of

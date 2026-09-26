@@ -207,6 +207,21 @@ def collect(args, out: Path) -> None:
             shutil.copy(p, out / Path(p).name)
 
 
+def effective_config(env: dict) -> dict:
+    """The settings the agent process will run with: its defaults plus overrides,
+    resolved exactly as the agent resolves them, and the sampling actually used."""
+    code = ("import json, dataclasses; from duet_voice.config import CONFIG; from duet_voice import gemini; "
+            "c = dataclasses.asdict(CONFIG); "
+            "c['thinker_sampling'] = gemini.sampling(CONFIG.thinker_model); "
+            "c['talker_sampling'] = gemini.sampling(CONFIG.talker_model); print(json.dumps(c))")
+    try:
+        out = subprocess.run([sys.executable, "-c", code], cwd=str(REPO), env=env, capture_output=True,
+                             text=True, timeout=120, check=True).stdout
+        return json.loads(out.strip().splitlines()[-1])
+    except Exception as exc:  # never block a run on the record of it
+        return {"error": str(exc)[:200]}
+
+
 def main() -> int:
     global PROVIDER
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -241,7 +256,9 @@ def main() -> int:
     (out / "run_config.json").write_text(json.dumps({
         "stamp": stamp, "provider": PROVIDER, "dry_run": args.dry_run,
         "scoring_asr": args.scoring_asr, "only": args.only,
-        "config": {k: v for k, v in env.items() if k.startswith(("DUET_", "FDB_"))},
+        # the agent's effective settings (models, thinking, sampling, seed, listening)
+        "agent": effective_config(env),
+        "overrides": {k: v for k, v in env.items() if k.startswith(("DUET_", "FDB_"))},
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
     }, indent=1), encoding="utf-8")
 

@@ -33,11 +33,10 @@ async def acknowledgement(user_text: str, context: str = "", usage: Optional[dic
     from google.genai import types
 
     prompt = (("Earlier in this call: " + context + "\n") if context else "") + "User: " + user_text
-    from .gemini import thinking_config
+    from .gemini import sampling, thinking_config
     config = types.GenerateContentConfig(
         system_instruction=TALKER_INSTRUCTIONS,
-        temperature=0.0,
-        seed=CONFIG.seed,
+        **sampling(CONFIG.talker_model),
         max_output_tokens=48,
         thinking_config=thinking_config(CONFIG.talker_model, "minimal"),
     )

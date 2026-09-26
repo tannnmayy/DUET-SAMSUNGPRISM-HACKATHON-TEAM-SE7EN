@@ -51,6 +51,21 @@ def http_options():
             initial_delay=1.0, max_delay=8.0, exp_base=2.0, jitter=0.3,
             http_status_codes=[408, 429, 500, 502, 503, 504]))
 
+
+def sampling(model: str) -> dict:
+    """Temperature and seed for a model call.
+
+    The seed is always fixed. Temperature is DUET_TEMPERATURE when set; otherwise
+    0 on Gemini 2.x and the default 1.0 on Gemini 3, for which Google recommends
+    against lowering it (it can cause looping or degraded reasoning)."""
+    from .config import CONFIG
+    if CONFIG.temperature != "":
+        temperature = float(CONFIG.temperature)
+    else:
+        temperature = 0.0 if model.startswith("gemini-2") else 1.0
+    return {"temperature": temperature, "seed": CONFIG.seed}
+
+
 # Gemini 2.5 models take a token budget; Gemini 3 models take a named level.
 _BUDGETS_25 = {"minimal": 0, "none": 0, "low": 512, "medium": 2048, "high": 8192}
 
