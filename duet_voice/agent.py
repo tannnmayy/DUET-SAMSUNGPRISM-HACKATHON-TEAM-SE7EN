@@ -354,7 +354,7 @@ def _load() -> float:
 
     LiveKit's default reports CPU usage and refuses new rooms above 70%. During a
     benchmark run the CPU is busy with the *scoring* speech recognizer between
-    items, so the default made the worker skip whole conversations (2 of 100 in
+    items, so the default made the worker skip whole conversations (two in
     our dry run). Here the worker is full only at five simultaneous rooms."""
     try:
         return min(1.0, len(server.active_jobs) * 0.2)
