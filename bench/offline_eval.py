@@ -45,6 +45,23 @@ def turn_audio(folder: Path, segments: List[Dict[str, Any]]):
     return encode_audio(pcm[int(a * 16000): int(b * 16000)])
 
 
+class Pace:
+    """Spaces request starts evenly, for API keys with a low requests-per-minute limit."""
+
+    def __init__(self, rpm: float) -> None:
+        self.gap, self.next, self.lock = 60.0 / rpm, 0.0, asyncio.Lock()
+
+    async def wait(self) -> None:
+        async with self.lock:
+            now = time.monotonic()
+            start = max(now, self.next)
+            self.next = start + self.gap
+        await asyncio.sleep(start - now)
+
+
+PACE = None  # set in main() when --rpm is given
+
+
 async def run_item(sem, args, item, text: str, segments) -> Dict[str, Any]:
     from duet_voice.coordinator import Coordinator
     from duet_voice.fdb_tools import FdbToolbox
@@ -56,6 +73,13 @@ async def run_item(sem, args, item, text: str, segments) -> Dict[str, Any]:
         coord.turn_committed()  # offline, the whole utterance is already in
         toolbox = FdbToolbox("offline-" + folder.name, coord)
         thinker = Thinker(model=args.model, thinking=args.thinking)
+        if PACE is not None:
+            generate = thinker._generate
+
+            async def paced(contents, config):
+                await PACE.wait()
+                return await generate(contents, config)
+            thinker._generate = paced
         audio = turn_audio(folder, segments) if args.audio and segments else None
         t = time.time()
         final_text, error, steps, listened = "", "", 0, ""
@@ -93,6 +117,7 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="", help="comma-separated example ids")
     ap.add_argument("--concurrency", type=int, default=6)
+    ap.add_argument("--rpm", type=float, default=0, help="at most this many model requests per minute")
     ap.add_argument("--judge", action="store_true", help="LLM judge for arguments and responses")
     ap.add_argument("--audio", action="store_true", help="the thinker also hears the request audio")
     ap.add_argument("--tag", default="")
@@ -123,6 +148,8 @@ def main() -> int:
     sem = asyncio.Semaphore(args.concurrency)
 
     async def run_all():
+        global PACE
+        PACE = Pace(args.rpm) if args.rpm else None
         return await asyncio.gather(*(run_item(sem, args, it, words(it), asr.get(it[2].name, {}).get("segments"))
                                       for it in items))
 

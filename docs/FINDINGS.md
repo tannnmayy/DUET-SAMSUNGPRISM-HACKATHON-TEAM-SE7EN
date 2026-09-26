@@ -95,6 +95,14 @@ clock):
 (turn-take 100%), with no interruptions and 3.95 s benchmark-measured latency.
 Fix 3 acts only when the thinker runs, so it is measured in the model runs.
 
+**Does the noise tail trigger false "user is speaking" events?** It matters: DUET
+treats new speech as a possible correction and discards the plan in flight. A
+noise burst with no words would then leave the request unanswered. Across all
+117 conversations of the two runs above, LiveKit's VAD fired after the user's
+last transcribed words exactly once: a 0.55 s burst, 23.7 s later, long after
+the reply. In a 1-6 s thinking window that is a risk of about 0.1% per
+conversation, so we did not add machinery for it.
+
 ## 4. Correctness fixes found by reading the code
 
 - **A call interrupted mid-flight.** If the user barges in while a tool call is

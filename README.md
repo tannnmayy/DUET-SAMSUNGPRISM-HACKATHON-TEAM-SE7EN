@@ -99,7 +99,7 @@ repository.
 
 | Variable | Needed for | Required? |
 |---|---|---|
-| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
+| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Use a key from a project with billing enabled (Tier 1): one 100-item run makes a few hundred requests, more than the free tier's daily allowance for Gemini 2.5 Flash. Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
 | `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | For judged scores |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) in dev mode | Optional |
 

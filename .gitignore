@@ -21,3 +21,5 @@ results/live/
 third_party/
 *.wav
 _tmp*
+results/plumbing/
+.env.livekit

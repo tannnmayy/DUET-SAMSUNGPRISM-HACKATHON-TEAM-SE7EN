@@ -4,9 +4,12 @@ The official scripts create `openai.OpenAI()` and ask for "gpt-4o". Samsung runs
 them with their own pinned judge, so our reported numbers must come from gpt-4o
 too whenever an OPENAI_API_KEY is available; then nothing here changes anything.
 
-Without an OpenAI key, `install_gemini_judge()` points the same prompts at a
-Gemini model through Gemini's OpenAI-compatible endpoint. Reports produced that
-way are labelled as a proxy judge and are never presented as official numbers.
+Without a usable OpenAI key, `install()` points the same prompts at a Gemini
+model through Gemini's OpenAI-compatible endpoint. Reports produced that way are
+labelled as a proxy judge and are never presented as official numbers. A key is
+"usable" only if one tiny gpt-4o request succeeds: a key on an account with no
+credits would otherwise make every judge call fail under an official label.
+DUET_JUDGE=gemini forces the proxy.
 """
 
 from __future__ import annotations
@@ -51,8 +54,28 @@ class NoJudge:
         self.chat = type("Chat", (), {"completions": _Declines()})()
 
 
+_openai_ok: Optional[bool] = None
+
+
+def openai_usable() -> bool:
+    """Whether the official judge (gpt-4o) can actually be called. Checked once."""
+    global _openai_ok
+    if _openai_ok is None:
+        _openai_ok = False
+        if os.environ.get("OPENAI_API_KEY") and os.environ.get("DUET_JUDGE", "").lower() != "gemini":
+            try:
+                from openai import OpenAI
+                OpenAI().chat.completions.create(model="gpt-4o", max_tokens=1,
+                                                 messages=[{"role": "user", "content": "ok"}])
+                _openai_ok = True
+            except Exception as exc:
+                print("WARNING: OPENAI_API_KEY is set but gpt-4o cannot be called (%s); "
+                      "using the Gemini PROXY judge instead." % str(exc)[:160], flush=True)
+    return _openai_ok
+
+
 def judge_label() -> str:
-    if os.environ.get("OPENAI_API_KEY"):
+    if openai_usable():
         return "gpt-4o (official judge)"
     if os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY"):
         return "%s via OpenAI-compatible endpoint (PROXY judge, not official)" % proxy_model()
@@ -64,8 +87,8 @@ def proxy_model() -> str:
 
 
 def install(*modules: Any) -> Optional[str]:
-    """Patch the official modules' client getter when no OpenAI key exists."""
-    if os.environ.get("OPENAI_API_KEY"):
+    """Patch the official modules' client getter when gpt-4o cannot be used."""
+    if openai_usable():
         return None
     if not (os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")):
         return None
