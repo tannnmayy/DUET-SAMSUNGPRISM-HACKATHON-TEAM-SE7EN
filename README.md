@@ -172,7 +172,9 @@ The agent's tool backend is the benchmark's own `mock_apis.py`, found in
 
 ## Run logs
 
-Every run writes `results/live/<time>/`:
+Every run writes `results/live/<time>/` (git-ignored). The run we report is copied,
+without audio, to the committed `results/reported/` folder with
+`python bench/publish_run.py results/live/<time> --name <name>`:
 
 | File | Content |
 |---|---|
