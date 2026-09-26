@@ -90,6 +90,30 @@ clock):
    removed, and acts or asks for exactly what is missing. The talker covers a
    slow thinker only after 1.6 s of quiet.
 
+4. **A third of all turns closed before their last words were transcribed.**
+   Found in the traces afterwards: 70 of 217 turns. Example:
+   - The user said "…I'll pay to pull from checking.", paused briefly, then
+     "Wait, wait, no, that's wrong too. Make it savings instead."
+   - The end-of-turn detector judges the *audio*, and closed the turn 0.8 s
+     after the voice stopped. Whisper was still transcribing the 7-second second
+     segment, so the committed turn held only the first sentence, the stale
+     value. The correction's transcript arrived 0.3 s later, and LiveKit
+     closed a second turn for it.
+   - With a model, the plan made on "checking" was protected only by timing:
+     LiveKit happened to cancel it, and the commit gate's quiet hold happened to
+     outlast the transcription. On a slower GPU or a longer segment, the stale
+     call could act, and one extra call fails the item.
+
+   *Fix, by construction:*
+   - Words that arrive after the turn closed advance the epoch, as new speech
+     does.
+   - Every tool call carries the epoch its plan was made in. A call from an
+     overtaken plan is refused at the gate, even after the newer turn has
+     closed. Before, the gate checked only the epoch current when the call
+     arrived.
+
+   Two coordinator tests cover it.
+
 **Recheck** (`results/live/20260927_014233`): the 19 conversations that failed
 (17 silent, 2 never joined) were re-run with fixes 1 and 2. All 19 replied
 (turn-take 100%), with no interruptions and 3.95 s benchmark-measured latency.
@@ -102,6 +126,25 @@ noise burst with no words would then leave the request unanswered. Across all
 last transcribed words exactly once: a 0.55 s burst, 23.7 s later, long after
 the reply. In a 1-6 s thinking window that is a risk of about 0.1% per
 conversation, so we did not add machinery for it.
+
+**LiveKit Cloud** (`results/live/20260927_044851`). The path the guide
+documents: the agent registered with our LiveKit Cloud project, and three
+recordings streamed through it. All three got a reply, with 3.55 s mean
+benchmark-measured latency.
+
+**The model-driven path, before any key** (`results/plumbing/`). A scripted
+stand-in for the Gemini API (`tests/fake_gemini.py`, fixed generic replies,
+no benchmark knowledge) drove the live agent through the official runner. The
+first conversation shows every mechanism working together:
+- the thinker called `keep_listening` after "Like..." and after "...last week
+  and...", and nothing was said or done;
+- a plan drafted at "Could you track it for me?", before the order id, was
+  discarded;
+- exactly one call reached the benchmark's log, and the benchmark's scorer
+  read it;
+- the acknowledgement and the answer played 0.24 s after the turn closed;
+- a repeated identical call came back from the ledger as `already_done`, and a
+  barge-in cut the agent's speech.
 
 ## 4. Correctness fixes found by reading the code
 

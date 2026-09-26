@@ -72,7 +72,7 @@ drafted during a pause and then discarded leaves the request open.
 
 | Mechanism | What it guarantees | Where |
 |---|---|---|
-| **Epochs** | Every time the user starts speaking the epoch advances. Work planned under an older epoch was planned on words that may be changing, and is discarded. | `coordinator.py` |
+| **Epochs** | The epoch advances every time the user starts speaking, and when words arrive after a turn was closed (the end of a segment still being transcribed when the end-of-turn detector fired). Every tool call carries the epoch its plan was made in; a plan the user's words have overtaken is refused at the gate, even after the newer turn has closed. | `coordinator.py` |
 | **Commit gate** | A tool runs only once the end-of-turn detector has closed the turn *and* the user has been quiet for a hold: 1.1 s normally, 1.8 s while they have been revising ("no wait", "actually", "instead"), 2.2 s when the last words leave a sentence open ("and", "um", "let me think"). A call that meets new speech at the gate is superseded: never executed, never logged. | `coordinator.py` |
 | **Idempotency ledger** | An identical call already made in this conversation is answered from the ledger (case, order and spacing ignored). A state-changing action is never performed twice. | `coordinator.py` |
 | **Failure policy** | A read-only call that fails is retried once. A state-changing call is never re-sent: if its outcome is unknown (timeout), the ledger remembers that and the user is told, with an offer of a human agent. | `coordinator.py` |
