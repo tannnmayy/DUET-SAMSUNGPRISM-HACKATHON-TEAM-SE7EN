@@ -22,14 +22,14 @@ FDB_COMMIT="3e799c45a045256f47d5f1c9cda90157e2d2ec9e"
 DATA_URL="https://drive.usercontent.google.com/download?id=1SO_4MTazWQ_jvCx0dtmpQ-t40bdd07yz&export=download&confirm=t"
 DATA_SHA256="37545bd896f81718136598cf5be25d42ea9aa22efcd91f58370938d05d7d672f"
 LK_VERSION="1.13.7"
-LK_SHA256_LINUX_AMD64=""   # filled from the release's checksums.txt at download time
 PY="${PYTHON:-python3}"
 
 say() { printf '\n== %s\n' "$*"; }
 need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 
-need git "apt install git"; need curl "apt install curl"; need ffmpeg "apt install ffmpeg"; need "$PY" "Python 3.10-3.12"
-: "${GOOGLE_API_KEY:?Set GOOGLE_API_KEY (Gemini API key) - DUET's thinker and talker run on Gemini}"
+need git "apt install git"; need curl "apt install curl"; need unzip "apt install unzip"
+need ffmpeg "apt install ffmpeg"; need "$PY" "Python 3.10-3.12"
+: "${GOOGLE_API_KEY:?Set GOOGLE_API_KEY (Gemini API key): the DUET thinker and talker run on Gemini}"
 
 # --- 1. environments -----------------------------------------------------------------
 # Two venvs: the agent's, and the benchmark runner's (NVIDIA NeMo for the scoring

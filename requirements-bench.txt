@@ -4,7 +4,6 @@
 livekit[crypto]==1.1.18
 livekit-api==1.2.1
 python-dotenv==1.2.3
-numpy==2.4.6
 pydub==0.25.1
 ffmpeg-python==0.2.0
 openai==2.54.0
