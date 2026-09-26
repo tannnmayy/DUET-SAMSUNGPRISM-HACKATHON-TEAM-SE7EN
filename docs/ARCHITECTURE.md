@@ -57,7 +57,7 @@ thinker's first look at a turn decides whether the user has finished:
 | The thinker decides | What the user hears |
 |---|---|
 | **The user is not finished** (cut off mid-sentence, or announced a detail not yet given): it calls `keep_listening` | Nothing. Nothing is done or remembered. Once the user has been quiet for 2.5 s, the thinker looks again with `keep_listening` removed. It acts, or asks for exactly what is missing. If the user resumes first, the next turn re-reads everything. |
-| **Tools are needed** | The talker's acknowledgement at once, then the thinker's answer after the tool results. "Still working on it." every 3.5 s while a slow tool runs. |
+| **Tools are needed** | The talker's acknowledgement at once, then the thinker's answer after the tool results. If the talker has nothing within 0.6 s (a slow or failed API call), "One moment." instead: no dead air, and no claim. "Still working on it." every 3.5 s while a slow tool runs. |
 | **No tool is needed** (a greeting, a question, a clarification) | Only the thinker's answer. |
 | **Noise, not speech** (`<silent>`) | Nothing. |
 | **Not decided yet after 0.9 s** | The acknowledgement, but only once the user has been quiet for 1.6 s, never in a pause they may resume. |

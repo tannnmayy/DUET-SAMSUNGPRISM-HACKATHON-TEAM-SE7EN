@@ -162,7 +162,7 @@ def trace_stats(out: Path) -> dict:
     the Gemini tokens and cost (bench/cost_report.py)."""
     from bench import cost_report
     stats = {"conversations": 0, "thinker_errors": 0, "keep_listening": 0, "superseded": 0,
-             "talker_lines": 0, "thinker_answers": 0, "tool_calls": 0}
+             "talker_lines": 0, "fallback_acks": 0, "thinker_answers": 0, "tool_calls": 0}
     first_error = ""
     for path in sorted((out / "traces").glob("*.jsonl")):
         stats["conversations"] += 1
@@ -181,6 +181,7 @@ def trace_stats(out: Path) -> dict:
                 stats["superseded"] += 1
             elif kind == "talker" and ev.get("text"):
                 stats["talker_lines"] += 1
+                stats["fallback_acks"] += bool(ev.get("fallback"))
             elif kind == "tool_done":
                 stats["tool_calls"] += 1
             elif kind == "thinker_say":

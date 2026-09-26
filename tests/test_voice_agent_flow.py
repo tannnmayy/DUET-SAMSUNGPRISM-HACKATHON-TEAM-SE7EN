@@ -70,6 +70,12 @@ def test_work_gets_an_acknowledgement_then_the_answer():
     assert said == ["Sure, checking that now.", "Order X1 is out for delivery."]
 
 
+def test_a_slow_or_failed_talker_still_leaves_no_dead_air_when_there_is_work():
+    a = make_agent([ThinkEvent("decided", tools=True),
+                    ThinkEvent("say", text="Order X1 is out for delivery.")], ack=None, delay=0.05)
+    assert speak(a, "where is my order X1") == ["One moment.", "Order X1 is out for delivery."]
+
+
 def test_no_tools_means_one_answer_and_no_acknowledgement():
     a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Hi! How can I help?")])
     assert speak(a, "hello there") == ["Hi! How can I help?"]

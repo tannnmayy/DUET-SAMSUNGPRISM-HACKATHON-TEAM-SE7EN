@@ -64,6 +64,9 @@ THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
 LISTEN_WAIT_S = float(os.environ.get("DUET_LISTEN_WAIT", "2.5"))
 # a slow thinker is covered by the talker only after this much quiet
 ACK_MIN_QUIET_S = float(os.environ.get("DUET_ACK_MIN_QUIET", "1.6"))
+# When there is work to cover and the talker has nothing in time (slow or failed
+# API call), this is said instead: no dead air, and no claim about any result.
+FALLBACK_ACK = os.environ.get("DUET_FALLBACK_ACK", "One moment.")
 # no LLM at all: every closed turn gets "Okay." (see DuetAgent.llm_node)
 DRY_RUN = os.environ.get("DUET_DRY_RUN", "0") == "1"
 
@@ -279,7 +282,9 @@ class DuetAgent(Agent):
                 if ev == "tick":
                     if not spoke and decided_tools:
                         ack = await speak_ack(0.6)
-                        self._trace("talker", text=ack, reason="tools")
+                        fallback = not ack
+                        ack = ack or FALLBACK_ACK
+                        self._trace("talker", text=ack, reason="tools", fallback=fallback)
                         if ack:
                             yield ack + " "
                             yield FlushSentinel()
