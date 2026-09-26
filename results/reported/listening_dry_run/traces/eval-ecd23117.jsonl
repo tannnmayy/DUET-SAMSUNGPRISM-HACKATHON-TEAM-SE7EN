@@ -1,0 +1,33 @@
+{"t": 1790460816.2625072, "kind": "session_start", "room": "eval-ecd23117", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460816.3663433, "kind": "agent_state", "state": "listening"}
+{"t": 1790460820.927177, "kind": "user_state", "state": "speaking"}
+{"t": 1790460822.6286976, "kind": "user_state", "state": "listening"}
+{"t": 1790460822.815759, "kind": "user_state", "state": "speaking"}
+{"t": 1790460823.2773423, "kind": "metrics", "type": "stt_metrics", "duration": 0.6483702000114135, "audio_duration": 2.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460823.2915776, "kind": "heard", "text": "You know, like, you know,"}
+{"t": 1790460823.294657, "kind": "dry_run_reply", "text": "You know, like, you know,"}
+{"t": 1790460826.2852323, "kind": "user_state", "state": "listening"}
+{"t": 1790460826.739499, "kind": "user_turn", "text": "You know, like, you know,"}
+{"t": 1790460826.7408648, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8062667846679688, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005471000040415674, "speech_id": "speech_7b052240bac3"}
+{"t": 1790460826.7408648, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460826.9083707, "kind": "metrics", "type": "stt_metrics", "duration": 0.6202149000018835, "audio_duration": 4.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460826.910446, "kind": "heard", "text": "Let's raise the max price to $3,000 per month."}
+{"t": 1790460826.910446, "kind": "agent_state", "state": "listening"}
+{"t": 1790460826.921026, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.1785717000020668, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7b052240bac3"}
+{"t": 1790460827.1721184, "kind": "user_state", "state": "speaking"}
+{"t": 1790460831.121154, "kind": "user_state", "state": "listening"}
+{"t": 1790460831.6669595, "kind": "metrics", "type": "stt_metrics", "duration": 0.5448085999814793, "audio_duration": 4.564, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460831.6689672, "kind": "heard", "text": "And also bump up the minimum bedrooms to three."}
+{"t": 1790460831.673114, "kind": "dry_run_reply", "text": "You know, like, you know, Let's raise the max price to $3,000 per month. And also bump up the minimum bedrooms to three."}
+{"t": 1790460831.6738694, "kind": "user_state", "state": "speaking"}
+{"t": 1790460835.5246074, "kind": "user_state", "state": "listening"}
+{"t": 1790460836.0955427, "kind": "metrics", "type": "stt_metrics", "duration": 0.5704955999972299, "audio_duration": 4.468, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460836.0972626, "kind": "heard", "text": "Yeah, I think I need more space than I originally thought."}
+{"t": 1790460836.1008902, "kind": "dry_run_reply", "text": "You know, like, you know, Let's raise the max price to $3,000 per month. And also bump up the minimum bedrooms to three. Yeah, I think I need more space than I originally thought."}
+{"t": 1790460837.6604226, "kind": "user_turn", "text": "Let's raise the max price to $3,000 per month. And also bump up the minimum bedrooms to three. Yeah, I think I need more space than I originally thought."}
+{"t": 1790460837.6614246, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4878151416778564, "transcription_delay": 0.9252676963806152, "on_user_turn_completed_delay": 0.0004555000050459057, "speech_id": "speech_e3976a4f017a"}
+{"t": 1790460837.6614246, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460837.7939503, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460837.8061197, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1302270000160206, "duration": 0.14301500000874512, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e3976a4f017a"}
+{"t": 1790460839.2630737, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460839.2630737, "kind": "agent_state", "state": "listening"}

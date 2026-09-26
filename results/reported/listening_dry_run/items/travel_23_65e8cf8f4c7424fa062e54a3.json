@@ -1,0 +1,301 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "travel_23",
+  "category": "travel_identity",
+  "title": "Heavy Fillers + Document Updates",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:49:51.594586",
+  "inference_time_s": 56.05,
+  "room_name": "eval-97beab04",
+  "stream_start_time": 1790462994.464769,
+  "input_transcript": "Hmm. Um, so I need to like update my passport number to P1122 because I just renewed it. And then, uh, I also got a new driver's license. So could you change that one to DL9090 as well?",
+  "input_asr_chunks": [
+    {
+      "text": "Hmm.",
+      "timestamp": [
+        0.21,
+        0.89
+      ]
+    },
+    {
+      "text": "Um,",
+      "timestamp": [
+        1.49,
+        2.19
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        2.83,
+        3.35
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.35,
+        3.67
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        3.67,
+        3.87
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        3.87,
+        4.15
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        4.15,
+        4.59
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        4.59,
+        5.01
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        5.01,
+        5.21
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        5.21,
+        5.71
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        5.71,
+        6.19
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.19,
+        6.63
+      ]
+    },
+    {
+      "text": "P1122",
+      "timestamp": [
+        6.63,
+        8.87
+      ]
+    },
+    {
+      "text": "because",
+      "timestamp": [
+        8.87,
+        9.25
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        9.25,
+        9.43
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        9.43,
+        9.63
+      ]
+    },
+    {
+      "text": "renewed",
+      "timestamp": [
+        9.63,
+        9.97
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        9.97,
+        10.27
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        10.45,
+        11.11
+      ]
+    },
+    {
+      "text": "then,",
+      "timestamp": [
+        11.11,
+        11.47
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        11.77,
+        12.09
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.45,
+        12.71
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        12.71,
+        13.15
+      ]
+    },
+    {
+      "text": "got",
+      "timestamp": [
+        13.15,
+        13.41
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        13.41,
+        13.53
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        13.53,
+        13.67
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        13.67,
+        14.19
+      ]
+    },
+    {
+      "text": "license.",
+      "timestamp": [
+        14.19,
+        14.59
+      ]
+    },
+    {
+      "text": "So",
+      "timestamp": [
+        14.63,
+        15.33
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        15.33,
+        15.67
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        15.67,
+        15.87
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        15.87,
+        16.27
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        16.27,
+        16.55
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        16.55,
+        16.83
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        16.83,
+        17.05
+      ]
+    },
+    {
+      "text": "DL9090",
+      "timestamp": [
+        17.05,
+        20.91
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        20.91,
+        21.69
+      ]
+    },
+    {
+      "text": "well?",
+      "timestamp": [
+        21.69,
+        21.93
+      ]
+    }
+  ],
+  "user_speech_end_rel": 21.93,
+  "latency": {
+    "input_duration_s": 52.5,
+    "output_duration_s": 52.5,
+    "first_speech_s": 26.2
+  },
+  "user_done_unix": 1790463016.394769,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        26.0,
+        26.48
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.07,
+  "audio_agent_speech_start": 26.0,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

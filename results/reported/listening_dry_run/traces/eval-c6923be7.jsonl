@@ -1,0 +1,39 @@
+{"t": 1790462185.197584, "kind": "session_start", "room": "eval-c6923be7", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462185.294905, "kind": "agent_state", "state": "listening"}
+{"t": 1790462187.737789, "kind": "user_state", "state": "speaking"}
+{"t": 1790462188.542031, "kind": "user_state", "state": "listening"}
+{"t": 1790462188.7914684, "kind": "user_state", "state": "speaking"}
+{"t": 1790462189.0598738, "kind": "metrics", "type": "stt_metrics", "duration": 0.5195141999865882, "audio_duration": 1.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462189.0742192, "kind": "heard", "text": "Oh."}
+{"t": 1790462189.0765243, "kind": "dry_run_reply", "text": "Oh."}
+{"t": 1790462192.5925126, "kind": "user_state", "state": "listening"}
+{"t": 1790462192.8113508, "kind": "user_state", "state": "speaking"}
+{"t": 1790462193.2341774, "kind": "metrics", "type": "stt_metrics", "duration": 0.6400512999971397, "audio_duration": 4.404, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462193.2351773, "kind": "heard", "text": "Um, the new driver's license number is D."}
+{"t": 1790462193.237571, "kind": "dry_run_reply", "text": "Oh. Um, the new driver's license number is D."}
+{"t": 1790462195.0898228, "kind": "user_state", "state": "listening"}
+{"t": 1790462195.3377643, "kind": "user_state", "state": "speaking"}
+{"t": 1790462195.600301, "kind": "metrics", "type": "stt_metrics", "duration": 0.5087293999968097, "audio_duration": 2.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462195.601346, "kind": "heard", "text": "P-L-5"}
+{"t": 1790462195.603813, "kind": "dry_run_reply", "text": "Oh. Um, the new driver's license number is D. P-L-5"}
+{"t": 1790462197.893285, "kind": "user_state", "state": "listening"}
+{"t": 1790462198.143014, "kind": "user_state", "state": "speaking"}
+{"t": 1790462198.4259267, "kind": "metrics", "type": "stt_metrics", "duration": 0.5313051999837626, "audio_duration": 3.156, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462198.4273956, "kind": "heard", "text": "Dash five, dash five."}
+{"t": 1790462201.7377827, "kind": "user_state", "state": "listening"}
+{"t": 1790462202.1817887, "kind": "user_turn", "text": "Oh. Um, the new driver's license number is D. P-L-5 Dash five, dash five."}
+{"t": 1790462202.1835175, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7949545383453369, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00042869997560046613, "speech_id": "speech_286037a6cc26"}
+{"t": 1790462202.1850357, "kind": "dry_run_reply", "text": "Oh. Um, the new driver's license number is D. P-L-5 Dash five, dash five."}
+{"t": 1790462202.1860418, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462202.3239746, "kind": "metrics", "type": "stt_metrics", "duration": 0.5838252000103239, "audio_duration": 4.244, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462202.3249948, "kind": "heard", "text": "Could you swap out the old one and put this new one in there?"}
+{"t": 1790462202.325505, "kind": "agent_state", "state": "listening"}
+{"t": 1790462202.3342943, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.14532129999133758, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_286037a6cc26"}
+{"t": 1790462203.1240735, "kind": "user_turn", "text": "Could you swap out the old one and put this new one in there?"}
+{"t": 1790462203.1250758, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005680999893229455, "speech_id": "speech_c4ad1f9b008e"}
+{"t": 1790462203.126076, "kind": "dry_run_reply", "text": "Oh. Um, the new driver's license number is D. P-L-5 Dash five, dash five. Could you swap out the old one and put this new one in there?"}
+{"t": 1790462203.1270757, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462203.2181358, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462203.2292633, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08873650000896305, "duration": 0.10093089999281801, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c4ad1f9b008e"}
+{"t": 1790462204.6863039, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462204.6863039, "kind": "agent_state", "state": "listening"}

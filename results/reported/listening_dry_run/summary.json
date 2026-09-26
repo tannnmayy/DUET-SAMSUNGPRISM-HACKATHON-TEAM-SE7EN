@@ -1,0 +1,44 @@
+{
+ "tool_selection_f1": 0.0,
+ "argument_acc": 0.0,
+ "response_qual": null,
+ "turn_take_rate": 1.0,
+ "interruption_rate": 0.12,
+ "avg_response_latency_s": 4.09,
+ "pass_at_1": 0.0,
+ "passed": 0,
+ "total": 100,
+ "pass_by_difficulty": {
+  "easy": 0.0,
+  "medium": 0.0,
+  "hard": 0.0
+ },
+ "pass_by_disfluency": {
+  "PAUSE": 0.0,
+  "FILLER": 0.0,
+  "HESITATION": 0.0,
+  "FALSE_START": 0.0,
+  "SELF_CORRECTION": 0.0
+ },
+ "pass_by_domain": {
+  "ecommerce_support": 0.0,
+  "finance_billing": 0.0,
+  "housing_location": 0.0,
+  "travel_identity": 0.0
+ },
+ "first_response_latency_mean_s": 4.09,
+ "tool_call_latency_mean_s": null,
+ "task_completion_latency_mean_s": 4.24,
+ "agent": {
+  "conversations": 100,
+  "thinker_errors": 0,
+  "keep_listening": 0,
+  "superseded": 0,
+  "talker_lines": 0,
+  "thinker_answers": 0,
+  "tool_calls": 0,
+  "tokens": {},
+  "cost_usd": 0.0,
+  "cost_usd_per_conversation": 0.0
+ }
+}

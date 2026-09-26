@@ -1,0 +1,392 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "finance_18",
+  "category": "finance_billing",
+  "title": "Exchange + Autopay + Benefits Chain",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:54:09.183714",
+  "inference_time_s": 53.32,
+  "room_name": "eval-b124ba11",
+  "stream_start_time": 1790459652.0512867,
+  "input_transcript": "Um, so alright, so first, um, I need to know how much thousand US dollars would be in U .S. Then I want to change my credit card auto -pay so it pulls from the savings instead. And finally, can you tell me what kind of benefits the premium card has?",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.46,
+        0.96
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.26,
+        1.44
+      ]
+    },
+    {
+      "text": "alright,",
+      "timestamp": [
+        1.44,
+        1.78
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        2.16,
+        2.28
+      ]
+    },
+    {
+      "text": "first,",
+      "timestamp": [
+        2.28,
+        2.72
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        3.14,
+        3.38
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.7,
+        3.92
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        3.92,
+        4.12
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.12,
+        4.32
+      ]
+    },
+    {
+      "text": "know",
+      "timestamp": [
+        4.32,
+        4.56
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        4.56,
+        4.88
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        4.88,
+        5.24
+      ]
+    },
+    {
+      "text": "thousand",
+      "timestamp": [
+        5.24,
+        5.72
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        5.72,
+        6.08
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        6.08,
+        6.54
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        6.54,
+        7.0
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        7.0,
+        7.26
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        7.26,
+        7.48
+      ]
+    },
+    {
+      "text": "U",
+      "timestamp": [
+        7.48,
+        7.58
+      ]
+    },
+    {
+      "text": ".S.",
+      "timestamp": [
+        7.58,
+        7.78
+      ]
+    },
+    {
+      "text": "Then",
+      "timestamp": [
+        8.2,
+        8.38
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        8.38,
+        8.52
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        8.52,
+        8.66
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        8.66,
+        8.8
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        8.8,
+        9.16
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        9.16,
+        9.42
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        9.42,
+        9.76
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        9.76,
+        10.28
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        10.28,
+        11.26
+      ]
+    },
+    {
+      "text": "-pay",
+      "timestamp": [
+        11.26,
+        11.54
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        11.54,
+        11.84
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        11.84,
+        12.08
+      ]
+    },
+    {
+      "text": "pulls",
+      "timestamp": [
+        12.08,
+        12.44
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        12.44,
+        12.72
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.72,
+        12.88
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        12.88,
+        13.28
+      ]
+    },
+    {
+      "text": "instead.",
+      "timestamp": [
+        13.28,
+        13.66
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        13.9,
+        13.96
+      ]
+    },
+    {
+      "text": "finally,",
+      "timestamp": [
+        13.96,
+        14.44
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        14.6,
+        14.7
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        14.7,
+        14.92
+      ]
+    },
+    {
+      "text": "tell",
+      "timestamp": [
+        14.92,
+        15.24
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        15.24,
+        15.54
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        15.54,
+        16.36
+      ]
+    },
+    {
+      "text": "kind",
+      "timestamp": [
+        16.36,
+        16.62
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        16.62,
+        16.78
+      ]
+    },
+    {
+      "text": "benefits",
+      "timestamp": [
+        16.78,
+        17.42
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        17.42,
+        17.66
+      ]
+    },
+    {
+      "text": "premium",
+      "timestamp": [
+        17.66,
+        17.96
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        17.96,
+        18.44
+      ]
+    },
+    {
+      "text": "has?",
+      "timestamp": [
+        18.44,
+        18.96
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.96,
+  "latency": {
+    "input_duration_s": 49.797,
+    "output_duration_s": 49.797,
+    "first_speech_s": 23.6
+  },
+  "user_done_unix": 1790459671.0112867,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        23.41,
+        23.89
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.45,
+  "audio_agent_speech_start": 23.41,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

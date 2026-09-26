@@ -1,0 +1,43 @@
+{"t": 1790461573.968397, "kind": "session_start", "room": "eval-702aa859", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461574.0688615, "kind": "agent_state", "state": "listening"}
+{"t": 1790461576.7268357, "kind": "user_state", "state": "speaking"}
+{"t": 1790461578.3311603, "kind": "user_state", "state": "listening"}
+{"t": 1790461578.486461, "kind": "user_state", "state": "speaking"}
+{"t": 1790461578.8553145, "kind": "metrics", "type": "stt_metrics", "duration": 0.5232218999881297, "audio_duration": 2.196, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461578.8572621, "kind": "heard", "text": "You know, um..."}
+{"t": 1790461578.8599522, "kind": "dry_run_reply", "text": "You know, um..."}
+{"t": 1790461581.3302717, "kind": "user_state", "state": "listening"}
+{"t": 1790461581.7831757, "kind": "user_state", "state": "speaking"}
+{"t": 1790461581.8616107, "kind": "metrics", "type": "stt_metrics", "duration": 0.5302263000048697, "audio_duration": 3.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461581.8626103, "kind": "heard", "text": "Can you first update my filter so pets are allowed?"}
+{"t": 1790461581.8656526, "kind": "dry_run_reply", "text": "You know, um... Can you first update my filter so pets are allowed?"}
+{"t": 1790461584.1730509, "kind": "user_state", "state": "listening"}
+{"t": 1790461584.5783803, "kind": "user_state", "state": "speaking"}
+{"t": 1790461584.7822702, "kind": "metrics", "type": "stt_metrics", "duration": 0.6085802000015974, "audio_duration": 2.996, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461584.7837944, "kind": "heard", "text": "I keep forgetting to set that."}
+{"t": 1790461584.7859373, "kind": "dry_run_reply", "text": "You know, um... Can you first update my filter so pets are allowed? I keep forgetting to set that."}
+{"t": 1790461587.7299085, "kind": "user_state", "state": "listening"}
+{"t": 1790461587.821312, "kind": "user_state", "state": "speaking"}
+{"t": 1790461588.2599275, "kind": "metrics", "type": "stt_metrics", "duration": 0.5291804000153206, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461588.261742, "kind": "heard", "text": "Then like search in Seattle for one bedroom."}
+{"t": 1790461591.2771194, "kind": "user_state", "state": "listening"}
+{"t": 1790461591.6355765, "kind": "user_state", "state": "speaking"}
+{"t": 1790461591.8607988, "kind": "metrics", "type": "stt_metrics", "duration": 0.5818330000038259, "audio_duration": 4.052, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461591.8617232, "kind": "heard", "text": "And then once you find something, I'll check the transit time."}
+{"t": 1790461595.2285464, "kind": "user_state", "state": "listening"}
+{"t": 1790461595.6658185, "kind": "user_turn", "text": "You know, um... Can you first update my filter so pets are allowed? I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, I'll check the transit time."}
+{"t": 1790461595.666821, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7892720699310303, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003527000080794096, "speech_id": "speech_84f096d10e6d"}
+{"t": 1790461595.6678207, "kind": "dry_run_reply", "text": "You know, um... Can you first update my filter so pets are allowed? I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, I'll check the transit time."}
+{"t": 1790461595.6688216, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461595.9156933, "kind": "metrics", "type": "stt_metrics", "duration": 0.6861509000009391, "audio_duration": 4.18, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461595.917497, "kind": "heard", "text": "From there to the stadium because, you know, I go to games pretty often."}
+{"t": 1790461595.9180596, "kind": "agent_state", "state": "listening"}
+{"t": 1790461595.9296286, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2597040999971796, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_84f096d10e6d"}
+{"t": 1790461596.7189205, "kind": "user_turn", "text": "From there to the stadium because, you know, I go to games pretty often."}
+{"t": 1790461596.7189205, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046320000546984375, "speech_id": "speech_8487de07bb7c"}
+{"t": 1790461596.7201364, "kind": "dry_run_reply", "text": "You know, um... Can you first update my filter so pets are allowed? I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, I'll check the transit time. From there to the stadium because, you know, I go to games pretty often."}
+{"t": 1790461596.7201364, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461596.8118916, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461596.8250182, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08915410001645796, "duration": 0.10288940000464208, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8487de07bb7c"}
+{"t": 1790461598.2842996, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461598.2853048, "kind": "agent_state", "state": "listening"}

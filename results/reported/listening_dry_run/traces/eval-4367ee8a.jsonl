@@ -1,0 +1,26 @@
+{"t": 1790458753.2655015, "kind": "session_start", "room": "eval-4367ee8a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458753.4172354, "kind": "agent_state", "state": "listening"}
+{"t": 1790458755.4203115, "kind": "user_state", "state": "speaking"}
+{"t": 1790458760.2713256, "kind": "user_state", "state": "listening"}
+{"t": 1790458760.9202054, "kind": "metrics", "type": "stt_metrics", "duration": 0.6486042000178713, "audio_duration": 5.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458760.9221165, "kind": "heard", "text": "I need to figure out how much 1,000 US dollars would be in."}
+{"t": 1790458760.9251227, "kind": "dry_run_reply", "text": "I need to figure out how much 1,000 US dollars would be in."}
+{"t": 1790458760.9264772, "kind": "user_turn", "text": "I need to figure out how much 1,000 US dollars would be in."}
+{"t": 1790458760.9269836, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0063233375549316, "transcription_delay": 1.002790927886963, "on_user_turn_completed_delay": 0.000371000001905486, "speech_id": "speech_3beb74753abf"}
+{"t": 1790458760.9295225, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458761.0631936, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458761.0750623, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12915829999838024, "duration": 0.1411820000212174, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3beb74753abf"}
+{"t": 1790458761.9205794, "kind": "user_state", "state": "speaking"}
+{"t": 1790458762.5325613, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458762.5325613, "kind": "agent_state", "state": "listening"}
+{"t": 1790458764.5209658, "kind": "user_state", "state": "listening"}
+{"t": 1790458765.1004546, "kind": "metrics", "type": "stt_metrics", "duration": 0.5300965000060387, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458765.101447, "kind": "heard", "text": "Do you know the current rate?"}
+{"t": 1790458765.1037657, "kind": "dry_run_reply", "text": "Do you know the current rate?"}
+{"t": 1790458765.1055005, "kind": "user_turn", "text": "Do you know the current rate?"}
+{"t": 1790458765.1060274, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9354004859924316, "transcription_delay": 0.9324812889099121, "on_user_turn_completed_delay": 0.0003968999953940511, "speech_id": "speech_b70846986a93"}
+{"t": 1790458765.1064663, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458765.2515454, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458765.2631593, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14177029998973012, "duration": 0.1538548999815248, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_b70846986a93"}
+{"t": 1790458766.7151263, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458766.7151263, "kind": "agent_state", "state": "listening"}

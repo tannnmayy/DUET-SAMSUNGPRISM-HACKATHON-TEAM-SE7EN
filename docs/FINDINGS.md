@@ -127,6 +127,21 @@ last transcribed words exactly once: a 0.55 s burst, 23.7 s later, long after
 the reply. In a 1-6 s thinking window that is a risk of about 0.1% per
 conversation, so we did not add machinery for it.
 
+**Final full run** (all 100 recordings, final code, committed as
+`results/reported/listening_dry_run`):
+
+| Metric (official scripts, no model) | First full run | Final run |
+|---|---|---|
+| Conversations answered (turn-take) | 81% | **100%** |
+| Interruption rate | 11.1% | 12.0% |
+| First-response latency, benchmark-measured | 4.14 s | **4.09 s** (median 4.07, p90 4.77) |
+
+The interruptions are the end-of-turn detector closing a turn in a pause; in
+this mode every closed turn is answered at once. With a model, the thinker's
+`keep_listening` decides such turns, so this rate is an upper bound for the
+listener. The late-transcript race of defect 4 appeared again (75 of 217 turns),
+confirming it is a property of the listener; the epoch rule makes it harmless.
+
 **LiveKit Cloud** (`results/live/20260927_044851`). The path the guide
 documents: the agent registered with our LiveKit Cloud project, and three
 recordings streamed through it. All three got a reply, with 3.55 s mean

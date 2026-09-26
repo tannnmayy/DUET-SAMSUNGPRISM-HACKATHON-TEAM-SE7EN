@@ -1,0 +1,182 @@
+{
+  "pid": "5e3c1fbece3a7b000a6fd95a",
+  "example_id": "travel_02",
+  "category": "travel_identity",
+  "title": "Update Passport Number",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:32:11.691675",
+  "inference_time_s": 48.04,
+  "room_name": "eval-9ea7720c",
+  "stream_start_time": 1790461934.5479293,
+  "input_transcript": "Uh, yeah. So my new passport number is P -889 -90011. Could you update that in the system for me, please?",
+  "input_asr_chunks": [
+    {
+      "text": "Uh,",
+      "timestamp": [
+        1.14,
+        1.7
+      ]
+    },
+    {
+      "text": "yeah.",
+      "timestamp": [
+        1.92,
+        2.1
+      ]
+    },
+    {
+      "text": "So",
+      "timestamp": [
+        2.34,
+        2.42
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        2.42,
+        2.6
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        2.6,
+        2.74
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        2.74,
+        3.2
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        3.2,
+        3.64
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        3.64,
+        4.12
+      ]
+    },
+    {
+      "text": "P",
+      "timestamp": [
+        4.12,
+        4.44
+      ]
+    },
+    {
+      "text": "-889",
+      "timestamp": [
+        4.44,
+        5.9
+      ]
+    },
+    {
+      "text": "-90011.",
+      "timestamp": [
+        5.9,
+        8.2
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        9.06,
+        9.7
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        9.7,
+        9.84
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        9.84,
+        10.2
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        10.2,
+        10.58
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        10.58,
+        10.84
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.84,
+        10.98
+      ]
+    },
+    {
+      "text": "system",
+      "timestamp": [
+        10.98,
+        11.46
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.46,
+        12.32
+      ]
+    },
+    {
+      "text": "me,",
+      "timestamp": [
+        12.32,
+        12.54
+      ]
+    },
+    {
+      "text": "please?",
+      "timestamp": [
+        12.6,
+        12.78
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.78,
+  "latency": {
+    "input_duration_s": 44.52,
+    "output_duration_s": 44.52,
+    "first_speech_s": 17.25
+  },
+  "user_done_unix": 1790461947.3279293,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        17.04,
+        17.5
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.26,
+  "audio_agent_speech_start": 17.04,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

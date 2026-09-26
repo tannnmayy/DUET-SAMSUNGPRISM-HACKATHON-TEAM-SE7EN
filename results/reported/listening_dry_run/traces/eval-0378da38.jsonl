@@ -1,0 +1,14 @@
+{"t": 1790459585.6148195, "kind": "session_start", "room": "eval-0378da38", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459585.7564604, "kind": "agent_state", "state": "listening"}
+{"t": 1790459588.8645945, "kind": "user_state", "state": "speaking"}
+{"t": 1790459601.4133003, "kind": "user_state", "state": "listening"}
+{"t": 1790459602.1337123, "kind": "metrics", "type": "stt_metrics", "duration": 0.7191403000033461, "audio_duration": 13.14, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459602.1569352, "kind": "heard", "text": "I wanted to pay my credit card bill right now, but actually never mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading."}
+{"t": 1790459602.8134406, "kind": "user_turn", "text": "I wanted to pay my credit card bill right now, but actually never mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading."}
+{"t": 1790459602.8134406, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7945473194122314, "transcription_delay": 0.13954949378967285, "on_user_turn_completed_delay": 0.0004710000066552311, "speech_id": "speech_e2542b44960c"}
+{"t": 1790459602.8154416, "kind": "dry_run_reply", "text": "I wanted to pay my credit card bill right now, but actually never mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading."}
+{"t": 1790459602.8164423, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459602.9544797, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459602.9656744, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1357373000064399, "duration": 0.14714750001439825, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e2542b44960c"}
+{"t": 1790459604.4245048, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459604.425511, "kind": "agent_state", "state": "listening"}

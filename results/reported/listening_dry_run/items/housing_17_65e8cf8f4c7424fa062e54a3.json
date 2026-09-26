@@ -1,0 +1,280 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "housing_17",
+  "category": "housing_location",
+  "title": "Commute Mode Self-Correction",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:19:26.052123",
+  "inference_time_s": 49.48,
+  "room_name": "eval-aad86f40",
+  "stream_start_time": 1790461168.893357,
+  "input_transcript": "Like, like, um, so calculate the transit time to the office from there. Wait, no, actually, um, I just remembered I'd be driving, so make it driving time to the office from my house instead.",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.4,
+        1.0
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        1.42,
+        1.86
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        2.26,
+        2.88
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        3.48,
+        3.74
+      ]
+    },
+    {
+      "text": "calculate",
+      "timestamp": [
+        3.74,
+        4.3
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        4.3,
+        4.58
+      ]
+    },
+    {
+      "text": "transit",
+      "timestamp": [
+        4.58,
+        4.88
+      ]
+    },
+    {
+      "text": "time",
+      "timestamp": [
+        4.88,
+        5.3
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.3,
+        5.74
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.74,
+        5.86
+      ]
+    },
+    {
+      "text": "office",
+      "timestamp": [
+        5.86,
+        6.26
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        6.26,
+        6.5
+      ]
+    },
+    {
+      "text": "there.",
+      "timestamp": [
+        6.5,
+        6.78
+      ]
+    },
+    {
+      "text": "Wait,",
+      "timestamp": [
+        7.04,
+        7.54
+      ]
+    },
+    {
+      "text": "no,",
+      "timestamp": [
+        7.7,
+        7.92
+      ]
+    },
+    {
+      "text": "actually,",
+      "timestamp": [
+        8.22,
+        8.6
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        8.9,
+        9.72
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        10.34,
+        10.52
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        10.52,
+        10.8
+      ]
+    },
+    {
+      "text": "remembered",
+      "timestamp": [
+        10.8,
+        11.34
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        11.34,
+        11.6
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        11.6,
+        11.72
+      ]
+    },
+    {
+      "text": "driving,",
+      "timestamp": [
+        11.72,
+        12.12
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        12.14,
+        12.54
+      ]
+    },
+    {
+      "text": "make",
+      "timestamp": [
+        12.54,
+        12.76
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        12.76,
+        12.92
+      ]
+    },
+    {
+      "text": "driving",
+      "timestamp": [
+        12.92,
+        13.3
+      ]
+    },
+    {
+      "text": "time",
+      "timestamp": [
+        13.3,
+        13.64
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.64,
+        13.98
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        13.98,
+        14.1
+      ]
+    },
+    {
+      "text": "office",
+      "timestamp": [
+        14.1,
+        14.48
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        14.48,
+        14.7
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        14.7,
+        14.84
+      ]
+    },
+    {
+      "text": "house",
+      "timestamp": [
+        14.84,
+        15.1
+      ]
+    },
+    {
+      "text": "instead.",
+      "timestamp": [
+        15.1,
+        15.28
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.28,
+  "latency": {
+    "input_duration_s": 46.02,
+    "output_duration_s": 46.02,
+    "first_speech_s": 20.1
+  },
+  "user_done_unix": 1790461184.173357,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.92,
+        20.36
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.64,
+  "audio_agent_speech_start": 19.92,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

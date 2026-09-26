@@ -1,0 +1,47 @@
+{"t": 1790457291.0612764, "kind": "session_start", "room": "eval-9aec538e", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457291.1828923, "kind": "agent_state", "state": "listening"}
+{"t": 1790457294.389313, "kind": "user_state", "state": "speaking"}
+{"t": 1790457295.138851, "kind": "user_state", "state": "listening"}
+{"t": 1790457295.4386985, "kind": "user_state", "state": "speaking"}
+{"t": 1790457295.771918, "kind": "metrics", "type": "stt_metrics", "duration": 0.6316835999896284, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457295.78554, "kind": "heard", "text": "Um."}
+{"t": 1790457295.7882872, "kind": "dry_run_reply", "text": "Um."}
+{"t": 1790457297.4893982, "kind": "user_state", "state": "listening"}
+{"t": 1790457297.7399368, "kind": "user_state", "state": "speaking"}
+{"t": 1790457297.940655, "kind": "metrics", "type": "stt_metrics", "duration": 0.4509468000032939, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457297.9428234, "kind": "heard", "text": "Well, so, well."}
+{"t": 1790457297.9451447, "kind": "dry_run_reply", "text": "Um. Well, so, well."}
+{"t": 1790457300.7409055, "kind": "user_state", "state": "listening"}
+{"t": 1790457300.9886591, "kind": "user_state", "state": "speaking"}
+{"t": 1790457301.3500838, "kind": "metrics", "type": "stt_metrics", "duration": 0.6078180999902543, "audio_duration": 3.604, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457301.350796, "kind": "heard", "text": "First, could you add item K-2?"}
+{"t": 1790457301.3533921, "kind": "dry_run_reply", "text": "Um. Well, so, well. First, could you add item K-2?"}
+{"t": 1790457302.4897573, "kind": "user_state", "state": "listening"}
+{"t": 1790457302.8019283, "kind": "metrics", "type": "stt_metrics", "duration": 0.3114548000157811, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457302.8029258, "kind": "heard", "text": "To my cart."}
+{"t": 1790457302.8395357, "kind": "user_state", "state": "speaking"}
+{"t": 1790457304.1390028, "kind": "user_state", "state": "listening"}
+{"t": 1790457304.2887342, "kind": "user_state", "state": "speaking"}
+{"t": 1790457304.444338, "kind": "metrics", "type": "stt_metrics", "duration": 0.30460870001115836, "audio_duration": 1.908, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457304.4453392, "kind": "heard", "text": "Just one of them?"}
+{"t": 1790457307.5380652, "kind": "user_state", "state": "listening"}
+{"t": 1790457307.8388567, "kind": "user_state", "state": "speaking"}
+{"t": 1790457308.1673598, "kind": "metrics", "type": "stt_metrics", "duration": 0.6287595999892801, "audio_duration": 3.828, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457308.1689332, "kind": "heard", "text": "And then can you check on my last order too?"}
+{"t": 1790457313.7393987, "kind": "user_state", "state": "listening"}
+{"t": 1790457314.1795275, "kind": "user_turn", "text": "Um. Well, so, well. First, could you add item K-2? To my cart. Just one of them? And then can you check on my last order too?"}
+{"t": 1790457314.180568, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7921288013458252, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004185000143479556, "speech_id": "speech_efccf4ed8a29"}
+{"t": 1790457314.1819353, "kind": "dry_run_reply", "text": "Um. Well, so, well. First, could you add item K-2? To my cart. Just one of them? And then can you check on my last order too?"}
+{"t": 1790457314.1829531, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457314.4384024, "kind": "metrics", "type": "stt_metrics", "duration": 0.6981079000106547, "audio_duration": 6.516, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457314.4408026, "kind": "heard", "text": "The order ID is D-E-L-I-V."}
+{"t": 1790457314.4408026, "kind": "agent_state", "state": "listening"}
+{"t": 1790457314.4544, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2691077000054065, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_efccf4ed8a29"}
+{"t": 1790457315.2293837, "kind": "user_turn", "text": "The order ID is D-E-L-I-V."}
+{"t": 1790457315.2303793, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004579999949783087, "speech_id": "speech_8ac7d94f3108"}
+{"t": 1790457315.2316134, "kind": "dry_run_reply", "text": "Um. Well, so, well. First, could you add item K-2? To my cart. Just one of them? And then can you check on my last order too? The order ID is D-E-L-I-V."}
+{"t": 1790457315.2316134, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457315.3861935, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457315.4024363, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15232880000257865, "duration": 0.1690039999957662, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8ac7d94f3108"}
+{"t": 1790457316.8565836, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457316.8578472, "kind": "agent_state", "state": "listening"}

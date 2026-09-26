@@ -1,0 +1,287 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "housing_15",
+  "category": "housing_location",
+  "title": "False Start then Search",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:17:05.683371",
+  "inference_time_s": 51.99,
+  "room_name": "eval-23f6a76d",
+  "stream_start_time": 1790461028.5699036,
+  "input_transcript": "So, hmm. I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta that's pet friendly? I've got two cats.",
+  "input_asr_chunks": [
+    {
+      "text": "So,",
+      "timestamp": [
+        0.0,
+        1.32
+      ]
+    },
+    {
+      "text": "hmm.",
+      "timestamp": [
+        1.58,
+        1.92
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.38,
+        4.06
+      ]
+    },
+    {
+      "text": "wanted",
+      "timestamp": [
+        4.06,
+        4.42
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.42,
+        5.42
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        5.42,
+        5.74
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.74,
+        5.96
+      ]
+    },
+    {
+      "text": "commute",
+      "timestamp": [
+        5.96,
+        6.34
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        6.34,
+        6.7
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        6.7,
+        6.94
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        6.94,
+        7.18
+      ]
+    },
+    {
+      "text": "listing.",
+      "timestamp": [
+        7.18,
+        7.7
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        8.3,
+        8.98
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        9.18,
+        9.44
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        9.44,
+        9.62
+      ]
+    },
+    {
+      "text": "skip",
+      "timestamp": [
+        9.62,
+        9.88
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        9.88,
+        10.14
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.14,
+        10.34
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        10.34,
+        10.62
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        10.96,
+        11.44
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        11.44,
+        11.56
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        11.56,
+        11.8
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        11.8,
+        12.12
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        12.12,
+        12.38
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        12.38,
+        12.56
+      ]
+    },
+    {
+      "text": "three",
+      "timestamp": [
+        12.56,
+        12.94
+      ]
+    },
+    {
+      "text": "bedroom",
+      "timestamp": [
+        12.94,
+        13.5
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        13.5,
+        13.88
+      ]
+    },
+    {
+      "text": "Atlanta",
+      "timestamp": [
+        13.88,
+        14.46
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        14.46,
+        15.34
+      ]
+    },
+    {
+      "text": "pet",
+      "timestamp": [
+        15.34,
+        15.6
+      ]
+    },
+    {
+      "text": "friendly?",
+      "timestamp": [
+        15.6,
+        16.04
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        16.04,
+        16.64
+      ]
+    },
+    {
+      "text": "got",
+      "timestamp": [
+        16.64,
+        16.9
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        16.9,
+        17.2
+      ]
+    },
+    {
+      "text": "cats.",
+      "timestamp": [
+        17.2,
+        17.7
+      ]
+    }
+  ],
+  "user_speech_end_rel": 17.7,
+  "latency": {
+    "input_duration_s": 48.42,
+    "output_duration_s": 48.42,
+    "first_speech_s": 22.1
+  },
+  "user_done_unix": 1790461046.2699037,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        21.9,
+        22.38
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.2,
+  "audio_agent_speech_start": 21.9,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

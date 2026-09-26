@@ -1,0 +1,14 @@
+{"t": 1790460081.1726172, "kind": "session_start", "room": "eval-2d3229ec", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460081.268392, "kind": "agent_state", "state": "listening"}
+{"t": 1790460083.5217507, "kind": "user_state", "state": "speaking"}
+{"t": 1790460093.3787017, "kind": "user_state", "state": "listening"}
+{"t": 1790460093.9927523, "kind": "metrics", "type": "stt_metrics", "duration": 0.6134051000117324, "audio_duration": 10.452, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460093.9943297, "kind": "heard", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?"}
+{"t": 1790460093.996968, "kind": "user_turn", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?"}
+{"t": 1790460093.9974754, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9693117141723633, "transcription_delay": 0.967628002166748, "on_user_turn_completed_delay": 0.00036700000055134296, "speech_id": "speech_6c61566d35cb"}
+{"t": 1790460093.9993956, "kind": "dry_run_reply", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?"}
+{"t": 1790460094.0005114, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460094.1357021, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460094.1482742, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1335086000035517, "duration": 0.14602069999091327, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6c61566d35cb"}
+{"t": 1790460095.600752, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460095.600752, "kind": "agent_state", "state": "listening"}

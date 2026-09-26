@@ -1,0 +1,31 @@
+{"t": 1790457996.8271158, "kind": "session_start", "room": "eval-de6cc632", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457996.946223, "kind": "agent_state", "state": "listening"}
+{"t": 1790458000.6179974, "kind": "user_state", "state": "speaking"}
+{"t": 1790458002.253329, "kind": "user_state", "state": "listening"}
+{"t": 1790458002.6604283, "kind": "user_state", "state": "speaking"}
+{"t": 1790458002.769307, "kind": "metrics", "type": "stt_metrics", "duration": 0.5155870000016876, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458002.7838006, "kind": "heard", "text": "So, um, you know, I..."}
+{"t": 1790458002.7864351, "kind": "dry_run_reply", "text": "So, um, you know, I..."}
+{"t": 1790458003.6017134, "kind": "user_state", "state": "listening"}
+{"t": 1790458003.9144502, "kind": "metrics", "type": "stt_metrics", "duration": 0.3104424999910407, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458003.9154553, "kind": "heard", "text": "So, um..."}
+{"t": 1790458003.9180863, "kind": "dry_run_reply", "text": "So, um, you know, I... So, um..."}
+{"t": 1790458004.4538188, "kind": "user_state", "state": "speaking"}
+{"t": 1790458023.4574435, "kind": "user_state", "state": "listening"}
+{"t": 1790458023.905245, "kind": "user_turn", "text": "So, um, you know, I... So, um..."}
+{"t": 1790458023.9063382, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7998015880584717, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004743000026792288, "speech_id": "speech_69abd11e90be"}
+{"t": 1790458023.9063382, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458024.2825472, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458024.2954218, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3739214999950491, "duration": 0.38749329998972826, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_69abd11e90be"}
+{"t": 1790458024.3782458, "kind": "metrics", "type": "stt_metrics", "duration": 0.919101999985287, "audio_duration": 19.572, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458024.3797448, "kind": "heard", "text": "So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead."}
+{"t": 1790458025.1682606, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458025.1692681, "kind": "agent_state", "state": "listening"}
+{"t": 1790458025.1708174, "kind": "user_turn", "text": "So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead."}
+{"t": 1790458025.1713438, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0007028999971225858, "speech_id": "speech_783ae41d3b7d"}
+{"t": 1790458025.1740546, "kind": "dry_run_reply", "text": "So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead."}
+{"t": 1790458025.1761272, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458025.3188486, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458025.3296661, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13963479999802075, "duration": 0.1510405000008177, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_783ae41d3b7d"}
+{"t": 1790458026.7909503, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458026.7914839, "kind": "agent_state", "state": "listening"}

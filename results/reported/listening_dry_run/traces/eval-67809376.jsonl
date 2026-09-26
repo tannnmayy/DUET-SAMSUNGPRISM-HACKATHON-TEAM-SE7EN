@@ -1,0 +1,28 @@
+{"t": 1790457230.046077, "kind": "session_start", "room": "eval-67809376", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457230.1449237, "kind": "agent_state", "state": "listening"}
+{"t": 1790457232.8452106, "kind": "user_state", "state": "speaking"}
+{"t": 1790457234.5443592, "kind": "user_state", "state": "listening"}
+{"t": 1790457234.6436195, "kind": "user_state", "state": "speaking"}
+{"t": 1790457235.194335, "kind": "metrics", "type": "stt_metrics", "duration": 0.6502671999915037, "audio_duration": 2.292, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457235.2091873, "kind": "heard", "text": "Like, you know, um..."}
+{"t": 1790457235.2126997, "kind": "dry_run_reply", "text": "Like, you know, um..."}
+{"t": 1790457242.8942618, "kind": "user_state", "state": "listening"}
+{"t": 1790457243.3328006, "kind": "user_turn", "text": "Like, you know, um..."}
+{"t": 1790457243.3339107, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7905387878417969, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046790001215413213, "speech_id": "speech_4e6a13368e1a"}
+{"t": 1790457243.3339107, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457243.3973303, "kind": "user_state", "state": "speaking"}
+{"t": 1790457243.530897, "kind": "metrics", "type": "stt_metrics", "duration": 0.6353571000217926, "audio_duration": 8.852, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457243.5323796, "kind": "heard", "text": "I'm thinking something in the, let me think, electronics section would be great. He's really into gadgets and tech stuff."}
+{"t": 1790457243.5328875, "kind": "agent_state", "state": "listening"}
+{"t": 1790457243.5418904, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.20566070001223125, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4e6a13368e1a"}
+{"t": 1790457243.7923794, "kind": "user_state", "state": "listening"}
+{"t": 1790457244.0929582, "kind": "metrics", "type": "stt_metrics", "duration": 0.2992328999971505, "audio_duration": 0.948, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457244.0943913, "kind": "heard", "text": "Thank you."}
+{"t": 1790457244.096581, "kind": "dry_run_reply", "text": "Like, you know, um... I'm thinking something in the, let me think, electronics section would be great. He's really into gadgets and tech stuff. Thank you."}
+{"t": 1790457244.2336948, "kind": "user_turn", "text": "I'm thinking something in the, let me think, electronics section would be great. He's really into gadgets and tech stuff. Thank you."}
+{"t": 1790457244.234695, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7933154106140137, "transcription_delay": 0.6540119647979736, "on_user_turn_completed_delay": 0.00044899998465552926, "speech_id": "speech_c41d55adba91"}
+{"t": 1790457244.234695, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457244.3880951, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457244.4003558, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15013379999436438, "duration": 0.1632413000043016, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c41d55adba91"}
+{"t": 1790457245.860285, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457245.860285, "kind": "agent_state", "state": "listening"}

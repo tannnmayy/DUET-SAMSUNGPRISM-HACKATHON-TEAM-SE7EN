@@ -1,0 +1,34 @@
+{"t": 1790456430.5912993, "kind": "session_start", "room": "eval-1c70c33b", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456430.789296, "kind": "agent_state", "state": "listening"}
+{"t": 1790456433.839239, "kind": "user_state", "state": "speaking"}
+{"t": 1790456434.5888245, "kind": "user_state", "state": "listening"}
+{"t": 1790456434.7893958, "kind": "user_state", "state": "speaking"}
+{"t": 1790456435.5309849, "kind": "metrics", "type": "stt_metrics", "duration": 0.9413025999965612, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456435.5329, "kind": "heard", "text": "Like,"}
+{"t": 1790456435.5354426, "kind": "dry_run_reply", "text": "Like,"}
+{"t": 1790456439.0881824, "kind": "user_state", "state": "listening"}
+{"t": 1790456439.3395739, "kind": "user_state", "state": "speaking"}
+{"t": 1790456439.6908424, "kind": "metrics", "type": "stt_metrics", "duration": 0.6009064000099897, "audio_duration": 4.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456439.691844, "kind": "heard", "text": "Uh, you know, well, I ordered something last week and..."}
+{"t": 1790456439.693887, "kind": "dry_run_reply", "text": "Like, Uh, you know, well, I ordered something last week and..."}
+{"t": 1790456443.088065, "kind": "user_state", "state": "listening"}
+{"t": 1790456443.238029, "kind": "user_state", "state": "speaking"}
+{"t": 1790456443.6970398, "kind": "metrics", "type": "stt_metrics", "duration": 0.6060691000020597, "audio_duration": 4.34, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456443.6979425, "kind": "heard", "text": "Um, I haven't received it yet. Could you track it for me?"}
+{"t": 1790456443.7000797, "kind": "dry_run_reply", "text": "Like, Uh, you know, well, I ordered something last week and... Um, I haven't received it yet. Could you track it for me?"}
+{"t": 1790456448.4377, "kind": "user_state", "state": "listening"}
+{"t": 1790456448.8787394, "kind": "user_turn", "text": "Like, Uh, you know, well, I ordered something last week and... Um, I haven't received it yet. Could you track it for me?"}
+{"t": 1790456448.879744, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7920434474945068, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004771999956574291, "speech_id": "speech_56759a330415"}
+{"t": 1790456448.8812475, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456449.1686478, "kind": "metrics", "type": "stt_metrics", "duration": 0.7293230000068434, "audio_duration": 5.78, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456449.170479, "kind": "heard", "text": "The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456449.170983, "kind": "agent_state", "state": "listening"}
+{"t": 1790456449.1819444, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2809543000184931, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_56759a330415"}
+{"t": 1790456449.9757793, "kind": "user_turn", "text": "The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456449.9757793, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005320000054780394, "speech_id": "speech_cf90d15f8961"}
+{"t": 1790456449.9767795, "kind": "dry_run_reply", "text": "Like, Uh, you know, well, I ordered something last week and... Um, I haven't received it yet. Could you track it for me? The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456449.9777799, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456450.093529, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456450.1189919, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.11377029999857768, "duration": 0.14054500000202097, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cf90d15f8961"}
+{"t": 1790456451.5786483, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456451.5786483, "kind": "agent_state", "state": "listening"}

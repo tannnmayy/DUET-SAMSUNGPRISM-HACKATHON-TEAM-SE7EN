@@ -1,0 +1,231 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "housing_04",
+  "category": "housing_location",
+  "title": "Apartment Search with Pause",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:04:35.436637",
+  "inference_time_s": 52.85,
+  "room_name": "eval-517277ab",
+  "stream_start_time": 1790460278.312524,
+  "input_transcript": "Well, um, uh, you know, I'm looking for an apartment in Denver that has one bedroom. I'm living alone. Um, so I don't need anything too big.",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.0,
+        0.7
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        1.38,
+        1.94
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        3.9,
+        4.12
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        4.3,
+        4.4
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        4.4,
+        4.62
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        4.98,
+        6.5
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        6.5,
+        6.72
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        6.72,
+        6.92
+      ]
+    },
+    {
+      "text": "an",
+      "timestamp": [
+        6.92,
+        7.04
+      ]
+    },
+    {
+      "text": "apartment",
+      "timestamp": [
+        7.04,
+        7.38
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        7.38,
+        7.6
+      ]
+    },
+    {
+      "text": "Denver",
+      "timestamp": [
+        7.6,
+        7.96
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        7.96,
+        9.72
+      ]
+    },
+    {
+      "text": "has",
+      "timestamp": [
+        9.72,
+        9.96
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        9.96,
+        10.2
+      ]
+    },
+    {
+      "text": "bedroom.",
+      "timestamp": [
+        10.2,
+        10.62
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        12.2,
+        12.8
+      ]
+    },
+    {
+      "text": "living",
+      "timestamp": [
+        12.8,
+        13.04
+      ]
+    },
+    {
+      "text": "alone.",
+      "timestamp": [
+        13.04,
+        13.5
+      ]
+    },
+    {
+      "text": "Um,",
+      "timestamp": [
+        15.1,
+        15.7
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        16.38,
+        16.6
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        16.6,
+        16.68
+      ]
+    },
+    {
+      "text": "don't",
+      "timestamp": [
+        16.68,
+        16.78
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        16.78,
+        16.94
+      ]
+    },
+    {
+      "text": "anything",
+      "timestamp": [
+        16.94,
+        17.28
+      ]
+    },
+    {
+      "text": "too",
+      "timestamp": [
+        17.28,
+        17.54
+      ]
+    },
+    {
+      "text": "big.",
+      "timestamp": [
+        17.54,
+        17.92
+      ]
+    }
+  ],
+  "user_speech_end_rel": 17.92,
+  "latency": {
+    "input_duration_s": 49.32,
+    "output_duration_s": 49.32,
+    "first_speech_s": 14.9
+  },
+  "user_done_unix": 1790460296.2325242,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        14.64,
+        15.28
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        21.08,
+        21.7
+      ]
+    }
+  ],
+  "perceived_total_latency": -3.28,
+  "audio_agent_speech_start": 14.64,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

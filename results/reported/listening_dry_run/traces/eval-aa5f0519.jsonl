@@ -1,0 +1,43 @@
+{"t": 1790462312.4638762, "kind": "session_start", "room": "eval-aa5f0519", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462312.5631142, "kind": "agent_state", "state": "listening"}
+{"t": 1790462314.92345, "kind": "user_state", "state": "speaking"}
+{"t": 1790462317.5724924, "kind": "user_state", "state": "listening"}
+{"t": 1790462317.8756053, "kind": "user_state", "state": "speaking"}
+{"t": 1790462318.2214978, "kind": "metrics", "type": "stt_metrics", "duration": 0.6483743000135291, "audio_duration": 3.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462318.2356176, "kind": "heard", "text": "I was going to ask about hotel options."}
+{"t": 1790462318.2386417, "kind": "dry_run_reply", "text": "I was going to ask about hotel options."}
+{"t": 1790462319.627777, "kind": "user_state", "state": "listening"}
+{"t": 1790462319.952722, "kind": "metrics", "type": "stt_metrics", "duration": 0.32399160001659766, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462319.9537237, "kind": "heard", "text": "But never mind for now on that."}
+{"t": 1790462319.9567082, "kind": "dry_run_reply", "text": "I was going to ask about hotel options. But never mind for now on that."}
+{"t": 1790462320.073072, "kind": "user_turn", "text": "I was going to ask about hotel options. But never mind for now on that."}
+{"t": 1790462320.0740726, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7972948551177979, "transcription_delay": 0.6779465675354004, "on_user_turn_completed_delay": 0.0004599000094458461, "speech_id": "speech_f89527396cba"}
+{"t": 1790462320.074639, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462320.2159967, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462320.2299325, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13927179999882355, "duration": 0.15295710001373664, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f89527396cba"}
+{"t": 1790462320.234504, "kind": "user_state", "state": "speaking"}
+{"t": 1790462320.9467425, "kind": "metrics", "type": "stt_metrics", "duration": 0.30974260001676157, "audio_duration": 0.98, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462320.9480274, "kind": "heard", "text": "Can you see that?"}
+{"t": 1790462321.6942558, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462321.6957543, "kind": "agent_state", "state": "listening"}
+{"t": 1790462322.7920046, "kind": "user_state", "state": "listening"}
+{"t": 1790462323.273227, "kind": "user_state", "state": "speaking"}
+{"t": 1790462323.3357432, "kind": "metrics", "type": "stt_metrics", "duration": 0.5426769999903627, "audio_duration": 1.492, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462323.337113, "kind": "heard", "text": "Seattle."}
+{"t": 1790462323.3397155, "kind": "dry_run_reply", "text": "Can you see that? Seattle."}
+{"t": 1790462325.129028, "kind": "user_state", "state": "listening"}
+{"t": 1790462325.5649881, "kind": "user_turn", "text": "Can you see that? Seattle."}
+{"t": 1790462325.5649881, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.786454439163208, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004467999970074743, "speech_id": "speech_25c74bcbc162"}
+{"t": 1790462325.5664563, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462325.5981843, "kind": "metrics", "type": "stt_metrics", "duration": 0.46660079999128357, "audio_duration": 2.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462325.5991902, "kind": "heard", "text": "November 1st instead."}
+{"t": 1790462325.599949, "kind": "agent_state", "state": "listening"}
+{"t": 1790462325.6101568, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.04182980000041425, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c74bcbc162"}
+{"t": 1790462326.3986716, "kind": "user_turn", "text": "November 1st instead."}
+{"t": 1790462326.3986716, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004602000117301941, "speech_id": "speech_a942964c46a5"}
+{"t": 1790462326.4006789, "kind": "dry_run_reply", "text": "Can you see that? Seattle. November 1st instead."}
+{"t": 1790462326.4006789, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462326.4930565, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462326.5040283, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.0897681999776978, "duration": 0.10175149998394772, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a942964c46a5"}
+{"t": 1790462327.9529986, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462327.9529986, "kind": "agent_state", "state": "listening"}

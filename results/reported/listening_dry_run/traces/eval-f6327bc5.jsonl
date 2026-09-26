@@ -1,0 +1,39 @@
+{"t": 1790460207.7754664, "kind": "session_start", "room": "eval-f6327bc5", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460207.8933167, "kind": "agent_state", "state": "listening"}
+{"t": 1790460212.6590054, "kind": "user_state", "state": "speaking"}
+{"t": 1790460214.5979476, "kind": "user_state", "state": "listening"}
+{"t": 1790460214.6983836, "kind": "user_state", "state": "speaking"}
+{"t": 1790460215.2191293, "kind": "metrics", "type": "stt_metrics", "duration": 0.6215847999847028, "audio_duration": 2.58, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460215.2249067, "kind": "heard", "text": "So while like"}
+{"t": 1790460215.2279246, "kind": "dry_run_reply", "text": "So while like"}
+{"t": 1790460215.661, "kind": "user_state", "state": "listening"}
+{"t": 1790460215.9680262, "kind": "metrics", "type": "stt_metrics", "duration": 0.305462099990109, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460215.9690275, "kind": "heard", "text": "Like, um,"}
+{"t": 1790460215.9715326, "kind": "dry_run_reply", "text": "So while like Like, um,"}
+{"t": 1790460216.3508053, "kind": "user_state", "state": "speaking"}
+{"t": 1790460219.5176537, "kind": "user_state", "state": "listening"}
+{"t": 1790460219.859795, "kind": "user_state", "state": "speaking"}
+{"t": 1790460220.0432198, "kind": "metrics", "type": "stt_metrics", "duration": 0.5237554000050295, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460220.0445437, "kind": "heard", "text": "I want to update my search filter."}
+{"t": 1790460220.046463, "kind": "dry_run_reply", "text": "So while like Like, um, I want to update my search filter."}
+{"t": 1790460223.747501, "kind": "user_state", "state": "listening"}
+{"t": 1790460224.2751787, "kind": "metrics", "type": "stt_metrics", "duration": 0.5260458999837283, "audio_duration": 4.532, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460224.2761204, "kind": "heard", "text": "So the max price is like $1,800 a month."}
+{"t": 1790460224.3608565, "kind": "user_state", "state": "speaking"}
+{"t": 1790460227.513492, "kind": "user_state", "state": "listening"}
+{"t": 1790460227.9645288, "kind": "user_turn", "text": "So while like Like, um, I want to update my search filter. So the max price is like $1,800 a month."}
+{"t": 1790460227.9658647, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8030366897583008, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000526999996509403, "speech_id": "speech_30ab87b42f77"}
+{"t": 1790460227.9669187, "kind": "dry_run_reply", "text": "So while like Like, um, I want to update my search filter. So the max price is like $1,800 a month."}
+{"t": 1790460227.967944, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460228.0815198, "kind": "metrics", "type": "stt_metrics", "duration": 0.5669058999919798, "audio_duration": 3.7, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460228.0832121, "kind": "heard", "text": "Everything I've been seeing is way over budget."}
+{"t": 1790460228.083716, "kind": "agent_state", "state": "listening"}
+{"t": 1790460228.094208, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.12348529999144375, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_30ab87b42f77"}
+{"t": 1790460228.890236, "kind": "user_turn", "text": "Everything I've been seeing is way over budget."}
+{"t": 1790460228.890236, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047759999870322645, "speech_id": "speech_df8f067c27ce"}
+{"t": 1790460228.892327, "kind": "dry_run_reply", "text": "So while like Like, um, I want to update my search filter. So the max price is like $1,800 a month. Everything I've been seeing is way over budget."}
+{"t": 1790460228.892327, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460229.0298455, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460229.0415378, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13497300000744872, "duration": 0.1471138000197243, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_df8f067c27ce"}
+{"t": 1790460230.4935176, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460230.4935176, "kind": "agent_state", "state": "listening"}

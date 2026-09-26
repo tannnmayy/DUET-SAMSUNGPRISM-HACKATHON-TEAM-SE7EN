@@ -1,0 +1,322 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "housing_14",
+  "category": "housing_location",
+  "title": "Filler-Heavy Apartment Search",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:14:44.397849",
+  "inference_time_s": 51.86,
+  "room_name": "eval-0dea2708",
+  "stream_start_time": 1790460887.241187,
+  "input_transcript": "Like, you know, um, so, um, I'm looking for like a one bedroom apartment in Portland and I'd want to keep the rent under $1 ,800. Oh, and it needs to be, uh, pet friendly because, um, I have a dog.",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.37,
+        1.01
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        1.21,
+        1.29
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        1.29,
+        1.59
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        1.89,
+        2.13
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        2.61,
+        2.93
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        3.59,
+        3.95
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        4.07,
+        4.23
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        4.23,
+        4.53
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        4.53,
+        5.09
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        5.09,
+        5.85
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        5.85,
+        6.07
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        6.07,
+        6.39
+      ]
+    },
+    {
+      "text": "bedroom",
+      "timestamp": [
+        6.39,
+        6.79
+      ]
+    },
+    {
+      "text": "apartment",
+      "timestamp": [
+        6.79,
+        7.33
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        7.33,
+        7.61
+      ]
+    },
+    {
+      "text": "Portland",
+      "timestamp": [
+        7.61,
+        8.05
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        8.05,
+        8.89
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        8.89,
+        9.21
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        9.21,
+        9.37
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        9.37,
+        9.55
+      ]
+    },
+    {
+      "text": "keep",
+      "timestamp": [
+        9.55,
+        9.77
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        9.77,
+        9.93
+      ]
+    },
+    {
+      "text": "rent",
+      "timestamp": [
+        9.93,
+        10.15
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        10.15,
+        10.49
+      ]
+    },
+    {
+      "text": "$1",
+      "timestamp": [
+        10.49,
+        10.83
+      ]
+    },
+    {
+      "text": ",800.",
+      "timestamp": [
+        10.83,
+        11.25
+      ]
+    },
+    {
+      "text": "Oh,",
+      "timestamp": [
+        11.83,
+        12.43
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        12.61,
+        12.77
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        12.77,
+        12.93
+      ]
+    },
+    {
+      "text": "needs",
+      "timestamp": [
+        12.93,
+        13.25
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.25,
+        13.47
+      ]
+    },
+    {
+      "text": "be,",
+      "timestamp": [
+        13.47,
+        13.93
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        13.93,
+        14.39
+      ]
+    },
+    {
+      "text": "pet",
+      "timestamp": [
+        14.59,
+        14.77
+      ]
+    },
+    {
+      "text": "friendly",
+      "timestamp": [
+        14.77,
+        15.27
+      ]
+    },
+    {
+      "text": "because,",
+      "timestamp": [
+        15.27,
+        15.75
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        15.83,
+        16.55
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        16.71,
+        17.15
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        17.15,
+        17.27
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        17.27,
+        17.41
+      ]
+    },
+    {
+      "text": "dog.",
+      "timestamp": [
+        17.41,
+        17.65
+      ]
+    }
+  ],
+  "user_speech_end_rel": 17.65,
+  "latency": {
+    "input_duration_s": 48.36,
+    "output_duration_s": 48.36,
+    "first_speech_s": 21.9
+  },
+  "user_done_unix": 1790460904.8911872,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        21.71,
+        22.19
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.06,
+  "audio_agent_speech_start": 21.71,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

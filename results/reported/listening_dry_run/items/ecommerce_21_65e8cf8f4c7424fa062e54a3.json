@@ -1,0 +1,343 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "ecommerce_21",
+  "category": "ecommerce_support",
+  "title": "Hesitant Tracking Chain",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:27:51.133742",
+  "inference_time_s": 58.24,
+  "room_name": "eval-db65ad07",
+  "stream_start_time": 1790458073.9528756,
+  "input_transcript": "Um, so, hmm, hmm, well, could you track order B -O -B for me first, then, um, um, I also want to search for a nice watch under $200, and once you find something good, uh, go ahead and add it to my cart.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.0,
+        0.62
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        1.7,
+        2.28
+      ]
+    },
+    {
+      "text": "hmm,",
+      "timestamp": [
+        2.7,
+        3.04
+      ]
+    },
+    {
+      "text": "hmm,",
+      "timestamp": [
+        4.34,
+        5.08
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        5.68,
+        6.06
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        6.36,
+        6.82
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        6.82,
+        6.96
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        6.96,
+        7.28
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        7.28,
+        7.82
+      ]
+    },
+    {
+      "text": "B",
+      "timestamp": [
+        7.82,
+        8.28
+      ]
+    },
+    {
+      "text": "-O",
+      "timestamp": [
+        8.28,
+        8.76
+      ]
+    },
+    {
+      "text": "-B",
+      "timestamp": [
+        8.76,
+        9.12
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.12,
+        9.54
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        9.54,
+        9.72
+      ]
+    },
+    {
+      "text": "first,",
+      "timestamp": [
+        9.72,
+        10.28
+      ]
+    },
+    {
+      "text": "then,",
+      "timestamp": [
+        10.28,
+        11.04
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        11.4,
+        11.94
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        13.5,
+        13.86
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        14.06,
+        14.54
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        14.54,
+        14.98
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        14.98,
+        15.7
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.7,
+        16.16
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        16.16,
+        16.54
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        16.54,
+        16.82
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        16.82,
+        16.92
+      ]
+    },
+    {
+      "text": "nice",
+      "timestamp": [
+        16.92,
+        17.2
+      ]
+    },
+    {
+      "text": "watch",
+      "timestamp": [
+        17.2,
+        17.58
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        17.58,
+        17.92
+      ]
+    },
+    {
+      "text": "$200,",
+      "timestamp": [
+        17.92,
+        18.52
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        18.58,
+        19.66
+      ]
+    },
+    {
+      "text": "once",
+      "timestamp": [
+        19.66,
+        19.92
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        19.92,
+        20.04
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        20.04,
+        20.32
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        20.32,
+        20.7
+      ]
+    },
+    {
+      "text": "good,",
+      "timestamp": [
+        20.7,
+        21.2
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        21.66,
+        21.88
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        22.14,
+        22.46
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        22.46,
+        22.84
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        22.84,
+        23.38
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        23.38,
+        23.62
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        23.62,
+        23.72
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        23.72,
+        23.84
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        23.84,
+        23.96
+      ]
+    },
+    {
+      "text": "cart.",
+      "timestamp": [
+        23.96,
+        24.22
+      ]
+    }
+  ],
+  "user_speech_end_rel": 24.22,
+  "latency": {
+    "input_duration_s": 54.78,
+    "output_duration_s": 54.78,
+    "first_speech_s": 28.7
+  },
+  "user_done_unix": 1790458098.1728756,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        28.53,
+        28.99
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.31,
+  "audio_agent_speech_start": 28.53,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,224 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "travel_08",
+  "category": "travel_identity",
+  "title": "False Start Flight Search",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:38:31.478183",
+  "inference_time_s": 46.59,
+  "room_name": "eval-aa5f0519",
+  "stream_start_time": 1790462314.3010926,
+  "input_transcript": "I was going to ask about hotel options, but never mind for now on that. Can you just find me flights to Seattle November 1st instead?",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        0.18,
+        0.5
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        0.5,
+        0.66
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        0.66,
+        0.82
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        0.82,
+        0.96
+      ]
+    },
+    {
+      "text": "ask",
+      "timestamp": [
+        0.96,
+        1.18
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        1.18,
+        1.42
+      ]
+    },
+    {
+      "text": "hotel",
+      "timestamp": [
+        1.42,
+        1.86
+      ]
+    },
+    {
+      "text": "options,",
+      "timestamp": [
+        1.86,
+        2.42
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        2.84,
+        3.5
+      ]
+    },
+    {
+      "text": "never",
+      "timestamp": [
+        3.5,
+        3.7
+      ]
+    },
+    {
+      "text": "mind",
+      "timestamp": [
+        3.7,
+        3.98
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        3.98,
+        4.16
+      ]
+    },
+    {
+      "text": "now",
+      "timestamp": [
+        4.16,
+        4.4
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        4.4,
+        4.56
+      ]
+    },
+    {
+      "text": "that.",
+      "timestamp": [
+        4.56,
+        4.78
+      ]
+    },
+    {
+      "text": "Can",
+      "timestamp": [
+        5.26,
+        5.8
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        5.8,
+        5.92
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        5.92,
+        6.1
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        6.1,
+        6.36
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.36,
+        6.54
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        6.54,
+        7.0
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.0,
+        7.28
+      ]
+    },
+    {
+      "text": "Seattle",
+      "timestamp": [
+        7.28,
+        7.82
+      ]
+    },
+    {
+      "text": "November",
+      "timestamp": [
+        7.82,
+        8.98
+      ]
+    },
+    {
+      "text": "1st",
+      "timestamp": [
+        8.98,
+        9.58
+      ]
+    },
+    {
+      "text": "instead?",
+      "timestamp": [
+        9.58,
+        9.98
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.98,
+  "latency": {
+    "input_duration_s": 43.08,
+    "output_duration_s": 43.08,
+    "first_speech_s": 8.05
+  },
+  "user_done_unix": 1790462324.2810926,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        7.73,
+        8.43
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        13.96,
+        14.58
+      ]
+    }
+  ],
+  "perceived_total_latency": -2.25,
+  "audio_agent_speech_start": 7.73,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,29 @@
+{"t": 1790460486.2949243, "kind": "session_start", "room": "eval-e75063d2", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460486.4053645, "kind": "agent_state", "state": "listening"}
+{"t": 1790460491.3965952, "kind": "user_state", "state": "speaking"}
+{"t": 1790460492.539914, "kind": "user_state", "state": "listening"}
+{"t": 1790460492.7980416, "kind": "user_state", "state": "speaking"}
+{"t": 1790460493.1519306, "kind": "metrics", "type": "stt_metrics", "duration": 0.6112466999911703, "audio_duration": 1.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460493.166637, "kind": "heard", "text": "So, hmm."}
+{"t": 1790460493.1691046, "kind": "dry_run_reply", "text": "So, hmm."}
+{"t": 1790460497.0935767, "kind": "user_state", "state": "listening"}
+{"t": 1790460497.641287, "kind": "user_state", "state": "speaking"}
+{"t": 1790460497.7544165, "kind": "metrics", "type": "stt_metrics", "duration": 0.6592717999883462, "audio_duration": 4.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460497.7559206, "kind": "heard", "text": "I was wondering how long it would take to walk from Oak Street to the gym."}
+{"t": 1790460497.758316, "kind": "dry_run_reply", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym."}
+{"t": 1790460499.8428104, "kind": "user_state", "state": "listening"}
+{"t": 1790460499.9513347, "kind": "user_state", "state": "speaking"}
+{"t": 1790460500.330444, "kind": "metrics", "type": "stt_metrics", "duration": 0.48655220001819544, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460500.3314435, "kind": "heard", "text": "I'm trying to figure out if"}
+{"t": 1790460500.3342934, "kind": "dry_run_reply", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym. I'm trying to figure out if"}
+{"t": 1790460502.94432, "kind": "user_state", "state": "listening"}
+{"t": 1790460503.5268166, "kind": "metrics", "type": "stt_metrics", "duration": 0.5813995999924373, "audio_duration": 3.572, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460503.5284214, "kind": "heard", "text": "I can walk there in the mornings."}
+{"t": 1790460505.0766032, "kind": "user_turn", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym. I'm trying to figure out if I can walk there in the mornings."}
+{"t": 1790460505.0776517, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.484283208847046, "transcription_delay": 0.9361014366149902, "on_user_turn_completed_delay": 0.0004521000082604587, "speech_id": "speech_6989e20b0afa"}
+{"t": 1790460505.0788805, "kind": "dry_run_reply", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym. I'm trying to figure out if I can walk there in the mornings."}
+{"t": 1790460505.0799148, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460505.2097933, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460505.2229273, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12856909999391064, "duration": 0.14208859999780543, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6989e20b0afa"}
+{"t": 1790460506.6680746, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460506.6680746, "kind": "agent_state", "state": "listening"}

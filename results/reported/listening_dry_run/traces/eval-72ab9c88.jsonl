@@ -1,0 +1,60 @@
+{"t": 1790456498.8794177, "kind": "session_start", "room": "eval-72ab9c88", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456499.023009, "kind": "agent_state", "state": "listening"}
+{"t": 1790456501.9739208, "kind": "user_state", "state": "speaking"}
+{"t": 1790456504.1241095, "kind": "user_state", "state": "listening"}
+{"t": 1790456504.6585028, "kind": "metrics", "type": "stt_metrics", "duration": 0.5336054000072181, "audio_duration": 2.74, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456504.6731913, "kind": "heard", "text": "Like, you know..."}
+{"t": 1790456504.6757216, "kind": "dry_run_reply", "text": "Like, you know..."}
+{"t": 1790456504.678029, "kind": "user_turn", "text": "Like, you know..."}
+{"t": 1790456504.678029, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9042227268218994, "transcription_delay": 0.9015874862670898, "on_user_turn_completed_delay": 0.0006054000114090741, "speech_id": "speech_34e7a3b4e9fa"}
+{"t": 1790456504.680333, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456504.8160586, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456504.8273914, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.130103000003146, "duration": 0.14245980000123382, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_34e7a3b4e9fa"}
+{"t": 1790456504.974421, "kind": "user_state", "state": "speaking"}
+{"t": 1790456506.2941403, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456506.2941403, "kind": "agent_state", "state": "listening"}
+{"t": 1790456507.6737828, "kind": "user_state", "state": "listening"}
+{"t": 1790456508.0729275, "kind": "user_state", "state": "speaking"}
+{"t": 1790456508.2171042, "kind": "metrics", "type": "stt_metrics", "duration": 0.5427370000106748, "audio_duration": 1.716, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456508.2185102, "kind": "heard", "text": "Last weekend."}
+{"t": 1790456508.2210028, "kind": "dry_run_reply", "text": "Last weekend."}
+{"t": 1790456509.0243556, "kind": "user_state", "state": "listening"}
+{"t": 1790456509.122667, "kind": "user_state", "state": "speaking"}
+{"t": 1790456509.3223693, "kind": "metrics", "type": "stt_metrics", "duration": 0.29588910000165924, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456509.324255, "kind": "heard", "text": "Um..."}
+{"t": 1790456509.3272936, "kind": "dry_run_reply", "text": "Last weekend. Um..."}
+{"t": 1790456510.6746454, "kind": "user_state", "state": "listening"}
+{"t": 1790456510.992639, "kind": "metrics", "type": "stt_metrics", "duration": 0.31716199999209493, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456510.9936385, "kind": "heard", "text": "I haven't received it yet."}
+{"t": 1790456510.9967084, "kind": "dry_run_reply", "text": "Last weekend. Um... I haven't received it yet."}
+{"t": 1790456511.123886, "kind": "user_turn", "text": "Last weekend. Um... I haven't received it yet."}
+{"t": 1790456511.123886, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7982370853424072, "transcription_delay": 0.6717870235443115, "on_user_turn_completed_delay": 0.0007311999797821045, "speech_id": "speech_a2f869f4bb58"}
+{"t": 1790456511.124884, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456511.262573, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456511.2730181, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13514369999757037, "duration": 0.1465223999985028, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a2f869f4bb58"}
+{"t": 1790456511.5240164, "kind": "user_state", "state": "speaking"}
+{"t": 1790456511.924424, "kind": "agent_state", "state": "listening"}
+{"t": 1790456512.9241447, "kind": "user_state", "state": "listening"}
+{"t": 1790456513.4108799, "kind": "metrics", "type": "stt_metrics", "duration": 0.48570289998315275, "audio_duration": 1.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456513.4117413, "kind": "heard", "text": "Could you track it for me?"}
+{"t": 1790456513.4168153, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456513.4186707, "kind": "user_turn", "text": "Could you track it for me?"}
+{"t": 1790456513.4186707, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8414416313171387, "transcription_delay": 0.8395965099334717, "on_user_turn_completed_delay": 0.0004427999956533313, "speech_id": "speech_5729653108c0"}
+{"t": 1790456513.4211452, "kind": "dry_run_reply", "text": "Could you track it for me?"}
+{"t": 1790456513.4224763, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456513.578655, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456513.5915303, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15148729999782518, "duration": 0.16523670000606216, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5729653108c0"}
+{"t": 1790456514.1734688, "kind": "user_state", "state": "speaking"}
+{"t": 1790456514.623336, "kind": "agent_state", "state": "listening"}
+{"t": 1790456519.6233728, "kind": "user_state", "state": "listening"}
+{"t": 1790456520.28182, "kind": "metrics", "type": "stt_metrics", "duration": 0.657527300005313, "audio_duration": 6.036, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456520.2828224, "kind": "heard", "text": "The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456520.2871923, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456520.2894158, "kind": "user_turn", "text": "The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456520.2894158, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.013345718383789, "transcription_delay": 1.0114495754241943, "on_user_turn_completed_delay": 0.0004888999974355102, "speech_id": "speech_f58d595b54c1"}
+{"t": 1790456520.291057, "kind": "dry_run_reply", "text": "The order ID is A, B, C, 1, 2, 3."}
+{"t": 1790456520.292437, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456520.4354007, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456520.4478922, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14052279997849837, "duration": 0.15306250000139698, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f58d595b54c1"}
+{"t": 1790456521.913162, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456521.9144406, "kind": "agent_state", "state": "listening"}

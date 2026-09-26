@@ -1,0 +1,371 @@
+{
+  "pid": "62a885d5b6af18b3d4579e1b",
+  "example_id": "travel_20",
+  "category": "travel_identity",
+  "title": "Conditional Booking Under Budget",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:46:16.880012",
+  "inference_time_s": 50.48,
+  "room_name": "eval-74644fe8",
+  "stream_start_time": 1790462779.7127862,
+  "input_transcript": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300, go ahead and book it for Riley Kim. But, if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead.",
+  "input_asr_chunks": [
+    {
+      "text": "Here's",
+      "timestamp": [
+        0.48,
+        0.92
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        0.92,
+        1.02
+      ]
+    },
+    {
+      "text": "thing,",
+      "timestamp": [
+        1.02,
+        1.3
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.54,
+        1.88
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        1.88,
+        2.1
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.1,
+        2.24
+      ]
+    },
+    {
+      "text": "fly",
+      "timestamp": [
+        2.24,
+        2.44
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.44,
+        2.58
+      ]
+    },
+    {
+      "text": "Toronto",
+      "timestamp": [
+        2.58,
+        2.96
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        2.96,
+        3.16
+      ]
+    },
+    {
+      "text": "July",
+      "timestamp": [
+        3.16,
+        3.34
+      ]
+    },
+    {
+      "text": "20th.",
+      "timestamp": [
+        3.34,
+        3.94
+      ]
+    },
+    {
+      "text": "If",
+      "timestamp": [
+        4.1,
+        4.52
+      ]
+    },
+    {
+      "text": "there",
+      "timestamp": [
+        4.52,
+        4.66
+      ]
+    },
+    {
+      "text": "happens",
+      "timestamp": [
+        4.66,
+        4.98
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.98,
+        5.08
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        5.08,
+        5.16
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        5.16,
+        5.26
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        5.26,
+        5.36
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        5.36,
+        5.54
+      ]
+    },
+    {
+      "text": "$300,",
+      "timestamp": [
+        5.54,
+        6.06
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        6.64,
+        7.24
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        7.24,
+        7.42
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        7.42,
+        7.54
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        7.54,
+        7.72
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        7.72,
+        7.82
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        7.82,
+        7.98
+      ]
+    },
+    {
+      "text": "Riley",
+      "timestamp": [
+        7.98,
+        8.32
+      ]
+    },
+    {
+      "text": "Kim.",
+      "timestamp": [
+        8.32,
+        8.72
+      ]
+    },
+    {
+      "text": "But,",
+      "timestamp": [
+        9.08,
+        9.44
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        9.58,
+        9.8
+      ]
+    },
+    {
+      "text": "everything's",
+      "timestamp": [
+        9.8,
+        10.26
+      ]
+    },
+    {
+      "text": "too",
+      "timestamp": [
+        10.26,
+        10.4
+      ]
+    },
+    {
+      "text": "expensive,",
+      "timestamp": [
+        10.4,
+        10.86
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.16,
+        11.32
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        11.32,
+        11.48
+      ]
+    },
+    {
+      "text": "forget",
+      "timestamp": [
+        11.48,
+        11.7
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        11.7,
+        11.86
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        11.86,
+        12.1
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        12.1,
+        12.26
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        12.26,
+        12.5
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        12.5,
+        12.66
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        12.66,
+        13.14
+      ]
+    },
+    {
+      "text": "license",
+      "timestamp": [
+        13.14,
+        13.42
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.42,
+        13.66
+      ]
+    },
+    {
+      "text": "DL88",
+      "timestamp": [
+        13.66,
+        14.98
+      ]
+    },
+    {
+      "text": "instead.",
+      "timestamp": [
+        14.98,
+        15.8
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.8,
+  "latency": {
+    "input_duration_s": 46.98,
+    "output_duration_s": 46.98,
+    "first_speech_s": 19.45
+  },
+  "user_done_unix": 1790462795.5127861,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.25,
+        19.79
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        20.11,
+        20.69
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.45,
+  "audio_agent_speech_start": 19.25,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,26 @@
+{"t": 1790461301.4273992, "kind": "session_start", "room": "eval-49624d1d", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461301.605369, "kind": "agent_state", "state": "listening"}
+{"t": 1790461304.4607263, "kind": "user_state", "state": "speaking"}
+{"t": 1790461305.21232, "kind": "user_state", "state": "listening"}
+{"t": 1790461305.3219235, "kind": "user_state", "state": "speaking"}
+{"t": 1790461305.7140014, "kind": "metrics", "type": "stt_metrics", "duration": 0.5006893000099808, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461305.7150092, "kind": "heard", "text": "Well..."}
+{"t": 1790461305.7180798, "kind": "dry_run_reply", "text": "Well..."}
+{"t": 1790461320.5565994, "kind": "user_state", "state": "listening"}
+{"t": 1790461321.0065532, "kind": "user_turn", "text": "Well..."}
+{"t": 1790461321.0065532, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8014376163482666, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000525799987372011, "speech_id": "speech_3869ba412829"}
+{"t": 1790461321.0075588, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461321.329334, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461321.3405092, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3189406000019517, "duration": 0.3313209000043571, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3869ba412829"}
+{"t": 1790461321.368198, "kind": "metrics", "type": "stt_metrics", "duration": 0.8103548999933992, "audio_duration": 15.86, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461321.3700416, "kind": "heard", "text": "So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work."}
+{"t": 1790461322.1708207, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461322.1708207, "kind": "agent_state", "state": "listening"}
+{"t": 1790461322.1734176, "kind": "user_turn", "text": "So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work."}
+{"t": 1790461322.1739492, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0008437999931629747, "speech_id": "speech_eaacfebb0423"}
+{"t": 1790461322.1771455, "kind": "dry_run_reply", "text": "So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work."}
+{"t": 1790461322.1793497, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461322.3204126, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461322.3323672, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13813370000571012, "duration": 0.15045810001902282, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_eaacfebb0423"}
+{"t": 1790461323.7830005, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461323.7830005, "kind": "agent_state", "state": "listening"}

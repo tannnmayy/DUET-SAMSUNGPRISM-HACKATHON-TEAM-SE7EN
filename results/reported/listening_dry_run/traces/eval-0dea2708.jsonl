@@ -1,0 +1,34 @@
+{"t": 1790460885.3831236, "kind": "session_start", "room": "eval-0dea2708", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460885.4817483, "kind": "agent_state", "state": "listening"}
+{"t": 1790460888.1923306, "kind": "user_state", "state": "speaking"}
+{"t": 1790460892.9843886, "kind": "user_state", "state": "listening"}
+{"t": 1790460893.1389053, "kind": "user_state", "state": "speaking"}
+{"t": 1790460893.6542566, "kind": "metrics", "type": "stt_metrics", "duration": 0.6689591000031214, "audio_duration": 5.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460893.6554806, "kind": "heard", "text": "Like, you know, so I'm looking for."}
+{"t": 1790460893.6579325, "kind": "dry_run_reply", "text": "Like, you know, so I'm looking for."}
+{"t": 1790460895.9993594, "kind": "user_state", "state": "listening"}
+{"t": 1790460896.234061, "kind": "user_state", "state": "speaking"}
+{"t": 1790460896.589595, "kind": "metrics", "type": "stt_metrics", "duration": 0.5893694999977015, "audio_duration": 3.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460896.5914104, "kind": "heard", "text": "Like a one-bedroom apartment in Portland."}
+{"t": 1790460896.5938358, "kind": "dry_run_reply", "text": "Like, you know, so I'm looking for. Like a one-bedroom apartment in Portland."}
+{"t": 1790460899.4348285, "kind": "user_state", "state": "listening"}
+{"t": 1790460899.6841438, "kind": "user_state", "state": "speaking"}
+{"t": 1790460900.0639539, "kind": "metrics", "type": "stt_metrics", "duration": 0.6274361000105273, "audio_duration": 3.796, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460900.0656552, "kind": "heard", "text": "And I'd want to keep the rent under $1,800."}
+{"t": 1790460900.067788, "kind": "dry_run_reply", "text": "Like, you know, so I'm looking for. Like a one-bedroom apartment in Portland. And I'd want to keep the rent under $1,800."}
+{"t": 1790460905.5390353, "kind": "user_state", "state": "listening"}
+{"t": 1790460905.9855006, "kind": "user_turn", "text": "Like, you know, so I'm looking for. Like a one-bedroom apartment in Portland. And I'd want to keep the rent under $1,800."}
+{"t": 1790460905.986503, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7974579334259033, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046770001063123345, "speech_id": "speech_d83e88d6bee8"}
+{"t": 1790460905.986503, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460906.1162887, "kind": "metrics", "type": "stt_metrics", "duration": 0.5757367000041995, "audio_duration": 6.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460906.1180067, "kind": "heard", "text": "Oh, and it needs to be pet friendly because I have a dog."}
+{"t": 1790460906.1185162, "kind": "agent_state", "state": "listening"}
+{"t": 1790460906.1294465, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.1406213000009302, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d83e88d6bee8"}
+{"t": 1790460906.920371, "kind": "user_turn", "text": "Oh, and it needs to be pet friendly because I have a dog."}
+{"t": 1790460906.9214203, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00044960001832805574, "speech_id": "speech_1fd0f0c512e9"}
+{"t": 1790460906.9225786, "kind": "dry_run_reply", "text": "Like, you know, so I'm looking for. Like a one-bedroom apartment in Portland. And I'd want to keep the rent under $1,800. Oh, and it needs to be pet friendly because I have a dog."}
+{"t": 1790460906.9225786, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460907.0147443, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460907.0276568, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08925930000259541, "duration": 0.10180790000595152, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1fd0f0c512e9"}
+{"t": 1790460908.4737604, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460908.4737604, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,24 @@
+{"t": 1790459392.9423592, "kind": "session_start", "room": "eval-538303ed", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459393.0412426, "kind": "agent_state", "state": "listening"}
+{"t": 1790459397.5055022, "kind": "user_state", "state": "speaking"}
+{"t": 1790459401.4379141, "kind": "user_state", "state": "listening"}
+{"t": 1790459401.8423185, "kind": "user_state", "state": "speaking"}
+{"t": 1790459402.132332, "kind": "metrics", "type": "stt_metrics", "duration": 0.6927799999830313, "audio_duration": 4.5, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459402.133332, "kind": "heard", "text": "Can you tell me how much 50 U.S. dollars would be in Euros?"}
+{"t": 1790459402.135909, "kind": "dry_run_reply", "text": "Can you tell me how much 50 U.S. dollars would be in Euros?"}
+{"t": 1790459407.2412295, "kind": "user_state", "state": "listening"}
+{"t": 1790459407.7379053, "kind": "user_state", "state": "speaking"}
+{"t": 1790459407.9390314, "kind": "metrics", "type": "stt_metrics", "duration": 0.6967043000040576, "audio_duration": 6.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459407.941157, "kind": "heard", "text": "And then how much 100 Canadian dollars would be in U.S. dollars?"}
+{"t": 1790459407.9437788, "kind": "dry_run_reply", "text": "Can you tell me how much 50 U.S. dollars would be in Euros? And then how much 100 Canadian dollars would be in U.S. dollars?"}
+{"t": 1790459409.9454498, "kind": "user_state", "state": "listening"}
+{"t": 1790459410.4698842, "kind": "metrics", "type": "stt_metrics", "duration": 0.5240571000031196, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459410.4718285, "kind": "heard", "text": "Mmm, I need both numbers."}
+{"t": 1790459410.474303, "kind": "dry_run_reply", "text": "Can you tell me how much 50 U.S. dollars would be in Euros? And then how much 100 Canadian dollars would be in U.S. dollars? Mmm, I need both numbers."}
+{"t": 1790459412.0871015, "kind": "user_turn", "text": "Can you tell me how much 50 U.S. dollars would be in Euros? And then how much 100 Canadian dollars would be in U.S. dollars? Mmm, I need both numbers."}
+{"t": 1790459412.0881011, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.492648124694824, "transcription_delay": 0.8783786296844482, "on_user_turn_completed_delay": 0.00048439999227412045, "speech_id": "speech_9741b3a6bc84"}
+{"t": 1790459412.0890973, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459412.2188528, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459412.2310698, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1267455999914091, "duration": 0.1386447999975644, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_9741b3a6bc84"}
+{"t": 1790459413.6851308, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459413.6851308, "kind": "agent_state", "state": "listening"}

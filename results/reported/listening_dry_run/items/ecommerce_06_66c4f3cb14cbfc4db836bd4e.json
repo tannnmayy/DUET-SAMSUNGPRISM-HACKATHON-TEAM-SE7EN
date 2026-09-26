@@ -1,0 +1,273 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "ecommerce_06",
+  "category": "ecommerce_support",
+  "title": "Simple Cart Addition",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:06:10.161296",
+  "inference_time_s": 48.04,
+  "room_name": "eval-431a1527",
+  "stream_start_time": 1790456773.0138862,
+  "input_transcript": "mm -hmm so I think could you add two items of two of other items k2 to my cart I need one for me and and one as a gift for my friend",
+  "input_asr_chunks": [
+    {
+      "text": "mm",
+      "timestamp": [
+        0.21,
+        0.77
+      ]
+    },
+    {
+      "text": "-hmm",
+      "timestamp": [
+        0.77,
+        1.13
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.13,
+        2.03
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.03,
+        2.23
+      ]
+    },
+    {
+      "text": "think",
+      "timestamp": [
+        2.23,
+        2.57
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        2.57,
+        3.39
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        3.39,
+        3.73
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        3.73,
+        4.25
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        4.25,
+        4.55
+      ]
+    },
+    {
+      "text": "items",
+      "timestamp": [
+        4.55,
+        5.19
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        5.19,
+        6.13
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        6.13,
+        6.29
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        6.29,
+        6.55
+      ]
+    },
+    {
+      "text": "other",
+      "timestamp": [
+        6.55,
+        6.73
+      ]
+    },
+    {
+      "text": "items",
+      "timestamp": [
+        6.73,
+        7.13
+      ]
+    },
+    {
+      "text": "k2",
+      "timestamp": [
+        7.13,
+        7.79
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.79,
+        8.11
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.11,
+        8.29
+      ]
+    },
+    {
+      "text": "cart",
+      "timestamp": [
+        8.29,
+        8.77
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        8.77,
+        9.79
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        9.79,
+        10.29
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        10.29,
+        10.61
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.61,
+        10.87
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        10.87,
+        11.13
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.13,
+        11.55
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.55,
+        11.85
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        11.85,
+        12.17
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        12.17,
+        12.63
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        12.63,
+        12.77
+      ]
+    },
+    {
+      "text": "gift",
+      "timestamp": [
+        12.77,
+        13.05
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        13.05,
+        13.25
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        13.25,
+        13.41
+      ]
+    },
+    {
+      "text": "friend",
+      "timestamp": [
+        13.41,
+        13.73
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.73,
+  "latency": {
+    "input_duration_s": 44.528,
+    "output_duration_s": 44.528,
+    "first_speech_s": 17.4
+  },
+  "user_done_unix": 1790456786.7438862,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        17.17,
+        17.73
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        18.13,
+        18.63
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.44,
+  "audio_agent_speech_start": 17.17,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

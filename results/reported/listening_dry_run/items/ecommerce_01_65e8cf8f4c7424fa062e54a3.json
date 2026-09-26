@@ -1,0 +1,217 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "ecommerce_01",
+  "category": "ecommerce_support",
+  "title": "Simple Order Tracking",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:00:29.351696",
+  "inference_time_s": 49.62,
+  "room_name": "eval-1c70c33b",
+  "stream_start_time": 1790456432.4519925,
+  "input_transcript": "Like, you know, well, I ordered something last week and I haven't received it yet. Could you track it for me? The order ID is ABC123.",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.85,
+        1.57
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.19,
+        2.89
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        2.89,
+        3.15
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        3.47,
+        3.85
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.01,
+        4.17
+      ]
+    },
+    {
+      "text": "ordered",
+      "timestamp": [
+        4.17,
+        4.51
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        4.51,
+        4.87
+      ]
+    },
+    {
+      "text": "last",
+      "timestamp": [
+        4.87,
+        5.23
+      ]
+    },
+    {
+      "text": "week",
+      "timestamp": [
+        5.23,
+        5.59
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.59,
+        5.97
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.97,
+        7.53
+      ]
+    },
+    {
+      "text": "haven't",
+      "timestamp": [
+        7.53,
+        7.85
+      ]
+    },
+    {
+      "text": "received",
+      "timestamp": [
+        7.85,
+        8.21
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        8.21,
+        8.37
+      ]
+    },
+    {
+      "text": "yet.",
+      "timestamp": [
+        8.37,
+        8.59
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.93,
+        9.01
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        9.01,
+        9.15
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        9.15,
+        9.41
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        9.41,
+        9.57
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.57,
+        9.73
+      ]
+    },
+    {
+      "text": "me?",
+      "timestamp": [
+        9.73,
+        9.95
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        10.17,
+        10.69
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        10.69,
+        10.99
+      ]
+    },
+    {
+      "text": "ID",
+      "timestamp": [
+        10.99,
+        11.31
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        11.31,
+        11.91
+      ]
+    },
+    {
+      "text": "ABC123.",
+      "timestamp": [
+        11.91,
+        15.23
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.23,
+  "latency": {
+    "input_duration_s": 45.84,
+    "output_duration_s": 45.84,
+    "first_speech_s": 19.7
+  },
+  "user_done_unix": 1790456447.6819925,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.47,
+        19.97
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.24,
+  "audio_agent_speech_start": 19.47,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,217 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "travel_05",
+  "category": "travel_identity",
+  "title": "Flight Search with Hesitation",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:35:23.396185",
+  "inference_time_s": 43.96,
+  "room_name": "eval-a1c12b8f",
+  "stream_start_time": 1790462126.2528687,
+  "input_transcript": "So I need to go to Chicago sometime around, let me think, I believe it's December 12th, yeah? Could you look up flights for the day?",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        0.27,
+        1.11
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.11,
+        1.41
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        1.41,
+        1.61
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.61,
+        1.77
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        1.77,
+        1.93
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.93,
+        2.13
+      ]
+    },
+    {
+      "text": "Chicago",
+      "timestamp": [
+        2.13,
+        2.59
+      ]
+    },
+    {
+      "text": "sometime",
+      "timestamp": [
+        2.59,
+        3.39
+      ]
+    },
+    {
+      "text": "around,",
+      "timestamp": [
+        3.39,
+        4.05
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        4.13,
+        4.25
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        4.25,
+        4.41
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        4.41,
+        4.65
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.87,
+        4.93
+      ]
+    },
+    {
+      "text": "believe",
+      "timestamp": [
+        4.93,
+        5.19
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        5.19,
+        5.43
+      ]
+    },
+    {
+      "text": "December",
+      "timestamp": [
+        5.43,
+        5.89
+      ]
+    },
+    {
+      "text": "12th,",
+      "timestamp": [
+        5.89,
+        6.49
+      ]
+    },
+    {
+      "text": "yeah?",
+      "timestamp": [
+        6.63,
+        6.81
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        7.45,
+        7.89
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        7.89,
+        7.99
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        7.99,
+        8.19
+      ]
+    },
+    {
+      "text": "up",
+      "timestamp": [
+        8.19,
+        8.41
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        8.41,
+        8.91
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        8.91,
+        9.23
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        9.23,
+        9.41
+      ]
+    },
+    {
+      "text": "day?",
+      "timestamp": [
+        9.41,
+        9.65
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.65,
+  "latency": {
+    "input_duration_s": 40.432,
+    "output_duration_s": 40.432,
+    "first_speech_s": 15.35
+  },
+  "user_done_unix": 1790462135.9028687,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        15.15,
+        15.65
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.5,
+  "audio_agent_speech_start": 15.15,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

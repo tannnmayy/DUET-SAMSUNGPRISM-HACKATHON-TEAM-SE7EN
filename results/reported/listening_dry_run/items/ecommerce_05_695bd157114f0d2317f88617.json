@@ -1,0 +1,266 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "ecommerce_05",
+  "category": "ecommerce_support",
+  "title": "Product Search with Hesitation",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:04:57.261499",
+  "inference_time_s": 55.59,
+  "room_name": "eval-8b3ba865",
+  "stream_start_time": 1790456700.1135793,
+  "input_transcript": "Um, so like, uh, I'm looking for, um, for a new, let me think, a desk. Yes. Something under $300. If you have an option like that, that would be great.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.4,
+        1.1
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.8,
+        1.96
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        1.96,
+        2.34
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        2.54,
+        3.12
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        3.86,
+        4.08
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        4.08,
+        4.32
+      ]
+    },
+    {
+      "text": "for,",
+      "timestamp": [
+        4.32,
+        4.92
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        5.08,
+        5.34
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        6.4,
+        6.56
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        6.56,
+        6.76
+      ]
+    },
+    {
+      "text": "new,",
+      "timestamp": [
+        6.76,
+        7.16
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        9.28,
+        9.94
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        9.94,
+        10.08
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        10.08,
+        10.52
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        11.0,
+        11.64
+      ]
+    },
+    {
+      "text": "desk.",
+      "timestamp": [
+        11.64,
+        12.16
+      ]
+    },
+    {
+      "text": "Yes.",
+      "timestamp": [
+        12.78,
+        13.58
+      ]
+    },
+    {
+      "text": "Something",
+      "timestamp": [
+        14.06,
+        14.86
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        14.86,
+        15.18
+      ]
+    },
+    {
+      "text": "$300.",
+      "timestamp": [
+        15.18,
+        15.96
+      ]
+    },
+    {
+      "text": "If",
+      "timestamp": [
+        17.46,
+        18.26
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        18.26,
+        18.36
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        18.36,
+        18.52
+      ]
+    },
+    {
+      "text": "an",
+      "timestamp": [
+        18.52,
+        18.64
+      ]
+    },
+    {
+      "text": "option",
+      "timestamp": [
+        18.64,
+        19.08
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        19.08,
+        19.36
+      ]
+    },
+    {
+      "text": "that,",
+      "timestamp": [
+        19.36,
+        19.84
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        20.08,
+        20.42
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        20.42,
+        20.52
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        20.52,
+        20.62
+      ]
+    },
+    {
+      "text": "great.",
+      "timestamp": [
+        20.62,
+        20.92
+      ]
+    }
+  ],
+  "user_speech_end_rel": 7.16,
+  "latency": {
+    "input_duration_s": 52.08,
+    "output_duration_s": 52.08,
+    "first_speech_s": 15.45
+  },
+  "user_done_unix": 1790456707.2735794,
+  "transcript": "Okay. Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        15.22,
+        15.86
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.96,
+        20.52
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        23.96,
+        24.64
+      ]
+    }
+  ],
+  "perceived_total_latency": 8.06,
+  "audio_agent_speech_start": 15.22,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

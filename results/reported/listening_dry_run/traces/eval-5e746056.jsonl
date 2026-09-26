@@ -1,0 +1,34 @@
+{"t": 1790458622.4581459, "kind": "session_start", "room": "eval-5e746056", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458622.6051471, "kind": "agent_state", "state": "listening"}
+{"t": 1790458625.2208414, "kind": "user_state", "state": "speaking"}
+{"t": 1790458627.0338285, "kind": "user_state", "state": "listening"}
+{"t": 1790458627.3620791, "kind": "user_state", "state": "speaking"}
+{"t": 1790458627.5471497, "kind": "metrics", "type": "stt_metrics", "duration": 0.5129888999799732, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458627.549194, "kind": "heard", "text": "Uh, um..."}
+{"t": 1790458627.5518835, "kind": "dry_run_reply", "text": "Uh, um..."}
+{"t": 1790458628.2656753, "kind": "user_state", "state": "listening"}
+{"t": 1790458628.4057117, "kind": "user_state", "state": "speaking"}
+{"t": 1790458628.5649476, "kind": "metrics", "type": "stt_metrics", "duration": 0.2979261000000406, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458628.5654528, "kind": "heard", "text": "So..."}
+{"t": 1790458628.5684643, "kind": "dry_run_reply", "text": "Uh, um... So..."}
+{"t": 1790458632.363816, "kind": "user_state", "state": "listening"}
+{"t": 1790458632.5659206, "kind": "user_state", "state": "speaking"}
+{"t": 1790458632.9604917, "kind": "metrics", "type": "stt_metrics", "duration": 0.595120499987388, "audio_duration": 4.564, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458632.9619908, "kind": "heard", "text": "Um, I want to change my mortgage autopay to pull from."}
+{"t": 1790458632.9644415, "kind": "dry_run_reply", "text": "Uh, um... So... Um, I want to change my mortgage autopay to pull from."}
+{"t": 1790458636.864735, "kind": "user_state", "state": "listening"}
+{"t": 1790458637.3041341, "kind": "user_turn", "text": "Uh, um... So... Um, I want to change my mortgage autopay to pull from."}
+{"t": 1790458637.305134, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7903990745544434, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004177000082563609, "speech_id": "speech_ad1b1d20dbab"}
+{"t": 1790458637.3061342, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458637.5736127, "kind": "metrics", "type": "stt_metrics", "duration": 0.7073410999728367, "audio_duration": 4.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458637.5753431, "kind": "heard", "text": "Like my savings account instead of where it's pulling from nil."}
+{"t": 1790458637.5758476, "kind": "agent_state", "state": "listening"}
+{"t": 1790458637.5856235, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2739157000032719, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ad1b1d20dbab"}
+{"t": 1790458638.360318, "kind": "user_turn", "text": "Like my savings account instead of where it's pulling from nil."}
+{"t": 1790458638.360318, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004474000015761703, "speech_id": "speech_77287f564083"}
+{"t": 1790458638.36183, "kind": "dry_run_reply", "text": "Uh, um... So... Um, I want to change my mortgage autopay to pull from. Like my savings account instead of where it's pulling from nil."}
+{"t": 1790458638.3623333, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458638.5003223, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458638.510988, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1357895999972243, "duration": 0.1477170999860391, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_77287f564083"}
+{"t": 1790458639.9650207, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458639.9650207, "kind": "agent_state", "state": "listening"}

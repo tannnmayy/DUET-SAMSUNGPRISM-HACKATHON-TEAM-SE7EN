@@ -1,0 +1,43 @@
+{"t": 1790459071.1312702, "kind": "session_start", "room": "eval-fe2b0c7e", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459071.2265863, "kind": "agent_state", "state": "listening"}
+{"t": 1790459074.332566, "kind": "user_state", "state": "speaking"}
+{"t": 1790459078.1850674, "kind": "user_state", "state": "listening"}
+{"t": 1790459078.5296123, "kind": "user_state", "state": "speaking"}
+{"t": 1790459078.821469, "kind": "metrics", "type": "stt_metrics", "duration": 0.6355665999872144, "audio_duration": 4.468, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459078.8364882, "kind": "heard", "text": "I'm trying to figure out how much money I'd have."}
+{"t": 1790459078.83906, "kind": "dry_run_reply", "text": "I'm trying to figure out how much money I'd have."}
+{"t": 1790459079.8875816, "kind": "user_state", "state": "listening"}
+{"t": 1790459080.1895578, "kind": "metrics", "type": "stt_metrics", "duration": 0.3000929999980144, "audio_duration": 1.94, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459080.1905794, "kind": "heard", "text": "I converted."}
+{"t": 1790459080.191598, "kind": "dry_run_reply", "text": "I'm trying to figure out how much money I'd have. I converted."}
+{"t": 1790459080.3291447, "kind": "user_turn", "text": "I'm trying to figure out how much money I'd have. I converted."}
+{"t": 1790459080.3291447, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7920503616333008, "transcription_delay": 0.6539971828460693, "on_user_turn_completed_delay": 0.0004597999795805663, "speech_id": "speech_da270e901316"}
+{"t": 1790459080.3312657, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459080.4635336, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459080.476021, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12821870000334457, "duration": 0.14080270001431927, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_da270e901316"}
+{"t": 1790459080.4811537, "kind": "user_state", "state": "speaking"}
+{"t": 1790459081.1840534, "kind": "metrics", "type": "stt_metrics", "duration": 0.29547380001167767, "audio_duration": 0.98, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459081.1856105, "kind": "heard", "text": "I mean."}
+{"t": 1790459081.9264185, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459081.9264185, "kind": "agent_state", "state": "listening"}
+{"t": 1790459084.6318336, "kind": "user_state", "state": "listening"}
+{"t": 1790459085.0792887, "kind": "user_turn", "text": "I mean."}
+{"t": 1790459085.0792887, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.798454999923706, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004771999956574291, "speech_id": "speech_20578c6bbada"}
+{"t": 1790459085.0803359, "kind": "dry_run_reply", "text": "I mean."}
+{"t": 1790459085.0803359, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459085.132166, "kind": "user_state", "state": "speaking"}
+{"t": 1790459085.208132, "kind": "metrics", "type": "stt_metrics", "duration": 0.5752315999998245, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459085.2090538, "kind": "heard", "text": "About 200 euros into US dollars."}
+{"t": 1790459085.209567, "kind": "agent_state", "state": "listening"}
+{"t": 1790459085.2131696, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.1292216000147164, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_20578c6bbada"}
+{"t": 1790459086.7303808, "kind": "user_state", "state": "listening"}
+{"t": 1790459087.0444472, "kind": "metrics", "type": "stt_metrics", "duration": 0.3129483000084292, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459087.0458121, "kind": "heard", "text": "What would that come out to?"}
+{"t": 1790459087.048464, "kind": "dry_run_reply", "text": "I mean. About 200 euros into US dollars. What would that come out to?"}
+{"t": 1790459087.1853676, "kind": "user_turn", "text": "About 200 euros into US dollars. What would that come out to?"}
+{"t": 1790459087.1859386, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8059804439544678, "transcription_delay": 0.6679360866546631, "on_user_turn_completed_delay": 0.0005782000080216676, "speech_id": "speech_4fa22cc11a3a"}
+{"t": 1790459087.1859386, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459087.320373, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459087.3322687, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1311670999857597, "duration": 0.14415169999119826, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4fa22cc11a3a"}
+{"t": 1790459088.7853663, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459088.7853663, "kind": "agent_state", "state": "listening"}

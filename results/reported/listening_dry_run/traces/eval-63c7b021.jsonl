@@ -1,0 +1,29 @@
+{"t": 1790457099.1900167, "kind": "session_start", "room": "eval-63c7b021", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457099.318107, "kind": "agent_state", "state": "listening"}
+{"t": 1790457101.4730408, "kind": "user_state", "state": "speaking"}
+{"t": 1790457104.072636, "kind": "user_state", "state": "listening"}
+{"t": 1790457104.3222136, "kind": "user_state", "state": "speaking"}
+{"t": 1790457104.6631618, "kind": "metrics", "type": "stt_metrics", "duration": 0.5893779000034556, "audio_duration": 3.156, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457104.6645346, "kind": "heard", "text": "Hmm, like, like, hmm."}
+{"t": 1790457104.6669571, "kind": "dry_run_reply", "text": "Hmm, like, like, hmm."}
+{"t": 1790457110.12307, "kind": "user_state", "state": "listening"}
+{"t": 1790457110.5735135, "kind": "user_state", "state": "speaking"}
+{"t": 1790457110.6773288, "kind": "metrics", "type": "stt_metrics", "duration": 0.5536414999805856, "audio_duration": 6.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457110.678336, "kind": "heard", "text": "First, can you track my order? The ID is 123ABC."}
+{"t": 1790457110.6806216, "kind": "dry_run_reply", "text": "Hmm, like, like, hmm. First, can you track my order? The ID is 123ABC."}
+{"t": 1790457121.222547, "kind": "user_state", "state": "listening"}
+{"t": 1790457121.6615968, "kind": "user_turn", "text": "Hmm, like, like, hmm. First, can you track my order? The ID is 123ABC."}
+{"t": 1790457121.6625965, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7910497188568115, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004199999966658652, "speech_id": "speech_992970be09db"}
+{"t": 1790457121.6625965, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457121.9320679, "kind": "metrics", "type": "stt_metrics", "duration": 0.7082293000130448, "audio_duration": 11.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457121.9331512, "kind": "heard", "text": "And then while we're at it, could you also search for winter jackets under $150? I need one for my trip."}
+{"t": 1790457121.9336598, "kind": "agent_state", "state": "listening"}
+{"t": 1790457121.9446394, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2787047000019811, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_992970be09db"}
+{"t": 1790457122.1583843, "kind": "user_turn", "text": "And then while we're at it, could you also search for winter jackets under $150? I need one for my trip."}
+{"t": 1790457122.1593866, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046370000927709043, "speech_id": "speech_8f8bf9f651f7"}
+{"t": 1790457122.160391, "kind": "dry_run_reply", "text": "Hmm, like, like, hmm. First, can you track my order? The ID is 123ABC. And then while we're at it, could you also search for winter jackets under $150? I need one for my trip."}
+{"t": 1790457122.1613908, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457122.30189, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457122.313525, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1382171000004746, "duration": 0.15040189999854192, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8f8bf9f651f7"}
+{"t": 1790457123.7707596, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457123.7707596, "kind": "agent_state", "state": "listening"}

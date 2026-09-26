@@ -1,0 +1,57 @@
+{"t": 1790460415.7506125, "kind": "session_start", "room": "eval-47088fc5", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460415.9096115, "kind": "agent_state", "state": "listening"}
+{"t": 1790460419.7510874, "kind": "user_state", "state": "speaking"}
+{"t": 1790460421.3055086, "kind": "user_state", "state": "listening"}
+{"t": 1790460421.603201, "kind": "user_state", "state": "speaking"}
+{"t": 1790460421.796186, "kind": "metrics", "type": "stt_metrics", "duration": 0.4900099999795202, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460421.7978675, "kind": "heard", "text": "You know, um..."}
+{"t": 1790460421.8007674, "kind": "dry_run_reply", "text": "You know, um..."}
+{"t": 1790460422.4114726, "kind": "user_state", "state": "listening"}
+{"t": 1790460422.5056667, "kind": "user_state", "state": "speaking"}
+{"t": 1790460422.7188294, "kind": "metrics", "type": "stt_metrics", "duration": 0.3065237000118941, "audio_duration": 1.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460422.7205882, "kind": "heard", "text": "You know."}
+{"t": 1790460422.72279, "kind": "dry_run_reply", "text": "You know, um... You know."}
+{"t": 1790460423.4088454, "kind": "user_state", "state": "listening"}
+{"t": 1790460423.6580248, "kind": "user_state", "state": "speaking"}
+{"t": 1790460423.720145, "kind": "metrics", "type": "stt_metrics", "duration": 0.30865299998549744, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460423.7209044, "kind": "heard", "text": "And, well..."}
+{"t": 1790460423.7233386, "kind": "dry_run_reply", "text": "You know, um... You know. And, well..."}
+{"t": 1790460427.051916, "kind": "user_state", "state": "listening"}
+{"t": 1790460427.2600956, "kind": "user_state", "state": "speaking"}
+{"t": 1790460427.586438, "kind": "metrics", "type": "stt_metrics", "duration": 0.5340158000180963, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460427.5885339, "kind": "heard", "text": "I need a pet friendly apartment in Miami."}
+{"t": 1790460429.9532707, "kind": "user_state", "state": "listening"}
+{"t": 1790460430.1092706, "kind": "user_state", "state": "speaking"}
+{"t": 1790460430.5533774, "kind": "metrics", "type": "stt_metrics", "duration": 0.5987656000070274, "audio_duration": 3.316, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460430.5543776, "kind": "heard", "text": "And my budget is about $5."}
+{"t": 1790460432.1670454, "kind": "user_state", "state": "listening"}
+{"t": 1790460432.4986417, "kind": "metrics", "type": "stt_metrics", "duration": 0.3293097999994643, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460432.4995244, "kind": "heard", "text": "Let me check, it's..."}
+{"t": 1790460432.8539636, "kind": "user_state", "state": "speaking"}
+{"t": 1790460435.3552325, "kind": "user_state", "state": "listening"}
+{"t": 1790460435.5135543, "kind": "user_state", "state": "speaking"}
+{"t": 1790460435.9693627, "kind": "metrics", "type": "stt_metrics", "duration": 0.6128124000097159, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460435.9708674, "kind": "heard", "text": "It's about $1,500 a month."}
+{"t": 1790460437.9594138, "kind": "user_state", "state": "listening"}
+{"t": 1790460438.4928107, "kind": "metrics", "type": "stt_metrics", "duration": 0.531898099987302, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460438.4938273, "kind": "heard", "text": "Is there anything in that range?"}
+{"t": 1790460440.1187863, "kind": "user_turn", "text": "You know, um... You know. And, well... I need a pet friendly apartment in Miami. And my budget is about $5. Let me check, it's... It's about $1,500 a month. Is there anything in that range?"}
+{"t": 1790460440.1197875, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.5113725662231445, "transcription_delay": 0.88641357421875, "on_user_turn_completed_delay": 0.0004461999924387783, "speech_id": "speech_c18b5d5b41cf"}
+{"t": 1790460440.1209774, "kind": "dry_run_reply", "text": "You know, um... You know. And, well... I need a pet friendly apartment in Miami. And my budget is about $5. Let me check, it's... It's about $1,500 a month. Is there anything in that range?"}
+{"t": 1790460440.1224937, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460440.2600384, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460440.269771, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13307050001458265, "duration": 0.14418620002106763, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c18b5d5b41cf"}
+{"t": 1790460441.7329345, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460441.7329345, "kind": "agent_state", "state": "listening"}
+{"t": 1790460456.3090513, "kind": "user_state", "state": "speaking"}
+{"t": 1790460456.90291, "kind": "user_state", "state": "listening"}
+{"t": 1790460457.5539393, "kind": "metrics", "type": "stt_metrics", "duration": 0.6508231000043452, "audio_duration": 1.204, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460457.5549407, "kind": "heard", "text": "Mmmmm."}
+{"t": 1790460457.5583813, "kind": "dry_run_reply", "text": "Mmmmm."}
+{"t": 1790460457.559946, "kind": "user_turn", "text": "Mmmmm."}
+{"t": 1790460457.559946, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0080010890960693, "transcription_delay": 1.005033254623413, "on_user_turn_completed_delay": 0.0003581999917514622, "speech_id": "speech_59ec437b2846"}
+{"t": 1790460457.5611486, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460457.6977346, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460457.7109578, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1347793000168167, "duration": 0.14814820000901818, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_59ec437b2846"}
+{"t": 1790460459.1678922, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460459.1678922, "kind": "agent_state", "state": "listening"}

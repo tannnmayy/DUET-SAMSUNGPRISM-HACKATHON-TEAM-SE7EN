@@ -1,0 +1,67 @@
+{"t": 1790463142.4858806, "kind": "session_start", "room": "eval-e1147c2a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790463142.584638, "kind": "agent_state", "state": "listening"}
+{"t": 1790463145.4823954, "kind": "user_state", "state": "speaking"}
+{"t": 1790463150.2309942, "kind": "user_state", "state": "listening"}
+{"t": 1790463150.6376898, "kind": "user_state", "state": "speaking"}
+{"t": 1790463150.817724, "kind": "metrics", "type": "stt_metrics", "duration": 0.5862106000131462, "audio_duration": 5.364, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463150.819665, "kind": "heard", "text": "Well, great. So first, I need to find a flight to Vancouver."}
+{"t": 1790463150.8219478, "kind": "dry_run_reply", "text": "Well, great. So first, I need to find a flight to Vancouver."}
+{"t": 1790463152.1266837, "kind": "user_state", "state": "listening"}
+{"t": 1790463152.4404132, "kind": "metrics", "type": "stt_metrics", "duration": 0.3123506999982055, "audio_duration": 2.068, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463152.4413834, "kind": "heard", "text": "On November 5th,"}
+{"t": 1790463152.4434354, "kind": "dry_run_reply", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th,"}
+{"t": 1790463152.5683095, "kind": "user_turn", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th,"}
+{"t": 1790463152.5693097, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7936258316040039, "transcription_delay": 0.6666996479034424, "on_user_turn_completed_delay": 0.0004913000157102942, "speech_id": "speech_be95f4cbe5a8"}
+{"t": 1790463152.5693097, "kind": "agent_state", "state": "thinking"}
+{"t": 1790463152.6416395, "kind": "user_state", "state": "speaking"}
+{"t": 1790463152.70871, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1314901000005193, "duration": 0.1373347000044305, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_be95f4cbe5a8"}
+{"t": 1790463153.049518, "kind": "agent_state", "state": "listening"}
+{"t": 1790463154.8748174, "kind": "user_state", "state": "listening"}
+{"t": 1790463155.3721693, "kind": "metrics", "type": "stt_metrics", "duration": 0.4968739000032656, "audio_duration": 2.836, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463155.3738294, "kind": "heard", "text": "And book it under the name Schuyler."}
+{"t": 1790463155.3793223, "kind": "user_turn", "text": "And book it under the name Schuyler."}
+{"t": 1790463155.3793223, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.853126049041748, "transcription_delay": 0.8515172004699707, "on_user_turn_completed_delay": 0.0003680999798234552, "speech_id": "speech_0bb447f30d95"}
+{"t": 1790463155.3813038, "kind": "dry_run_reply", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th, And book it under the name Schuyler."}
+{"t": 1790463155.3826718, "kind": "agent_state", "state": "thinking"}
+{"t": 1790463155.5264564, "kind": "agent_state", "state": "speaking"}
+{"t": 1790463155.5400805, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14007150000543334, "duration": 0.1539117000065744, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0bb447f30d95"}
+{"t": 1790463156.374113, "kind": "user_state", "state": "speaking"}
+{"t": 1790463156.991333, "kind": "agent_said", "text": "Okay."}
+{"t": 1790463156.991333, "kind": "agent_state", "state": "listening"}
+{"t": 1790463158.828928, "kind": "user_state", "state": "listening"}
+{"t": 1790463158.927857, "kind": "user_state", "state": "speaking"}
+{"t": 1790463161.7801316, "kind": "user_state", "state": "listening"}
+{"t": 1790463162.4130008, "kind": "metrics", "type": "stt_metrics", "duration": 0.6323854999791365, "audio_duration": 5.236, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463162.4147334, "kind": "heard", "text": "So hoping you could find a hotel near the airport for a couple of nights."}
+{"t": 1790463162.429269, "kind": "dry_run_reply", "text": "So hoping you could find a hotel near the airport for a couple of nights."}
+{"t": 1790463162.4319525, "kind": "user_turn", "text": "So hoping you could find a hotel near the airport for a couple of nights."}
+{"t": 1790463162.4319525, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0014469623565674, "transcription_delay": 0.985908031463623, "on_user_turn_completed_delay": 0.00042910000775009394, "speech_id": "speech_a77a8257c07d"}
+{"t": 1790463162.4332802, "kind": "agent_state", "state": "thinking"}
+{"t": 1790463162.4730048, "kind": "user_state", "state": "speaking"}
+{"t": 1790463162.5416865, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.10168359999079257, "duration": 0.10646709997672588, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a77a8257c07d"}
+{"t": 1790463162.888028, "kind": "agent_state", "state": "listening"}
+{"t": 1790463165.5492098, "kind": "user_state", "state": "listening"}
+{"t": 1790463165.7383928, "kind": "user_state", "state": "speaking"}
+{"t": 1790463166.1509953, "kind": "metrics", "type": "stt_metrics", "duration": 0.6012976999918465, "audio_duration": 3.636, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463166.1529994, "kind": "heard", "text": "And then finally, I need to update my visa number."}
+{"t": 1790463168.032346, "kind": "user_state", "state": "listening"}
+{"t": 1790463168.2339015, "kind": "user_state", "state": "speaking"}
+{"t": 1790463168.5349908, "kind": "metrics", "type": "stt_metrics", "duration": 0.501292500004638, "audio_duration": 2.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463168.5363438, "kind": "heard", "text": "To V as in Victor."}
+{"t": 1790463168.5387921, "kind": "dry_run_reply", "text": "So hoping you could find a hotel near the airport for a couple of nights. And then finally, I need to update my visa number. To V as in Victor."}
+{"t": 1790463170.7379868, "kind": "user_state", "state": "listening"}
+{"t": 1790463171.1927776, "kind": "user_turn", "text": "And then finally, I need to update my visa number. To V as in Victor."}
+{"t": 1790463171.1937773, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.806790828704834, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00039790000300854445, "speech_id": "speech_bbf3f2ec2465"}
+{"t": 1790463171.1937773, "kind": "agent_state", "state": "thinking"}
+{"t": 1790463171.3327036, "kind": "metrics", "type": "stt_metrics", "duration": 0.594206599984318, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790463171.334656, "kind": "heard", "text": "Dash four, dash four."}
+{"t": 1790463171.3351603, "kind": "agent_state", "state": "listening"}
+{"t": 1790463171.345463, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.14889410001342185, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_bbf3f2ec2465"}
+{"t": 1790463172.142288, "kind": "user_turn", "text": "Dash four, dash four."}
+{"t": 1790463172.142288, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046540002222172916, "speech_id": "speech_dd2bb70fe092"}
+{"t": 1790463172.1442866, "kind": "dry_run_reply", "text": "So hoping you could find a hotel near the airport for a couple of nights. And then finally, I need to update my visa number. To V as in Victor. Dash four, dash four."}
+{"t": 1790463172.1452875, "kind": "agent_state", "state": "thinking"}
+{"t": 1790463172.2783566, "kind": "agent_state", "state": "speaking"}
+{"t": 1790463172.2894948, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12702340001123957, "duration": 0.13932139999815263, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_dd2bb70fe092"}
+{"t": 1790463173.7375844, "kind": "agent_said", "text": "Okay."}
+{"t": 1790463173.7385848, "kind": "agent_state", "state": "listening"}

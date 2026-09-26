@@ -1,0 +1,36 @@
+{"t": 1790456771.19585, "kind": "session_start", "room": "eval-431a1527", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456771.2937014, "kind": "agent_state", "state": "listening"}
+{"t": 1790456773.7944672, "kind": "user_state", "state": "speaking"}
+{"t": 1790456774.3458378, "kind": "user_state", "state": "listening"}
+{"t": 1790456774.9535716, "kind": "metrics", "type": "stt_metrics", "duration": 0.6058569000160787, "audio_duration": 1.14, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456774.9672189, "kind": "heard", "text": "Mm-mm-mm."}
+{"t": 1790456774.969884, "kind": "dry_run_reply", "text": "Mm-mm-mm."}
+{"t": 1790456775.1450565, "kind": "user_state", "state": "speaking"}
+{"t": 1790456775.9950578, "kind": "user_state", "state": "listening"}
+{"t": 1790456776.3184288, "kind": "metrics", "type": "stt_metrics", "duration": 0.32195559999672696, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456776.3192098, "kind": "heard", "text": "So I like"}
+{"t": 1790456776.321594, "kind": "dry_run_reply", "text": "Mm-mm-mm. So I like"}
+{"t": 1790456776.4459085, "kind": "user_state", "state": "speaking"}
+{"t": 1790456779.045804, "kind": "user_state", "state": "listening"}
+{"t": 1790456779.2440076, "kind": "user_state", "state": "speaking"}
+{"t": 1790456779.5412257, "kind": "metrics", "type": "stt_metrics", "duration": 0.4930935000011232, "audio_duration": 3.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456779.5420923, "kind": "heard", "text": "Could you add two items?"}
+{"t": 1790456779.5444233, "kind": "dry_run_reply", "text": "Mm-mm-mm. So I like Could you add two items?"}
+{"t": 1790456787.5436509, "kind": "user_state", "state": "listening"}
+{"t": 1790456787.9850998, "kind": "user_turn", "text": "Mm-mm-mm. So I like Could you add two items?"}
+{"t": 1790456787.986099, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7934489250183105, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004937000048812479, "speech_id": "speech_11e3dc840a4f"}
+{"t": 1790456787.986099, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456788.3107955, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456788.313338, "kind": "metrics", "type": "stt_metrics", "duration": 0.7680425000144169, "audio_duration": 8.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456788.3159869, "kind": "heard", "text": "I have two of the items K2 to my cart. I need one for me and one as a gift for my friend."}
+{"t": 1790456788.3271167, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3220547999953851, "duration": 0.3389995000034105, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_11e3dc840a4f"}
+{"t": 1790456789.1186862, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456789.119693, "kind": "agent_state", "state": "listening"}
+{"t": 1790456789.121117, "kind": "user_turn", "text": "I have two of the items K2 to my cart. I need one for me and one as a gift for my friend."}
+{"t": 1790456789.1216443, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0006343999993987381, "speech_id": "speech_4d8673acd4f0"}
+{"t": 1790456789.1244311, "kind": "dry_run_reply", "text": "I have two of the items K2 to my cart. I need one for me and one as a gift for my friend."}
+{"t": 1790456789.1258147, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456789.2761765, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456789.288793, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14601609998499043, "duration": 0.15920329999062233, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4d8673acd4f0"}
+{"t": 1790456790.7444093, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456790.7444093, "kind": "agent_state", "state": "listening"}

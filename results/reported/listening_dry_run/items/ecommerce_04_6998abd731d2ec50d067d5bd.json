@@ -1,0 +1,224 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "ecommerce_04",
+  "category": "ecommerce_support",
+  "title": "Order Tracking with Pause",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:03:54.668545",
+  "inference_time_s": 44.29,
+  "room_name": "eval-e709a9e8",
+  "stream_start_time": 1790456637.5324318,
+  "input_transcript": "You know, where is my package? Let me find the order number here. The order number is XYZ88. Could you check what's going on with it?",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.21,
+        0.99
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        0.99,
+        1.23
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        1.47,
+        1.95
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        1.95,
+        2.09
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        2.09,
+        2.27
+      ]
+    },
+    {
+      "text": "package?",
+      "timestamp": [
+        2.27,
+        2.83
+      ]
+    },
+    {
+      "text": "Let",
+      "timestamp": [
+        3.09,
+        3.09
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        3.09,
+        3.25
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        3.25,
+        3.53
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.53,
+        4.31
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        4.31,
+        4.65
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        4.65,
+        5.03
+      ]
+    },
+    {
+      "text": "here.",
+      "timestamp": [
+        5.03,
+        5.33
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        5.61,
+        5.71
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        5.71,
+        5.79
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        5.79,
+        6.05
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        6.05,
+        6.29
+      ]
+    },
+    {
+      "text": "XYZ88.",
+      "timestamp": [
+        6.29,
+        7.75
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.43,
+        8.93
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.93,
+        9.01
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        9.01,
+        9.15
+      ]
+    },
+    {
+      "text": "what's",
+      "timestamp": [
+        9.15,
+        9.41
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        9.41,
+        9.61
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        9.61,
+        9.83
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        9.83,
+        10.03
+      ]
+    },
+    {
+      "text": "it?",
+      "timestamp": [
+        10.03,
+        10.21
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.21,
+  "latency": {
+    "input_duration_s": 40.773,
+    "output_duration_s": 40.773,
+    "first_speech_s": 14.4
+  },
+  "user_done_unix": 1790456647.7424319,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        14.16,
+        14.8
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        32.72,
+        33.3
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.95,
+  "audio_agent_speech_start": 14.16,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

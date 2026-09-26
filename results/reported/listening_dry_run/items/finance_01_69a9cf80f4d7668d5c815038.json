@@ -1,0 +1,210 @@
+{
+  "pid": "69a9cf80f4d7668d5c815038",
+  "example_id": "finance_01",
+  "category": "finance_billing",
+  "title": "Simple Currency Exchange",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:35:01.031520",
+  "inference_time_s": 44.51,
+  "room_name": "eval-d4a4f96f",
+  "stream_start_time": 1790458503.919989,
+  "input_transcript": "Like, I'm trying to figure out how much 500 US dollars would be if I converted it to Euros. Could you check that for me?",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.69,
+        1.37
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        1.83,
+        2.27
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        2.27,
+        2.51
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.51,
+        2.65
+      ]
+    },
+    {
+      "text": "figure",
+      "timestamp": [
+        2.65,
+        2.89
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        2.89,
+        3.15
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        3.15,
+        3.33
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        3.33,
+        3.61
+      ]
+    },
+    {
+      "text": "500",
+      "timestamp": [
+        3.61,
+        4.09
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        4.09,
+        4.47
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        4.47,
+        4.77
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        4.77,
+        5.05
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        5.05,
+        5.33
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        5.33,
+        5.85
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.85,
+        6.03
+      ]
+    },
+    {
+      "text": "converted",
+      "timestamp": [
+        6.03,
+        6.47
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        6.47,
+        6.65
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.65,
+        6.89
+      ]
+    },
+    {
+      "text": "Euros.",
+      "timestamp": [
+        6.89,
+        7.39
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.07,
+        8.55
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.55,
+        8.67
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        8.67,
+        8.85
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        8.85,
+        9.01
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.01,
+        9.19
+      ]
+    },
+    {
+      "text": "me?",
+      "timestamp": [
+        9.19,
+        9.37
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.37,
+  "latency": {
+    "input_duration_s": 40.98,
+    "output_duration_s": 40.98,
+    "first_speech_s": 12.75
+  },
+  "user_done_unix": 1790458513.289989,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        12.53,
+        13.01
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.16,
+  "audio_agent_speech_start": 12.53,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

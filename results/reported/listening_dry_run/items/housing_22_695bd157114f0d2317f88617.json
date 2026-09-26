@@ -1,0 +1,385 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "housing_22",
+  "category": "housing_location",
+  "title": "Filler-Heavy Multi-Tool Chain",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:26:12.995819",
+  "inference_time_s": 53.6,
+  "room_name": "eval-702aa859",
+  "stream_start_time": 1790461575.8053212,
+  "input_transcript": "You know, can you first update my filter so pets are allowed? I keep forgetting to set that. Then, like, search in Seattle for one bedroom. And then once you find something, check the transit time from there to the stadium. Because, you know, I go to games pretty often.",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.34,
+        0.86
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        0.86,
+        1.16
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        1.42,
+        2.56
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.56,
+        2.72
+      ]
+    },
+    {
+      "text": "first",
+      "timestamp": [
+        2.72,
+        3.02
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        3.02,
+        3.36
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        3.36,
+        3.54
+      ]
+    },
+    {
+      "text": "filter",
+      "timestamp": [
+        3.54,
+        3.94
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        3.94,
+        4.18
+      ]
+    },
+    {
+      "text": "pets",
+      "timestamp": [
+        4.18,
+        4.48
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        4.48,
+        4.62
+      ]
+    },
+    {
+      "text": "allowed?",
+      "timestamp": [
+        4.62,
+        4.9
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.7,
+        6.26
+      ]
+    },
+    {
+      "text": "keep",
+      "timestamp": [
+        6.26,
+        6.48
+      ]
+    },
+    {
+      "text": "forgetting",
+      "timestamp": [
+        6.48,
+        6.9
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.9,
+        7.14
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        7.14,
+        7.44
+      ]
+    },
+    {
+      "text": "that.",
+      "timestamp": [
+        7.44,
+        7.76
+      ]
+    },
+    {
+      "text": "Then,",
+      "timestamp": [
+        8.2,
+        8.76
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        8.78,
+        9.0
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        9.18,
+        9.36
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        9.36,
+        9.52
+      ]
+    },
+    {
+      "text": "Seattle",
+      "timestamp": [
+        9.52,
+        9.84
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.84,
+        10.1
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        10.1,
+        10.38
+      ]
+    },
+    {
+      "text": "bedroom.",
+      "timestamp": [
+        10.38,
+        10.86
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        11.38,
+        11.94
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.94,
+        12.08
+      ]
+    },
+    {
+      "text": "once",
+      "timestamp": [
+        12.08,
+        12.42
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        12.42,
+        12.56
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        12.56,
+        12.8
+      ]
+    },
+    {
+      "text": "something,",
+      "timestamp": [
+        12.8,
+        13.24
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        13.38,
+        13.68
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        13.68,
+        13.9
+      ]
+    },
+    {
+      "text": "transit",
+      "timestamp": [
+        13.9,
+        14.34
+      ]
+    },
+    {
+      "text": "time",
+      "timestamp": [
+        14.34,
+        14.86
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        14.86,
+        15.74
+      ]
+    },
+    {
+      "text": "there",
+      "timestamp": [
+        15.74,
+        15.94
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.94,
+        16.08
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        16.08,
+        16.2
+      ]
+    },
+    {
+      "text": "stadium.",
+      "timestamp": [
+        16.2,
+        16.5
+      ]
+    },
+    {
+      "text": "Because,",
+      "timestamp": [
+        16.5,
+        16.88
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        16.96,
+        17.02
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        17.02,
+        17.1
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        17.16,
+        17.26
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        17.26,
+        17.42
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        17.42,
+        17.54
+      ]
+    },
+    {
+      "text": "games",
+      "timestamp": [
+        17.54,
+        17.82
+      ]
+    },
+    {
+      "text": "pretty",
+      "timestamp": [
+        17.82,
+        18.18
+      ]
+    },
+    {
+      "text": "often.",
+      "timestamp": [
+        18.18,
+        18.6
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.6,
+  "latency": {
+    "input_duration_s": 50.1,
+    "output_duration_s": 50.1,
+    "first_speech_s": 23.15
+  },
+  "user_done_unix": 1790461594.4053211,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        22.93,
+        23.43
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.33,
+  "audio_agent_speech_start": 22.93,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

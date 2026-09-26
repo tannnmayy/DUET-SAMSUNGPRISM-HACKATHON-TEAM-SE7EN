@@ -1,0 +1,210 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "travel_03",
+  "category": "travel_identity",
+  "title": "Flight Search with Fillers",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:34:19.907063",
+  "inference_time_s": 46.7,
+  "room_name": "eval-2e90a5d1",
+  "stream_start_time": 1790462062.7547631,
+  "input_transcript": "Yeah, well, I've been looking for flights, and I was wondering if you could maybe check what's available to London around August 20th for me.",
+  "input_asr_chunks": [
+    {
+      "text": "Yeah,",
+      "timestamp": [
+        1.88,
+        2.32
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        2.48,
+        2.56
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        2.68,
+        2.76
+      ]
+    },
+    {
+      "text": "been",
+      "timestamp": [
+        2.76,
+        2.86
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        2.86,
+        3.02
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        3.02,
+        3.24
+      ]
+    },
+    {
+      "text": "flights,",
+      "timestamp": [
+        3.24,
+        3.72
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.78,
+        4.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.16,
+        5.58
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        5.58,
+        5.74
+      ]
+    },
+    {
+      "text": "wondering",
+      "timestamp": [
+        5.74,
+        5.98
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        5.98,
+        6.16
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        6.16,
+        6.26
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        6.26,
+        6.44
+      ]
+    },
+    {
+      "text": "maybe",
+      "timestamp": [
+        6.44,
+        6.62
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        6.62,
+        7.44
+      ]
+    },
+    {
+      "text": "what's",
+      "timestamp": [
+        7.44,
+        8.28
+      ]
+    },
+    {
+      "text": "available",
+      "timestamp": [
+        8.28,
+        8.66
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        8.66,
+        8.96
+      ]
+    },
+    {
+      "text": "London",
+      "timestamp": [
+        8.96,
+        9.44
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        9.44,
+        9.9
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        9.9,
+        11.04
+      ]
+    },
+    {
+      "text": "20th",
+      "timestamp": [
+        11.04,
+        11.62
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.62,
+        11.84
+      ]
+    },
+    {
+      "text": "me.",
+      "timestamp": [
+        11.84,
+        12.1
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.1,
+  "latency": {
+    "input_duration_s": 43.2,
+    "output_duration_s": 43.2,
+    "first_speech_s": 16.4
+  },
+  "user_done_unix": 1790462074.854763,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        16.18,
+        16.68
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.08,
+  "audio_agent_speech_start": 16.18,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

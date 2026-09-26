@@ -19,7 +19,7 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Step | Where | Status |
 |---|---|---|
 | Build a LiveKit voice agent (custom allowed, following the template patterns) | `duet_voice/agent.py`: same tool names, arguments and `/tmp/agent_tool_calls.log` format as the templates | ✅ |
-| Clone FDB-v3, LiveKit, download data, run it | `reproduce.sh`, `bench/run_live.py`. Local LiveKit server verified end to end on 100 items; LiveKit Cloud (`LIVEKIT_*`) verified on 3 items | ✅ |
+| Clone FDB-v3, LiveKit, download data, run it | `reproduce.sh`, `bench/run_live.py`. Local LiveKit server verified end to end on all 100 items with the final code (100% answered; `results/reported/listening_dry_run`); LiveKit Cloud (`LIVEKIT_*`) verified on 3 items | ✅ |
 | Iterate on self-corrections and multi-step chains | `bench/offline_eval.py`, `docs/FINDINGS.md` | 🟡 listening done; first 20-item sample (12 of 13 completed items passed) before the free tier's 20-requests-a-day cap; full iteration needs billing |
 | One extension use case, end to end, in the video | `docs/USE_CASE_RESEARCH.md` | ⬜ deferred by decision |
 

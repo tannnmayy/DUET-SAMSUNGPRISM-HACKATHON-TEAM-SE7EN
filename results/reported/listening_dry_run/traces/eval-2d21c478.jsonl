@@ -1,0 +1,34 @@
+{"t": 1790461997.3650076, "kind": "session_start", "room": "eval-2d21c478", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461997.467375, "kind": "agent_state", "state": "listening"}
+{"t": 1790461999.7623143, "kind": "user_state", "state": "speaking"}
+{"t": 1790462000.4646475, "kind": "user_state", "state": "listening"}
+{"t": 1790462001.056267, "kind": "user_state", "state": "speaking"}
+{"t": 1790462001.092043, "kind": "metrics", "type": "stt_metrics", "duration": 0.6261375999893062, "audio_duration": 1.3, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462001.097091, "kind": "heard", "text": "Well..."}
+{"t": 1790462001.0998247, "kind": "dry_run_reply", "text": "Well..."}
+{"t": 1790462004.411591, "kind": "user_state", "state": "listening"}
+{"t": 1790462004.6123827, "kind": "user_state", "state": "speaking"}
+{"t": 1790462004.918869, "kind": "metrics", "type": "stt_metrics", "duration": 0.5048844999982975, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462004.9198701, "kind": "heard", "text": "Um, I've been looking at flights and"}
+{"t": 1790462004.9232209, "kind": "dry_run_reply", "text": "Well... Um, I've been looking at flights and"}
+{"t": 1790462008.1741238, "kind": "user_state", "state": "listening"}
+{"t": 1790462008.5057883, "kind": "user_state", "state": "speaking"}
+{"t": 1790462008.7286148, "kind": "metrics", "type": "stt_metrics", "duration": 0.5536947999789845, "audio_duration": 4.18, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462008.7299767, "kind": "heard", "text": "I was wondering if you could like check."}
+{"t": 1790462008.7326198, "kind": "dry_run_reply", "text": "Well... Um, I've been looking at flights and I was wondering if you could like check."}
+{"t": 1790462012.2703233, "kind": "user_state", "state": "listening"}
+{"t": 1790462012.703993, "kind": "user_turn", "text": "Well... Um, I've been looking at flights and I was wondering if you could like check."}
+{"t": 1790462012.7054982, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7846536636352539, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004661999992094934, "speech_id": "speech_15219ec3bccc"}
+{"t": 1790462012.707104, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462012.9405568, "kind": "metrics", "type": "stt_metrics", "duration": 0.6682489000086207, "audio_duration": 4.372, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462012.9419591, "kind": "heard", "text": "What's available to London around August 20th for me?"}
+{"t": 1790462012.9424648, "kind": "agent_state", "state": "listening"}
+{"t": 1790462012.953825, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.24119729999802075, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_15219ec3bccc"}
+{"t": 1790462013.7325697, "kind": "user_turn", "text": "What's available to London around August 20th for me?"}
+{"t": 1790462013.7341206, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005112999933771789, "speech_id": "speech_0e0b48dfbbfa"}
+{"t": 1790462013.7351656, "kind": "dry_run_reply", "text": "Well... Um, I've been looking at flights and I was wondering if you could like check. What's available to London around August 20th for me?"}
+{"t": 1790462013.7351656, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462013.8831651, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462013.8943841, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1450460999913048, "duration": 0.15692849998595193, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0e0b48dfbbfa"}
+{"t": 1790462015.3433065, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462015.3433065, "kind": "agent_state", "state": "listening"}

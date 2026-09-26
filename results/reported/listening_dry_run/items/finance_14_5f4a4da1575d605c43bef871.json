@@ -1,0 +1,252 @@
+{
+  "pid": "5f4a4da1575d605c43bef871",
+  "example_id": "finance_14",
+  "category": "finance_billing",
+  "title": "Two Currency Conversions",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:49:51.951973",
+  "inference_time_s": 48.85,
+  "room_name": "eval-538303ed",
+  "stream_start_time": 1790459394.8099375,
+  "input_transcript": "Can you tell me how much 50 U .S. dollars would be in Euros and then how much 100 Canadian dollars would be in U .S. dollars? I need both numbers.",
+  "input_asr_chunks": [
+    {
+      "text": "Can",
+      "timestamp": [
+        2.22,
+        2.6
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.6,
+        2.7
+      ]
+    },
+    {
+      "text": "tell",
+      "timestamp": [
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        2.9,
+        3.06
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        3.06,
+        3.24
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        3.24,
+        3.54
+      ]
+    },
+    {
+      "text": "50",
+      "timestamp": [
+        3.54,
+        3.9
+      ]
+    },
+    {
+      "text": "U",
+      "timestamp": [
+        3.9,
+        4.18
+      ]
+    },
+    {
+      "text": ".S.",
+      "timestamp": [
+        4.18,
+        4.38
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        4.52,
+        4.76
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        4.76,
+        5.1
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        5.1,
+        5.28
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        5.28,
+        5.48
+      ]
+    },
+    {
+      "text": "Euros",
+      "timestamp": [
+        5.48,
+        5.86
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.86,
+        6.94
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        6.94,
+        7.2
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        7.2,
+        7.82
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        7.82,
+        8.08
+      ]
+    },
+    {
+      "text": "100",
+      "timestamp": [
+        8.08,
+        8.76
+      ]
+    },
+    {
+      "text": "Canadian",
+      "timestamp": [
+        8.76,
+        9.36
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        9.36,
+        9.92
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        9.92,
+        10.26
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        10.26,
+        10.52
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        10.52,
+        10.86
+      ]
+    },
+    {
+      "text": "U",
+      "timestamp": [
+        10.86,
+        11.08
+      ]
+    },
+    {
+      "text": ".S.",
+      "timestamp": [
+        11.08,
+        11.26
+      ]
+    },
+    {
+      "text": "dollars?",
+      "timestamp": [
+        11.72,
+        11.72
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.86,
+        13.42
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        13.42,
+        13.66
+      ]
+    },
+    {
+      "text": "both",
+      "timestamp": [
+        13.66,
+        13.94
+      ]
+    },
+    {
+      "text": "numbers.",
+      "timestamp": [
+        13.94,
+        14.38
+      ]
+    }
+  ],
+  "user_speech_end_rel": 14.38,
+  "latency": {
+    "input_duration_s": 45.312,
+    "output_duration_s": 45.312,
+    "first_speech_s": 19.55
+  },
+  "user_done_unix": 1790459409.1899376,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.34,
+        19.84
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.96,
+  "audio_agent_speech_start": 19.34,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

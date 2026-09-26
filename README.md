@@ -44,6 +44,12 @@ That maps onto the three capabilities the Theme 05 guide asks for:
 | Cascaded Whisper→GPT-4o→TTS (paper) | 0.450 | 0.803 | 0.562 | 0.600 | 100% | 10.12 s | 33.0% |
 | **DUET (ours)** | *pending* | | | | | | |
 
+**Listening alone, no model** (all 100 recordings through the official runner
+and scripts, the agent answering "Okay." to every closed turn): every
+conversation answered, 12% interruptions, and 4.09 s first-response latency as
+the benchmark measures it, including its constant ~1.9 s recorder offset.
+Record: [`results/reported/listening_dry_run`](results/reported/listening_dry_run).
+
 ## Architecture
 
 ```mermaid

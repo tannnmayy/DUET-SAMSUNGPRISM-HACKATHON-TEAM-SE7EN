@@ -1,0 +1,46 @@
+{"t": 1790462634.4030695, "kind": "session_start", "room": "eval-5753966e", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462634.50507, "kind": "agent_state", "state": "listening"}
+{"t": 1790462637.1100285, "kind": "user_state", "state": "speaking"}
+{"t": 1790462637.8004029, "kind": "user_state", "state": "listening"}
+{"t": 1790462638.1972125, "kind": "user_state", "state": "speaking"}
+{"t": 1790462638.3289716, "kind": "metrics", "type": "stt_metrics", "duration": 0.5277581000118516, "audio_duration": 1.3, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462638.3310063, "kind": "heard", "text": "Hmm."}
+{"t": 1790462638.3332887, "kind": "dry_run_reply", "text": "Hmm."}
+{"t": 1790462643.3560126, "kind": "user_state", "state": "listening"}
+{"t": 1790462643.9526608, "kind": "metrics", "type": "stt_metrics", "duration": 0.5951447999977972, "audio_duration": 5.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462643.953987, "kind": "heard", "text": "All right, first, I need to find flights to Dubai on April 10th."}
+{"t": 1790462643.958205, "kind": "dry_run_reply", "text": "Hmm. All right, first, I need to find flights to Dubai on April 10th."}
+{"t": 1790462644.025898, "kind": "user_state", "state": "speaking"}
+{"t": 1790462646.4608936, "kind": "user_state", "state": "listening"}
+{"t": 1790462646.600379, "kind": "user_state", "state": "speaking"}
+{"t": 1790462647.0539868, "kind": "metrics", "type": "stt_metrics", "duration": 0.5913799999980256, "audio_duration": 3.06, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462647.0549529, "kind": "heard", "text": "Then go ahead and book the cheapest option."}
+{"t": 1790462647.0570614, "kind": "dry_run_reply", "text": "Hmm. All right, first, I need to find flights to Dubai on April 10th. Then go ahead and book the cheapest option."}
+{"t": 1790462649.0026014, "kind": "user_state", "state": "listening"}
+{"t": 1790462649.4454827, "kind": "user_turn", "text": "Hmm. All right, first, I need to find flights to Dubai on April 10th. Then go ahead and book the cheapest option."}
+{"t": 1790462649.4464915, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7948813438415527, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00048550000065006316, "speech_id": "speech_3bdb5aec23dc"}
+{"t": 1790462649.4464915, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462649.4623857, "kind": "user_state", "state": "speaking"}
+{"t": 1790462649.540142, "kind": "metrics", "type": "stt_metrics", "duration": 0.5365431999962311, "audio_duration": 2.996, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462649.5411403, "kind": "heard", "text": "The name on the ticket should be Casey Lee."}
+{"t": 1790462649.5419085, "kind": "agent_state", "state": "listening"}
+{"t": 1790462649.555137, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.10434750001877546, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3bdb5aec23dc"}
+{"t": 1790462657.5984151, "kind": "user_state", "state": "listening"}
+{"t": 1790462658.038818, "kind": "user_turn", "text": "The name on the ticket should be Casey Lee."}
+{"t": 1790462658.039816, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7914047241210938, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00044860001071356237, "speech_id": "speech_8a18eaa12961"}
+{"t": 1790462658.0411384, "kind": "dry_run_reply", "text": "Hmm. All right, first, I need to find flights to Dubai on April 10th. Then go ahead and book the cheapest option. The name on the ticket should be Casey Lee."}
+{"t": 1790462658.0422068, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462658.2336156, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462658.247125, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.18869120001909323, "duration": 0.20277150001493283, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8a18eaa12961"}
+{"t": 1790462658.271341, "kind": "metrics", "type": "stt_metrics", "duration": 0.6713335000094958, "audio_duration": 8.756, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462658.2729442, "kind": "heard", "text": "Oh, and I almost forgot. I need to update my passport number to E-77-2211."}
+{"t": 1790462659.0701385, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462659.0711386, "kind": "agent_state", "state": "listening"}
+{"t": 1790462659.0725844, "kind": "user_turn", "text": "Oh, and I almost forgot. I need to update my passport number to E-77-2211."}
+{"t": 1790462659.0731242, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0008266999793704599, "speech_id": "speech_0cbfe08db53c"}
+{"t": 1790462659.0755508, "kind": "dry_run_reply", "text": "Oh, and I almost forgot. I need to update my passport number to E-77-2211."}
+{"t": 1790462659.077923, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462659.2270231, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462659.2411046, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14669610001146793, "duration": 0.16048799999407493, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0cbfe08db53c"}
+{"t": 1790462660.6988127, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462660.6988127, "kind": "agent_state", "state": "listening"}

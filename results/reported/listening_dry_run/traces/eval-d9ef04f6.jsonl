@@ -1,0 +1,24 @@
+{"t": 1790458563.0511355, "kind": "session_start", "room": "eval-d9ef04f6", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458563.1466691, "kind": "agent_state", "state": "listening"}
+{"t": 1790458565.93866, "kind": "user_state", "state": "speaking"}
+{"t": 1790458569.653567, "kind": "user_state", "state": "listening"}
+{"t": 1790458570.089091, "kind": "user_state", "state": "speaking"}
+{"t": 1790458570.1832306, "kind": "metrics", "type": "stt_metrics", "duration": 0.5288282999827061, "audio_duration": 4.34, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458570.18473, "kind": "heard", "text": "So could you tell me what kind of benefits come?"}
+{"t": 1790458570.1876848, "kind": "dry_run_reply", "text": "So could you tell me what kind of benefits come?"}
+{"t": 1790458574.8948832, "kind": "user_state", "state": "listening"}
+{"t": 1790458575.3369918, "kind": "user_turn", "text": "So could you tell me what kind of benefits come?"}
+{"t": 1790458575.3379915, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7926421165466309, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004311000229790807, "speech_id": "speech_a41066437a5a"}
+{"t": 1790458575.3379915, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458575.6196594, "kind": "metrics", "type": "stt_metrics", "duration": 0.7218944999913219, "audio_duration": 5.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458575.6210198, "kind": "heard", "text": "With the platinum card, I want to know if it's worth switching to."}
+{"t": 1790458575.6215246, "kind": "agent_state", "state": "listening"}
+{"t": 1790458575.6325898, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.2927600000111852, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a41066437a5a"}
+{"t": 1790458576.4116836, "kind": "user_turn", "text": "With the platinum card, I want to know if it's worth switching to."}
+{"t": 1790458576.412852, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005142000154592097, "speech_id": "speech_6ed951c6f120"}
+{"t": 1790458576.4141955, "kind": "dry_run_reply", "text": "So could you tell me what kind of benefits come? With the platinum card, I want to know if it's worth switching to."}
+{"t": 1790458576.4141955, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458576.548967, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458576.5605419, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13210689998231828, "duration": 0.14470049997908063, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6ed951c6f120"}
+{"t": 1790458578.0081744, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458578.0081744, "kind": "agent_state", "state": "listening"}

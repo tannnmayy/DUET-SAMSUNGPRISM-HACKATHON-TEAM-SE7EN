@@ -1,0 +1,217 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "finance_03",
+  "category": "finance_billing",
+  "title": "Modify Autopay with Fillers",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:37:01.499162",
+  "inference_time_s": 47.19,
+  "room_name": "eval-5e746056",
+  "stream_start_time": 1790458624.2974887,
+  "input_transcript": "Uh, um, so, um, I want to change my mortgage auto pay to pull from like my savings account instead of where it's pulling from now.",
+  "input_asr_chunks": [
+    {
+      "text": "Uh,",
+      "timestamp": [
+        0.34,
+        1.04
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        1.96,
+        1.96
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        2.72,
+        3.1
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        3.66,
+        4.02
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.14,
+        4.22
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        4.22,
+        4.44
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.44,
+        4.58
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        4.58,
+        4.9
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        4.9,
+        5.14
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        5.14,
+        5.58
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        5.58,
+        5.88
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        5.88,
+        6.24
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.24,
+        6.58
+      ]
+    },
+    {
+      "text": "pull",
+      "timestamp": [
+        6.58,
+        7.0
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        7.0,
+        7.36
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        7.36,
+        8.2
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.2,
+        8.42
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        8.42,
+        8.88
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        8.88,
+        9.44
+      ]
+    },
+    {
+      "text": "instead",
+      "timestamp": [
+        9.44,
+        9.9
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        9.9,
+        10.12
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        10.12,
+        10.4
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        10.4,
+        10.72
+      ]
+    },
+    {
+      "text": "pulling",
+      "timestamp": [
+        10.72,
+        11.04
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        11.04,
+        11.44
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        11.44,
+        11.76
+      ]
+    }
+  ],
+  "user_speech_end_rel": 11.76,
+  "latency": {
+    "input_duration_s": 43.74,
+    "output_duration_s": 43.74,
+    "first_speech_s": 16.3
+  },
+  "user_done_unix": 1790458636.0574887,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        16.08,
+        16.56
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.32,
+  "audio_agent_speech_start": 16.08,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

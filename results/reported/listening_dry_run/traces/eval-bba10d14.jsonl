@@ -1,0 +1,33 @@
+{"t": 1790460141.8899875, "kind": "session_start", "room": "eval-bba10d14", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460142.0042748, "kind": "agent_state", "state": "listening"}
+{"t": 1790460146.9097471, "kind": "user_state", "state": "speaking"}
+{"t": 1790460149.1098032, "kind": "user_state", "state": "listening"}
+{"t": 1790460149.3652585, "kind": "user_state", "state": "speaking"}
+{"t": 1790460149.682965, "kind": "metrics", "type": "stt_metrics", "duration": 0.5722589000070002, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460149.6964293, "kind": "heard", "text": "Tell me how long it would take to drive."}
+{"t": 1790460149.6990323, "kind": "dry_run_reply", "text": "Tell me how long it would take to drive."}
+{"t": 1790460152.9599285, "kind": "user_state", "state": "listening"}
+{"t": 1790460153.2103136, "kind": "user_state", "state": "speaking"}
+{"t": 1790460153.468045, "kind": "metrics", "type": "stt_metrics", "duration": 0.5067906000185758, "audio_duration": 4.212, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460153.4694614, "kind": "heard", "text": "From 101 Main Street to downtown office."}
+{"t": 1790460153.4720666, "kind": "dry_run_reply", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office."}
+{"t": 1790460154.7820592, "kind": "user_state", "state": "listening"}
+{"t": 1790460155.0588188, "kind": "user_state", "state": "speaking"}
+{"t": 1790460155.0880692, "kind": "metrics", "type": "stt_metrics", "duration": 0.30539940000744537, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460155.0900388, "kind": "heard", "text": "During a normal day,"}
+{"t": 1790460155.0926433, "kind": "dry_run_reply", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office. During a normal day,"}
+{"t": 1790460156.0136065, "kind": "user_state", "state": "listening"}
+{"t": 1790460156.1682818, "kind": "user_state", "state": "speaking"}
+{"t": 1790460156.3143022, "kind": "metrics", "type": "stt_metrics", "duration": 0.30014820001088083, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460156.3158667, "kind": "heard", "text": "Um..."}
+{"t": 1790460158.2095103, "kind": "user_state", "state": "listening"}
+{"t": 1790460158.7428164, "kind": "metrics", "type": "stt_metrics", "duration": 0.5315174999996088, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460158.7438025, "kind": "heard", "text": "I want to make sure it's reasonable."}
+{"t": 1790460160.3509066, "kind": "user_turn", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office. During a normal day, Um... I want to make sure it's reasonable."}
+{"t": 1790460160.3519068, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.493396282196045, "transcription_delay": 0.8867969512939453, "on_user_turn_completed_delay": 0.0004766999918501824, "speech_id": "speech_aabad266a6ed"}
+{"t": 1790460160.3529067, "kind": "dry_run_reply", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office. During a normal day, Um... I want to make sure it's reasonable."}
+{"t": 1790460160.353907, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460160.487972, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460160.4976904, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13123440000345, "duration": 0.1426355000003241, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aabad266a6ed"}
+{"t": 1790460161.9571722, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460161.9571722, "kind": "agent_state", "state": "listening"}

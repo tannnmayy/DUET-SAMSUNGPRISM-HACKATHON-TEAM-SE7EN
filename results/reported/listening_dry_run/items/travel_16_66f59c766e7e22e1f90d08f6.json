@@ -1,0 +1,217 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "travel_16",
+  "category": "travel_identity",
+  "title": "Filler-Heavy Flight Search",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:42:46.634240",
+  "inference_time_s": 49.39,
+  "room_name": "eval-5444c7c5",
+  "stream_start_time": 1790462569.460779,
+  "input_transcript": "Hmm. Like, I've been thinking about it and I need to book flights to Vegas. I'm looking at going around August 8th if there's anything available.",
+  "input_asr_chunks": [
+    {
+      "text": "Hmm.",
+      "timestamp": [
+        0.43,
+        1.01
+      ]
+    },
+    {
+      "text": "Like,",
+      "timestamp": [
+        1.59,
+        2.01
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        2.13,
+        2.57
+      ]
+    },
+    {
+      "text": "been",
+      "timestamp": [
+        2.57,
+        2.67
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        2.67,
+        2.93
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        2.93,
+        3.23
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        3.23,
+        3.49
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.49,
+        3.95
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.95,
+        5.77
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        5.77,
+        5.93
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.93,
+        6.05
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        6.05,
+        6.25
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        6.25,
+        6.65
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.65,
+        7.11
+      ]
+    },
+    {
+      "text": "Vegas.",
+      "timestamp": [
+        7.11,
+        8.31
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        8.65,
+        9.37
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        9.37,
+        9.59
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        9.59,
+        9.83
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        9.83,
+        10.05
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        10.05,
+        10.63
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        10.63,
+        11.97
+      ]
+    },
+    {
+      "text": "8th",
+      "timestamp": [
+        11.97,
+        12.47
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        12.47,
+        12.81
+      ]
+    },
+    {
+      "text": "there's",
+      "timestamp": [
+        12.81,
+        13.17
+      ]
+    },
+    {
+      "text": "anything",
+      "timestamp": [
+        13.17,
+        13.39
+      ]
+    },
+    {
+      "text": "available.",
+      "timestamp": [
+        13.39,
+        13.81
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.81,
+  "latency": {
+    "input_duration_s": 45.9,
+    "output_duration_s": 45.9,
+    "first_speech_s": 18.25
+  },
+  "user_done_unix": 1790462583.270779,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        18.03,
+        18.53
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.22,
+  "audio_agent_speech_start": 18.03,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

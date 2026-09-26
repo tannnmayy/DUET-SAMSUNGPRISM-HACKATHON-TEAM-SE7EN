@@ -1,0 +1,294 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "ecommerce_13",
+  "category": "ecommerce_support",
+  "title": "Cart + Track Combo",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:14:50.094100",
+  "inference_time_s": 55.15,
+  "room_name": "eval-9aec538e",
+  "stream_start_time": 1790457292.9296956,
+  "input_transcript": "Um, well, so, well, first, could you add item K -2 to my cart, just one of them? And then can you check on my last order, too? The order ID is D -E -L -I -V.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.88,
+        1.48
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        2.38,
+        2.58
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        3.06,
+        3.24
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        3.72,
+        3.92
+      ]
+    },
+    {
+      "text": "first,",
+      "timestamp": [
+        4.32,
+        4.9
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        5.06,
+        5.18
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        5.18,
+        5.3
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        5.3,
+        5.64
+      ]
+    },
+    {
+      "text": "item",
+      "timestamp": [
+        5.64,
+        6.06
+      ]
+    },
+    {
+      "text": "K",
+      "timestamp": [
+        6.06,
+        6.42
+      ]
+    },
+    {
+      "text": "-2",
+      "timestamp": [
+        6.42,
+        7.12
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.12,
+        8.5
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.5,
+        8.68
+      ]
+    },
+    {
+      "text": "cart,",
+      "timestamp": [
+        8.68,
+        9.04
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        9.44,
+        9.92
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        9.92,
+        10.24
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        10.24,
+        10.36
+      ]
+    },
+    {
+      "text": "them?",
+      "timestamp": [
+        10.36,
+        10.6
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        10.78,
+        11.32
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.32,
+        11.52
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        11.52,
+        11.78
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        11.78,
+        12.02
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        12.02,
+        12.28
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        12.28,
+        12.54
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        12.54,
+        12.72
+      ]
+    },
+    {
+      "text": "last",
+      "timestamp": [
+        12.72,
+        13.14
+      ]
+    },
+    {
+      "text": "order,",
+      "timestamp": [
+        13.14,
+        13.54
+      ]
+    },
+    {
+      "text": "too?",
+      "timestamp": [
+        13.8,
+        13.92
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        14.54,
+        14.82
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        14.82,
+        15.14
+      ]
+    },
+    {
+      "text": "ID",
+      "timestamp": [
+        15.14,
+        15.52
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        15.52,
+        15.96
+      ]
+    },
+    {
+      "text": "D",
+      "timestamp": [
+        15.96,
+        16.36
+      ]
+    },
+    {
+      "text": "-E",
+      "timestamp": [
+        16.36,
+        17.24
+      ]
+    },
+    {
+      "text": "-L",
+      "timestamp": [
+        17.24,
+        18.14
+      ]
+    },
+    {
+      "text": "-I",
+      "timestamp": [
+        18.14,
+        19.18
+      ]
+    },
+    {
+      "text": "-V.",
+      "timestamp": [
+        19.18,
+        20.12
+      ]
+    }
+  ],
+  "user_speech_end_rel": 20.12,
+  "latency": {
+    "input_duration_s": 51.66,
+    "output_duration_s": 51.66,
+    "first_speech_s": 24.6
+  },
+  "user_done_unix": 1790457313.0496955,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        24.37,
+        24.89
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.25,
+  "audio_agent_speech_start": 24.37,
+  "actual_tool_calls": [],
+  "status": "completed"
+}
