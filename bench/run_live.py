@@ -151,8 +151,47 @@ def summarize(out: Path) -> dict:
         for k in ("first_response_latency", "tool_call_latency", "task_completion_latency"):
             if k in agg:
                 summary[k + "_mean_s"] = agg[k].get("mean")
+    summary["agent"] = trace_stats(out)
     (out / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
     return summary
+
+
+def trace_stats(out: Path) -> dict:
+    """What the agent did, from our traces: model errors (a key or quota problem
+    must not pass for a low score), keep-listening decisions, talker lines, and the
+    tokens used (for the cost analysis)."""
+    stats = {"conversations": 0, "thinker_errors": 0, "keep_listening": 0, "superseded": 0,
+             "talker_lines": 0, "thinker_answers": 0, "tool_calls": 0,
+             "tokens": {"input": 0, "output": 0, "thinking": 0, "calls": 0}}
+    first_error = ""
+    for path in sorted((out / "traces").glob("*.jsonl")):
+        stats["conversations"] += 1
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            try:
+                ev = json.loads(line)
+            except ValueError:
+                continue
+            kind = ev.get("kind")
+            if kind == "thinker_error":
+                stats["thinker_errors"] += 1
+                first_error = first_error or str(ev.get("text", ""))[:200]
+            elif kind == "thinker_listen":
+                stats["keep_listening"] += 1
+            elif kind == "superseded":
+                stats["superseded"] += 1
+            elif kind == "talker" and ev.get("text"):
+                stats["talker_lines"] += 1
+            elif kind == "tool_done":
+                stats["tool_calls"] += 1
+            elif kind == "thinker_say":
+                stats["thinker_answers"] += 1
+                for k, v in (ev.get("usage") or {}).items():
+                    if k in stats["tokens"]:
+                        stats["tokens"][k] += int(v or 0)
+    if first_error:
+        stats["first_thinker_error"] = first_error
+        print("WARNING: %d thinker errors in this run, e.g. %s" % (stats["thinker_errors"], first_error))
+    return stats
 
 
 def collect(args, out: Path) -> None:

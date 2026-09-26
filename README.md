@@ -80,8 +80,8 @@ realtime-provider presets.
 |---|---|---|
 | Thinker (reasoning, tool calls) | Google `gemini-2.5-flash` (thinking budget 512, temperature 0, seed 7) | Gemini API (hosted) |
 | Talker (acknowledgements) | Google `gemini-2.5-flash-lite` (thinking off, temperature 0, seed 7) | Gemini API (hosted) |
-| Speech recognition | `faster-whisper` large-v3-turbo (CTranslate2, float16) | Local GPU |
-| Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M`, voice `af_heart`) | Local GPU |
+| Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
+| Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
 | Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
 | End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
@@ -112,15 +112,21 @@ bash reproduce.sh                # all 100 items, then the three official evalua
 bash reproduce.sh --only travel_19,housing_04   # a quick subset
 ```
 
-- **Target machine:** Linux x86_64, one NVIDIA GPU (CUDA 12 or 13 driver),
-  Python 3.10-3.12, with `ffmpeg`, `git`, `curl` and `unzip` installed.
+- **Target machine:** Linux x86_64, one NVIDIA GPU (CUDA 12 or 13 driver), with
+  `ffmpeg`, `git`, `curl` and `unzip` installed. Python 3.10-3.12 (3.11 preferred,
+  the version of our runs). If there is none, or the `venv` module is missing
+  (stock Ubuntu without `python3-venv`), the script uses a pinned `uv` to create
+  the environments and, if needed, to supply Python 3.11.
 - **Runtime:** about 2 hours. The benchmark streams every recording in real
   time, and each is about 47 s long.
 
 What the script does, in order:
-1. Creates two virtual environments: `.venv` for the agent (pinned
-   `requirements.txt`) and `.venv-bench` for the benchmark runner
-   (`requirements-bench.txt`, including NVIDIA NeMo for the scoring ASR).
+1. Creates two virtual environments and installs each from its lock file, so
+   every package, direct and transitive, is at the version of our runs:
+   `.venv` for the agent (`requirements.lock`, from `requirements.txt`) and
+   `.venv-bench` for the benchmark runner (`requirements-bench.lock`, from
+   `requirements-bench.txt`, with NVIDIA NeMo for the scoring ASR). Both use the
+   CUDA 12.8 build of torch 2.10, which runs on CUDA 12.x and 13.x drivers.
 2. Clones Full-Duplex-Bench and checks out the pinned commit `3e799c4`.
 3. Downloads the benchmark audio from the Google Drive link in the v3 README and
    verifies its SHA-256.
@@ -133,6 +139,24 @@ What the script does, in order:
    - runs its three evaluation scripts (`evaluate_tool_calls.py`,
      `evaluate_pass_rate.py`, `analyze_tool_latency.py`) with `--use-llm`;
    - prints the headline numbers.
+
+### Running the agent under your own harness
+
+The agent is an ordinary LiveKit worker, so it also runs under a harness other
+than ours. It joins every new room in the LiveKit project (no agent name, no
+explicit dispatch), so run only this worker in that project.
+
+```bash
+export GOOGLE_API_KEY=... LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...
+.venv/bin/python -m duet_voice.prefetch          # once: download and warm the models
+.venv/bin/python -m duet_voice.agent start      # FDB_V3_DIR=... if the benchmark is elsewhere
+```
+
+The worker is ready when its log shows `registered worker` and `ready in`. Then
+run the benchmark's own runner and evaluations with `--provider duet` (or any
+name). Tool calls go to `/tmp/agent_tool_calls.log` in the benchmark's format.
+The agent's tool backend is the benchmark's own `mock_apis.py`, found in
+`third_party/Full-Duplex-Bench/v3` (where `reproduce.sh` clones it) or in `FDB_V3_DIR`.
 
 ## Run logs
 
@@ -167,9 +191,14 @@ python -m pytest tests -q
   coordinator, toolbox and conversation state. Only model weights are shared.
 - **No calls to our own servers.** The only remote services are the Gemini API and
   LiveKit.
-- **Pinned:** Python packages, the benchmark commit, the data checksum, the
-  LiveKit server version, model versions, sampling (temperature 0, seed 7) and
-  greedy speech recognition.
+- **Pinned:**
+  - every Python package, including transitive ones (`requirements*.lock`);
+  - the benchmark commit, the data checksum and the LiveKit server version;
+  - the exact Hugging Face snapshots of the speech models;
+  - sampling (temperature 0, seed 7) and greedy speech recognition.
+- **Transient API errors are retried.** A rate limit or a brief server error
+  from the Gemini API is retried with backoff (up to three times), so it does not
+  fail a conversation on the re-run machine.
 - **Tool schemas.** Names, argument names and the call log format are the
   benchmark's. Arguments that a real API would treat as optional (for example an
   apartment budget) are optional here, rather than forcing the model to invent a

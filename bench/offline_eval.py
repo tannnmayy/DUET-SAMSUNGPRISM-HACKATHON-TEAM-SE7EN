@@ -143,6 +143,7 @@ def main() -> int:
                "judge": judge.judge_label() if args.judge else "exact match (no LLM judge)",
                "pass@1": round(sum(r["passed"] for r in rows) / n, 3), "tool_f1": round(mean("tool_f1"), 3),
                "arg_acc": round(mean("arg_acc"), 3), "resp_qual": round(mean("resp"), 3) if args.judge else None,
+               "errors": sum(1 for r in rows if r.get("error")),
                "seconds": round(time.time() - t0, 1)}
     by = {}
     for key in ("difficulty", "domain"):
@@ -163,6 +164,11 @@ def main() -> int:
                   json.dumps(r["calls"])[:160], r.get("error", "")[:80]))
     print(json.dumps(summary, indent=1))
     print("wrote", path)
+    if summary["errors"]:
+        # a key, quota or network problem must not pass for a low score
+        first = next(r["error"] for r in rows if r.get("error"))
+        print("WARNING: %d of %d items hit a model error, e.g. %s" % (summary["errors"], n, first[:200]))
+        return 2 if summary["errors"] == n else 0
     return 0
 
 

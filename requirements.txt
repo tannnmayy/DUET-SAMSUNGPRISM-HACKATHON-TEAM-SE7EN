@@ -20,6 +20,11 @@ kokoro==0.9.4
 misaki[en]==0.9.4
 transformers==5.17.0
 soundfile==0.14.0
+# Kokoro's English phonemizer (misaki) needs this spaCy model; pinned here instead
+# of letting misaki download whatever is current on first use
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
-numpy==2.4.6
+# numpy 2.3+ needs Python 3.11; Ubuntu 22.04's Python 3.10 gets the last 3.10 release
+numpy==2.4.6; python_version >= "3.11"
+numpy==2.2.6; python_version < "3.11"
 python-dotenv==1.2.3

@@ -8,3 +8,6 @@ pydub==0.25.1
 ffmpeg-python==0.2.0
 openai==2.54.0
 nemo_toolkit[asr]==3.0.0
+# Unpinned, NeMo pulls the newest torch, today a CUDA 13 build that a CUDA 12.x
+# driver cannot use; the agent's torch (CUDA 12.8) runs on 12.x and 13.x drivers.
+torch==2.10.0

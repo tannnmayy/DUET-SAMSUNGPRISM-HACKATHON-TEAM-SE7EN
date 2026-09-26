@@ -89,6 +89,14 @@ def _pick_device() -> str:
         return "cpu"
 
 
+# The exact Hugging Face snapshots of the reported runs, so a re-run downloads the
+# same weights even if a repository is updated later.
+MODEL_REVISIONS = {
+    "large-v3-turbo": "0a363e9161cbc7ed1431c9597a8ceaf0c4f78fcf",  # mobiuslabsgmbh/faster-whisper-large-v3-turbo
+}
+KOKORO_REVISION = "f3ff3571791e39611d31c381e3a41a3af07b4987"        # hexgrad/Kokoro-82M
+
+
 def whisper():
     global _whisper
     with _lock:
@@ -98,7 +106,7 @@ def whisper():
             device = _pick_device()
             model = CONFIG.asr_model if device == "cuda" else os.environ.get("DUET_ASR_CPU_MODEL", "small.en")
             t = time.time()
-            _whisper = WhisperModel(model, device=device,
+            _whisper = WhisperModel(model, device=device, revision=MODEL_REVISIONS.get(model),
                                     compute_type="float16" if device == "cuda" else "int8")
             # one short warm-up so the first real turn is not slow
             _whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)
@@ -110,10 +118,19 @@ def kokoro():
     global _kokoro
     with _lock:
         if _kokoro is None:
-            from kokoro import KPipeline
+            import torch
+            from huggingface_hub import hf_hub_download
+            from kokoro import KModel, KPipeline
             t = time.time()
-            _kokoro = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
-            list(_kokoro("Ready.", voice=CONFIG.tts_voice))  # warm-up
+            repo = "hexgrad/Kokoro-82M"
+            fetch = lambda name: hf_hub_download(repo_id=repo, filename=name, revision=KOKORO_REVISION)
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            model = KModel(repo_id=repo, config=fetch("config.json"),
+                           model=fetch(KModel.MODEL_NAMES[repo])).to(device).eval()
+            _kokoro = KPipeline(lang_code="a", repo_id=repo, model=model)
+            voice = CONFIG.tts_voice
+            _kokoro.voices[voice] = torch.load(fetch("voices/%s.pt" % voice), weights_only=True)
+            list(_kokoro("Ready.", voice=voice))  # warm-up
             log.info("kokoro ready in %.1f s", time.time() - t)
     return _kokoro
 

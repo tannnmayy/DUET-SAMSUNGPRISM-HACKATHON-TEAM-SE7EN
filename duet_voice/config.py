@@ -71,7 +71,9 @@ class Config:
     tts_voice: str = field(default_factory=lambda: _env("DUET_TTS_VOICE", "af_heart"))
 
     # --- benchmark plumbing ---------------------------------------------------------
-    fdb_dir: str = field(default_factory=lambda: _env("FDB_V3_DIR", ""))
+    # where reproduce.sh clones the benchmark, unless FDB_V3_DIR says otherwise
+    fdb_dir: str = field(default_factory=lambda: _env("FDB_V3_DIR", os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "third_party", "Full-Duplex-Bench", "v3")))
     tool_log: str = field(default_factory=lambda: _env("FDB_TOOL_LOG", "/tmp/agent_tool_calls.log"))
     heartbeat_log: str = field(default_factory=lambda: _env("FDB_HEARTBEAT_LOG", "/tmp/agent_heartbeat.log"))
     latency_profile: str = field(default_factory=lambda: _env("FDB_LATENCY_PROFILE", "instant"))

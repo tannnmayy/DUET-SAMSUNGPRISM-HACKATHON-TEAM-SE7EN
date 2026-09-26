@@ -28,7 +28,7 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Deliverable | Where | Status |
 |---|---|---|
 | README: architecture (one diagram), exact setup and run steps, extension marked | `README.md` | 🟡 results and extension sections pending |
-| One-command reproduction (install, configure, evaluate) | `reproduce.sh` | 🟡 written; clean-Linux test pending |
+| One-command reproduction (install, configure, evaluate) | `reproduce.sh`: lock-file installs, Python 3.10-3.12 auto-picked (uv fallback), pinned benchmark, data and LiveKit. Both environments resolve for Linux on Python 3.10-3.12 (`docs/FINDINGS.md` §5) | 🟡 resolved for Linux; clean-machine run pending (`docs/CLEAN_MACHINE_TEST.md`) |
 | Declaration of model provider / custom agent | `README.md`, section "Models and providers" | ✅ |
 | Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/` (`run_config.json`, `summary.json`, official reports, per-item JSON, traces, logs) | 🟡 pipeline ready, best run pending |
 | API keys documented, not included | `README.md`, section "API keys" | ✅ |
@@ -39,7 +39,7 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 
 | Point | How we handle it | Status |
 |---|---|---|
-| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | Local models need about 4 GB; hosted: Gemini API only | 🟡 clean-machine test pending |
+| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | Local models need about 4 GB; hosted: Gemini API only. Both environments use the CUDA 12.8 torch build, which runs on CUDA 12.x and 13.x drivers. Gemini calls retry rate limits and server errors | 🟡 clean-machine test pending |
 | LLM judge enabled, single pinned judge | The official scripts run unmodified with `--use-llm`; our own numbers use gpt-4o when `OPENAI_API_KEY` is set, and a proxy judge is labelled as such | ✅ |
 | Ties break on strict pass rate | Pass@1 is the metric we optimise first | ✅ |
 
@@ -48,8 +48,8 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Rule | How we comply | Status |
 |---|---|---|
 | Cite public checkpoints and hosted APIs | `README.md`, sections "Models and providers" and "References" | ✅ |
-| Pin seeds and versions | `requirements*.txt`; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; temperature 0 and seed 7; greedy ASR | ✅ |
-| Test the reproduction on a machine that is not ours | Google Cloud GPU VM | ⬜ |
+| Pin seeds and versions | Every package, transitive included (`requirements*.lock`); Hugging Face snapshots of Whisper and Kokoro; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; temperature 0 and seed 7; greedy ASR | ✅ |
+| Test the reproduction on a machine that is not ours | Google Cloud GPU VM, procedure in `docs/CLEAN_MACHINE_TEST.md` | ⬜ needs the team's Google Cloud account |
 | Keep the extension honest | The extension will be marked and scoped | ⬜ |
 | Don't hardcode or memorise test items | `tests/test_voice_integrity.py` fails on any benchmark value in the agent's strings | ✅ |
 | Don't call your own servers | Only the Gemini API and LiveKit | ✅ |

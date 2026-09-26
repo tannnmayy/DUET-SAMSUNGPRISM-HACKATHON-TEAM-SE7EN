@@ -9,7 +9,10 @@
 #   bash reproduce.sh --only travel_19,housing_04   # a quick subset
 #
 # Target machine: Linux x86_64, one NVIDIA GPU (48 GB is far more than needed;
-# about 4 GB is used), CUDA 12 or 13 driver, Python 3.10-3.12, ffmpeg, git, curl.
+# about 4 GB is used), CUDA 12 or 13 driver, ffmpeg, git, curl, unzip. Python
+# 3.10-3.12 (3.11 preferred); if there is none, a pinned uv supplies Python 3.11.
+# Both environments install from lock files (requirements*.lock): every package
+# at the exact version of our reported runs.
 # Without LIVEKIT_URL a local LiveKit server (v1.13.7, checksum-verified) is
 # downloaded and run in dev mode, so no LiveKit account is needed.
 # Everything is written under this folder; results land in results/live/<time>/.
@@ -28,24 +31,55 @@ say() { printf '\n== %s\n' "$*"; }
 need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 
 need git "apt install git"; need curl "apt install curl"; need unzip "apt install unzip"
-need ffmpeg "apt install ffmpeg"; need "$PY" "Python 3.10-3.12"
+need ffmpeg "apt install ffmpeg"; need sha256sum "apt install coreutils"
 : "${GOOGLE_API_KEY:?Set GOOGLE_API_KEY (Gemini API key): the DUET thinker and talker run on Gemini}"
 
 # --- 1. environments -----------------------------------------------------------------
+# A Python in 3.10-3.12, preferring 3.11 (the version of our reported runs). If the
+# machine has none, or lacks the venv module (stock Ubuntu without python3-venv),
+# uv (pinned) creates the environments and, if needed, supplies Python 3.11.
+UV_VERSION="0.12.19"
+UV=""
+py_ok() { "$1" -c 'import sys; sys.exit(not ((3, 10) <= sys.version_info[:2] <= (3, 12)))' 2>/dev/null; }
+if [ -n "${PYTHON:-}" ]; then
+  py_ok "$PY" || { echo "PYTHON=$PY is not Python 3.10-3.12"; exit 1; }
+else
+  PY=""
+  for c in python3.11 python3.12 python3.10 python3; do
+    if command -v "$c" >/dev/null && py_ok "$c"; then PY="$c"; break; fi
+  done
+fi
+ensure_uv() {
+  [ -n "$UV" ] && return 0
+  if [ ! -x third_party/uv/uv ]; then
+    say "uv $UV_VERSION (to create the Python environments)"
+    mkdir -p third_party/uv
+    curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" \
+      | env UV_INSTALL_DIR="$ROOT/third_party/uv" UV_NO_MODIFY_PATH=1 sh >/dev/null
+  fi
+  UV="$ROOT/third_party/uv/uv"
+}
+make_venv() {  # $1: folder. Plain venv when it works; otherwise uv (with pip seeded in).
+  if [ -n "$PY" ] && "$PY" -m venv "$1" 2>/dev/null && [ -x "$1/bin/pip" ]; then return 0; fi
+  rm -rf "$1"; ensure_uv
+  "$UV" venv -q --seed --python "${PY:-3.11}" "$1"
+}
 # Two venvs: the agent's, and the benchmark runner's (NVIDIA NeMo for the scoring
-# ASR has heavy pins of its own and must not constrain the agent).
+# ASR has heavy pins of its own and must not constrain the agent). Each installs
+# from its lock file: every package, direct and transitive, at the version we ran.
 if [ ! -x .venv/bin/python ]; then
   say "agent environment"
-  "$PY" -m venv .venv
-  .venv/bin/pip install -q -U pip
-  .venv/bin/pip install -q -r requirements.txt
+  make_venv .venv
+  .venv/bin/python -m pip install -q -U "pip==26.1.2"
+  .venv/bin/python -m pip install -q -r requirements.lock
 fi
 if [ ! -x .venv-bench/bin/python ]; then
   say "benchmark runner environment"
-  "$PY" -m venv .venv-bench
-  .venv-bench/bin/pip install -q -U pip
-  .venv-bench/bin/pip install -q -r requirements-bench.txt
+  make_venv .venv-bench
+  .venv-bench/bin/python -m pip install -q -U "pip==26.1.2"
+  .venv-bench/bin/python -m pip install -q -r requirements-bench.lock
 fi
+echo "agent Python: $(.venv/bin/python -V)   runner Python: $(.venv-bench/bin/python -V)"
 
 # --- 2. the benchmark, pinned ------------------------------------------------------------
 if [ ! -d third_party/Full-Duplex-Bench/.git ]; then

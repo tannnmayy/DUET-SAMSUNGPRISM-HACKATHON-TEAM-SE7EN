@@ -142,20 +142,28 @@ class Thinker:
         for step in range(1, CONFIG.max_tool_steps + 1):
             t = time.time()
             config = self.config if (allow_listen and step == 1) else self.config_final
-            try:
-                resp = await self._generate(contents, config)
-            except asyncio.CancelledError:
-                raise
-            except Exception as exc:
-                log.warning("thinker call failed: %s", exc)
-                yield ThinkEvent("error", text=str(exc))
-                return
+            for attempt in (1, 2):
+                try:
+                    resp = await self._generate(contents, config)
+                except asyncio.CancelledError:
+                    raise
+                except Exception as exc:
+                    log.warning("thinker call failed: %s", exc)
+                    yield ThinkEvent("error", text=str(exc))
+                    return
+                for k, v in usage_of(resp).items():
+                    usage[k] += v
+                usage["calls"] += 1
+                content = resp.candidates[0].content if resp.candidates else None
+                parts = list(content.parts or []) if content is not None else []
+                # Gemini 2.5 now and then returns an empty candidate, or stops on a
+                # malformed function call; asking once more usually gets a clean one.
+                if any(p.function_call or (getattr(p, "text", None) and not getattr(p, "thought", False))
+                       for p in parts) or attempt == 2:
+                    break
+                log.warning("thinker step %d: empty reply (%s), asking again", step,
+                            getattr(resp.candidates[0], "finish_reason", None) if resp.candidates else "no candidate")
             log.debug("thinker step %d in %.2f s", step, time.time() - t)
-            for k, v in usage_of(resp).items():
-                usage[k] += v
-            usage["calls"] += 1
-            content = resp.candidates[0].content if resp.candidates else None
-            parts = list(content.parts or []) if content is not None else []
             calls = [p.function_call for p in parts if p.function_call]
             words = " ".join(p.text for p in parts if getattr(p, "text", None) and not getattr(p, "thought", False)).strip()
             listens = [c for c in calls if c.name == KEEP_LISTENING]

@@ -106,7 +106,54 @@ Fix 3 acts only when the thinker runs, so it is measured in the model runs.
   decoding makes re-runs differ. It is now greedy/beam only. All Gemini calls use
   temperature 0 and a fixed seed (`DUET_SEED=7`).
 
-## 5. Gaps in today's systems that DUET is built against
+## 5. Will Samsung's re-run install and run? (resolved for Linux from Windows)
+
+Only Samsung's re-run of `reproduce.sh` is scored, and a script that does not run
+scores zero on 60% of the grade. We have no Linux GPU machine of our own yet, so
+we resolved both environments for Linux x86_64 with `pip --platform` and
+`uv pip compile --universal`, for Python 3.10, 3.11 and 3.12. This found two
+defects that would have broken the re-run:
+
+1. **The benchmark runner would have lost the GPU on a CUDA 12 machine.** Its
+   environment left torch unpinned, and NVIDIA NeMo accepts any torch >= 2.6. A
+   clean install today pulls torch 2.14, which is built for CUDA 13 and cannot use
+   a CUDA 12.x driver. The guide allows either. *Fix:* the runner uses the
+   agent's torch 2.10 (CUDA 12.8 build, cuDNN 9.10), which runs on 12.x and 13.x
+   drivers.
+2. **The agent would not install on Python 3.10**, the default Python of Ubuntu
+   22.04, a common GPU-server image. `numpy==2.4.6` requires Python 3.11 or
+   newer. *Fix:* numpy 2.2.6 on Python 3.10, and 2.4.6 on 3.11 and newer.
+
+And three hardening steps:
+
+- **Lock files.** Only the 13 top-level packages of the agent were pinned. About
+  160 transitive ones in the agent's environment alone, and more under NeMo, would
+  float to whatever is newest on the day of the re-run. `requirements.lock` and `requirements-bench.lock` now pin every
+  package. On Python 3.11 the lock matches the environment of our runs exactly,
+  so `reproduce.sh` prefers 3.11.
+- **No `python3-venv` or no suitable Python.** Stock Ubuntu lacks the `venv`
+  module, and some images ship only Python 3.13. `reproduce.sh` now picks a
+  Python in 3.10-3.12. If there is none, or `venv` is missing, it falls back to
+  a pinned `uv`, which also supplies Python 3.11 when needed.
+- **Model snapshots.** Whisper and Kokoro download the exact Hugging Face
+  revisions of our runs (verified to load offline from the cache). The spaCy
+  model that Kokoro's phonemizer fetches on first use is pinned in the lock.
+
+Still open: a real run on a clean Linux GPU machine (see
+[CLEAN_MACHINE_TEST.md](CLEAN_MACHINE_TEST.md)).
+
+## 6. Failures a hosted model adds, and how they are absorbed
+
+- **Rate limits and brief outages.** A 429 or 5xx from the Gemini API used to
+  end the turn with an apology, which fails the item. Calls are now retried with
+  backoff (1, 2, 4 s; verified against a local server that answers 503 twice),
+  and a hung request is cut off after 20 s.
+- **Empty or malformed replies.** Gemini 2.5 occasionally returns an empty
+  candidate, or stops on `MALFORMED_FUNCTION_CALL`. The user would hear nothing.
+  The thinker now asks once more before giving up. `tests/test_voice_thinker.py`
+  covers this, and the rest of the thinker's tool loop.
+
+## 7. Gaps in today's systems that DUET is built against
 
 - **FDB-v3 paper.**
   - The best published system, GPT-Realtime, passes fewer than 59% of
