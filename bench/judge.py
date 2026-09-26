@@ -39,6 +39,18 @@ class GeminiJudge:
         self.model = model
 
 
+class _Declines:
+    def create(self, **kwargs: Any) -> Any:
+        raise RuntimeError("no LLM judge configured")
+
+
+class NoJudge:
+    """Stands in for a client when no judge key exists; every call fails politely."""
+
+    def __init__(self) -> None:
+        self.chat = type("Chat", (), {"completions": _Declines()})()
+
+
 def judge_label() -> str:
     if os.environ.get("OPENAI_API_KEY"):
         return "gpt-4o (official judge)"

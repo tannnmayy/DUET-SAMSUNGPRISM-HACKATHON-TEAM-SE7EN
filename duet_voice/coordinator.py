@@ -164,6 +164,16 @@ class Coordinator:
         epoch = await self.gate()
         record = CallRecord(tool, args, epoch, time.time())
         self.history.append(record)
+        # Past the gate the call is committed. If the conversation is interrupted
+        # now (the user barges in, the reply is cancelled), the call still runs to
+        # completion and is recorded in the ledger and the log: dropping it would
+        # leave an action that happened unaccounted for, and a re-plan could then
+        # perform it a second time.
+        committed = asyncio.ensure_future(
+            self._run_committed(key, record, run, state_changing, timeout_s, on_committed))
+        return await asyncio.shield(committed)
+
+    async def _run_committed(self, key, record, run, state_changing, timeout_s, on_committed) -> CallRecord:
         attempts = 1 if state_changing else 2
         for attempt in range(attempts):
             try:

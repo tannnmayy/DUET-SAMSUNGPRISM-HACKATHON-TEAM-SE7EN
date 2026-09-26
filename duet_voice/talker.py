@@ -36,7 +36,8 @@ async def acknowledgement(user_text: str, context: str = "") -> Optional[str]:
     from .gemini import thinking_config
     config = types.GenerateContentConfig(
         system_instruction=TALKER_INSTRUCTIONS,
-        temperature=0.4,
+        temperature=0.0,
+        seed=CONFIG.seed,
         max_output_tokens=48,
         thinking_config=thinking_config(CONFIG.talker_model, "minimal"),
     )

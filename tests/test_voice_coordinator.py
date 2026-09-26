@@ -137,5 +137,34 @@ def test_a_write_that_times_out_is_remembered_as_unknown_and_never_resent():
     assert again.outcome == "cached" and len(sent) == 1
 
 
+def test_a_committed_call_survives_a_barge_in_and_is_recorded():
+    """The user interrupts while a booking is executing: the reply is cancelled,
+    but the booking that already started must finish and be recorded, so a
+    re-plan answers it from the ledger instead of booking twice."""
+    c, _ = make(commit_hold_s=0.0)
+    c.turn_committed()
+    logged, sent = [], []
+
+    async def slow_booking():
+        sent.append(1)
+        await asyncio.sleep(0.2)
+        return {"status": "success", "booking_ref": "B1"}
+
+    async def go():
+        task = asyncio.ensure_future(c.execute("book_flight", {"passenger_name": "A"}, slow_booking,
+                                               state_changing=True, timeout_s=2,
+                                               on_committed=logged.append))
+        await asyncio.sleep(0.05)
+        task.cancel()  # the reply that owned the call is gone
+        await asyncio.sleep(0.3)
+        again = await c.execute("book_flight", {"passenger_name": "A"}, slow_booking,
+                                state_changing=True, timeout_s=2)
+        return again
+
+    again = run(go())
+    assert len(sent) == 1 and len(logged) == 1
+    assert again.outcome == "cached"
+
+
 def test_canonical_key_ignores_case_order_spacing_and_nulls():
     assert canonical("t", {"a": "New  York", "b": 2.0, "c": None}) == canonical("t", {"b": 2, "a": "new york"})

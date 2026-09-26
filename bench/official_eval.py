@@ -30,9 +30,15 @@ def main() -> int:
     used = judge.install(module)
     print("judge:", judge.judge_label() if "--use-llm" in sys.argv or module_name == "analyze_tool_latency"
           else "none (exact match)", flush=True)
-    if used and module_name == "analyze_tool_latency":
-        # this script builds its own OpenAI() client inside main()
-        module.OpenAI = lambda *a, **k: judge.GeminiJudge(used)
+    if module_name == "analyze_tool_latency":
+        # this script builds its own OpenAI() client inside main(); without any
+        # judge it would crash before measuring anything, so give it one that
+        # declines: first-response and tool-call latencies are still computed,
+        # and only the judge-dependent task-completion latency is left empty.
+        if used:
+            module.OpenAI = lambda *a, **k: judge.GeminiJudge(used)
+        elif not os.environ.get("OPENAI_API_KEY"):
+            module.OpenAI = lambda *a, **k: judge.NoJudge()
     module.main()
     return 0
 

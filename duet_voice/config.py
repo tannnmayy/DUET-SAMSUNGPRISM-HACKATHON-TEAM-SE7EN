@@ -37,6 +37,8 @@ class Config:
     # OpenAI-compatible endpoint for a local model (vLLM) when provider == "openai"
     thinker_base_url: str = field(default_factory=lambda: _env("DUET_THINKER_BASE_URL", ""))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))
+    # fixed sampling seed for every model call (the guide: "pin seeds and versions")
+    seed: int = field(default_factory=lambda: _env_int("DUET_SEED", 7))
 
     # --- talker (fast mind): acknowledgements, progress, never tools -----------
     talker_enabled: bool = field(default_factory=lambda: _env_bool("DUET_TALKER", True))

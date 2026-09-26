@@ -88,6 +88,7 @@ class Thinker:
             system_instruction=THINKER_INSTRUCTIONS,
             tools=[types.Tool(function_declarations=decls)],
             temperature=0.0,
+            seed=CONFIG.seed,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
             **extra,
         )

@@ -111,9 +111,9 @@ def run_evaluations(env: dict, args, out: Path) -> dict:
     wrapper = str(REPO / "bench" / "official_eval.py")
     steps = [
         ("tool_calls", ["evaluate_tool_calls.py", "--benchmark", "benchmark_data_v2.json", "--results-dir",
-                        str(args.data_dir), "--provider", PROVIDER, "--output", str(out / "duet_evaluation_report.json")]),
+                        str(args.data_dir), "--provider", PROVIDER, "--output", str(out / (PROVIDER + "_evaluation_report.json"))]),
         ("pass_rate", ["evaluate_pass_rate.py", "--benchmark", "benchmark_data_v2.json", "--results-dir",
-                       str(args.data_dir), "--provider", PROVIDER, "--output", str(out / "duet_pass_rate_report.json")]),
+                       str(args.data_dir), "--provider", PROVIDER, "--output", str(out / (PROVIDER + "_pass_rate_report.json"))]),
         ("latency", ["analyze_tool_latency.py", "--results-dir", str(args.data_dir), "--provider", PROVIDER]),
     ]
     for name, cmd in steps:
@@ -131,9 +131,9 @@ def run_evaluations(env: dict, args, out: Path) -> dict:
 
 def summarize(out: Path) -> dict:
     summary: dict = {}
-    ev = out / "duet_evaluation_report.json"
-    pr = out / "duet_pass_rate_report.json"
-    lat = out / "duet_latency_report.json"
+    ev = out / (PROVIDER + "_evaluation_report.json")
+    pr = out / (PROVIDER + "_pass_rate_report.json")
+    lat = out / (PROVIDER + "_latency_report.json")
     if ev.exists():
         d = json.loads(ev.read_text(encoding="utf-8"))
         summary.update(tool_selection_f1=d["by_metric"]["tool_selection_acc"], argument_acc=d["by_metric"]["argument_acc"],
@@ -168,8 +168,13 @@ def collect(args, out: Path) -> None:
 
 
 def main() -> int:
+    global PROVIDER
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data-dir", default=str(DATA_DIR))
+    ap.add_argument("--provider", default=PROVIDER,
+                    help="name the results are filed under (result_<provider>.json)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="no LLM: the agent answers every turn with 'Okay.' (checks listening and plumbing)")
     ap.add_argument("--only", default="", help="comma-separated example ids or folder names")
     ap.add_argument("--force", action="store_true", help="re-run items that already have results")
     ap.add_argument("--no-eval", action="store_true")
@@ -181,17 +186,21 @@ def main() -> int:
     ap.add_argument("--scoring-asr", choices=["parakeet", "whisper"],
                     default="whisper" if os.name == "nt" else "parakeet")
     args = ap.parse_args()
+    PROVIDER = args.provider
 
     stamp = time.strftime("%Y%m%d_%H%M%S")
     out = Path(args.run_dir) if args.run_dir else REPO / "results" / "live" / stamp
     out.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, PYTHONIOENCODING="utf-8", FDB_V3_DIR=str(FDB_DIR),
                DUET_TRACE_DIR=str(out / "traces"), PYTHONPATH=str(REPO))
+    if args.dry_run:
+        env["DUET_DRY_RUN"] = "1"
     ffmpeg_dir = os.environ.get("FFMPEG_DIR")
     if ffmpeg_dir:
         env["PATH"] = ffmpeg_dir + os.pathsep + env.get("PATH", "")
     (out / "run_config.json").write_text(json.dumps({
-        "stamp": stamp, "scoring_asr": args.scoring_asr, "only": args.only,
+        "stamp": stamp, "provider": PROVIDER, "dry_run": args.dry_run,
+        "scoring_asr": args.scoring_asr, "only": args.only,
         "config": {k: v for k, v in env.items() if k.startswith(("DUET_", "FDB_"))},
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
     }, indent=1), encoding="utf-8")

@@ -149,7 +149,7 @@ def _transcribe_locked(model, pcm16k: np.ndarray) -> "Transcript":
     segments, _ = model.transcribe(
         pcm16k, language="en", beam_size=5, vad_filter=False,
         condition_on_previous_text=False, initial_prompt=ASR_PROMPT,
-        temperature=[0.0, 0.2, 0.4],
+        temperature=0.0,  # greedy/beam only: sampled fallbacks would make re-runs differ
     )
     kept: List[str] = []
     logprobs: List[float] = []

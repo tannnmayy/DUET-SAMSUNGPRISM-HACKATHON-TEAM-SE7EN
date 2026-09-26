@@ -59,6 +59,8 @@ ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
 # speak a progress line when tools keep the user waiting this long
 PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5"))
 THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
+# no LLM at all: every closed turn gets "Okay." (see DuetAgent.llm_node)
+DRY_RUN = os.environ.get("DUET_DRY_RUN", "0") == "1"
 
 
 # --- models ----------------------------------------------------------------------------
@@ -173,6 +175,15 @@ class DuetAgent(Agent):
         if not text:
             return
         started = time.time()
+        if DRY_RUN:
+            # Plumbing and turn-taking check with no model and no key: answer every
+            # closed turn with the fastest possible acknowledgement. The benchmark's
+            # own scripts then measure our listening (turn-take rate, interruptions,
+            # first-response latency) independently of any LLM.
+            self._trace("dry_run_reply", text=text)
+            self._consumed = len(self._user_messages(chat_ctx))
+            yield "Okay."
+            return
         audio = None
         if THINKER_AUDIO and self._utterance_started is not None:
             pcm = self._tape.since(self._utterance_started)
@@ -350,7 +361,7 @@ async def entrypoint(ctx: JobContext) -> None:
         if getattr(item, "role", None) == "assistant":
             trace("agent_said", text=item.text_content)
 
-    trace("session_start", room=room, thinker=CONFIG.thinker_model, thinking=CONFIG.thinker_thinking,
+    trace("session_start", room=room, dry_run=DRY_RUN, thinker=CONFIG.thinker_model, thinking=CONFIG.thinker_thinking,
           talker=CONFIG.talker_model, asr=CONFIG.asr_model, tts=CONFIG.tts_backend, thinker_audio=THINKER_AUDIO)
     await session.start(room=ctx.room, agent=agent)
 
