@@ -182,7 +182,7 @@ With a newly created key:
     because lower values can cause looping. The seed stays fixed.
 - **The free tier is not enough to evaluate on.** It allows 5 requests per minute
   per model and serves them slowly: 1-16 s for a one-sentence talker reply and
-  28 s for a thinker step, against about 1 s on the paid tier. The benchmark
+  28 s for a thinker step. Paid-tier latency is not measured yet. The benchmark
   needs a billing-enabled key.
 - **First real-model check.** On "…the ID is X-K-4-2-Q-7, no wait, X-K-4-2-Q-8",
   `gemini-3.5-flash` made exactly one call, `track_order("XK42Q8")`, with the
