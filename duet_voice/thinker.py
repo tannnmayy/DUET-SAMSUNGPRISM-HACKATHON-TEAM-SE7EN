@@ -63,11 +63,15 @@ class ThinkEvent:
 
 
 def usage_of(resp) -> Dict[str, int]:
-    """Token counts of one response, for the cost analysis."""
+    """Token counts of one response, for the cost analysis. Audio input is
+    counted separately because it is billed at a higher rate than text."""
     u = getattr(resp, "usage_metadata", None)
     if u is None:
         return {}
+    audio = sum(int(d.token_count or 0) for d in (getattr(u, "prompt_tokens_details", None) or [])
+                if str(getattr(d.modality, "value", d.modality)).upper().endswith("AUDIO"))
     return {"input": int(getattr(u, "prompt_token_count", 0) or 0),
+            "input_audio": audio,
             "output": int(getattr(u, "candidates_token_count", 0) or 0),
             "thinking": int(getattr(u, "thoughts_token_count", 0) or 0)}
 
@@ -138,7 +142,7 @@ class Thinker:
         start_epoch = toolbox.coord.epoch
         contents = list(self.history) + [self.user_content(text, audio, note)]
         final_text = ""
-        usage = {"input": 0, "output": 0, "thinking": 0, "calls": 0}
+        usage = {"input": 0, "input_audio": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
             t = time.time()
             config = self.config if (allow_listen and step == 1) else self.config_final

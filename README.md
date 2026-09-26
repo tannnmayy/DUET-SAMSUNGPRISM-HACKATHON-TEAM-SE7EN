@@ -165,7 +165,7 @@ Every run writes `results/live/<time>/`:
 | File | Content |
 |---|---|
 | `run_config.json` | Every `DUET_*`/`FDB_*` setting, the LiveKit target and the scoring ASR. |
-| `summary.json` | Headline metrics. |
+| `summary.json` | Headline metrics, plus what the agent did (thinker errors, keep-listening decisions, talker lines, tool calls) and the Gemini tokens and cost of the run. |
 | `duet_evaluation_report.json`, `duet_pass_rate_report.json`, `duet_latency_report.json` | The benchmark's own reports. |
 | `items/*.json` | The benchmark's per-item results: transcripts, tool calls, timings. |
 | `traces/*.jsonl` | Our per-conversation trace: every heard segment, turn decision, talker line, thinker step, tool call with arguments and outcome, token usage, and STT/TTS/end-of-turn timings. |
@@ -179,6 +179,7 @@ python bench/run_live.py --only travel_19   # one benchmark item, official scrip
 python bench/run_live.py --dry-run          # no model, no key: checks listening and plumbing
 python bench/offline_asr.py                 # what the agent's ears hear on all 100 inputs
 python bench/offline_eval.py --judge        # the thinker alone on those transcripts, officially scored
+python bench/cost_report.py results/live/<run>   # Gemini tokens and dollars, from the traces
 python -m pytest tests -q
 ```
 

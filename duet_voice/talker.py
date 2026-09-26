@@ -18,7 +18,6 @@ from .prompts import TALKER_INSTRUCTIONS
 log = logging.getLogger("duet.talker")
 
 SILENT = "<silent>"
-LAST_USAGE: dict = {}
 
 
 def _gemini():
@@ -26,8 +25,9 @@ def _gemini():
     return client()
 
 
-async def acknowledgement(user_text: str, context: str = "") -> Optional[str]:
-    """One sentence, or None when the talker has nothing useful to say in time."""
+async def acknowledgement(user_text: str, context: str = "", usage: Optional[dict] = None) -> Optional[str]:
+    """One sentence, or None when the talker has nothing useful to say in time.
+    `usage`, if given, receives the call's token counts (for the cost analysis)."""
     if not CONFIG.talker_enabled or not user_text.strip():
         return None
     from google.genai import types
@@ -54,8 +54,9 @@ async def acknowledgement(user_text: str, context: str = "") -> Optional[str]:
         return None
     text = (resp.text or "").strip().strip('"')
     u = getattr(resp, "usage_metadata", None)
-    if u is not None:
-        LAST_USAGE.update(input=int(u.prompt_token_count or 0), output=int(u.candidates_token_count or 0))
+    if u is not None and usage is not None:
+        usage.update(input=int(u.prompt_token_count or 0), output=int(u.candidates_token_count or 0),
+                     thinking=int(u.thoughts_token_count or 0), calls=1)
     if not text or SILENT in text:
         return None
     return text

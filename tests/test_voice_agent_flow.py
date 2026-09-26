@@ -40,7 +40,7 @@ def make_agent(events, ack="Sure, checking that now.", delay=0.0, final=None):
     a = agent_mod.DuetAgent(agent_mod.Trace("test"), coord, toolbox=None)
     a._thinker = FakeThinker(events, delay, final)
 
-    async def fake_ack(text, context=""):
+    async def fake_ack(text, context="", usage=None):
         await asyncio.sleep(0.05)
         return ack
     agent_mod.talker.acknowledgement = fake_ack

@@ -27,7 +27,7 @@ import json
 import logging
 import os
 import time
-from typing import Any, AsyncIterable, Deque, List, Optional, Tuple
+from typing import Any, AsyncIterable, Deque, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
 
@@ -218,7 +218,8 @@ class DuetAgent(Agent):
             note = "Already done in this conversation (do not repeat): " + "; ".join(
                 "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
 
-        ack_task = asyncio.ensure_future(talker.acknowledgement(text))
+        ack_usage: Dict[str, int] = {}
+        ack_task = asyncio.ensure_future(talker.acknowledgement(text, usage=ack_usage))
         events: asyncio.Queue = asyncio.Queue()
         epoch = self._coord.epoch
 
@@ -310,7 +311,8 @@ class DuetAgent(Agent):
                 kind = ev.kind
                 if kind == "listen":
                     listening = True
-                    self._trace("thinker_listen", reason=ev.text, after_s=round(time.time() - started, 2))
+                    self._trace("thinker_listen", reason=ev.text, after_s=round(time.time() - started, 2),
+                                usage=getattr(ev, "usage", {}), model=self._thinker.model)
                 elif kind == "decided":
                     decided_tools = ev.tools
                     self._trace("thinker_decided", tools=ev.tools, after_s=round(time.time() - started, 2))
@@ -335,6 +337,8 @@ class DuetAgent(Agent):
             worker.cancel()
             if not ack_task.done():
                 ack_task.cancel()
+            if ack_usage:  # the talker is billed whether or not its line was spoken
+                self._trace("talker_usage", usage=dict(ack_usage), model=CONFIG.talker_model)
 
 
 # --- worker ------------------------------------------------------------------------------

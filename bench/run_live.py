@@ -158,11 +158,11 @@ def summarize(out: Path) -> dict:
 
 def trace_stats(out: Path) -> dict:
     """What the agent did, from our traces: model errors (a key or quota problem
-    must not pass for a low score), keep-listening decisions, talker lines, and the
-    tokens used (for the cost analysis)."""
+    must not pass for a low score), keep-listening decisions, talker lines, and
+    the Gemini tokens and cost (bench/cost_report.py)."""
+    from bench import cost_report
     stats = {"conversations": 0, "thinker_errors": 0, "keep_listening": 0, "superseded": 0,
-             "talker_lines": 0, "thinker_answers": 0, "tool_calls": 0,
-             "tokens": {"input": 0, "output": 0, "thinking": 0, "calls": 0}}
+             "talker_lines": 0, "thinker_answers": 0, "tool_calls": 0}
     first_error = ""
     for path in sorted((out / "traces").glob("*.jsonl")):
         stats["conversations"] += 1
@@ -185,9 +185,10 @@ def trace_stats(out: Path) -> dict:
                 stats["tool_calls"] += 1
             elif kind == "thinker_say":
                 stats["thinker_answers"] += 1
-                for k, v in (ev.get("usage") or {}).items():
-                    if k in stats["tokens"]:
-                        stats["tokens"][k] += int(v or 0)
+    if stats["conversations"]:
+        cost = cost_report.report(out)
+        stats.update(tokens=cost["by_model"], cost_usd=cost["total_usd"],
+                     cost_usd_per_conversation=cost["usd_per_conversation"])
     if first_error:
         stats["first_thinker_error"] = first_error
         print("WARNING: %d thinker errors in this run, e.g. %s" % (stats["thinker_errors"], first_error))
