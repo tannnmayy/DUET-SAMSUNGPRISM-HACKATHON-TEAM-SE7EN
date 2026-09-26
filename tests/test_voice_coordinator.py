@@ -168,3 +168,56 @@ def test_a_committed_call_survives_a_barge_in_and_is_recorded():
 
 def test_canonical_key_ignores_case_order_spacing_and_nulls():
     assert canonical("t", {"a": "New  York", "b": 2.0, "c": None}) == canonical("t", {"b": 2, "a": "new york"})
+
+
+def test_words_transcribed_after_the_turn_closed_void_the_plan_made_without_them():
+    """The end-of-turn detector can close a turn while its last segment is still
+    being transcribed ("...from checking." closes; "Wait, no, make it savings"
+    arrives a moment later). A plan made on the shorter text must not act."""
+    c, clock = make(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    c.heard("switch my mortgage autopay to pull from checking")
+    c.turn_committed()
+    stale = c.epoch
+
+    async def go():
+        c.heard("wait, no, make it savings instead")   # the late transcript
+        with pytest.raises(Superseded):
+            await c.gate(stale)
+        c.turn_committed()                              # the listener closes the full turn
+        assert await c.gate() == c.epoch
+    run(go())
+
+
+def test_transcripts_before_the_turn_closes_do_not_disturb_the_plan():
+    c, clock = make(commit_hold_s=0.0)
+    c.heard("track my order")
+    epoch = c.epoch
+    c.heard("the id is X1")          # still the same, open turn
+    c.turn_committed()
+    assert run(c.gate(epoch)) == epoch
+
+
+def test_a_call_from_a_plan_the_user_has_overtaken_never_runs_under_the_new_turn():
+    """Planned at epoch E; the user then added something and that newer turn
+    closed too. The old plan's call must not slip through under the new turn."""
+    c, clock = make(commit_hold_s=0.0)
+    c.turn_committed()
+    planned_in = c.epoch
+    c.user_started_speaking()
+    c.user_stopped_speaking()
+    c.turn_committed()
+    performed = []
+
+    async def backend():
+        performed.append(1)
+        return {"status": "success"}
+
+    async def go():
+        with pytest.raises(Superseded):
+            await c.execute("book_flight", {"passenger_name": "A"}, backend,
+                            state_changing=True, timeout_s=1.0, epoch=planned_in)
+        # a plan made in the new turn goes through
+        await c.execute("book_flight", {"passenger_name": "B"}, backend,
+                        state_changing=True, timeout_s=1.0, epoch=c.epoch)
+    run(go())
+    assert performed == [1]

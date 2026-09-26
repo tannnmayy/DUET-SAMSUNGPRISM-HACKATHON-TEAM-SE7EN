@@ -171,8 +171,8 @@ With a newly created key:
   is the same generation.
 - Samsung's re-run uses a key of its own, possibly a new one. A declared model it
   cannot call would make the re-run fail, and that part of the grade scores zero.
-  DUET therefore declares `gemini-3.5-flash` (thinker) and
-  `gemini-3.5-flash-lite` (talker), the generation Google names as the
+  DUET therefore declares current-generation models, `gemini-3.7-flash`
+  (thinker) and `gemini-3.5-flash-lite` (talker), which is Google's named
   replacement. The switch needed two changes for Gemini 3:
   - **Thought signatures.** Gemini 3 attaches them to function-call parts and
     rejects a follow-up request that lost one. The thinker used to delete a
@@ -187,6 +187,15 @@ With a newly created key:
 - **First real-model check.** On "…the ID is X-K-4-2-Q-7, no wait, X-K-4-2-Q-8",
   `gemini-3.5-flash` made exactly one call, `track_order("XK42Q8")`, with the
   corrected, joined id. The talker named the corrected id too.
+- **First sample (20 items, our ASR transcripts, exact-match scoring).** The free
+  tier's daily cap (20 requests per model) stopped both runs part-way:
+  - `gemini-3.7-flash` passed 7 of the 7 items it completed;
+  - `gemini-3.5-flash` passed 5 of 6. On the two-step chain both attempted, 3.5
+    got the second call's arguments wrong and 3.7 got them right.
+
+  The thinker default is `gemini-3.7-flash`: newer (August 2026), half the price
+  today, and at least as good on this sample. The full 100-item comparison runs
+  once billing is on.
 
 ## 8. Gaps in today's systems that DUET is built against
 

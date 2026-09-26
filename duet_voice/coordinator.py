@@ -96,9 +96,20 @@ class Coordinator:
         self.last_speech_end = self.clock()
 
     def heard(self, text: str) -> None:
-        """A final transcript segment from the ears."""
-        if text:
-            self.open_utterance = (self.open_utterance + " " + text).strip()
+        """A final transcript segment from the ears.
+
+        Words that arrive after the turn was closed are the end of a segment that
+        was still being transcribed when the end-of-turn detector fired (in our
+        dry run, a third of all turns closed that way, often right before a
+        correction: "...from checking. Wait, no, make it savings"). A plan made
+        without them is stale, so they advance the epoch exactly as new speech
+        does; the listener then closes a new turn that includes them."""
+        text = (text or "").strip()
+        if not text:
+            return
+        if self.committed_epoch == self.epoch and not self.user_speaking:
+            self.epoch += 1
+        self.open_utterance = (self.open_utterance + " " + text).strip()
 
     def agent_acted(self) -> None:
         self.open_utterance = ""
@@ -127,12 +138,14 @@ class Coordinator:
         return self.commit_hold_s
 
     # -- the gate -------------------------------------------------------------------
-    async def gate(self) -> int:
+    async def gate(self, epoch: Optional[int] = None) -> int:
         """Wait until the user has been quiet for the commit hold.
 
-        Returns the epoch the call commits under. Raises Superseded if the user
-        starts speaking again first."""
-        epoch = await self.wait_committed()
+        `epoch` is the epoch the plan was made in (default: now). A call from a
+        plan made before the words changed (the user spoke again, or late words
+        arrived) raises Superseded, even if the new turn has since closed: it is
+        never executed under the newer turn. Returns the epoch it commits under."""
+        epoch = await self.wait_committed(epoch)
         while True:
             if self.user_speaking or self.epoch != epoch:
                 raise Superseded()
@@ -152,6 +165,7 @@ class Coordinator:
         state_changing: bool,
         timeout_s: float,
         on_committed: Optional[Callable[[CallRecord], None]] = None,
+        epoch: Optional[int] = None,
     ) -> CallRecord:
         key = canonical(tool, args)
         previous = self.ledger.get(key)
@@ -161,7 +175,7 @@ class Coordinator:
             self.history.append(cached)
             return cached
 
-        epoch = await self.gate()
+        epoch = await self.gate(epoch)
         record = CallRecord(tool, args, epoch, time.time())
         self.history.append(record)
         # Past the gate the call is committed. If the conversation is interrupted

@@ -213,7 +213,10 @@ class FdbToolbox:
                      "timestamp_start": record.started, "timestamp_end": record.finished},
         })
 
-    async def call(self, tool: str, raw_args: Dict[str, Any]) -> str:
+    async def call(self, tool: str, raw_args: Dict[str, Any], epoch: Optional[int] = None) -> str:
+        """Run one tool call through the coordinator. `epoch`: the epoch the plan
+        calling it was made in, so a plan that the user's words have overtaken
+        never acts."""
         args = coerce(tool, raw_args)
         backend_args = {**BACKEND_DEFAULTS.get(tool, {}), **args}
         registry = _load_registry()
@@ -227,6 +230,7 @@ class FdbToolbox:
                 state_changing=tool in WRITE_TOOLS,
                 timeout_s=12.0 if tool in WRITE_TOOLS else 8.0,
                 on_committed=self._log_benchmark_call,
+                epoch=epoch,
             )
         except Superseded:
             log.info("superseded at the gate: %s %s", tool, args)

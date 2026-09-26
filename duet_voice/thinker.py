@@ -199,7 +199,7 @@ class Thinker:
                     continue
                 args = dict(fc.args or {})
                 yield ThinkEvent("tool_start", name=fc.name, args=args)
-                out = await toolbox.call(fc.name, args)
+                out = await toolbox.call(fc.name, args, epoch=start_epoch)
                 parsed = json.loads(out)
                 yield ThinkEvent("tool_done", name=fc.name, args=args,
                                  outcome=str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok")

@@ -25,7 +25,7 @@ class FakeToolbox:
         self.coord.turn_committed()
         self.calls = []
 
-    async def call(self, tool, args):
+    async def call(self, tool, args, epoch=None):
         self.calls.append((tool, args))
         return json.dumps({"status": "success", "tool": tool})
 

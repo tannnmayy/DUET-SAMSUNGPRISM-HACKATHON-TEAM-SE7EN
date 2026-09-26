@@ -15,17 +15,31 @@ DUET_JUDGE=gemini forces the proxy.
 from __future__ import annotations
 
 import os
+import threading
+import time
 from typing import Any, Optional
 
 GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 
 class _Completions:
+    """DUET_JUDGE_RPM paces the calls, for keys with a per-minute request limit."""
+
     def __init__(self, client: Any, model: str) -> None:
         self._client, self._model = client, model
+        rpm = float(os.environ.get("DUET_JUDGE_RPM", "0") or 0)
+        self._gap = 60.0 / rpm if rpm > 0 else 0.0
+        self._next = 0.0
+        self._lock = threading.Lock()
 
     def create(self, *, model: str, **kwargs: Any) -> Any:
         kwargs.pop("max_tokens", None)  # thinking models count thoughts against it
+        if self._gap:
+            with self._lock:
+                now = time.monotonic()
+                start = max(now, self._next)
+                self._next = start + self._gap
+            time.sleep(start - now)
         return self._client.chat.completions.create(model=self._model, **kwargs)
 
 

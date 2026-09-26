@@ -31,9 +31,9 @@ def _env_bool(name: str, default: bool) -> bool:
 class Config:
     # --- thinker (slow mind): plans and runs tool chains ---------------------
     # Gemini 2.5 Flash-Lite and 2.5 Pro are "no longer available to new users" (the
-    # API's own words, Sep 2026), and a re-run uses a new key: the 3.5 generation,
-    # which Google names as their replacement, is what any key can reach.
-    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-3.5-flash"))
+    # API's own words, Sep 2026), and a re-run uses a new key: DUET declares the
+    # current generation (3.5 and later), which any key can reach.
+    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-3.7-flash"))
     # minimal | low | medium | high: thinking level (a token budget on Gemini 2.5)
     thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))

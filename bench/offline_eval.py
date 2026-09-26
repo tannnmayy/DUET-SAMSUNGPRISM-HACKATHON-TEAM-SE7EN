@@ -112,7 +112,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--text", choices=["asr", "script"], default="asr")
     ap.add_argument("--asr-file", default=str(REPO / "results" / "offline" / "asr_large-v3-turbo.json"))
-    ap.add_argument("--model", default=os.environ.get("DUET_THINKER_MODEL", "gemini-3.5-flash"))
+    ap.add_argument("--model", default=os.environ.get("DUET_THINKER_MODEL", "gemini-3.7-flash"))
     ap.add_argument("--thinking", default=os.environ.get("DUET_THINKER_THINKING", "low"))
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="", help="comma-separated example ids")
@@ -121,6 +121,9 @@ def main() -> int:
     ap.add_argument("--judge", action="store_true", help="LLM judge for arguments and responses")
     ap.add_argument("--audio", action="store_true", help="the thinker also hears the request audio")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--rescore", default="",
+                    help="score a saved results/offline/eval_*.json again (e.g. with the judge) "
+                         "without calling the thinker")
     args = ap.parse_args()
 
     os.environ.setdefault("FDB_V3_DIR", str(FDB_DIR))
@@ -132,6 +135,13 @@ def main() -> int:
 
     judge_model = judge.install(etc, epr) if args.judge else None
     items = discover()
+    saved = None
+    if args.rescore:
+        saved = json.loads(Path(args.rescore).read_text(encoding="utf-8"))
+        kept = {r["folder"] for r in saved["rows"]}
+        items = [i for i in items if i[2].name in kept]
+        for key in ("text", "audio", "model", "thinking"):
+            setattr(args, key, saved["summary"].get(key, getattr(args, key)))
     if args.only:
         wanted = set(args.only.split(","))
         items = [i for i in items if i[0] in wanted or i[2].name in wanted]
@@ -154,7 +164,13 @@ def main() -> int:
                                       for it in items))
 
     t0 = time.time()
-    outs = asyncio.run(run_all())
+    if saved is not None:
+        by_folder = {r["folder"]: r for r in saved["rows"]}
+        outs = [{k: by_folder[i[2].name].get(k) for k in
+                 ("example_id", "folder", "input", "calls", "final_text", "error", "tool_steps",
+                  "kept_listening", "seconds")} for i in items]
+    else:
+        outs = asyncio.run(run_all())
     rows = []
     for item, out in zip(items, outs):
         scenario = item[3]

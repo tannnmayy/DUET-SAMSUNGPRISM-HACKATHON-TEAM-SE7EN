@@ -56,7 +56,7 @@ flowchart LR
     end
     subgraph DUET["DUET: the brain"]
         T["Talker: Gemini 3.5 Flash-Lite<br/>one truthful acknowledgement"]
-        K["Thinker: Gemini 3.5 Flash<br/>own tool loop"]
+        K["Thinker: Gemini 3.7 Flash<br/>own tool loop"]
         C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
     end
     S --> K
@@ -78,7 +78,7 @@ realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Thinker (reasoning, tool calls) | Google `gemini-3.5-flash` (thinking level low, temperature 1.0, seed 7) | Gemini API (hosted) |
+| Thinker (reasoning, tool calls) | Google `gemini-3.7-flash` (thinking level low, temperature 1.0, seed 7) | Gemini API (hosted) |
 | Talker (acknowledgements) | Google `gemini-3.5-flash-lite` (thinking level minimal, temperature 1.0, seed 7) | Gemini API (hosted) |
 | Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
 | Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
@@ -88,7 +88,9 @@ realtime-provider presets.
 
 **Why Gemini 3.5, not 2.5.** In September 2026 the Gemini API answers requests
 for `gemini-2.5-flash-lite` and `gemini-2.5-pro` with *"no longer available to
-new users"*, naming the 3.5 generation as the replacement. Samsung's re-run will
+new users"*, naming the 3.5 generation as the replacement. The thinker uses
+`gemini-3.7-flash` (August 2026), which on a first sample matched or beat
+`gemini-3.5-flash` and currently costs half as much. Samsung's re-run will
 use a key of its own, possibly a new one, so DUET declares models that any key
 can reach. Temperature stays at the Gemini 3 default (1.0), because Google
 advises that lowering it can cause looping; the seed is fixed. Every setting
