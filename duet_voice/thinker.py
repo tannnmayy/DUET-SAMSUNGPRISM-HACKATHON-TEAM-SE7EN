@@ -67,6 +67,17 @@ class ThinkEvent:
     name: str = ""
     args: Dict[str, Any] = field(default_factory=dict)
     outcome: str = ""
+    usage: Dict[str, int] = field(default_factory=dict)
+
+
+def usage_of(resp) -> Dict[str, int]:
+    """Token counts of one response, for the cost analysis."""
+    u = getattr(resp, "usage_metadata", None)
+    if u is None:
+        return {}
+    return {"input": int(getattr(u, "prompt_token_count", 0) or 0),
+            "output": int(getattr(u, "candidates_token_count", 0) or 0),
+            "thinking": int(getattr(u, "thoughts_token_count", 0) or 0)}
 
 
 class Thinker:
@@ -76,9 +87,11 @@ class Thinker:
         self.thinking = thinking or CONFIG.thinker_thinking
         decls = [types.FunctionDeclaration(name=s["name"], description=s["description"],
                                            parameters_json_schema=s["parameters"]) for s in TOOL_SPECS]
+        from .gemini import thinking_config
         extra: Dict[str, Any] = {}
-        if self.thinking != "none":
-            extra["thinking_config"] = types.ThinkingConfig(thinking_level=self.thinking)
+        tc = thinking_config(self.model, self.thinking)
+        if tc is not None:
+            extra["thinking_config"] = tc
         self.config = types.GenerateContentConfig(
             system_instruction=THINKER_INSTRUCTIONS,
             tools=[types.Tool(function_declarations=decls)],
@@ -113,6 +126,7 @@ class Thinker:
         start_epoch = toolbox.coord.epoch
         contents = list(self.history) + [self.user_content(text, audio, note)]
         final_text = ""
+        usage = {"input": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
             t = time.time()
             try:
@@ -124,6 +138,9 @@ class Thinker:
                 yield ThinkEvent("error", text=str(exc))
                 return
             log.debug("thinker step %d in %.2f s", step, time.time() - t)
+            for k, v in usage_of(resp).items():
+                usage[k] += v
+            usage["calls"] += 1
             content = resp.candidates[0].content if resp.candidates else None
             parts = list(content.parts or []) if content is not None else []
             calls = [p.function_call for p in parts if p.function_call]
@@ -150,4 +167,4 @@ class Thinker:
         # The exchange completed: keep it, with a text-only copy of the user turn
         # (the audio has done its job and would be re-sent on every later call).
         self.history = list(self.history) + [self.user_content(text, None, note)] + contents[base + 1:]
-        yield ThinkEvent("say", text=final_text)
+        yield ThinkEvent("say", text=final_text, usage=usage)

@@ -79,7 +79,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--text", choices=["asr", "script"], default="asr")
     ap.add_argument("--asr-file", default=str(REPO / "results" / "offline" / "asr_large-v3-turbo.json"))
-    ap.add_argument("--model", default=os.environ.get("DUET_THINKER_MODEL", "gemini-3.8-flash"))
+    ap.add_argument("--model", default=os.environ.get("DUET_THINKER_MODEL", "gemini-2.5-flash"))
     ap.add_argument("--thinking", default=os.environ.get("DUET_THINKER_THINKING", "low"))
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="", help="comma-separated example ids")

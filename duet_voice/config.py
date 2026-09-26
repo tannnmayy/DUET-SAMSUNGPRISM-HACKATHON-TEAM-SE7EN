@@ -31,7 +31,7 @@ def _env_bool(name: str, default: bool) -> bool:
 class Config:
     # --- thinker (slow mind): plans and runs tool chains ---------------------
     thinker_provider: str = field(default_factory=lambda: _env("DUET_THINKER_PROVIDER", "gemini"))
-    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-3.8-flash"))
+    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-2.5-flash"))
     # low | medium | high | none - thinking budget of the thinker
     thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
     # OpenAI-compatible endpoint for a local model (vLLM) when provider == "openai"
@@ -40,7 +40,7 @@ class Config:
 
     # --- talker (fast mind): acknowledgements, progress, never tools -----------
     talker_enabled: bool = field(default_factory=lambda: _env_bool("DUET_TALKER", True))
-    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", "gemini-3.5-flash-lite"))
+    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", "gemini-2.5-flash-lite"))
     talker_timeout_s: float = field(default_factory=lambda: _env_float("DUET_TALKER_TIMEOUT", 1.2))
 
     # --- perception ------------------------------------------------------------

@@ -1,0 +1,11 @@
+# The FDB-v3 runner and evaluation scripts, as the benchmark's v3 README installs them:
+# the LiveKit client that streams each input.wav, NVIDIA NeMo for the scoring ASR
+# (Parakeet-TDT-0.6B-v2), and the OpenAI client for the gpt-4o judge.
+livekit[crypto]==1.1.18
+livekit-api==1.2.1
+python-dotenv==1.2.3
+numpy==2.4.6
+pydub==0.25.1
+ffmpeg-python==0.2.0
+openai==2.54.0
+nemo_toolkit[asr]==3.0.0

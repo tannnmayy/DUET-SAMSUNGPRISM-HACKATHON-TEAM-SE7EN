@@ -35,9 +35,13 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 
 import numpy as np  # noqa: E402
 from livekit import agents, rtc  # noqa: E402
-from livekit.agents import Agent, AgentServer, AgentSession, JobContext, JobProcess, llm  # noqa: E402
+from livekit.agents import Agent, AgentServer, AgentSession, JobContext, JobExecutorType, JobProcess, llm  # noqa: E402
 from livekit.agents.types import FlushSentinel  # noqa: E402
 from livekit.agents.voice import ModelSettings  # noqa: E402
+# LiveKit plugins must be registered on the main thread, so import them here and
+# not inside the per-process warm-up.
+from livekit.plugins import google as lk_google  # noqa: E402
+from livekit.plugins import silero  # noqa: E402
 
 from . import speech_models, talker  # noqa: E402
 from .config import CONFIG  # noqa: E402
@@ -48,6 +52,7 @@ from .prompts import THINKER_INSTRUCTIONS  # noqa: E402
 from .thinker import Thinker, encode_audio  # noqa: E402
 
 log = logging.getLogger("duet.agent")
+logging.getLogger("duet").setLevel(logging.INFO)
 
 # how long the talker waits for the thinker's first decision before speaking anyway
 ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
@@ -61,12 +66,10 @@ THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
 def build_placeholder_llm():
     """AgentSession needs an LLM to run its STT-LLM-TTS pipeline; DuetAgent.llm_node
     replaces the call itself, so this instance only satisfies the framework."""
-    from livekit.plugins import google as lk_google
-    return lk_google.LLM(model=CONFIG.thinker_model)
+    return lk_google.LLM(model=CONFIG.thinker_model, api_key=os.environ.get("GOOGLE_API_KEY") or "unused")
 
 
 def build_vad():
-    from livekit.plugins import silero
     return silero.VAD.load(
         min_speech_duration=0.08,
         min_silence_duration=CONFIG.vad_min_silence_s,
@@ -255,7 +258,8 @@ class DuetAgent(Agent):
                     spoke = True
                 elif kind == "say":
                     words = (ev.text or "").strip()
-                    self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2))
+                    self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
+                                usage=getattr(ev, "usage", {}), model=self._thinker.model)
                     if words and "<silent>" not in words:
                         yield words
                         spoke = True
@@ -277,8 +281,12 @@ def prewarm(proc: JobProcess) -> None:
         speech_models.kokoro()
 
 
+# Jobs run as threads of one process, so the speech models are loaded once and
+# shared (one copy in GPU memory however many rooms come and go); model calls
+# release the GIL and run off the event loop.
 server = AgentServer(
     setup_fnc=prewarm,
+    job_executor_type=JobExecutorType.THREAD,
     num_idle_processes=int(os.environ.get("DUET_IDLE_PROCESSES", "1")),
     initialize_process_timeout=240.0,
 )
@@ -326,6 +334,15 @@ async def entrypoint(ctx: JobContext) -> None:
         trace("agent_state", state=ev.new_state)
         if ev.new_state == "speaking":
             coord.agent_acted()
+
+    @session.on("metrics_collected")
+    def _metrics(ev) -> None:
+        m = ev.metrics
+        kind = getattr(m, "type", "")
+        if kind in ("eou_metrics", "eot_inference_metrics", "tts_metrics", "stt_metrics"):
+            fields = {k: v for k, v in m.model_dump().items()
+                      if isinstance(v, (int, float, str)) and k not in ("timestamp", "request_id", "label")}
+            trace("metrics", **fields)
 
     @session.on("conversation_item_added")
     def _item(ev) -> None:

@@ -30,7 +30,7 @@ def whisper_asr():
     speech_models._cuda_dll_paths()
     from faster_whisper import WhisperModel
     import ctranslate2
-    device = "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+    device = os.environ.get("DUET_SCORING_DEVICE") or ("cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu")
     model = WhisperModel("large-v3-turbo", device=device, compute_type="float16" if device == "cuda" else "int8")
 
     def run_asr(_model, audio_path):

@@ -57,8 +57,8 @@ TOOL_SPECS: List[Dict[str, Any]] = [
     {"name": "search_flights", "kind": "read",
      "description": "Search available flights to a destination on a date.",
      "parameters": _obj({
-         "destination": {**S, "description": "Destination city or airport, as the user named it, e.g. 'London'."},
-         "date": {**S, "description": "Travel date as the user said it, e.g. 'August 20'. Do not add a year the user did not say."},
+         "destination": {**S, "description": "Destination city or airport, as the user named it, e.g. 'Oslo'."},
+         "date": {**S, "description": "Travel date as the user said it, e.g. 'October 4'. Do not add a year the user did not say."},
      }, ["destination", "date"])},
     {"name": "book_flight", "kind": "write",
      "description": "Book a flight ticket for a passenger. Use after search_flights has found the flight.",
@@ -111,18 +111,18 @@ TOOL_SPECS: List[Dict[str, Any]] = [
      "description": "Change one saved apartment-search filter. Call once per filter the user changes.",
      "parameters": _obj({
          "filter_name": {**S, "description": "Filter key in snake_case, e.g. 'max_price', 'min_bedrooms', 'pets_allowed', 'neighborhood'."},
-         "value": {**S, "description": "New value, e.g. '1800', 'true', 'Northside'."},
+         "value": {**S, "description": "New value, e.g. '2400', 'true', 'Riverside'."},
      }, ["filter_name", "value"])},
     # E-commerce
     {"name": "track_order", "kind": "read",
      "description": "Get the shipping status of an order.",
      "parameters": _obj({
-         "order_id": {**S, "description": "Order id, spelled-out letters and digits joined with no spaces or dashes, e.g. 'ABC123'."},
+         "order_id": {**S, "description": "Order id, spelled-out letters and digits joined with no spaces or dashes, e.g. 'XK42Q7'."},
      }, ["order_id"])},
     {"name": "search_products", "kind": "read",
      "description": "Search the product catalog.",
      "parameters": _obj({
-         "query": {**S, "description": "What the user is looking for, e.g. 'wireless headphones'."},
+         "query": {**S, "description": "What the user is looking for, e.g. 'running shoes'."},
          "max_price": {**N, "description": "Price cap, only if the user gave one."},
          "category": {**S, "description": "Product category, only if the user named one."},
      }, ["query"])},
@@ -139,7 +139,7 @@ WRITE_TOOLS = {s["name"] for s in TOOL_SPECS if s["kind"] == "write"}
 
 # Values the mock's Python signature needs but the schema leaves optional.
 BACKEND_DEFAULTS: Dict[str, Dict[str, Any]] = {
-    "search_apartments": {"city": "any", "bedrooms": 1, "max_price": 3000.0},
+    "search_apartments": {"city": "any", "bedrooms": 1, "max_price": 5000.0},
 }
 
 
@@ -165,7 +165,7 @@ def _load_registry():
 
 
 def coerce(tool: str, args: Dict[str, Any]) -> Dict[str, Any]:
-    """Drop nulls and coerce types to the schema (a model may send '1500')."""
+    """Drop nulls and coerce types to the schema (a model may send '2,400')."""
     props = SPEC_BY_NAME[tool]["parameters"]["properties"]
     out: Dict[str, Any] = {}
     for key, value in (args or {}).items():

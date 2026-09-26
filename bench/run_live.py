@@ -81,7 +81,9 @@ def start_agent(env: dict, logs: Path) -> subprocess.Popen:
         text = (logs / "agent.log").read_text(encoding="utf-8", errors="replace")
         if proc.poll() is not None:
             sys.exit("agent exited early; see " + str(logs / "agent.log"))
-        if "registered worker" in text and ("kokoro ready" in text or "whisper" in text and "ready" in text):
+        if "Traceback" in text and "registered worker" in text and "ready in" not in text:
+            print("Agent: a job process failed to start; see", logs / "agent.log")
+        if "registered worker" in text and "ready in" in text:
             print("Agent: registered and warm (pid %d)" % proc.pid)
             time.sleep(3)
             return proc
@@ -92,9 +94,9 @@ def start_agent(env: dict, logs: Path) -> subprocess.Popen:
 def run_runner(env: dict, args, logs: Path) -> None:
     if args.scoring_asr == "parakeet" and not args.only:
         # the unmodified official script
-        cmd = [sys.executable, str(FDB_DIR / "run_tool_benchmark_all_released.py")]
+        cmd = [args.bench_python, str(FDB_DIR / "run_tool_benchmark_all_released.py")]
     else:
-        cmd = [sys.executable, str(REPO / "bench" / "fdb_runner.py"), "--scoring-asr", args.scoring_asr]
+        cmd = [args.bench_python, str(REPO / "bench" / "fdb_runner.py"), "--scoring-asr", args.scoring_asr]
         if args.only:
             cmd += ["--only", args.only]
     cmd += ["--provider", PROVIDER, "--root_dir", str(args.data_dir)]
@@ -117,7 +119,7 @@ def run_evaluations(env: dict, args, out: Path) -> dict:
     for name, cmd in steps:
         if name != "latency" and not args.no_judge:
             cmd = cmd + ["--use-llm"]
-        full = [sys.executable, wrapper] + cmd
+        full = [args.bench_python, wrapper] + cmd
         print("Eval:", name)
         with open(out / ("eval_%s.log" % name), "w", encoding="utf-8") as fh:
             subprocess.run(full, cwd=str(FDB_DIR), env=env, stdout=fh, stderr=subprocess.STDOUT, check=False)
@@ -174,6 +176,8 @@ def main() -> int:
     ap.add_argument("--eval-only", action="store_true")
     ap.add_argument("--no-judge", action="store_true")
     ap.add_argument("--run-dir", default="")
+    ap.add_argument("--bench-python", default=sys.executable,
+                    help="interpreter for the benchmark runner and evaluations (its own venv)")
     ap.add_argument("--scoring-asr", choices=["parakeet", "whisper"],
                     default="whisper" if os.name == "nt" else "parakeet")
     args = ap.parse_args()

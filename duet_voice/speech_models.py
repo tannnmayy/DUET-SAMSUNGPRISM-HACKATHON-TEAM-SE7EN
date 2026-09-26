@@ -22,30 +22,61 @@ from .config import CONFIG
 log = logging.getLogger("duet.speech")
 
 _lock = threading.Lock()
+_asr_lock = threading.Lock()   # one transcription at a time on the shared model
+_tts_lock = threading.Lock()   # the Kokoro pipeline is not safe to share concurrently
 _whisper = None
 _kokoro = None
 
 
+_cuda_ready = False
+
+
 def _cuda_dll_paths() -> None:
-    """On Windows, CTranslate2 finds cuBLAS/cuDNN only if their folders are on
-    the DLL search path. torch ships them; the nvidia-* wheels do too."""
-    if os.name != "nt":
+    """Make pip-installed CUDA libraries visible to CTranslate2 (faster-whisper).
+
+    CTranslate2 loads cuBLAS 12 and cuDNN 9 by name at run time. They arrive as
+    pip packages (dependencies of torch) under site-packages, where the loader
+    does not look. On Linux they are loaded here by absolute path with
+    RTLD_GLOBAL, so CTranslate2's later lookup finds them resident; on Windows
+    their folders join the DLL search path. Best effort: a trial transcription
+    at load time is what proves the GPU works."""
+    global _cuda_ready
+    if _cuda_ready:
         return
-    try:
-        import torch  # noqa: F401
-        os.add_dll_directory(os.path.join(os.path.dirname(sys.modules["torch"].__file__), "lib"))
-    except Exception:
-        pass
-    for base in sys.path:
-        nv = os.path.join(base, "nvidia")
-        if os.path.isdir(nv):
-            for sub in os.listdir(nv):
-                b = os.path.join(nv, sub, "bin")
-                if os.path.isdir(b):
-                    try:
-                        os.add_dll_directory(b)
-                    except OSError:
-                        pass
+    _cuda_ready = True
+    import glob
+    roots = [p for p in sys.path if p and os.path.isdir(os.path.join(p, "nvidia"))]
+    if os.name == "nt":
+        dirs = []
+        try:
+            import torch  # noqa: F401
+            dirs.append(os.path.join(os.path.dirname(sys.modules["torch"].__file__), "lib"))
+        except Exception:
+            pass
+        for root in roots:
+            dirs.extend(glob.glob(os.path.join(root, "nvidia", "*", "bin")))
+        for d in dirs:
+            try:
+                os.add_dll_directory(d)
+            except OSError:
+                pass
+        return
+    import ctypes
+    pending = []
+    for root in roots:
+        for name in ("cuda_runtime", "cublas", "cudnn", "cuda_nvrtc"):
+            pending.extend(sorted(glob.glob(os.path.join(root, "nvidia", name, "lib", "*.so*"))))
+    pending = list(dict.fromkeys(pending))
+    for _ in range(4):  # cuDNN's sub-libraries do not declare a loadable order
+        failed = []
+        for path in pending:
+            try:
+                ctypes.CDLL(path, mode=ctypes.RTLD_GLOBAL)
+            except OSError:
+                failed.append(path)
+        if len(failed) == len(pending):
+            break
+        pending = failed
 
 
 def _pick_device() -> str:
@@ -110,6 +141,11 @@ def transcribe(pcm16k: np.ndarray) -> Transcript:
     30 s of room noise after every request is exactly where Whisper invents
     sentences, and an invented sentence can trigger an extra tool call."""
     model = whisper()
+    with _asr_lock:
+        return _transcribe_locked(model, pcm16k)
+
+
+def _transcribe_locked(model, pcm16k: np.ndarray) -> "Transcript":
     segments, _ = model.transcribe(
         pcm16k, language="en", beam_size=5, vad_filter=False,
         condition_on_previous_text=False, initial_prompt=ASR_PROMPT,
@@ -140,5 +176,6 @@ def transcribe(pcm16k: np.ndarray) -> Transcript:
 def synthesize(text: str) -> np.ndarray:
     """Text to 24 kHz float32 audio."""
     pipe = kokoro()
-    parts = [np.asarray(audio, dtype=np.float32) for _, _, audio in pipe(text, voice=CONFIG.tts_voice)]
+    with _tts_lock:
+        parts = [np.asarray(audio, dtype=np.float32) for _, _, audio in pipe(text, voice=CONFIG.tts_voice)]
     return np.concatenate(parts) if parts else np.zeros(0, dtype=np.float32)

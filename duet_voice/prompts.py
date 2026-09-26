@@ -24,7 +24,7 @@ skip that", "never mind", "before that, ..."), do not perform the dropped reques
 - The transcript can contain mis-heard words. If a word makes no sense in context, read \
 it as the similar-sounding word that fits the request.
 - Identifiers spelled out letter by letter or digit by digit are one token: join them \
-with no spaces or dashes ("A-B-C-1-2-3" is "ABC123"). Numbers said as words are numbers.
+with no spaces or dashes ("X-K-4-2-Q-7" is "XK42Q7"). Numbers said as words are numbers.
 
 HOW TO ACT
 - Carry out every task the user asks for in this turn, with the tools, in the order they \

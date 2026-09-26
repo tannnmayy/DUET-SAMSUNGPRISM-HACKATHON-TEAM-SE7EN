@@ -19,6 +19,7 @@ log = logging.getLogger("duet.talker")
 
 SILENT = "<silent>"
 _client = None
+LAST_USAGE: dict = {}
 
 
 def _gemini():
@@ -36,11 +37,12 @@ async def acknowledgement(user_text: str, context: str = "") -> Optional[str]:
     from google.genai import types
 
     prompt = (("Earlier in this call: " + context + "\n") if context else "") + "User: " + user_text
+    from .gemini import thinking_config
     config = types.GenerateContentConfig(
         system_instruction=TALKER_INSTRUCTIONS,
         temperature=0.4,
         max_output_tokens=48,
-        thinking_config=types.ThinkingConfig(thinking_level="minimal"),
+        thinking_config=thinking_config(CONFIG.talker_model, "minimal"),
     )
     try:
         resp = await asyncio.wait_for(
@@ -54,6 +56,9 @@ async def acknowledgement(user_text: str, context: str = "") -> Optional[str]:
         log.warning("talker failed: %s", exc)
         return None
     text = (resp.text or "").strip().strip('"')
+    u = getattr(resp, "usage_metadata", None)
+    if u is not None:
+        LAST_USAGE.update(input=int(u.prompt_token_count or 0), output=int(u.candidates_token_count or 0))
     if not text or SILENT in text:
         return None
     return text
