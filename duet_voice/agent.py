@@ -59,6 +59,11 @@ ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
 # speak a progress line when tools keep the user waiting this long
 PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5"))
 THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
+# how long the user must stay quiet, after the thinker decided they had not finished,
+# before it answers anyway (the benchmark counts a gap over 2 s as the end of a turn)
+LISTEN_WAIT_S = float(os.environ.get("DUET_LISTEN_WAIT", "2.5"))
+# a slow thinker is covered by the talker only after this much quiet
+ACK_MIN_QUIET_S = float(os.environ.get("DUET_ACK_MIN_QUIET", "1.6"))
 # no LLM at all: every closed turn gets "Okay." (see DuetAgent.llm_node)
 DRY_RUN = os.environ.get("DUET_DRY_RUN", "0") == "1"
 
@@ -139,7 +144,12 @@ class DuetAgent(Agent):
         self._thinker = Thinker()
         self._tape = AudioTape()
         self._utterance_started: Optional[float] = None
-        self._consumed = 0  # user messages already answered by a completed thinker run
+        # User messages already answered. It advances only when a reply that
+        # finished thinking has actually reached the conversation (see
+        # reply_delivered): a reply drafted during a pause and then thrown away
+        # must not mark the request answered.
+        self._consumed = 0
+        self._pending_consumed: Optional[int] = None
 
     # ears: keep a copy of the audio for the thinker, pass it on to STT unchanged
     async def stt_node(self, audio: AsyncIterable[rtc.AudioFrame], model_settings: ModelSettings):
@@ -154,6 +164,13 @@ class DuetAgent(Agent):
         if self._utterance_started is None:
             self._utterance_started = time.time() - 0.4
 
+    def reply_delivered(self) -> None:
+        """An assistant message reached the conversation: close the request it answered."""
+        if self._pending_consumed is not None:
+            self._consumed = self._pending_consumed
+            self._pending_consumed = None
+            self._utterance_started = None
+
     async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
         self._coord.turn_committed()
         self._trace("user_turn", text=(new_message.text_content or "").strip())
@@ -163,17 +180,23 @@ class DuetAgent(Agent):
                 if isinstance(item, llm.ChatMessage) and item.role == "user" and item.text_content]
 
     def _open_request(self, chat_ctx: llm.ChatContext) -> str:
-        """Everything the user said since the thinker last finished an answer.
+        """Everything the user said since the last delivered answer.
 
         A turn that was cut short (the user kept talking, or barged in) is re-read
         together with what followed, so a correction always sees what it corrects."""
         return " ".join(self._user_messages(chat_ctx)[self._consumed:]).strip()
+
+    def _quiet_for(self) -> float:
+        if self._coord.user_speaking:
+            return 0.0
+        return self._coord.clock() - self._coord.last_speech_end
 
     async def llm_node(self, chat_ctx: llm.ChatContext, tools: List[llm.Tool],
                        model_settings: ModelSettings) -> AsyncIterable[Any]:
         text = self._open_request(chat_ctx)
         if not text:
             return
+        answered_upto = len(self._user_messages(chat_ctx))
         started = time.time()
         if DRY_RUN:
             # Plumbing and turn-taking check with no model and no key: answer every
@@ -181,7 +204,7 @@ class DuetAgent(Agent):
             # own scripts then measure our listening (turn-take rate, interruptions,
             # first-response latency) independently of any LLM.
             self._trace("dry_run_reply", text=text)
-            self._consumed = len(self._user_messages(chat_ctx))
+            self._pending_consumed = answered_upto
             yield "Okay."
             return
         audio = None
@@ -197,11 +220,30 @@ class DuetAgent(Agent):
 
         ack_task = asyncio.ensure_future(talker.acknowledgement(text))
         events: asyncio.Queue = asyncio.Queue()
+        epoch = self._coord.epoch
 
-        async def pump() -> None:
+        async def think() -> None:
+            """First look at the turn; if the thinker says the user has not finished,
+            wait for them to go quiet (or for new speech, which cancels this reply),
+            then ask again with keep_listening removed."""
             try:
+                listened = False
                 async for ev in self._thinker.run(text, self._toolbox, audio=audio, note=note):
+                    if ev.kind == "listen":
+                        listened = True
                     await events.put(ev)
+                if listened:
+                    while self._quiet_for() < LISTEN_WAIT_S:
+                        if self._coord.epoch != epoch:
+                            return  # they resumed: the next turn re-reads everything
+                        await asyncio.sleep(0.05)
+                    await events.put("resumed_thinking")
+                    final_note = (note + "\n" if note else "") + (
+                        "The user has stopped talking. Respond now: act if the request can be "
+                        "carried out, otherwise ask briefly for exactly what is missing.")
+                    async for ev in self._thinker.run(text, self._toolbox, audio=audio,
+                                                      note=final_note, allow_listen=False):
+                        await events.put(ev)
             except Superseded:
                 self._trace("superseded")  # the user kept talking; this plan is void
             except Exception as exc:  # never leave the user in silence
@@ -210,26 +252,23 @@ class DuetAgent(Agent):
             finally:
                 await events.put(None)
 
-        worker = asyncio.ensure_future(pump())
+        worker = asyncio.ensure_future(think())
         spoke = False
+        listening = False
         decided_tools: Optional[bool] = None
         last_speech = started
 
         async def speak_ack(wait_s: float) -> Optional[str]:
             try:
-                ack = await asyncio.wait_for(asyncio.shield(ack_task), timeout=wait_s)
-            except asyncio.TimeoutError:
-                return None
+                return await asyncio.wait_for(asyncio.shield(ack_task), timeout=wait_s)
             except Exception:
                 return None
-            return ack
 
         self._trace("think_start", text=text, audio=bool(audio))
         try:
             while True:
-                timeout = None
-                if not spoke and decided_tools is None:
-                    timeout = max(0.0, ACK_GRACE_S - (time.time() - started))
+                if not spoke and decided_tools is None and not listening:
+                    timeout = max(0.05, ACK_GRACE_S - (time.time() - started))
                 elif decided_tools and not spoke:
                     timeout = 0.0
                 else:
@@ -239,15 +278,24 @@ class DuetAgent(Agent):
                 except asyncio.TimeoutError:
                     ev = "tick"
                 if ev == "tick":
-                    if not spoke and (decided_tools is None or decided_tools):
-                        ack = await speak_ack(0.4 if decided_tools is None else 0.6)
-                        self._trace("talker", text=ack, reason="grace" if decided_tools is None else "tools")
+                    if not spoke and decided_tools:
+                        ack = await speak_ack(0.6)
+                        self._trace("talker", text=ack, reason="tools")
                         if ack:
                             yield ack + " "
                             yield FlushSentinel()
-                            spoke, last_speech = True, time.time()
-                        elif decided_tools:
-                            spoke = True  # nothing to say in time; do not try again
+                            last_speech = time.time()
+                        spoke = True  # said it, or had nothing in time: never twice
+                    elif not spoke and decided_tools is None and not listening:
+                        # The thinker is slow to decide. Only cover the gap once the
+                        # user has clearly finished, never in a pause they may resume.
+                        if self._quiet_for() >= ACK_MIN_QUIET_S:
+                            ack = await speak_ack(0.3)
+                            self._trace("talker", text=ack, reason="grace")
+                            if ack:
+                                yield ack + " "
+                                yield FlushSentinel()
+                                spoke, last_speech = True, time.time()
                     elif spoke and decided_tools and time.time() - last_speech >= PROGRESS_AFTER_S:
                         yield "Still working on it. "
                         yield FlushSentinel()
@@ -255,8 +303,15 @@ class DuetAgent(Agent):
                     continue
                 if ev is None:
                     break
+                if ev == "resumed_thinking":
+                    listening = False
+                    self._trace("listen_done", quiet_s=round(self._quiet_for(), 2))
+                    continue
                 kind = ev.kind
-                if kind == "decided":
+                if kind == "listen":
+                    listening = True
+                    self._trace("thinker_listen", reason=ev.text, after_s=round(time.time() - started, 2))
+                elif kind == "decided":
                     decided_tools = ev.tools
                     self._trace("thinker_decided", tools=ev.tools, after_s=round(time.time() - started, 2))
                 elif kind == "tool_start":
@@ -271,12 +326,11 @@ class DuetAgent(Agent):
                     words = (ev.text or "").strip()
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
+                    # the thinker finished: this request is answered once the reply lands
+                    self._pending_consumed = answered_upto
                     if words and "<silent>" not in words:
                         yield words
                         spoke = True
-            # this request is answered: the next one starts fresh
-            self._consumed = len(self._user_messages(chat_ctx))
-            self._utterance_started = None
         finally:
             worker.cancel()
             if not ack_task.done():
@@ -295,8 +349,23 @@ def prewarm(proc: JobProcess) -> None:
 # Jobs run as threads of one process, so the speech models are loaded once and
 # shared (one copy in GPU memory however many rooms come and go); model calls
 # release the GIL and run off the event loop.
+def _load() -> float:
+    """Report load by conversations, not by CPU.
+
+    LiveKit's default reports CPU usage and refuses new rooms above 70%. During a
+    benchmark run the CPU is busy with the *scoring* speech recognizer between
+    items, so the default made the worker skip whole conversations (2 of 100 in
+    our dry run). Here the worker is full only at five simultaneous rooms."""
+    try:
+        return min(1.0, len(server.active_jobs) * 0.2)
+    except Exception:  # before the worker has started
+        return 0.0
+
+
 server = AgentServer(
     setup_fnc=prewarm,
+    load_fnc=_load,
+    load_threshold=0.99,
     job_executor_type=JobExecutorType.THREAD,
     num_idle_processes=int(os.environ.get("DUET_IDLE_PROCESSES", "1")),
     initialize_process_timeout=240.0,
@@ -360,6 +429,7 @@ async def entrypoint(ctx: JobContext) -> None:
         item = ev.item
         if getattr(item, "role", None) == "assistant":
             trace("agent_said", text=item.text_content)
+            agent.reply_delivered()
 
     trace("session_start", room=room, dry_run=DRY_RUN, thinker=CONFIG.thinker_model, thinking=CONFIG.thinker_thinking,
           talker=CONFIG.talker_model, asr=CONFIG.asr_model, tts=CONFIG.tts_backend, thinker_audio=THINKER_AUDIO)

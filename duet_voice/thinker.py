@@ -72,6 +72,16 @@ def usage_of(resp) -> Dict[str, int]:
             "thinking": int(getattr(u, "thoughts_token_count", 0) or 0)}
 
 
+KEEP_LISTENING = "keep_listening"
+KEEP_LISTENING_DESCRIPTION = (
+    "Call this INSTEAD of acting or answering when the user has clearly not finished "
+    "speaking: their last words are cut off mid-sentence or mid-list, or they announced a "
+    "detail they have not said yet ('the order number is...', 'and also...'), or the "
+    "request lacks something they are evidently about to give. Nothing is done and "
+    "nothing is said; you will be asked again once they go quiet. Never call it for a "
+    "request that can be carried out as it stands.")
+
+
 class Thinker:
     def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
         from google.genai import types
@@ -79,19 +89,28 @@ class Thinker:
         self.thinking = thinking or CONFIG.thinker_thinking
         decls = [types.FunctionDeclaration(name=s["name"], description=s["description"],
                                            parameters_json_schema=s["parameters"]) for s in TOOL_SPECS]
+        listen = types.FunctionDeclaration(
+            name=KEEP_LISTENING, description=KEEP_LISTENING_DESCRIPTION,
+            parameters_json_schema={"type": "object", "properties": {
+                "reason": {"type": "string", "description": "What the user has not finished saying."}},
+                "required": ["reason"]})
         from .gemini import thinking_config
         extra: Dict[str, Any] = {}
         tc = thinking_config(self.model, self.thinking)
         if tc is not None:
             extra["thinking_config"] = tc
-        self.config = types.GenerateContentConfig(
-            system_instruction=THINKER_INSTRUCTIONS,
-            tools=[types.Tool(function_declarations=decls)],
-            temperature=0.0,
-            seed=CONFIG.seed,
-            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-            **extra,
-        )
+
+        def config(with_listen: bool):
+            return types.GenerateContentConfig(
+                system_instruction=THINKER_INSTRUCTIONS,
+                tools=[types.Tool(function_declarations=decls + ([listen] if with_listen else []))],
+                temperature=0.0,
+                seed=CONFIG.seed,
+                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+                **extra,
+            )
+        self.config = config(True)          # the first look at a turn may decide to keep listening
+        self.config_final = config(False)   # after the user has gone quiet, it must respond
         # completed exchanges only; an interrupted turn never lands here
         self.history: List[Any] = []
 
@@ -109,11 +128,11 @@ class Thinker:
             parts.append(types.Part(text=note))
         return types.Content(role="user", parts=parts)
 
-    async def _generate(self, contents: List[Any]):
-        return await client().aio.models.generate_content(model=self.model, contents=contents, config=self.config)
+    async def _generate(self, contents: List[Any], config):
+        return await client().aio.models.generate_content(model=self.model, contents=contents, config=config)
 
     async def run(self, text: str, toolbox, audio: Optional[Tuple[bytes, str]] = None,
-                  note: str = "") -> AsyncIterator[ThinkEvent]:
+                  note: str = "", allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         from google.genai import types
         base = len(self.history)
         start_epoch = toolbox.coord.epoch
@@ -122,8 +141,9 @@ class Thinker:
         usage = {"input": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
             t = time.time()
+            config = self.config if (allow_listen and step == 1) else self.config_final
             try:
-                resp = await self._generate(contents)
+                resp = await self._generate(contents, config)
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
@@ -138,6 +158,18 @@ class Thinker:
             parts = list(content.parts or []) if content is not None else []
             calls = [p.function_call for p in parts if p.function_call]
             words = " ".join(p.text for p in parts if getattr(p, "text", None) and not getattr(p, "thought", False)).strip()
+            listens = [c for c in calls if c.name == KEEP_LISTENING]
+            calls = [c for c in calls if c.name != KEEP_LISTENING]
+            if listens and not calls and step == 1:
+                # The user has not finished: nothing is acted on and nothing is
+                # remembered; the caller waits and asks again once they go quiet.
+                yield ThinkEvent("listen", text=str((listens[0].args or {}).get("reason", "")), usage=usage)
+                return
+            if listens:
+                # keep_listening next to real work: the work stands; drop the stray
+                # control call so the transcript the model sees stays well-formed
+                parts = [p for p in parts if not (p.function_call and p.function_call.name == KEEP_LISTENING)]
+                content = types.Content(role=content.role, parts=parts)
             if content is not None:
                 contents.append(content)
             if step == 1:

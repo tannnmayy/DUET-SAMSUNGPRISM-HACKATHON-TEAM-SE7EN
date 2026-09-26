@@ -20,21 +20,25 @@ from duet_voice.thinker import ThinkEvent  # noqa: E402
 
 
 class FakeThinker:
-    def __init__(self, events, delay=0.0):
-        self.events, self.delay, self.history, self.model = events, delay, [], "fake"
+    """First look -> `events`; a second look (after keep_listening) -> `final`."""
 
-    async def run(self, text, toolbox, audio=None, note=""):
-        for ev in self.events:
+    def __init__(self, events, delay=0.0, final=None):
+        self.events, self.delay, self.final = events, delay, final or []
+        self.history, self.model, self.seen = [], "fake", []
+
+    async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+        self.seen.append((text, allow_listen))
+        for ev in (self.events if allow_listen else self.final):
             await asyncio.sleep(self.delay)
             if isinstance(ev, Exception):
                 raise ev
             yield ev
 
 
-def make_agent(events, ack="Sure, checking that now.", delay=0.0):
+def make_agent(events, ack="Sure, checking that now.", delay=0.0, final=None):
     coord = Coordinator(commit_hold_s=0.0)
     a = agent_mod.DuetAgent(agent_mod.Trace("test"), coord, toolbox=None)
-    a._thinker = FakeThinker(events, delay)
+    a._thinker = FakeThinker(events, delay, final)
 
     async def fake_ack(text, context=""):
         await asyncio.sleep(0.05)
@@ -43,9 +47,10 @@ def make_agent(events, ack="Sure, checking that now.", delay=0.0):
     return a
 
 
-def speak(a, user_text):
-    ctx = llm.ChatContext.empty()
-    ctx.add_message(role="user", content=user_text)
+def speak(a, user_text, ctx=None):
+    if ctx is None:
+        ctx = llm.ChatContext.empty()
+        ctx.add_message(role="user", content=user_text)
 
     async def go():
         out = []
@@ -86,3 +91,25 @@ def test_slow_thinker_gets_the_acknowledgement_after_the_grace_period():
                    delay=0.6)
     said = speak(a, "book the flight")
     assert said[0] == "Sure, checking that now." and said[-1] == "Done: it's booked."
+
+
+def test_unfinished_turn_is_listened_to_then_answered_once_quiet():
+    a = make_agent([ThinkEvent("listen", text="the order id has not been said yet")],
+                   final=[ThinkEvent("decided", tools=False),
+                          ThinkEvent("say", text="Sure, what's the order number?")])
+    said = speak(a, "could you track it for me")
+    # no acknowledgement while listening, one answer after the user went quiet
+    assert said == ["Sure, what's the order number?"]
+    assert a._thinker.seen[-1][1] is False  # the second look may not keep listening
+
+
+def test_a_discarded_draft_does_not_mark_the_request_answered():
+    """A reply drafted during a pause and then thrown away (never delivered) must
+    leave the request open, so the real turn is answered."""
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Okay.")])
+    ctx = llm.ChatContext.empty()
+    ctx.add_message(role="user", content="like, you know")
+    speak(a, None, ctx)            # drafted during the pause, then discarded
+    assert a._open_request(ctx) == "like, you know"
+    a.reply_delivered()            # only a delivered reply closes it
+    assert a._open_request(ctx) == ""

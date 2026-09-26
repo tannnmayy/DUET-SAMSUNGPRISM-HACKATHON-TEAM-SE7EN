@@ -1,257 +1,204 @@
-# DUET: making voice agents safe to interrupt
+# DUET: an interruption-safe, dual-mind voice agent for Full-Duplex-Bench v3
 
-**Samsung PRISM GenAI Hackathon 3.0 · Theme 05: Interruptible Real-Time Agents · Team SE7EN, SRM (`SRM_SE7EN`)**
+**Samsung PRISM GenAI Hackathon 3.0 · Theme 05: Interruptible Real-Time Agents · Team SE7EN, SRM**
 
-> Full-duplex *speech* is solved. Full-duplex *action* is not. An assistant can
-> already hear you talk over it - but if you change your mind while it is
-> booking, searching or filing, the work already in flight is what breaks.
-> DUET is the coordination layer that makes that safe.
+People interrupt, hesitate and correct themselves mid-sentence. Voice agents that
+act on their behalf break exactly there. The Full-Duplex-Bench v3 paper
+names the failure that costs every published system the most: *"models commit
+intermediate parameters before the correction arrives."* Even the best system
+(GPT-Realtime) fails over 40% of self-correction scenarios.
 
-DUET (*Duplex Utterance-Epoch Transaction* runtime) sits between the speech
-layer and the action layer of a voice agent and guarantees four things together:
+DUET is a custom LiveKit voice agent built around not doing that, without going
+quiet while it waits:
 
-| Property | Guarantee |
+- **Two minds.**
+  - A **talker** (a fast model) acknowledges the user the moment there is work
+    to cover, and never claims a result it doesn't have.
+  - A **thinker** (a reasoning model with the tools) plans, calls tools and
+    speaks the outcome.
+- **One coordinator** decides *when acting is allowed*:
+  - No tool runs while the user is still speaking, or before the turn has
+    closed and the user has been quiet for a short hold. The hold is longer
+    while they are revising ("no wait…") or mid-sentence ("…and").
+  - An identical action is never performed twice.
+  - A failed read is retried once, and a failed or uncertain write is never
+    blindly re-sent.
+
+That maps onto the three capabilities the Theme 05 guide asks for:
+
+| Guide | DUET |
 |---|---|
-| **Never silent** | A truthful spoken response within tens of milliseconds of every turn or interruption, however slow the real work is. |
-| **Always interruptible** | Any in-flight work can be invalidated mid-execution; its results are never spoken and never committed. |
-| **Never double-commits** | No irreversible action is executed twice - not under retries, cancellations or re-plans. A timed-out booking is never blindly resent. |
-| **Honest about uncertainty** | When perception is unsure it asks, and names what it is unsure of ("Sorry, did you say Austin?"). |
-
-The kit's organizer instructions are in [KIT_README.md](KIT_README.md) and
-[WALKTHROUGH.md](WALKTHROUGH.md); the full engineering record is
-[PROJECT.md](PROJECT.md), with evidence for every non-obvious decision in
-[notes/FINDINGS.md](notes/FINDINGS.md).
-
----
+| **Stay responsive**: no dead air, no false "done!" claims | The talker speaks while the thinker works. Nothing is announced as done before its tool result. A thinker failure still produces a spoken reply. |
+| **Work asynchronously**: tools, perception and reasoning never block the conversation | Speech recognition, TTS and every tool run off the audio loop. Tools run while the acknowledgement plays, and a progress line covers slow tools. |
+| **Recover cleanly**: discard stale intent, update tool arguments, never repeat a state-changing action | Epochs discard plans made on words the user has since changed. The commit gate keeps stale values from reaching a tool. The idempotency ledger gives exactly-once actions, including when the user barges in mid-call. |
 
 ## Results
 
-All numbers below are produced by commands in this repository, at the
-official `--time-scale 1`.
+> Filled in from the reported run's `results/live/<run>/summary.json`; the full
+> run logs sit next to it (see [Run logs](#run-logs)).
 
-| Measurement | Result | Command |
-|---|---|---|
-| Official evaluator, public set | **97.4 weighted** (97.9 plain; text 100, audio 100, visual 81.5) | `python eval_submission.py . --time-scale 1` |
-| Our conformance suite (23 scenarios the kit does not cover) | 22 at 100; visual-without-hint at 81.5 | `python tools/quality.py` |
-| Kit templates on unseen seeds (2026, 7331) | 120/120 at 100.0; 0 crashes, 0 protocol errors | `python tools/chaos.py --n 60 --seed <new>` |
-| All 8 templates - the kit's 3 and our 5 - on never-used seeds | seed 202: **99.7** (119/120; the miss is fixed) · seed 303: **120/120 at 100.0** | `python tools/chaos.py --templates all --n 120 --seed <new>` |
-| Every model disabled | 89.1 average, 0 crashes, 0 silent scenarios | `python tools/killswitch.py` |
-| Transcript quality lint (32 scenarios; speech and failed irreversible calls) | 0 flagged | `python tools/quality.py` |
-| Dispatcher, slowest event handler | 0.47 ms (budget 20 ms) | `python tools/bench.py` |
-| Test suite | 373 passing | `python -m pytest tests/ -q` |
-
-The kit's reference agent scores about 57 on the same public set, and 0 on
-both audio scenarios.
-
-The one checkpoint we do not pass is naming the port in pub_07's photo.
-We tested a vision-language model for it and **it was wrong more often than
-right** (see [Honest limits](#honest-limits)), so the agent says it cannot
-tell and asks, rather than guessing.
-
----
+| System (FDB-v3, 100 items) | Pass@1 | Tool F1 | Arg acc | Resp qual | Turn-take | Latency (task) | Interrupt |
+|---|---|---|---|---|---|---|---|
+| GPT-Realtime (paper) | 0.600 | 0.876 | 0.680 | 0.792 | 96.0% | 6.89 s | 13.5% |
+| Gemini Live 3.1 (paper) | 0.540 | 0.817 | 0.588 | 0.718 | 78.0% | 4.25 s | 19.2% |
+| Cascaded Whisper→GPT-4o→TTS (paper) | 0.450 | 0.803 | 0.562 | 0.600 | 100% | 10.12 s | 33.0% |
+| **DUET (ours)** | *pending* | | | | | | |
 
 ## Architecture
 
-```
-  in_queue --> DISPATCHER (duet/runtime.py)   synchronous, never awaits slow work, < 20 ms per event
-                  |
-     +------------+----------------+-------------------+
-     v            v                v                   v
-  FAST PATH   COORDINATOR       SLOW PATH            STATE
-  fastpath.py coordinator.py    perception/*         state.py
-  nlg.py      - epochs     M1   - speech (Whisper)   - slots + provenance  M3
-  - repairs   - call registry   - frames (CLIP)      - epoch history       M1
-  - extraction- idempotency M2  - (vision model,     - undo                M6
-  - ack+echo  - commit gate M2    off by default)
-     |            |                |                   |
-     +------------+----------------+-------------------+--> EMITTER (emitter.py) --> out_queue
-```
-
-**Two invariants govern all of it, and both are enforced by tests:**
-
-1. **The dispatcher never blocks.** No event handler may occupy the shared
-   event loop for more than 20 ms; anything slower is a task. The harness
-   runs our agent on its own event loop, so one blocking call would delay
-   event delivery and make the scorer blame us for things we did not do.
-2. **Every outbound action passes through one function.** `put_nowait`
-   appears exactly once in `duet/`. That single exit attaches the state
-   snapshot, validates the payload, refuses verbatim repeats, and refuses any
-   sentence that claims an irreversible action completed before its tool
-   said so.
-
-### The six mechanisms
-
-| # | Mechanism | What it does | Where |
-|---|---|---|---|
-| M1 | **Epoch-versioned state** | Every computation carries the epoch it was conceived under. An interruption bumps the epoch, orphaning all descendants - tool calls, transcriptions, plans - in one step. | `state.py`, `coordinator.py` |
-| M2 | **Reversibility-gated commitment** | Read-only work fires freely; state-modifying work passes a gate (turn ended, confident slots, a 250 ms quiet window after a correction, and an idempotency ledger keyed exactly like the scorer's duplicate check). | `coordinator.py` |
-| M3 | **Slot provenance** | A slot records the utterance, span, time, modality and confidence that produced it, so a correction rewrites one slot and leaves the rest. | `state.py` |
-| M4 | **Perception-ahead** | A camera frame is read the moment it arrives, before anyone asks about it; a question about the frame waits (bounded) for that reading while the acknowledgment is already spoken. | `runtime.py` |
-| M5 | **Calibrated abstention** | Speech confidence is judged per slot word, not per sentence. A value heard but not trusted is confirmed by name; nothing heard is asked about openly. | `perception/asr.py`, `runtime.py` |
-| M6 | **Conversational undo** | "Go back to what I said" restores an epoch checkpoint instead of re-conversing. | `state.py` |
-
-### Schema-driven tools
-
-About ten hidden tools are delivered only as a schema at the start of a
-scenario, so nothing in `duet/` knows any tool by name (enforced by a grep
-test). Tools are chosen by sparse retrieval over their own schemas, arguments
-bind by *role* (a `city`, a `destination` and a `pickup_city` all receive a
-place), and chaining falls out of satisfiability: `book_flight` needs a
-`flight_id` that only exists after `flight_search` returns, so the search
-ranks first and the booking follows.
-
----
-
-## Setup
-
-Python 3.10-3.12. Every graded dependency is pinned in `requirements.txt`,
-mirrored exactly in `submission.yaml`.
-
-```bash
-pip install -r requirements.txt
-python tools/prefetch.py            # optional: download every pinned model now
-python eval_submission.py . --time-scale 1
+```mermaid
+flowchart LR
+    subgraph LiveKit["LiveKit agent: ears and mouth"]
+        A[Room audio in] --> V[Silero VAD]
+        V --> S["ASR: faster-whisper<br/>large-v3-turbo + non-speech filter"]
+        V --> E["End of turn:<br/>turn-detector v1-mini"]
+        TTS["TTS: Kokoro-82M"] --> O[Room audio out]
+    end
+    subgraph DUET["DUET: the brain"]
+        T["Talker: Gemini 2.5 Flash-Lite<br/>one truthful acknowledgement"]
+        K["Thinker: Gemini 2.5 Flash<br/>own tool loop"]
+        C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
+    end
+    S --> K
+    S --> T
+    E -->|turn closed| C
+    K -->|tool call| C
+    C -->|gate open| B[(12 FDB-v3 tools<br/>benchmark's mock backend)]
+    B --> K
+    T -->|only when there is work| TTS
+    K -->|answer with the key facts| TTS
 ```
 
-**GPU.** On Linux, `torch==2.10.0` from PyPI is a CUDA 12.8 build and brings
-the cuBLAS 12 / cuDNN 9 libraries the speech engine (CTranslate2) needs;
-`duet/perception/cuda.py` makes them visible to it. Only an NVIDIA driver is
-required - no system CUDA toolkit. On Windows, install the CUDA build of the
-same torch version first:
+Details, and why each piece exists: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-```bash
-pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cu128
-```
+## Models and providers (declaration)
 
-`setup()` runs a trial transcription on the GPU and falls back to CPU if it
-fails, so a broken GPU stack costs accuracy, not the scenario.
-
-**Models** (all pinned by repository and commit in `duet/perception/checkpoints.py`):
+This is a **custom LiveKit agent**. It is not one of the benchmark's
+realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Speech | `dropbox-dash/faster-whisper-large-v3-turbo` | GPU (CTranslate2 float16) |
-| Speech fallback | `Systran/faster-whisper-base` | CPU (int8) |
-| Frame embedding | `sentence-transformers/clip-ViT-B-32` | GPU or CPU |
-| Vision-language (off by default) | `Qwen/Qwen2.5-VL-3B-Instruct` | GPU; enable with `DUET_VISION=1` |
+| Thinker (reasoning, tool calls) | Google `gemini-2.5-flash` (thinking budget 512, temperature 0, seed 7) | Gemini API (hosted) |
+| Talker (acknowledgements) | Google `gemini-2.5-flash-lite` (thinking off, temperature 0, seed 7) | Gemini API (hosted) |
+| Speech recognition | `faster-whisper` large-v3-turbo (CTranslate2, float16) | Local GPU |
+| Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M`, voice `af_heart`) | Local GPU |
+| Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
+| End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
+| Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
 
-No network dependency at scoring time beyond downloading these checkpoints,
-no API keys, no hosted models.
+Local models use about 4 GB of GPU memory, far below the 48 GB evaluation GPU.
+An OpenAI-compatible endpoint (for example Gemma 4 on vLLM) can replace
+the Gemini models with `DUET_THINKER_PROVIDER=openai` and
+`DUET_THINKER_BASE_URL`, for a fully local run.
 
-### Docker
+## API keys: which ones, and where they go
 
-```bash
-docker build -t duet .
-docker run --gpus all duet                       # runs the official evaluator
-```
+Set these as environment variables, or put them in `.env.local` at the
+repository root (the file is git-ignored). No key is included in this
+repository.
 
-The image pre-downloads every pinned model, so cold start does not depend on
-the network.
+| Variable | Needed for | Required? |
+|---|---|---|
+| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
+| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | For judged scores |
+| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) in dev mode | Optional |
 
-### Presentation and demo
-
-- Deck: [`SRM_SE7EN.pptx`](SRM_SE7EN.pptx) / [`SRM_SE7EN.pdf`](SRM_SE7EN.pdf), generated by
-  `tools/deck/build_deck.js` (every number in one table at the top).
-- Demo video script: [`notes/VIDEO_SCRIPT.md`](notes/VIDEO_SCRIPT.md).
-- Timelines for any run: `python tools/timeline.py <scenario.json>` writes a self-contained
-  HTML page - tool calls as bars, cancelled calls drawn cut at the cancel, epochs marked,
-  changed slots highlighted.
-
-### Useful commands
+## Reproduce the benchmark: one command
 
 ```bash
-python run_local.py --scenario scenarios/pub_02_text_interrupt.json --agent agent.agent:ParticipantAgent
-python tools/quality.py --show            # every transcript, linted
-python tools/chaos.py --templates all --n 100 --seed <new>
-python tools/killswitch.py                # everything off: does it degrade?
-python tools/vision_bench.py --variants   # measure a vision model before trusting it
+export GOOGLE_API_KEY=...        # required
+export OPENAI_API_KEY=...        # the official gpt-4o judge
+bash reproduce.sh                # all 100 items, then the three official evaluations
+bash reproduce.sh --only travel_19,housing_04   # a quick subset
 ```
 
-Environment switches: `DUET_NO_ASR`, `DUET_NO_VISION`, `DUET_NO_EMBED` force
-the degradation ladder; `DUET_ASR_DEVICE=cpu|cuda` forces a speech device;
-`DUET_DEBUG=1` mirrors the internal log to stderr.
+- **Target machine:** Linux x86_64, one NVIDIA GPU (CUDA 12 or 13 driver),
+  Python 3.10-3.12, with `ffmpeg`, `git`, `curl` and `unzip` installed.
+- **Runtime:** about 2 hours. The benchmark streams every recording in real
+  time, and each is about 47 s long.
 
----
+What the script does, in order:
+1. Creates two virtual environments: `.venv` for the agent (pinned
+   `requirements.txt`) and `.venv-bench` for the benchmark runner
+   (`requirements-bench.txt`, including NVIDIA NeMo for the scoring ASR).
+2. Clones Full-Duplex-Bench and checks out the pinned commit `3e799c4`.
+3. Downloads the benchmark audio from the Google Drive link in the v3 README and
+   verifies its SHA-256.
+4. Uses your LiveKit Cloud project, or starts a local LiveKit dev server.
+5. Pre-downloads every model, so the timed run is not a download.
+6. Runs `bench/run_live.py`:
+   - starts the agent (`python -m duet_voice.agent start`);
+   - runs the benchmark's **unmodified** `run_tool_benchmark_all_released.py
+     --provider duet`;
+   - runs its three evaluation scripts (`evaluate_tool_calls.py`,
+     `evaluate_pass_rate.py`, `analyze_tool_latency.py`) with `--use-llm`;
+   - prints the headline numbers.
 
-## Generalisation
+## Run logs
 
-The nine public scenarios are worth nothing on their own - they are what we
-developed against. What matters is behaviour on scenarios nobody wrote by
-hand, so we measure three ways:
+Every run writes `results/live/<time>/`:
 
-1. **Our conformance suite** (`tests/conformance/`, generated by
-   `tools/make_conformance.py`): 23 scenarios for what the kit leaves
-   untested - double and triple interruptions, retraction and topic change,
-   interruption during a booking, a correction inside the commitment hold,
-   an interruption 40 ms before a stale result returns, empty results, a
-   booking timeout, ten paraphrase shapes, number words, and an unseen
-   state-modifying tool. Each interruption scenario is **proven** to fail an
-   agent that does not cancel (`tests/test_conformance_discriminates.py`).
-2. **Chaos runs** on fresh seeds, from the kit's templates and from ours
-   (`tools/scenario_templates.py`), which draw cities, names, phrasings and
-   timings from pools that appear nowhere in the engine. The kit's templates
-   alone had shown 100.0 for days. Our first run of our own templates
-   (seed 101) scored **88.1, with 23 of 100 below 75**. That exposed six general
-   gaps: time-of-day selectors, "for Leeds" read as a person, an incidental
-   word in an argument description outranking the right tool, "scratch the
-   trip" not read as a topic change, a sentence's first capital read as a
-   name, and argument roles chosen before extraction could fill them. After
-   fixing those, a seed never used before (202) scored **99.7**. Its one miss
-   ("The Olive Room" shortened to "Olive Room") is fixed and tested too, and
-   the next fresh seed (303) scored **120/120 at 100.0**.
-3. **Transcript lint** (`tools/quality.py`), because the automated score cannot
-   hear the agent: repeats, tool names read aloud, answers stacked on each
-   other, cut-off clauses. The first read-through found a garbled answer in
-   6 of 17 scenarios that all scored 100.
-
----
-
-## Degradation ladder
-
-The agent never crashes and never goes silent. `tools/killswitch.py` proves it
-with every model disabled (89.1 average).
-
-| If this fails | DUET does this |
+| File | Content |
 |---|---|
-| GPU speech stack | CPU speech model, after a trial transcription catches it in `setup()` |
-| Speech model entirely | Acknowledges and asks the user to repeat |
-| Low speech confidence | Confirms the heard value by name - correct behaviour, not a fallback |
-| Frame embedding model | Searches by text alone |
-| A referenced media file | Treated as unintelligible; asks |
-| Any exception in a handler | Caught at the dispatcher; the fast path still speaks |
+| `run_config.json` | Every `DUET_*`/`FDB_*` setting, the LiveKit target and the scoring ASR. |
+| `summary.json` | Headline metrics. |
+| `duet_evaluation_report.json`, `duet_pass_rate_report.json`, `duet_latency_report.json` | The benchmark's own reports. |
+| `items/*.json` | The benchmark's per-item results: transcripts, tool calls, timings. |
+| `traces/*.jsonl` | Our per-conversation trace: every heard segment, turn decision, talker line, thinker step, tool call with arguments and outcome, token usage, and STT/TTS/end-of-turn timings. |
+| `agent.log`, `runner.log`, `eval_*.log` | Process logs. |
 
----
+## Develop
 
-## Honest limits
+```bash
+python -m duet_voice.agent console          # talk to the agent with your own mic
+python bench/run_live.py --only travel_19   # one benchmark item, official scripts
+python bench/run_live.py --dry-run          # no model, no key: checks listening and plumbing
+python bench/offline_asr.py                 # what the agent's ears hear on all 100 inputs
+python bench/offline_eval.py --judge        # the thinker alone on those transcripts, officially scored
+python -m pytest tests -q
+```
 
-- **Naming what is in a photo.** Qwen2.5-VL-3B named pub_07's HDMI port
-  "USB-C" on 3 of 4 image variants under three prompts, and invented a
-  printed label to match. A wrong reading retrieves the wrong manual page
-  and fails two checkpoints instead of one, so vision-language reading ships
-  **off**; the agent says it cannot tell which port it is, names the candidate
-  pages, and asks. A larger model may clear the bar on a big GPU;
-  `tools/vision_bench.py` is how to find out before trusting it.
-- **CLIP re-ranking** of candidate pages was tried and rejected for the same
-  reason: it never ranked HDMI first (F13).
-- **A self-repair whose trigger word is lost in noise** ("actually" heard as
-  something else) can leave the abandoned value in place (F21). The obvious
-  fix - "last place mentioned wins" - breaks legitimate two-place sentences,
-  so it is documented rather than papered over.
+## Integrity and reproducibility
 
----
+- **No benchmark item is written into the agent.** Prompts and tool schemas are
+  written from general principles. `tests/test_voice_integrity.py` fails if any
+  argument value the benchmark expects appears in any string the agent contains.
+- **Nothing is cached across scenarios.** Each LiveKit room gets a fresh
+  coordinator, toolbox and conversation state. Only model weights are shared.
+- **No calls to our own servers.** The only remote services are the Gemini API and
+  LiveKit.
+- **Pinned:** Python packages, the benchmark commit, the data checksum, the
+  LiveKit server version, model versions, sampling (temperature 0, seed 7) and
+  greedy speech recognition.
+- **Tool schemas.** Names, argument names and the call log format are the
+  benchmark's. Arguments that a real API would treat as optional (for example an
+  apartment budget) are optional here, rather than forcing the model to invent a
+  value. Where the mock backend's Python signature needs such a value anyway, the
+  adapter passes a neutral default, and the logged call keeps exactly what the
+  agent asked for. See `duet_voice/fdb_tools.py`.
+
+## Use-case extension
+
+*In progress: this section will mark the extension, its code and how to run it.*
+Research behind the choice: [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md).
 
 ## Repository map
 
 ```
-agent/agent.py        entry point (ParticipantAgent) - a thin shell over duet/
-duet/                 the engine: runtime, coordinator, state, tools, fast path, NLG, emitter
-duet/perception/      speech, frame embedding, vision; checkpoints and CUDA setup
-duet/planner/rules.py deterministic planner (chaining by satisfiability)
-tests/                373 tests: invariants, contract equivalence, conformance discrimination,
-                      quality lint, packaging (pins, WAV, same-process repetition)
-tests/conformance/    our 23 scenarios
-tools/                chaos (+ our templates), quality lint, timeline, killswitch, bench, clock check,
-                      vision bench, prefetch, conformance generator, deck generator
-notes/                problem analysis, build plan, findings F1-F24, organizer clarifications, video script
-harness/ scenarios/ docs/ run_local.py eval_submission.py   the organizers' kit, unchanged
+duet_voice/        the agent: LiveKit entrypoint, talker, thinker, coordinator, tools, speech models
+bench/             benchmark drivers: live runner, offline evaluators, judge adapter
+tests/             coordinator, speaking-flow and integrity tests
+docs/              architecture, use-case research
+reproduce.sh       one-command reproduction
+legacy/kit_v1/     the previous Theme 05 kit and DUET v1 (research record, not used)
 ```
+
+## References
+
+- G.-T. Lin, C. Chen, Z. Chen, H.-y. Lee. *Full-Duplex-Bench-v3: Benchmarking Tool Use
+  for Full-Duplex Voice Agents Under Real-World Disfluency.* arXiv:2604.04847, 2026.
+  Code and data: <https://github.com/DanielLin94144/Full-Duplex-Bench> (v3).
+- LiveKit Agents: <https://github.com/livekit/agents> · faster-whisper:
+  <https://github.com/SYSTRAN/faster-whisper> · Kokoro-82M:
+  <https://huggingface.co/hexgrad/Kokoro-82M> · Silero VAD:
+  <https://github.com/snakers4/silero-vad> · Gemini API: <https://ai.google.dev>.
