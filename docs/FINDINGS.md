@@ -90,6 +90,11 @@ clock):
    removed, and acts or asks for exactly what is missing. The talker covers a
    slow thinker only after 1.6 s of quiet.
 
+**Recheck** (`results/live/20260927_014233`): the 19 conversations that failed
+(17 silent, 2 never joined) were re-run with fixes 1 and 2. All 19 replied
+(turn-take 100%), with no interruptions and 3.95 s benchmark-measured latency.
+Fix 3 acts only when the thinker runs, so it is measured in the model runs.
+
 ## 4. Correctness fixes found by reading the code
 
 - **A call interrupted mid-flight.** If the user barges in while a tool call is
