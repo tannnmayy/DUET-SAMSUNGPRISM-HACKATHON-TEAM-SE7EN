@@ -1,0 +1,144 @@
+"""Local speech models: faster-whisper for the ears, Kokoro for the voice.
+
+Both load once per worker process and run in a thread, so the event loop that
+carries the conversation never waits on them.
+"""
+
+from __future__ import annotations
+
+import logging
+import math
+import os
+import sys
+import threading
+import time
+from dataclasses import dataclass
+from typing import List, Optional
+
+import numpy as np
+
+from .config import CONFIG
+
+log = logging.getLogger("duet.speech")
+
+_lock = threading.Lock()
+_whisper = None
+_kokoro = None
+
+
+def _cuda_dll_paths() -> None:
+    """On Windows, CTranslate2 finds cuBLAS/cuDNN only if their folders are on
+    the DLL search path. torch ships them; the nvidia-* wheels do too."""
+    if os.name != "nt":
+        return
+    try:
+        import torch  # noqa: F401
+        os.add_dll_directory(os.path.join(os.path.dirname(sys.modules["torch"].__file__), "lib"))
+    except Exception:
+        pass
+    for base in sys.path:
+        nv = os.path.join(base, "nvidia")
+        if os.path.isdir(nv):
+            for sub in os.listdir(nv):
+                b = os.path.join(nv, sub, "bin")
+                if os.path.isdir(b):
+                    try:
+                        os.add_dll_directory(b)
+                    except OSError:
+                        pass
+
+
+def _pick_device() -> str:
+    if CONFIG.asr_device != "auto":
+        return CONFIG.asr_device
+    try:
+        import ctranslate2
+        return "cuda" if ctranslate2.get_cuda_device_count() > 0 else "cpu"
+    except Exception:
+        return "cpu"
+
+
+def whisper():
+    global _whisper
+    with _lock:
+        if _whisper is None:
+            _cuda_dll_paths()
+            from faster_whisper import WhisperModel
+            device = _pick_device()
+            model = CONFIG.asr_model if device == "cuda" else os.environ.get("DUET_ASR_CPU_MODEL", "small.en")
+            t = time.time()
+            _whisper = WhisperModel(model, device=device,
+                                    compute_type="float16" if device == "cuda" else "int8")
+            # one short warm-up so the first real turn is not slow
+            _whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)
+            log.info("whisper %s on %s ready in %.1f s", model, device, time.time() - t)
+    return _whisper
+
+
+def kokoro():
+    global _kokoro
+    with _lock:
+        if _kokoro is None:
+            from kokoro import KPipeline
+            t = time.time()
+            _kokoro = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
+            list(_kokoro("Ready.", voice=CONFIG.tts_voice))  # warm-up
+            log.info("kokoro ready in %.1f s", time.time() - t)
+    return _kokoro
+
+
+# The agent's own vocabulary: tool domains, not benchmark items. Whisper
+# spells domain words better when it has seen them in the prompt.
+ASR_PROMPT = ("Flight search and booking, passport and driver's license numbers, card "
+              "benefits, currency exchange, autopay, apartments, commute, search filters, "
+              "order tracking, product search, shopping cart.")
+
+
+@dataclass
+class Transcript:
+    text: str
+    confidence: float
+    no_speech_prob: float
+    dropped: bool
+
+
+def transcribe(pcm16k: np.ndarray) -> Transcript:
+    """One VAD segment in, one cleaned transcript out.
+
+    Segments the model itself believes are not speech (high no-speech
+    probability together with low log-probability) are dropped: in FDB-v3 the
+    30 s of room noise after every request is exactly where Whisper invents
+    sentences, and an invented sentence can trigger an extra tool call."""
+    model = whisper()
+    segments, _ = model.transcribe(
+        pcm16k, language="en", beam_size=5, vad_filter=False,
+        condition_on_previous_text=False, initial_prompt=ASR_PROMPT,
+        temperature=[0.0, 0.2, 0.4],
+    )
+    kept: List[str] = []
+    logprobs: List[float] = []
+    worst_no_speech = 0.0
+    dropped_any = False
+    for seg in segments:
+        text = seg.text.strip()
+        if not text:
+            continue
+        if (seg.no_speech_prob > CONFIG.asr_max_no_speech_prob
+                and seg.avg_logprob < CONFIG.asr_min_avg_logprob + 0.5) \
+                or seg.avg_logprob < CONFIG.asr_min_avg_logprob - 0.5 \
+                or seg.compression_ratio > 2.6:
+            dropped_any = True
+            continue
+        kept.append(text)
+        logprobs.append(seg.avg_logprob)
+        worst_no_speech = max(worst_no_speech, seg.no_speech_prob)
+    text = " ".join(kept).strip()
+    confidence = math.exp(sum(logprobs) / len(logprobs)) if logprobs else 0.0
+    return Transcript(text, confidence, worst_no_speech, dropped_any and not text)
+
+
+def synthesize(text: str) -> np.ndarray:
+    """Text to 24 kHz float32 audio."""
+    pipe = kokoro()
+    parts = [np.asarray(audio, dtype=np.float32) for _, _, audio in pipe(text, voice=CONFIG.tts_voice)]
+    return np.concatenate(parts) if parts else np.zeros(0, dtype=np.float32)
