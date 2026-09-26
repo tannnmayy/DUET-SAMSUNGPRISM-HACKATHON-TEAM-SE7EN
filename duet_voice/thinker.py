@@ -34,15 +34,7 @@ from .prompts import THINKER_INSTRUCTIONS
 
 log = logging.getLogger("duet.thinker")
 
-_client = None
-
-
-def client():
-    global _client
-    if _client is None:
-        from google import genai
-        _client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY"))
-    return _client
+from .gemini import client  # one client per process, API key or Vertex AI
 
 
 def encode_audio(pcm16k) -> Tuple[bytes, str]:
