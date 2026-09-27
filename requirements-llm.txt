@@ -1,0 +1,12 @@
+# The local model server: vLLM serving Qwen3-30B-A3B-Instruct-2507 on the same GPU
+# (Linux x86_64 with an NVIDIA GPU only). Its own environment, because vLLM pins
+# its own torch and transformers.
+#
+# vLLM 0.19.1 is the newest release built on torch 2.10 (CUDA 12.8). Every later
+# release is built on torch 2.11+, whose PyPI wheels need CUDA 13 (driver 580+),
+# which a CUDA 12.x machine cannot run. The guide allows either, so 12.8 it is.
+vllm==0.19.1
+huggingface_hub[hf_transfer]
+# the transformers release current when vLLM 0.19.1 shipped (18 Apr 2026), which its
+# own pin (>=5.5.1) was tested with; later releases are allowed by that pin but untested
+transformers==5.5.4

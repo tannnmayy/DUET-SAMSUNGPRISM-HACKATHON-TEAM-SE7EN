@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What a run cost in Gemini API calls, from the agent's own traces.
+"""What a run cost in API calls, from the agent's own traces (the local model: $0).
 
     python bench/cost_report.py results/live/<run>
 
@@ -54,9 +54,11 @@ def tokens_by_model(run_dir: Path) -> Dict[str, Dict[str, int]]:
 
 
 def dollars(model: str, t: Dict[str, int]) -> float:
-    p = PRICES.get(model.split(" ")[0])
+    name = model.split(" ")[0]
+    p = PRICES.get(name)
     if p is None:
-        return float("nan")
+        # an open-weights model on our own GPU: no API bill (only GPU time)
+        return 0.0 if not name.startswith("gemini") else float("nan")
     text_in = max(0, t["input"] - t["input_audio"])
     return (text_in * p["input"] + t["input_audio"] * p["input_audio"]
             + (t["output"] + t["thinking"]) * p["output"]) / 1e6

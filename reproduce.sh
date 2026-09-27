@@ -1,112 +1,107 @@
 #!/usr/bin/env bash
-# One command: install, fetch FDB-v3 and its data, run the DUET agent through the
-# benchmark's own pipeline, evaluate, and print the scores.
+# DUET on Full-Duplex-Bench v3 in one command: install, fetch the benchmark and its
+# data, start the local model server, run the agent through the benchmark's own
+# pipeline, evaluate, and print the scores.
 #
-#   export GOOGLE_API_KEY=...          # required: Gemini (thinker and talker)
-#   export OPENAI_API_KEY=...          # optional: the official gpt-4o judge
-#   export LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...   # optional
-#   bash reproduce.sh                  # all 100 items (~2 h: the audio is streamed in real time)
-#   bash reproduce.sh --only travel_19,housing_04   # a quick subset
-#   FDB_DATA_DIR=/path/to/fdb_v3_data_released bash reproduce.sh   # reuse data you already have
+#   bash reproduce.sh                                 # all 100 items (~2 h: the audio streams in real time)
+#   bash reproduce.sh --only travel_19,housing_04     # a quick subset
+#   bash reproduce.sh --dry-run                       # no language model: listening and plumbing only
 #
-# Target machine: Linux x86_64, one NVIDIA GPU (48 GB is far more than needed;
-# about 4 GB is used), CUDA 12 or 13 driver, ffmpeg, git, curl, unzip. Python
-# 3.10-3.12 (3.11 preferred); if there is none, a pinned uv supplies Python 3.11.
-# Both environments install from lock files (requirements*.lock): every package
-# at the exact version of our reported runs.
-# Without LIVEKIT_URL a local LiveKit server (v1.13.7, checksum-verified) is
-# downloaded and run in dev mode, so no LiveKit account is needed.
-# Everything is written under this folder; results land in results/live/<time>/.
+# No API key is needed. The language model, Qwen3-30B-A3B-Instruct-2507 (open weights,
+# Apache-2.0), runs on the same GPU through vLLM. Optional settings:
+#   OPENAI_API_KEY                                  the official gpt-4o judge (otherwise a labelled
+#                                                   proxy judge: the same local model)
+#   LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET  LiveKit Cloud instead of a local LiveKit server
+#   FDB_DATA_DIR                                    the benchmark audio, if you already have it extracted
+#   CUDA_VISIBLE_DEVICES                            which GPU (default: the one with the most free memory)
+#   DUET_LLM_BACKEND=gemini and GOOGLE_API_KEY       the Gemini API instead of the local model
+#
+# Needs: Linux x86_64; one NVIDIA GPU with 48 GB (the model server takes 33 GiB, the
+# speech models and the benchmark's scoring recognizer most of the rest); an NVIDIA
+# driver for CUDA 12.x or 13.x; git, curl and internet access; about 90 GB of disk.
+# No sudo: Python 3.11 (through a pinned uv), ffmpeg and the LiveKit server are
+# fetched into third_party/, and every Python package is installed at the exact
+# version of our runs (requirements*.lock). Results land in results/live/<time>/.
 set -euo pipefail
 cd "$(dirname "$0")"
 ROOT="$(pwd)"
+source scripts/env.sh
 
 FDB_REPO="https://github.com/DanielLin94144/Full-Duplex-Bench.git"
 FDB_COMMIT="3e799c45a045256f47d5f1c9cda90157e2d2ec9e"
 DATA_URL="https://drive.usercontent.google.com/download?id=1SO_4MTazWQ_jvCx0dtmpQ-t40bdd07yz&export=download&confirm=t"
 DATA_SHA256="37545bd896f81718136598cf5be25d42ea9aa22efcd91f58370938d05d7d672f"
 LK_VERSION="1.13.7"
-PY="${PYTHON:-python3}"
+UV_VERSION="0.12.19"
+PYVER="${DUET_PYTHON_VERSION:-3.11}"
+BACKEND="${DUET_LLM_BACKEND:-local}"
+DRY_RUN=0
+for a in "$@"; do [ "$a" = "--dry-run" ] && DRY_RUN=1; done
 
 say() { printf '\n== %s\n' "$*"; }
 need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 
-need git "apt install git"; need curl "apt install curl"; need unzip "apt install unzip"
-need ffmpeg "apt install ffmpeg"; need sha256sum "apt install coreutils"
-: "${GOOGLE_API_KEY:?Set GOOGLE_API_KEY (Gemini API key): the DUET thinker and talker run on Gemini}"
+# --- 0. what this machine has ---------------------------------------------------------------
+need git "install git"; need curl "install curl"; need tar "install tar"; need sha256sum "install coreutils"
+if [ "$BACKEND" = "gemini" ]; then
+  : "${GOOGLE_API_KEY:?DUET_LLM_BACKEND=gemini needs GOOGLE_API_KEY}"
+fi
 if [ -n "${LIVEKIT_URL:-}" ] && { [ -z "${LIVEKIT_API_KEY:-}" ] || [ -z "${LIVEKIT_API_SECRET:-}" ]; }; then
   echo "LIVEKIT_URL is set, so LIVEKIT_API_KEY and LIVEKIT_API_SECRET are needed too"; exit 1
 fi
 if command -v nvidia-smi >/dev/null; then
-  echo "GPU: $(nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader | head -1)"
-else
-  echo "No NVIDIA GPU visible: the speech models will run on the CPU (slower replies)"
+  echo "GPU ${CUDA_VISIBLE_DEVICES:-0}: $(nvidia-smi -i "${CUDA_VISIBLE_DEVICES:-0}" \
+        --query-gpu=name,driver_version,memory.total,memory.free --format=csv,noheader)"
+elif [ "$BACKEND" = "local" ] && [ "$DRY_RUN" = 0 ]; then
+  echo "No NVIDIA GPU visible (nvidia-smi not found): the local model needs one."; exit 1
 fi
 
-# --- 1. environments -----------------------------------------------------------------
-# A Python in 3.10-3.12, preferring 3.11 (the version of our reported runs). If the
-# machine has none, or lacks the venv module (stock Ubuntu without python3-venv),
-# uv (pinned) creates the environments and, if needed, supplies Python 3.11.
-UV_VERSION="0.12.19"
-UV=""
-py_ok() { "$1" -c 'import sys; sys.exit(not ((3, 10) <= sys.version_info[:2] <= (3, 12)))' 2>/dev/null; }
-if [ -n "${PYTHON:-}" ]; then
-  py_ok "$PY" || { echo "PYTHON=$PY is not Python 3.10-3.12"; exit 1; }
-else
-  PY=""
-  for c in python3.11 python3.12 python3.10 python3; do
-    if command -v "$c" >/dev/null && py_ok "$c"; then PY="$c"; break; fi
-  done
+# --- 1. uv (pinned) and three Python environments ----------------------------------------------
+# uv supplies its own Python 3.11, which carries the C headers that vLLM's kernel
+# compiler (Triton) needs: no system Python, python3-venv or python3-dev required.
+if ! command -v uv >/dev/null; then
+  say "uv $UV_VERSION"
+  mkdir -p third_party/uv
+  curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" \
+    | env UV_INSTALL_DIR="$ROOT/third_party/uv" UV_NO_MODIFY_PATH=1 sh >/dev/null
+  export PATH="$ROOT/third_party/uv:$PATH"
 fi
-ensure_uv() {
-  [ -n "$UV" ] && return 0
-  if [ ! -x third_party/uv/uv ]; then
-    say "uv $UV_VERSION (to create the Python environments)"
-    mkdir -p third_party/uv
-    curl -LsSf "https://astral.sh/uv/$UV_VERSION/install.sh" \
-      | env UV_INSTALL_DIR="$ROOT/third_party/uv" UV_NO_MODIFY_PATH=1 sh >/dev/null
-  fi
-  UV="$ROOT/third_party/uv/uv"
+make_env() {  # $1: folder, $2: lock file. A marker file records a finished install,
+  local dir="$1" lock="$2"  # so an interrupted one is completed on the next run.
+  [ -f "$dir/.duet-installed" ] && return 0
+  say "Python environment $dir (from $lock)"
+  [ -x "$dir/bin/python" ] || uv venv -q --seed --managed-python --python "$PYVER" "$dir"
+  uv pip install -q --python "$dir/bin/python" -r "$lock"
+  touch "$dir/.duet-installed"
 }
-make_venv() {  # $1: folder. Plain venv when it works; otherwise uv (with pip seeded in).
-  if [ -n "$PY" ] && "$PY" -m venv "$1" 2>/dev/null && [ -x "$1/bin/pip" ]; then return 0; fi
-  rm -rf "$1"; ensure_uv
-  "$UV" venv -q --seed --python "${PY:-3.11}" "$1"
-}
-# Two venvs: the agent's, and the benchmark runner's (NVIDIA NeMo for the scoring
-# ASR has heavy pins of its own and must not constrain the agent). Each installs
-# from its lock file: every package, direct and transitive, at the version we ran.
-# A marker file records a finished install, so an install that was interrupted
-# is completed on the next run instead of being taken as done.
-if [ ! -f .venv/.duet-installed ]; then
-  say "agent environment"
-  [ -x .venv/bin/python ] || make_venv .venv
-  .venv/bin/python -m pip install -q -U "pip==26.1.2"
-  .venv/bin/python -m pip install -q -r requirements.lock
-  touch .venv/.duet-installed
+make_env .venv requirements.lock                  # the agent
+make_env .venv-bench requirements-bench.lock      # the benchmark's runner and scoring recognizer (NeMo)
+if [ "$BACKEND" = "local" ]; then
+  make_env .venv-llm requirements-llm.lock        # the model server (vLLM)
 fi
-if [ ! -f .venv-bench/.duet-installed ]; then
-  say "benchmark runner environment"
-  [ -x .venv-bench/bin/python ] || make_venv .venv-bench
-  .venv-bench/bin/python -m pip install -q -U "pip==26.1.2"
-  .venv-bench/bin/python -m pip install -q -r requirements-bench.lock
-  touch .venv-bench/.duet-installed
-fi
-echo "agent Python: $(.venv/bin/python -V)   runner Python: $(.venv-bench/bin/python -V)"
 
-# --- 2. the benchmark, pinned ------------------------------------------------------------
+# --- 2. ffmpeg (the benchmark's runner needs it) --------------------------------------------------
+if ! command -v ffmpeg >/dev/null; then
+  say "ffmpeg (static build, into third_party/)"
+  base="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
+  name="ffmpeg-master-latest-linux64-gpl.tar.xz"
+  mkdir -p third_party/downloads third_party/ffmpeg
+  curl -sSL -o "third_party/downloads/$name" "$base/$name"
+  (cd third_party/downloads && curl -sSL "$base/checksums.sha256" | grep " $name\$" | sha256sum -c -)
+  tar -xJf "third_party/downloads/$name" -C third_party/downloads
+  cp third_party/downloads/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg \
+     third_party/downloads/ffmpeg-master-latest-linux64-gpl/bin/ffprobe third_party/ffmpeg/
+  export PATH="$ROOT/third_party/ffmpeg:$PATH"
+fi
+
+# --- 3. the benchmark, pinned, and its audio (Google Drive link from the v3 README) --------------
 if [ ! -d third_party/Full-Duplex-Bench/.git ]; then
   say "Full-Duplex-Bench @ ${FDB_COMMIT:0:7}"
   git clone -q "$FDB_REPO" third_party/Full-Duplex-Bench
 fi
 git -C third_party/Full-Duplex-Bench checkout -q "$FDB_COMMIT"
-export FDB_V3_DIR="$ROOT/third_party/Full-Duplex-Bench/v3"
-export FDB_DATA_DIR="${FDB_DATA_DIR:-$FDB_V3_DIR/fdb_v3_data_released}"
-
-# --- 3. the benchmark audio (Google Drive link from the v3 README), verified -------------
 # Google Drive sometimes refuses a busy file for a while, so the download is retried;
-# a zip placed at the path below by hand (or FDB_DATA_DIR set to an extracted copy)
-# is used as it is.
+# a zip placed at $ZIP by hand (or FDB_DATA_DIR pointing at an extracted copy) is used as is.
 ZIP="third_party/downloads/fdb_v3_data_released.zip"
 if [ ! -d "$FDB_DATA_DIR" ]; then
   say "benchmark data (736 MB)"
@@ -118,31 +113,41 @@ if [ ! -d "$FDB_DATA_DIR" ]; then
     echo "download attempt $attempt did not match the checksum; retrying in 30 s"; sleep 30
   done
   if ! echo "$DATA_SHA256  $ZIP" | sha256sum -c --status -; then
-    echo "Could not download the benchmark data. Download it from the Google Drive link in"
-    echo "the FDB-v3 README to $ROOT/$ZIP (or set FDB_DATA_DIR to an extracted copy) and run again."
+    echo "Could not download the benchmark data. Download it from the Google Drive link in the"
+    echo "FDB-v3 README to $ROOT/$ZIP (or set FDB_DATA_DIR to an extracted copy) and run again."
     exit 1
   fi
-  (cd "$FDB_V3_DIR" && unzip -q -o "$ROOT/$ZIP" -x "__MACOSX/*")
+  "$PY_AGENT" -c 'import sys, zipfile
+z = zipfile.ZipFile(sys.argv[1])
+z.extractall(sys.argv[2], [n for n in z.namelist() if not n.startswith("__MACOSX")])' "$ROOT/$ZIP" "$FDB_V3_DIR"
 fi
-echo "benchmark data: $FDB_DATA_DIR ($(ls -d "$FDB_DATA_DIR"/*/ | wc -l) recordings)"
+echo "benchmark data: $FDB_DATA_DIR ($(find "$FDB_DATA_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l) recordings)"
 
-# --- 4. LiveKit: your Cloud project, or a local dev server --------------------------------
-if [ -z "${LIVEKIT_URL:-}" ] && ! command -v livekit-server >/dev/null; then
+# --- 4. LiveKit: your Cloud project, or a local server (checksum-verified) ------------------------
+if [ -z "${LIVEKIT_URL:-}" ] && [ -z "${LIVEKIT_SERVER_BIN:-}" ] && ! command -v livekit-server >/dev/null; then
   say "local LiveKit server v$LK_VERSION"
-  mkdir -p third_party/livekit && cd third_party/livekit
+  mkdir -p third_party/livekit
   base="https://github.com/livekit/livekit/releases/download/v$LK_VERSION"
-  curl -sSL -o lk.tgz "$base/livekit_${LK_VERSION}_linux_amd64.tar.gz"
-  curl -sSL -o checksums.txt "$base/checksums.txt"
-  grep "linux_amd64.tar.gz" checksums.txt | sed "s#livekit_${LK_VERSION}_linux_amd64.tar.gz#lk.tgz#" | sha256sum -c -
-  tar -xzf lk.tgz livekit-server
-  cd "$ROOT"
+  (cd third_party/livekit \
+    && curl -sSL -o lk.tgz "$base/livekit_${LK_VERSION}_linux_amd64.tar.gz" \
+    && curl -sSL -o checksums.txt "$base/checksums.txt" \
+    && grep "linux_amd64.tar.gz" checksums.txt | sed "s#livekit_${LK_VERSION}_linux_amd64.tar.gz#lk.tgz#" \
+       | sha256sum -c - \
+    && tar -xzf lk.tgz livekit-server)
   export LIVEKIT_SERVER_BIN="$ROOT/third_party/livekit/livekit-server"
 fi
 
-# --- 5. models (downloads are not part of the timed run) -----------------------------------
-say "prefetching models"
-.venv/bin/python -m duet_voice.prefetch
+# --- 5. every model, downloaded before the timed run -------------------------------------------------
+say "speech models"
+"$PY_AGENT" -m duet_voice.prefetch
+if [ "$BACKEND" = "local" ] && [ "$DRY_RUN" = 0 ]; then
+  say "language model weights"
+  "$PY_LLM" bench/llm_server.py prefetch
+fi
+say "the benchmark's scoring recognizer (Parakeet)"
+"$PY_BENCH" -c "import nemo.collections.asr as a; a.models.ASRModel.from_pretrained('nvidia/parakeet-tdt-0.6b-v2')" \
+  >/dev/null 2>&1 || echo "WARNING: could not pre-load Parakeet; the runner will try again"
 
-# --- 6. run and evaluate ----------------------------------------------------------------------
+# --- 6. run and evaluate ------------------------------------------------------------------------------
 say "running FDB-v3 against the DUET agent"
-.venv/bin/python bench/run_live.py --bench-python "$ROOT/.venv-bench/bin/python" "$@"
+"$PY_AGENT" bench/run_live.py --bench-python "$PY_BENCH" --llm-python "$PY_LLM" "$@"

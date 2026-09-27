@@ -103,7 +103,7 @@ _notes: list = []
 
 def probe(model: str) -> tuple:
     """One tiny request. Returns (verdict, detail): ok | unavailable | rate_limited
-    | free_tier | bad_key | error."""
+    | free_tier | no_credit | bad_key | error."""
     from google.genai import types
     try:
         client().models.generate_content(model=model, contents="Reply with the word ok.",
@@ -113,6 +113,8 @@ def probe(model: str) -> tuple:
         text = str(exc)
         if "free_tier" in text:
             return "free_tier", text[:300]
+        if "prepayment credits" in text or "402" in text[:12]:
+            return "no_credit", text[:300]
         if "RESOURCE_EXHAUSTED" in text or " 429" in text[:12]:
             return "rate_limited", text[:300]
         if "NOT_FOUND" in text or "no longer available" in text or "not found" in text.lower():
@@ -139,6 +141,9 @@ def resolve(role: str, preferred: str) -> str:
                           "20/day per model, not enough for a benchmark run)" % (role, model, verdict))
         elif verdict == "bad_key":
             _notes.append("%s %s: the API key was refused (%s)" % (role, model, detail[:120]))
+        elif verdict == "no_credit":
+            _notes.append("%s %s: the key's prepaid credit is used up; add credits in AI Studio "
+                          "(Billing, Buy credits) before running" % (role, model))
         elif verdict == "error":
             _notes.append("%s %s: probe failed (%s); keeping it" % (role, model, detail[:120]))
         chosen = model
@@ -163,7 +168,7 @@ def main() -> int:
     out = {"thinker": resolve("thinker", CONFIG.thinker_model),
            "talker": resolve("talker", CONFIG.talker_model), "notes": _notes}
     print(json.dumps(out))
-    return 1 if any("refused" in n for n in _notes) else 0
+    return 1 if any("refused" in n or "prepaid credit" in n for n in _notes) else 0
 
 
 if __name__ == "__main__":

@@ -300,7 +300,54 @@ whatever could be measured.
 | The integrity test skipped itself when run alone | The "no hardcoding" proof silently not run | It loads the settings itself |
 | Markdown or snake_case in an answer | Symbols read aloud | Stripped before speech; underscores spoken as spaces |
 
-## 9. Gaps in today's systems that DUET is built against
+## 9. Moving the language model onto the GPU (27 Sep 2026)
+
+**Why.** Every hosted route stalled:
+- The Gemini free tier allows 20 requests per model per day, against about 350
+  for one run.
+- The billing-enabled key turned out to be a prepaid account with no balance
+  (HTTP 402).
+- The OpenAI account had no credits.
+
+A local open-weights model removes the dependency entirely. Samsung's re-run then
+needs no key, no quota, and no hosted model that could be withdrawn, and every
+run costs nothing.
+
+**The model.** Qwen3-30B-A3B-Instruct-2507, Apache-2.0: a mixture-of-experts model
+with 30.5B parameters, about 3.3B of them active per token, so it decodes fast.
+It is a non-thinking instruct model with native tool calling.
+
+**Making it fit a single 48 GB GPU** (about 45 GiB usable), next to the speech
+models (~3.5 GiB) and the benchmark's scoring recognizer (~4-5 GiB):
+
+| Choice | Evidence |
+|---|---|
+| Qwen's official FP8 build | 31.2 GB, against 61.1 GB in full precision. Architecture: 48 layers, 4 KV heads of 128, so 96 KiB of KV cache per token |
+| A fixed 33 GiB budget for vLLM | 29.1 GiB of weights, plus working memory, plus ~22k tokens of cache. It is a GiB budget, not a fraction, so an 80 GB GPU measures the same footprint |
+| Red Hat's 4-bit build on GPUs older than Ada | The FP8 build uses block-wise FP8 kernels (Ada or later). The 4-bit build is 16.7 GB in a 22 GiB budget, chosen automatically from the GPU's compute capability |
+| **vLLM 0.19.1** | The newest vLLM on torch 2.10. Every later release pins torch 2.11+, whose PyPI wheels are CUDA 13 builds (driver 580+), which a CUDA 12.x machine cannot run, and the guide allows 12.x |
+| transformers 5.5.4 in the server's environment | The release current when vLLM 0.19.1 shipped. vLLM's own pin allows later releases, but they are untested with it |
+| Port 18000; LiveKit on free ports; caches inside the repository | Shared GPU machines: port 8000 is the usual vLLM port, 7880 may be another user's LiveKit, home directories are small |
+| uv's own Python 3.11 for all three environments | vLLM's Triton kernels compile helpers against Python's C headers, often missing from system Pythons (python3-dev) |
+
+**Verified without a large GPU.**
+- 12 new tests cover the thinker's loop over the OpenAI-compatible API: tool calls
+  and results, `keep_listening`, a tool call the parser left in the text,
+  arguments that are not JSON, an empty reply, and an overtaken plan. They also
+  cover the local talker and the launcher's GPU plan (FP8 on a 48 GB L40S, the
+  same 33 GiB on an 80 GB H100, 4-bit on an A6000, refusal on a 6 GB GPU).
+- A stand-in server speaking vLLM's exact protocol (`tests/fake_openai.py`) drove
+  the full live pipeline on this laptop:
+  - the preflight passed, tool calling included;
+  - two conversations were answered;
+  - `keep_listening` was used twice;
+  - three tool calls reached the benchmark's log;
+  - the official evaluation scripts scored the run, using the local proxy judge.
+
+Still to measure on the DGX: the real model's accuracy, latency and peak GPU
+memory.
+
+## 10. Gaps in today's systems that DUET is built against
 
 - **FDB-v3 paper.**
   - The best published system, GPT-Realtime, passes fewer than 59% of

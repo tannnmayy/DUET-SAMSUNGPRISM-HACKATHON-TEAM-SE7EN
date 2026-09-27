@@ -87,6 +87,15 @@ KEEP_LISTENING_DESCRIPTION = (
     "request that can be carried out as it stands.")
 
 
+def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None):
+    """The thinker for the configured backend: the local model (default) or Gemini.
+    Both have the same interface and yield the same events."""
+    if CONFIG.llm_backend == "local":
+        from .llm_local import LocalThinker
+        return LocalThinker(model=model, thinking=thinking)
+    return Thinker(model=model, thinking=thinking)
+
+
 # The second look, once a user the thinker was waiting for has gone quiet.
 RESPOND_NOW_NOTE = ("The user has stopped talking. Respond now: act if the request can be "
                     "carried out, otherwise ask briefly for exactly what is missing.")

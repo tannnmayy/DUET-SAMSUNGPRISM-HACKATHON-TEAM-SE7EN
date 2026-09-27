@@ -50,7 +50,7 @@ from .coordinator import Coordinator, Superseded  # noqa: E402
 from .fdb_tools import FdbToolbox  # noqa: E402
 from .plugins import KokoroTTS, WhisperSTT  # noqa: E402
 from .prompts import THINKER_INSTRUCTIONS  # noqa: E402
-from .thinker import RESPOND_NOW_NOTE, Thinker, encode_audio  # noqa: E402
+from .thinker import RESPOND_NOW_NOTE, encode_audio, make_thinker  # noqa: E402
 
 log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
@@ -146,7 +146,7 @@ class DuetAgent(Agent):
         self._trace = trace
         self._coord = coord
         self._toolbox = toolbox
-        self._thinker = Thinker()
+        self._thinker = make_thinker()
         self._tape = AudioTape()
         self._utterance_started: Optional[float] = None
         # User messages already answered. It advances only when a reply that
@@ -345,15 +345,24 @@ class DuetAgent(Agent):
             if not ack_task.done():
                 ack_task.cancel()
             if ack_usage:  # the talker is billed whether or not its line was spoken
-                from .gemini import resolved
-                self._trace("talker_usage", usage=dict(ack_usage), model=resolved("talker", CONFIG.talker_model))
+                self._trace("talker_usage", usage=dict(ack_usage), model=talker_model())
+
+
+def talker_model() -> str:
+    """The model actually answering as the talker (after any Gemini fallback)."""
+    if CONFIG.llm_backend == "local":
+        return CONFIG.talker_model
+    from .gemini import resolved
+    return resolved("talker", CONFIG.talker_model)
 
 
 # --- worker ------------------------------------------------------------------------------
 
 def prewarm(proc: JobProcess) -> None:
     proc.userdata["vad"] = build_vad()
-    if not DRY_RUN:
+    if not DRY_RUN and CONFIG.llm_backend == "local":
+        log.info("language model: %s on the local server %s", CONFIG.llm_model, CONFIG.llm_base_url)
+    elif not DRY_RUN:
         # the models this key can actually use (a declared model may have been
         # withdrawn from new keys); one tiny request each, once per process
         from . import gemini
@@ -452,10 +461,9 @@ async def entrypoint(ctx: JobContext) -> None:
             trace("agent_said", text=item.text_content)
             agent.reply_delivered()
 
-    from .gemini import resolved
-    trace("session_start", room=room, dry_run=DRY_RUN, thinker=agent._thinker.model, thinking=CONFIG.thinker_thinking,
-          talker=resolved("talker", CONFIG.talker_model), asr=CONFIG.asr_model, tts=CONFIG.tts_backend,
-          thinker_audio=THINKER_AUDIO)
+    trace("session_start", room=room, dry_run=DRY_RUN, backend=CONFIG.llm_backend, thinker=agent._thinker.model,
+          thinking=agent._thinker.thinking, talker=talker_model(), asr=CONFIG.asr_model, tts=CONFIG.tts_backend,
+          thinker_audio=THINKER_AUDIO and CONFIG.llm_backend != "local")
     await session.start(room=ctx.room, agent=agent)
 
 

@@ -4,9 +4,9 @@
     python bench/official_eval.py evaluate_pass_rate.py --provider duet ... --use-llm
 
 With a usable OPENAI_API_KEY this is exactly the official command (gpt-4o judge).
-Otherwise the scripts' OpenAI client is redirected to a Gemini model through
-Gemini's OpenAI-compatible endpoint (see bench/judge.py), and the run folder's
-run_config records that the judge was a proxy.
+Otherwise the scripts' OpenAI client is redirected to a proxy judge: the local
+model server, or Gemini's OpenAI-compatible endpoint (see bench/judge.py), and
+every report says so.
 """
 
 from __future__ import annotations
@@ -36,8 +36,8 @@ def main() -> int:
         # declines: first-response and tool-call latencies are still computed,
         # and only the judge-dependent task-completion latency is left empty.
         if used:
-            module.OpenAI = lambda *a, **k: judge.GeminiJudge(used)
-        elif not judge.openai_usable():
+            module.OpenAI = lambda *a, **k: judge.proxy_client()
+        elif judge.choice() == "none":
             module.OpenAI = lambda *a, **k: judge.NoJudge()
     module.main()
     return 0

@@ -1,5 +1,9 @@
 # Testing the reproduction on a clean machine
 
+> For a remote GPU machine you reach over SSH (such as a DGX), follow
+> [DGX_RUNBOOK.md](../DGX_RUNBOOK.md): it covers the same test, step by step. No API key is needed any
+> more; the commands below that set keys apply only to the Gemini alternative.
+
 The guide: *"Only our re-run counts … test the script on a clean machine before
 submitting."* This is the procedure, on a Google Cloud GPU VM that has never
 seen the project. It takes about 30 minutes plus the benchmark's run time. The
@@ -7,18 +11,19 @@ VM costs roughly US$1 per hour; delete it afterwards.
 
 ## 1. Create the VM (Google Cloud)
 
-Any NVIDIA GPU works; DUET uses about 4 GB. An L4 (24 GB) is the cheapest good
-fit. Use a Deep Learning VM image, which comes with the NVIDIA driver. List the
-current CUDA 12 image families, then pick an Ubuntu 22.04 one. Ubuntu 22.04
-ships Python 3.10, the hardest case for our pins.
+DUET needs one GPU with about 44 GiB free: the language model takes a fixed
+33 GiB, the speech models and the scoring recognizer the rest. An L4 (24 GB) is
+too small; use an A100 80 GB (`a2-ultragpu-1g`) or an H100 (`a3-highgpu-1g`).
+Use a Deep Learning VM image, which comes with the NVIDIA driver: list the current
+CUDA 12 image families, then pick an Ubuntu 22.04 one.
 
 ```bash
 gcloud compute images list --project deeplearning-platform-release \
   --filter="family~cu12 AND family~ubuntu-2204" --format="value(family)" | sort -u
 
 gcloud compute instances create duet-repro \
-  --zone=us-central1-a --machine-type=g2-standard-8 \
-  --accelerator=type=nvidia-l4,count=1 --maintenance-policy=TERMINATE \
+  --zone=us-central1-a --machine-type=a2-ultragpu-1g \
+  --accelerator=type=nvidia-a100-80gb,count=1 --maintenance-policy=TERMINATE \
   --image-project=deeplearning-platform-release --image-family=<family from the list> \
   --boot-disk-size=200GB --metadata=install-nvidia-driver=True
 
@@ -31,7 +36,6 @@ gcloud compute ssh duet-repro --zone=us-central1-a
 nvidia-smi                                   # driver and CUDA version (12.x or 13.x)
 sudo apt-get update && sudo apt-get install -y ffmpeg unzip git curl
 git clone <repository URL> duet && cd duet   # or copy the submission folder
-export GOOGLE_API_KEY=...                    # never commit it
 export OPENAI_API_KEY=...                    # optional: the official gpt-4o judge
 bash reproduce.sh --only travel_19,ecommerce_01_65e8cf8f4c7424fa062e54a3,housing_04
 ```
