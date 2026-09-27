@@ -217,6 +217,10 @@ class FdbToolbox:
         """Run one tool call through the coordinator. `epoch`: the epoch the plan
         calling it was made in, so a plan that the user's words have overtaken
         never acts."""
+        if tool not in SPEC_BY_NAME:
+            log.warning("model called an unknown tool: %s", tool)
+            return json.dumps({"status": "error", "error": "unknown tool '%s'" % tool,
+                               "instruction": "use only the tools you were given"})
         args = coerce(tool, raw_args)
         backend_args = {**BACKEND_DEFAULTS.get(tool, {}), **args}
         registry = _load_registry()

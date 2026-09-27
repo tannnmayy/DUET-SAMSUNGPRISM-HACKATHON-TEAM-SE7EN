@@ -66,7 +66,7 @@ def read_wav(path: Path) -> Tuple[np.ndarray, int]:
 
 
 def resample(x: np.ndarray, sr: int, target: int = 16000) -> np.ndarray:
-    if sr == target:
-        return x.astype(np.float32)
-    n = int(round(len(x) * target / sr))
-    return np.interp(np.linspace(0, len(x) - 1, n), np.arange(len(x)), x).astype(np.float32)
+    """The agent's own band-limited resampler, so offline hearing matches live."""
+    assert target == 16000
+    from duet_voice.speech_models import to_16k
+    return to_16k(x, sr)

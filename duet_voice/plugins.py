@@ -21,11 +21,7 @@ def _to_16k_mono(buffer: utils.AudioBuffer) -> np.ndarray:
     pcm = np.frombuffer(frame.data, dtype=np.int16).astype(np.float32) / 32768.0
     if frame.num_channels > 1:
         pcm = pcm.reshape(-1, frame.num_channels).mean(axis=1)
-    if frame.sample_rate != 16000 and len(pcm):
-        # polyphase-free linear resampling is enough for 48k/24k -> 16k speech
-        n_out = int(round(len(pcm) * 16000 / frame.sample_rate))
-        pcm = np.interp(np.linspace(0, len(pcm) - 1, n_out), np.arange(len(pcm)), pcm).astype(np.float32)
-    return pcm
+    return speech_models.to_16k(pcm, frame.sample_rate)
 
 
 class WhisperSTT(stt.STT):

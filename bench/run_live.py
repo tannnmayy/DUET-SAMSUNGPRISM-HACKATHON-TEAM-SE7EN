@@ -130,6 +130,14 @@ def run_evaluations(env: dict, args, out: Path) -> dict:
 
 
 def summarize(out: Path) -> dict:
+    try:
+        return _summarize(out)
+    except Exception as exc:  # the run's own files are all still on disk
+        print("WARNING: could not summarize the reports (%s); see the files in %s" % (exc, out))
+        return {"error": str(exc)}
+
+
+def _summarize(out: Path) -> dict:
     summary: dict = {}
     ev = out / (PROVIDER + "_evaluation_report.json")
     pr = out / (PROVIDER + "_pass_rate_report.json")
@@ -208,6 +216,24 @@ def collect(args, out: Path) -> None:
             shutil.copy(p, out / Path(p).name)
 
 
+def preflight(env: dict, out: Path) -> None:
+    """Before a two-hour run: can this key reach the models, and at what tier?
+    A refused key stops here instead of producing 100 apologies."""
+    proc = subprocess.run([sys.executable, "-m", "duet_voice.gemini"], cwd=str(REPO), env=env,
+                          capture_output=True, text=True, timeout=180)
+    lines = [l for l in proc.stdout.splitlines() if l.startswith("{")]
+    models = json.loads(lines[-1]) if lines else {"error": (proc.stderr or proc.stdout)[-500:]}
+    cfg_path = out / "run_config.json"
+    cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+    cfg["models_in_use"] = models
+    cfg_path.write_text(json.dumps(cfg, indent=1), encoding="utf-8")
+    print("Models:", models.get("thinker"), "(thinker),", models.get("talker"), "(talker)")
+    for note in models.get("notes", []):
+        print("WARNING:", note)
+    if proc.returncode != 0 or "error" in models:
+        sys.exit("Preflight failed: the Gemini key cannot be used (see above). Nothing was run.")
+
+
 def effective_config(env: dict) -> dict:
     """The settings the agent process will run with: its defaults plus overrides,
     resolved exactly as the agent resolves them, and the sampling actually used."""
@@ -262,6 +288,9 @@ def main() -> int:
         "overrides": {k: v for k, v in env.items() if k.startswith(("DUET_", "FDB_"))},
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
     }, indent=1), encoding="utf-8")
+
+    if not args.eval_only and not args.dry_run:
+        preflight(env, out)
 
     server = agent = None
     try:

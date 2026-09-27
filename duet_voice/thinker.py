@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 from .config import CONFIG
+from .coordinator import Superseded
 from .fdb_tools import TOOL_SPECS
 from .prompts import THINKER_INSTRUCTIONS
 
@@ -94,7 +95,8 @@ RESPOND_NOW_NOTE = ("The user has stopped talking. Respond now: act if the reque
 class Thinker:
     def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
         from google.genai import types
-        self.model = model or CONFIG.thinker_model
+        from .gemini import resolved
+        self.model = model or resolved("thinker", CONFIG.thinker_model)
         self.thinking = thinking or CONFIG.thinker_thinking
         decls = [types.FunctionDeclaration(name=s["name"], description=s["description"],
                                            parameters_json_schema=s["parameters"]) for s in TOOL_SPECS]
@@ -200,6 +202,10 @@ class Thinker:
                 args = dict(fc.args or {})
                 yield ThinkEvent("tool_start", name=fc.name, args=args)
                 out = await toolbox.call(fc.name, args, epoch=start_epoch)
+                if toolbox.coord.epoch != start_epoch:
+                    # the user spoke again, or late words arrived: this plan is void,
+                    # and asking the model to continue it would only waste a call
+                    raise Superseded()
                 parsed = json.loads(out)
                 yield ThinkEvent("tool_done", name=fc.name, args=args,
                                  outcome=str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok")

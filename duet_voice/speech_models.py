@@ -79,6 +79,28 @@ def _cuda_dll_paths() -> None:
         pending = failed
 
 
+def to_16k(pcm: np.ndarray, sample_rate: int) -> np.ndarray:
+    """Mono float32 audio at any rate -> 16 kHz float32, band-limited.
+
+    Plain linear interpolation (what this used to be) has almost no low-pass
+    filter: from 48 kHz input, an 11 kHz component folded down to 5 kHz only
+    6 dB below the speech, inside the band Whisper listens to. LiveKit's
+    resampler (already a dependency) suppresses it by more than 90 dB and takes
+    about 10 ms for a 10 s segment."""
+    pcm = np.asarray(pcm, dtype=np.float32)
+    if sample_rate == 16000 or not len(pcm):
+        return pcm
+    from livekit import rtc
+    resampler = rtc.AudioResampler(sample_rate, 16000, num_channels=1,
+                                   quality=rtc.AudioResamplerQuality.HIGH)
+    data = (np.clip(pcm, -1.0, 1.0) * 32767.0).astype(np.int16)
+    frames = resampler.push(rtc.AudioFrame(data.tobytes(), sample_rate, 1, len(data)))
+    frames += resampler.flush()
+    if not frames:
+        return np.zeros(0, dtype=np.float32)
+    return np.concatenate([np.frombuffer(f.data, dtype=np.int16) for f in frames]).astype(np.float32) / 32768.0
+
+
 def _pick_device() -> str:
     if CONFIG.asr_device != "auto":
         return CONFIG.asr_device
@@ -106,10 +128,21 @@ def whisper():
             device = _pick_device()
             model = CONFIG.asr_model if device == "cuda" else os.environ.get("DUET_ASR_CPU_MODEL", "small.en")
             t = time.time()
-            _whisper = WhisperModel(model, device=device, revision=MODEL_REVISIONS.get(model),
-                                    compute_type="float16" if device == "cuda" else "int8")
-            # one short warm-up so the first real turn is not slow
-            _whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)
+            try:
+                _whisper = WhisperModel(model, device=device, revision=MODEL_REVISIONS.get(model),
+                                        compute_type="float16" if device == "cuda" else "int8")
+                # one short warm-up so the first real turn is not slow (and so a GPU
+                # whose libraries cannot load fails here, not in the first turn)
+                list(_whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)[0])
+            except Exception as exc:
+                if device != "cuda":
+                    raise
+                # Keep the same model for accuracy; slower on the CPU, but the run goes on.
+                log.error("whisper on the GPU failed (%s); falling back to the CPU", exc)
+                device = "cpu"
+                _whisper = WhisperModel(model, device="cpu", revision=MODEL_REVISIONS.get(model),
+                                        compute_type="int8")
+                list(_whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)[0])
             log.info("whisper %s on %s ready in %.1f s", model, device, time.time() - t)
     return _whisper
 
@@ -125,12 +158,19 @@ def kokoro():
             repo = "hexgrad/Kokoro-82M"
             fetch = lambda name: hf_hub_download(repo_id=repo, filename=name, revision=KOKORO_REVISION)
             device = "cuda" if torch.cuda.is_available() else "cpu"
-            model = KModel(repo_id=repo, config=fetch("config.json"),
-                           model=fetch(KModel.MODEL_NAMES[repo])).to(device).eval()
-            _kokoro = KPipeline(lang_code="a", repo_id=repo, model=model)
             voice = CONFIG.tts_voice
-            _kokoro.voices[voice] = torch.load(fetch("voices/%s.pt" % voice), weights_only=True)
-            list(_kokoro("Ready.", voice=voice))  # warm-up
+            for attempt_device in ([device, "cpu"] if device == "cuda" else [device]):
+                try:
+                    model = KModel(repo_id=repo, config=fetch("config.json"),
+                                   model=fetch(KModel.MODEL_NAMES[repo])).to(attempt_device).eval()
+                    _kokoro = KPipeline(lang_code="a", repo_id=repo, model=model)
+                    _kokoro.voices[voice] = torch.load(fetch("voices/%s.pt" % voice), weights_only=True)
+                    list(_kokoro("Ready.", voice=voice))  # warm-up
+                    break
+                except Exception as exc:
+                    if attempt_device == "cpu":
+                        raise
+                    log.error("kokoro on the GPU failed (%s); falling back to the CPU", exc)
             log.info("kokoro ready in %.1f s", time.time() - t)
     return _kokoro
 

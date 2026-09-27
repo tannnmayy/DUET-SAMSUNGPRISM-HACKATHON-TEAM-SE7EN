@@ -7,6 +7,7 @@
 #   export LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...   # optional
 #   bash reproduce.sh                  # all 100 items (~2 h: the audio is streamed in real time)
 #   bash reproduce.sh --only travel_19,housing_04   # a quick subset
+#   FDB_DATA_DIR=/path/to/fdb_v3_data_released bash reproduce.sh   # reuse data you already have
 #
 # Target machine: Linux x86_64, one NVIDIA GPU (48 GB is far more than needed;
 # about 4 GB is used), CUDA 12 or 13 driver, ffmpeg, git, curl, unzip. Python
@@ -33,6 +34,14 @@ need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 need git "apt install git"; need curl "apt install curl"; need unzip "apt install unzip"
 need ffmpeg "apt install ffmpeg"; need sha256sum "apt install coreutils"
 : "${GOOGLE_API_KEY:?Set GOOGLE_API_KEY (Gemini API key): the DUET thinker and talker run on Gemini}"
+if [ -n "${LIVEKIT_URL:-}" ] && { [ -z "${LIVEKIT_API_KEY:-}" ] || [ -z "${LIVEKIT_API_SECRET:-}" ]; }; then
+  echo "LIVEKIT_URL is set, so LIVEKIT_API_KEY and LIVEKIT_API_SECRET are needed too"; exit 1
+fi
+if command -v nvidia-smi >/dev/null; then
+  echo "GPU: $(nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader | head -1)"
+else
+  echo "No NVIDIA GPU visible: the speech models will run on the CPU (slower replies)"
+fi
 
 # --- 1. environments -----------------------------------------------------------------
 # A Python in 3.10-3.12, preferring 3.11 (the version of our reported runs). If the
@@ -67,17 +76,21 @@ make_venv() {  # $1: folder. Plain venv when it works; otherwise uv (with pip se
 # Two venvs: the agent's, and the benchmark runner's (NVIDIA NeMo for the scoring
 # ASR has heavy pins of its own and must not constrain the agent). Each installs
 # from its lock file: every package, direct and transitive, at the version we ran.
-if [ ! -x .venv/bin/python ]; then
+# A marker file records a finished install, so an install that was interrupted
+# is completed on the next run instead of being taken as done.
+if [ ! -f .venv/.duet-installed ]; then
   say "agent environment"
-  make_venv .venv
+  [ -x .venv/bin/python ] || make_venv .venv
   .venv/bin/python -m pip install -q -U "pip==26.1.2"
   .venv/bin/python -m pip install -q -r requirements.lock
+  touch .venv/.duet-installed
 fi
-if [ ! -x .venv-bench/bin/python ]; then
+if [ ! -f .venv-bench/.duet-installed ]; then
   say "benchmark runner environment"
-  make_venv .venv-bench
+  [ -x .venv-bench/bin/python ] || make_venv .venv-bench
   .venv-bench/bin/python -m pip install -q -U "pip==26.1.2"
   .venv-bench/bin/python -m pip install -q -r requirements-bench.lock
+  touch .venv-bench/.duet-installed
 fi
 echo "agent Python: $(.venv/bin/python -V)   runner Python: $(.venv-bench/bin/python -V)"
 
@@ -88,16 +101,30 @@ if [ ! -d third_party/Full-Duplex-Bench/.git ]; then
 fi
 git -C third_party/Full-Duplex-Bench checkout -q "$FDB_COMMIT"
 export FDB_V3_DIR="$ROOT/third_party/Full-Duplex-Bench/v3"
-export FDB_DATA_DIR="$FDB_V3_DIR/fdb_v3_data_released"
+export FDB_DATA_DIR="${FDB_DATA_DIR:-$FDB_V3_DIR/fdb_v3_data_released}"
 
 # --- 3. the benchmark audio (Google Drive link from the v3 README), verified -------------
+# Google Drive sometimes refuses a busy file for a while, so the download is retried;
+# a zip placed at the path below by hand (or FDB_DATA_DIR set to an extracted copy)
+# is used as it is.
+ZIP="third_party/downloads/fdb_v3_data_released.zip"
 if [ ! -d "$FDB_DATA_DIR" ]; then
   say "benchmark data (736 MB)"
   mkdir -p third_party/downloads
-  curl -L --fail -o third_party/downloads/fdb_v3_data_released.zip "$DATA_URL"
-  echo "$DATA_SHA256  third_party/downloads/fdb_v3_data_released.zip" | sha256sum -c -
-  (cd "$FDB_V3_DIR" && unzip -q -o "$ROOT/third_party/downloads/fdb_v3_data_released.zip" -x "__MACOSX/*")
+  for attempt in 1 2 3; do
+    if [ -f "$ZIP" ] && echo "$DATA_SHA256  $ZIP" | sha256sum -c --status -; then break; fi
+    curl -L --fail -o "$ZIP" "$DATA_URL" || true
+    if echo "$DATA_SHA256  $ZIP" | sha256sum -c --status -; then break; fi
+    echo "download attempt $attempt did not match the checksum; retrying in 30 s"; sleep 30
+  done
+  if ! echo "$DATA_SHA256  $ZIP" | sha256sum -c --status -; then
+    echo "Could not download the benchmark data. Download it from the Google Drive link in"
+    echo "the FDB-v3 README to $ROOT/$ZIP (or set FDB_DATA_DIR to an extracted copy) and run again."
+    exit 1
+  fi
+  (cd "$FDB_V3_DIR" && unzip -q -o "$ROOT/$ZIP" -x "__MACOSX/*")
 fi
+echo "benchmark data: $FDB_DATA_DIR ($(ls -d "$FDB_DATA_DIR"/*/ | wc -l) recordings)"
 
 # --- 4. LiveKit: your Cloud project, or a local dev server --------------------------------
 if [ -z "${LIVEKIT_URL:-}" ] && ! command -v livekit-server >/dev/null; then

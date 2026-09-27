@@ -86,3 +86,85 @@ def thinking_config(model: str, level: str):
     if level == "none":
         level = "minimal"
     return types.ThinkingConfig(thinking_level=level)
+
+
+# --- which model actually serves each role -------------------------------------------------
+# Google withdraws models from new keys without notice: in September 2026
+# gemini-2.5-flash-lite and gemini-2.5-pro began answering "no longer available to
+# new users". A re-run on someone else's key must not turn every reply into an
+# apology because of that, so each role falls back down a list of current models.
+FALLBACKS = {
+    "thinker": ["gemini-3.7-flash", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-2.5-flash"],
+    "talker": ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-2.5-flash-lite", "gemini-3.5-flash"],
+}
+_resolved: dict = {}
+_notes: list = []
+
+
+def probe(model: str) -> tuple:
+    """One tiny request. Returns (verdict, detail): ok | unavailable | rate_limited
+    | free_tier | bad_key | error."""
+    from google.genai import types
+    try:
+        client().models.generate_content(model=model, contents="Reply with the word ok.",
+                                         config=types.GenerateContentConfig(max_output_tokens=32))
+        return "ok", ""
+    except Exception as exc:
+        text = str(exc)
+        if "free_tier" in text:
+            return "free_tier", text[:300]
+        if "RESOURCE_EXHAUSTED" in text or " 429" in text[:12]:
+            return "rate_limited", text[:300]
+        if "NOT_FOUND" in text or "no longer available" in text or "not found" in text.lower():
+            return "unavailable", text[:300]
+        if "API key" in text or "API_KEY" in text or "PERMISSION_DENIED" in text or "UNAUTHENTICATED" in text:
+            return "bad_key", text[:300]
+        return "error", text[:300]
+
+
+def resolve(role: str, preferred: str) -> str:
+    """The model this key can use for a role: the preferred one, or the first
+    fallback the API serves. Only a model the API refuses is skipped; a rate limit
+    or a network error keeps the preferred model (the retries handle those)."""
+    if role in _resolved:
+        return _resolved[role]
+    chosen = preferred
+    for model in [preferred] + [m for m in FALLBACKS.get(role, []) if m != preferred]:
+        verdict, detail = probe(model)
+        if verdict == "unavailable":
+            _notes.append("%s %s unavailable to this key; trying the next model" % (role, model))
+            continue
+        if verdict in ("free_tier", "rate_limited"):
+            _notes.append("%s %s: %s (the key may be on the free tier: 5 requests/min, "
+                          "20/day per model, not enough for a benchmark run)" % (role, model, verdict))
+        elif verdict == "bad_key":
+            _notes.append("%s %s: the API key was refused (%s)" % (role, model, detail[:120]))
+        elif verdict == "error":
+            _notes.append("%s %s: probe failed (%s); keeping it" % (role, model, detail[:120]))
+        chosen = model
+        break
+    _resolved[role] = chosen
+    return chosen
+
+
+def resolved(role: str, preferred: str) -> str:
+    """The model resolve() chose for a role, or `preferred` if nothing was resolved
+    (tests, offline runs with an explicit model)."""
+    return _resolved.get(role, preferred)
+
+
+def main() -> int:
+    """python -m duet_voice.gemini: which models this key can use; JSON on stdout."""
+    import json
+    import sys
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env.local"))
+    from .config import CONFIG
+    out = {"thinker": resolve("thinker", CONFIG.thinker_model),
+           "talker": resolve("talker", CONFIG.talker_model), "notes": _notes}
+    print(json.dumps(out))
+    return 1 if any("refused" in n for n in _notes) else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

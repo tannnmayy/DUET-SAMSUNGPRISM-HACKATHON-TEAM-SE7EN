@@ -113,27 +113,28 @@ class Trace:
 # --- the ears' memory: recent input audio, for a thinker that listens --------------------
 
 class AudioTape:
-    """The last minute of user audio with wall-clock times, downmixed to 16 kHz."""
+    """The last minute of user audio with wall-clock times, downmixed to mono."""
 
     def __init__(self, seconds: float = 60.0) -> None:
-        self.frames: Deque[Tuple[float, np.ndarray]] = collections.deque()
+        self.frames: Deque[Tuple[float, int, np.ndarray]] = collections.deque()
         self.seconds = seconds
 
     def add(self, frame: rtc.AudioFrame) -> None:
         pcm = np.frombuffer(frame.data, dtype=np.int16).astype(np.float32) / 32768.0
         if frame.num_channels > 1:
             pcm = pcm.reshape(-1, frame.num_channels).mean(axis=1)
-        if frame.sample_rate != 16000:
-            n = max(1, int(round(len(pcm) * 16000 / frame.sample_rate)))
-            pcm = np.interp(np.linspace(0, len(pcm) - 1, n), np.arange(len(pcm)), pcm).astype(np.float32)
         now = time.time()
-        self.frames.append((now, pcm))
+        self.frames.append((now, frame.sample_rate, pcm))
         while self.frames and now - self.frames[0][0] > self.seconds:
             self.frames.popleft()
 
     def since(self, t0: float) -> Optional[np.ndarray]:
-        chunks = [pcm for t, pcm in self.frames if t >= t0]
-        return np.concatenate(chunks) if chunks else None
+        """The audio since t0 at 16 kHz (kept at the room's rate, resampled once here)."""
+        chunks = [(rate, pcm) for t, rate, pcm in self.frames if t >= t0]
+        if not chunks:
+            return None
+        rate = chunks[-1][0]
+        return speech_models.to_16k(np.concatenate([pcm for r, pcm in chunks if r == rate]), rate)
 
 
 # --- the agent ---------------------------------------------------------------------------
@@ -173,6 +174,7 @@ class DuetAgent(Agent):
             self._consumed = self._pending_consumed
             self._pending_consumed = None
             self._utterance_started = None
+            self._coord.agent_acted()
 
     async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
         self._coord.turn_committed()
@@ -341,13 +343,23 @@ class DuetAgent(Agent):
             if not ack_task.done():
                 ack_task.cancel()
             if ack_usage:  # the talker is billed whether or not its line was spoken
-                self._trace("talker_usage", usage=dict(ack_usage), model=CONFIG.talker_model)
+                from .gemini import resolved
+                self._trace("talker_usage", usage=dict(ack_usage), model=resolved("talker", CONFIG.talker_model))
 
 
 # --- worker ------------------------------------------------------------------------------
 
 def prewarm(proc: JobProcess) -> None:
     proc.userdata["vad"] = build_vad()
+    if not DRY_RUN:
+        # the models this key can actually use (a declared model may have been
+        # withdrawn from new keys); one tiny request each, once per process
+        from . import gemini
+        for role, preferred in (("thinker", CONFIG.thinker_model), ("talker", CONFIG.talker_model)):
+            chosen = gemini.resolve(role, preferred)
+            log.info("%s model: %s", role, chosen)
+        for note in gemini._notes:
+            log.warning(note)
     speech_models.whisper()
     if CONFIG.tts_backend == "kokoro":
         speech_models.kokoro()
@@ -396,7 +408,9 @@ async def entrypoint(ctx: JobContext) -> None:
         turn_handling={
             "turn_detection": build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
-            "preemptive_generation": {"enabled": True},
+            "preemptive_generation": {"enabled": True,
+                                      "max_speech_duration": CONFIG.preempt_max_speech_s,
+                                      "max_retries": CONFIG.preempt_max_retries},
         },
         user_away_timeout=None,
     )
@@ -419,8 +433,6 @@ async def entrypoint(ctx: JobContext) -> None:
     @session.on("agent_state_changed")
     def _agent_state(ev) -> None:
         trace("agent_state", state=ev.new_state)
-        if ev.new_state == "speaking":
-            coord.agent_acted()
 
     @session.on("metrics_collected")
     def _metrics(ev) -> None:
@@ -438,8 +450,10 @@ async def entrypoint(ctx: JobContext) -> None:
             trace("agent_said", text=item.text_content)
             agent.reply_delivered()
 
-    trace("session_start", room=room, dry_run=DRY_RUN, thinker=CONFIG.thinker_model, thinking=CONFIG.thinker_thinking,
-          talker=CONFIG.talker_model, asr=CONFIG.asr_model, tts=CONFIG.tts_backend, thinker_audio=THINKER_AUDIO)
+    from .gemini import resolved
+    trace("session_start", room=room, dry_run=DRY_RUN, thinker=agent._thinker.model, thinking=CONFIG.thinker_thinking,
+          talker=resolved("talker", CONFIG.talker_model), asr=CONFIG.asr_model, tts=CONFIG.tts_backend,
+          thinker_audio=THINKER_AUDIO)
     await session.start(room=ctx.room, agent=agent)
 
 

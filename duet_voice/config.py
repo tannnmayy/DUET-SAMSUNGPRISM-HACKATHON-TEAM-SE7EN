@@ -68,6 +68,13 @@ class Config:
     commit_hold_s: float = field(default_factory=lambda: _env_float("DUET_COMMIT_HOLD", 1.1))
     revising_hold_s: float = field(default_factory=lambda: _env_float("DUET_REVISING_HOLD", 1.8))
     dangling_hold_s: float = field(default_factory=lambda: _env_float("DUET_DANGLING_HOLD", 2.2))
+    # Preemptive generation lets the thinker start during a pause, before the turn
+    # closes. LiveKit's defaults stop it 10 s into a turn and after 3 attempts, so on
+    # FDB-v3's long, pause-filled requests (15-40 s, 5-8 pauses) the thinker would
+    # otherwise start only after the last pause. Safe: a preemptive plan cannot act
+    # before the turn closes, and it is void if the words change.
+    preempt_max_speech_s: float = field(default_factory=lambda: _env_float("DUET_PREEMPT_MAX_SPEECH", 120.0))
+    preempt_max_retries: int = field(default_factory=lambda: _env_int("DUET_PREEMPT_RETRIES", 20))
 
     # --- speech out ---------------------------------------------------------------
     tts_backend: str = field(default_factory=lambda: _env("DUET_TTS", "kokoro"))

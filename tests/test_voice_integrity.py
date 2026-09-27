@@ -19,6 +19,13 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 AGENT_DIR = REPO / "duet_voice"
+# the same settings the agent reads, so this test runs wherever the benchmark is,
+# not only when another test happened to load them first
+try:
+    from dotenv import load_dotenv
+    load_dotenv(REPO / ".env.local")
+except ImportError:
+    pass
 FDB = Path(os.environ.get("FDB_V3_DIR", REPO / "third_party" / "Full-Duplex-Bench" / "v3"))
 
 # words that describe a tool's purpose and may legitimately appear in schemas
