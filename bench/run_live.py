@@ -295,10 +295,17 @@ def main() -> int:
     server = agent = None
     try:
         if not args.eval_only:
-            if not args.only:
-                for p in ("/tmp/agent_tool_calls.log",):
-                    if Path(p).exists():
-                        Path(p).unlink()
+            log_path = Path("/tmp/agent_tool_calls.log")  # fixed by the benchmark's runner
+            try:
+                if not args.only and log_path.exists():
+                    log_path.unlink()
+                log_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(log_path, "a", encoding="utf-8"):
+                    pass
+            except OSError as exc:
+                sys.exit("Cannot write %s (%s). The benchmark reads tool calls from that exact path; "
+                         "on a shared machine it may belong to another user. Remove it or run as that "
+                         "user, then start again." % (log_path, exc))
             server = start_livekit(env, out)
             agent = start_agent(env, out)
             run_runner(env, args, out)

@@ -26,6 +26,7 @@ import collections
 import json
 import logging
 import os
+import re
 import time
 from typing import Any, AsyncIterable, Deque, Dict, List, Optional, Tuple
 
@@ -330,7 +331,8 @@ class DuetAgent(Agent):
                     yield "Sorry, something went wrong on my side. Could you say that once more?"
                     spoke = True
                 elif kind == "say":
-                    words = (ev.text or "").strip()
+                    # spoken, not displayed: markdown symbols would be read aloud
+                    words = re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip()
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
                     # the thinker finished: this request is answered once the reply lands

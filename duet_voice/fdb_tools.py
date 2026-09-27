@@ -207,11 +207,16 @@ class FdbToolbox:
         self.last_tool_end = 0.0
 
     def _log_benchmark_call(self, record: CallRecord) -> None:
-        _append_jsonl(CONFIG.tool_log, {
-            "room": self.room_name,
-            "call": {"function": record.tool, "args": record.args,
-                     "timestamp_start": record.started, "timestamp_end": record.finished},
-        })
+        try:
+            _append_jsonl(CONFIG.tool_log, {
+                "room": self.room_name,
+                "call": {"function": record.tool, "args": record.args,
+                         "timestamp_start": record.started, "timestamp_end": record.finished},
+            })
+        except OSError as exc:
+            # The benchmark reads this fixed path; on a shared machine it may belong to
+            # another user. The call still happened, so the conversation goes on.
+            log.error("could not write the tool-call log %s: %s", CONFIG.tool_log, exc)
 
     async def call(self, tool: str, raw_args: Dict[str, Any], epoch: Optional[int] = None) -> str:
         """Run one tool call through the coordinator. `epoch`: the epoch the plan

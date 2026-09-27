@@ -119,3 +119,13 @@ def test_a_discarded_draft_does_not_mark_the_request_answered():
     assert a._open_request(ctx) == "like, you know"
     a.reply_delivered()            # only a delivered reply closes it
     assert a._open_request(ctx) == ""
+
+
+def test_markdown_in_the_answer_is_not_read_aloud():
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Your order is **out for delivery**.")])
+    assert speak(a, "where is my order") == ["Your order is out for delivery."]
+
+
+def test_snake_case_is_spoken_as_words():
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Your driver_license is updated.")])
+    assert speak(a, "update it") == ["Your driver license is updated."]
