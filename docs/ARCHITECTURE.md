@@ -34,8 +34,9 @@ flowchart LR
 ## The two minds
 
 **Talker.** A fast model (no tools, no thinking) turns the user's words into
-one short sentence that shows they were understood ("Sure, checking flights to
-Oslo for Friday"). It never states a result, because it has none.
+one short sentence that shows they were understood ("Sure, checking those
+flights now"). It names the task but never a value, because the user may still
+be correcting it. It never states a result, because it has none.
 
 **Thinker.** Gemini with the twelve tools, run by DUET's own loop rather than
 the framework's: every call goes through the coordinator. It keeps its own
@@ -45,7 +46,14 @@ so a mis-heard word or a spelled id can be recovered from the sound.
 
 Both start together when a turn ends, or earlier: LiveKit runs generation
 *preemptively* during a pause, so the plan is often ready by the time the turn
-closes. Planning early is safe because acting early is not allowed.
+closes. DUET raises LiveKit's limits (10 s into a turn, 3 attempts) to 120 s and
+20 attempts, because FDB-v3's requests are long and full of pauses. Planning
+early is safe because acting early is not allowed.
+
+**Model availability.** Each role (thinker, talker) has a list of current
+Gemini models. At start-up the worker makes one tiny request per role. If the
+API refuses the declared model (as it began doing for some Gemini 2.5 models in
+September 2026), the next one in the list is used and the choice is logged.
 
 ## When the agent speaks, and when it keeps listening
 

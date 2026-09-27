@@ -255,7 +255,52 @@ With a newly created key:
   today, and at least as good on this sample. The full 100-item comparison runs
   once billing is on.
 
-## 8. Gaps in today's systems that DUET is built against
+## 8. A critical review of every file on the benchmark path (27 Sep 2026)
+
+We read every file the benchmark exercises and assumed each could be wrong. We
+simulated each scenario against the benchmark's own scorer, and measured
+whatever could be measured.
+
+**Checked, and sound (with the evidence):**
+
+- **The scorer's rules.** Pass@1 needs the exact multiset of tool names. Then
+  each expected call is compared with the *first* actual call of the same tool,
+  in the order the calls were made. No benchmark item expects an identical call
+  twice, so the idempotency ledger can never block a required call. Our schemas'
+  required and optional arguments match the argument sets the benchmark expects
+  for every tool.
+- **The agent joins in time.** The runner waits a fixed 2 s after connecting,
+  then streams. Across the final 100-recording run, our agent was listening
+  1.66-1.78 s before streaming began. No request audio was ever missed.
+- **Spoken facts survive the voice.** Twelve typical answers went through
+  Kokoro, then Whisper, standing in for the scoring recognizer. Every id,
+  amount, name and date came back intact ("XK42Q8", "X1234567", "$1,850",
+  "Morgan Smith").
+- **Late transcripts never strand a plan.** In all 145 cases across two full
+  runs, a new closed turn (121) or new speech (24) followed, so the epoch rule
+  cannot deadlock.
+- **The mock backend is stateless** (pure functions), so sharing one instance
+  across conversations caches nothing. The reference agents also use the
+  `instant` latency profile, so our tool latencies are comparable.
+
+**Found, and fixed:**
+
+| Finding | Risk | Fix |
+|---|---|---|
+| A declared model can be withdrawn from new keys (it happened to two models this month) | Every turn an apology; the item fails | Each role falls back down a list of current models; the run's preflight checks the key and models before starting |
+| A GPU whose libraries fail to load killed the worker at start | No run at all | Whisper and Kokoro fall back to the CPU, same models |
+| Audio was downsampled by linear interpolation with no low-pass filter (an 11 kHz tone aliased to 5 kHz only 6 dB down) | Noisier input to Whisper | LiveKit's band-limited resampler (92.6 dB down), live and offline. **Measured effect on hearing: none** (recall 0.861 before, 0.860 after), but it is now correct |
+| LiveKit stops preemptive planning 10 s into a turn and after 3 attempts | On FDB-v3's long requests the thinker started only after the last pause | Limits raised (120 s, 20 attempts); still safe, because a preemptive plan cannot act before the turn closes |
+| The acknowledgement named values ("checking flights to Paris") | A stale value in the transcript the response judge reads, if the user then corrects it | The talker names the task, never a value |
+| The acknowledgement cleared the "user is revising" state | The shorter 1.1 s hold applied after a correction | Cleared only when a reply is delivered |
+| A tool name the model invents raised an exception | Apology instead of an answer | An error result the model can recover from |
+| An interrupted chain kept calling the model | Wasted calls on a void plan | The chain stops at once |
+| The benchmark's fixed `/tmp/agent_tool_calls.log` may belong to another user on a shared machine | Every tool call would become an apology | Logging failure is logged, not fatal; `run_live.py` checks the file up front |
+| `reproduce.sh` overwrote a pre-set data folder, trusted half-finished installs, and did not check LiveKit credentials | A failed re-run | Uses existing data, retries the download, marks finished installs, validates credentials, reports the GPU |
+| The integrity test skipped itself when run alone | The "no hardcoding" proof silently not run | It loads the settings itself |
+| Markdown or snake_case in an answer | Symbols read aloud | Stripped before speech; underscores spoken as spaces |
+
+## 9. Gaps in today's systems that DUET is built against
 
 - **FDB-v3 paper.**
   - The best published system, GPT-Realtime, passes fewer than 59% of
