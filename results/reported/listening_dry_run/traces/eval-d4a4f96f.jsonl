@@ -1,0 +1,19 @@
+{"t": 1790458502.0526953, "kind": "session_start", "room": "eval-d4a4f96f", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458502.1478999, "kind": "agent_state", "state": "listening"}
+{"t": 1790458505.212846, "kind": "user_state", "state": "speaking"}
+{"t": 1790458512.0984192, "kind": "user_state", "state": "listening"}
+{"t": 1790458512.5037777, "kind": "user_state", "state": "speaking"}
+{"t": 1790458512.8093352, "kind": "metrics", "type": "stt_metrics", "duration": 0.7096898000163492, "audio_duration": 7.508, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458512.8248463, "kind": "heard", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to euros."}
+{"t": 1790458512.8271434, "kind": "dry_run_reply", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to euros."}
+{"t": 1790458513.89972, "kind": "user_state", "state": "listening"}
+{"t": 1790458514.217111, "kind": "metrics", "type": "stt_metrics", "duration": 0.31663939999998547, "audio_duration": 1.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458514.2186835, "kind": "heard", "text": "Could you check that for me?"}
+{"t": 1790458514.2214043, "kind": "dry_run_reply", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to euros. Could you check that for me?"}
+{"t": 1790458514.3427975, "kind": "user_turn", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to euros. Could you check that for me?"}
+{"t": 1790458514.3427975, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7945711612701416, "transcription_delay": 0.6709635257720947, "on_user_turn_completed_delay": 0.00039930001366883516, "speech_id": "speech_116913a19467"}
+{"t": 1790458514.3438046, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458514.4798553, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458514.4922094, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13357469998300076, "duration": 0.14681959999143146, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_116913a19467"}
+{"t": 1790458515.9518945, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458515.9518945, "kind": "agent_state", "state": "listening"}

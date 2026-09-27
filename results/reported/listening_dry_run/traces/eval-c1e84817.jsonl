@@ -1,0 +1,58 @@
+{"t": 1790461645.0972505, "kind": "session_start", "room": "eval-c1e84817", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461645.2200065, "kind": "agent_state", "state": "listening"}
+{"t": 1790461648.1664212, "kind": "user_state", "state": "speaking"}
+{"t": 1790461649.462357, "kind": "user_state", "state": "listening"}
+{"t": 1790461649.617158, "kind": "user_state", "state": "speaking"}
+{"t": 1790461650.0230443, "kind": "metrics", "type": "stt_metrics", "duration": 0.5603164000203833, "audio_duration": 1.908, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461650.0257094, "kind": "heard", "text": "Um, so..."}
+{"t": 1790461650.0282905, "kind": "dry_run_reply", "text": "Um, so..."}
+{"t": 1790461650.3617923, "kind": "user_state", "state": "listening"}
+{"t": 1790461650.6664362, "kind": "metrics", "type": "stt_metrics", "duration": 0.3031609999889042, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461650.6671867, "kind": "heard", "text": "Hmm."}
+{"t": 1790461650.6697872, "kind": "dry_run_reply", "text": "Um, so... Hmm."}
+{"t": 1790461650.7873843, "kind": "user_turn", "text": "Um, so... Hmm."}
+{"t": 1790461650.788389, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7765853404998779, "transcription_delay": 0.6573944091796875, "on_user_turn_completed_delay": 0.0004535000189207494, "speech_id": "speech_35177f9b039f"}
+{"t": 1790461650.788389, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461650.8201332, "kind": "user_state", "state": "speaking"}
+{"t": 1790461650.9342625, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13658250001026317, "duration": 0.1420003000239376, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_35177f9b039f"}
+{"t": 1790461651.2269955, "kind": "agent_state", "state": "listening"}
+{"t": 1790461652.474197, "kind": "user_state", "state": "listening"}
+{"t": 1790461652.766818, "kind": "user_state", "state": "speaking"}
+{"t": 1790461652.9001317, "kind": "metrics", "type": "stt_metrics", "duration": 0.42516399998567067, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461652.9018075, "kind": "heard", "text": "Like, you know."}
+{"t": 1790461653.5163634, "kind": "user_state", "state": "listening"}
+{"t": 1790461653.6131718, "kind": "user_state", "state": "speaking"}
+{"t": 1790461653.827213, "kind": "metrics", "type": "stt_metrics", "duration": 0.3098539999919012, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461653.8288198, "kind": "heard", "text": "Okay."}
+{"t": 1790461653.8310044, "kind": "dry_run_reply", "text": "Um, so... Hmm. Like, you know. Okay."}
+{"t": 1790461655.2867374, "kind": "user_state", "state": "listening"}
+{"t": 1790461655.6246266, "kind": "metrics", "type": "stt_metrics", "duration": 0.33612920000450686, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461655.6255872, "kind": "heard", "text": "So first."}
+{"t": 1790461655.6298687, "kind": "dry_run_reply", "text": "Um, so... Hmm. Like, you know. Okay. So first."}
+{"t": 1790461655.662325, "kind": "user_state", "state": "speaking"}
+{"t": 1790461656.929598, "kind": "user_state", "state": "listening"}
+{"t": 1790461657.1651225, "kind": "user_state", "state": "speaking"}
+{"t": 1790461657.2698832, "kind": "metrics", "type": "stt_metrics", "duration": 0.33933299998170696, "audio_duration": 1.844, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461657.2715123, "kind": "heard", "text": "I want to..."}
+{"t": 1790461657.2740526, "kind": "dry_run_reply", "text": "Um, so... Hmm. Like, you know. Okay. So first. I want to..."}
+{"t": 1790461667.2139983, "kind": "user_state", "state": "listening"}
+{"t": 1790461667.6668885, "kind": "user_state", "state": "speaking"}
+{"t": 1790461667.9049666, "kind": "metrics", "type": "stt_metrics", "duration": 0.6890902000013739, "audio_duration": 10.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461667.9059653, "kind": "heard", "text": "Update my max price to $1,500 because I'm on a tighter budget, then search for apartments in Dallas that fit that budget, and then."}
+{"t": 1790461672.961727, "kind": "user_state", "state": "listening"}
+{"t": 1790461673.3998342, "kind": "user_turn", "text": "Like, you know. Okay. So first. I want to... Update my max price to $1,500 because I'm on a tighter budget, then search for apartments in Dallas that fit that budget, and then."}
+{"t": 1790461673.4008365, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.790107250213623, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005163000023458153, "speech_id": "speech_cfbd66ec1e35"}
+{"t": 1790461673.4018366, "kind": "dry_run_reply", "text": "Um, so... Hmm. Like, you know. Okay. So first. I want to... Update my max price to $1,500 because I'm on a tighter budget, then search for apartments in Dallas that fit that budget, and then."}
+{"t": 1790461673.402834, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461673.6978643, "kind": "metrics", "type": "stt_metrics", "duration": 0.7348408999969251, "audio_duration": 5.94, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461673.6996639, "kind": "heard", "text": "Check the walking time from whatever you find to the grocery store because I want to be close to one."}
+{"t": 1790461673.7001696, "kind": "agent_state", "state": "listening"}
+{"t": 1790461673.7100787, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.30536600001505576, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cfbd66ec1e35"}
+{"t": 1790461674.4948123, "kind": "user_turn", "text": "Check the walking time from whatever you find to the grocery store because I want to be close to one."}
+{"t": 1790461674.4948123, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005146999901626259, "speech_id": "speech_16f5bb3b4a7f"}
+{"t": 1790461674.4963245, "kind": "dry_run_reply", "text": "Um, so... Hmm. Like, you know. Okay. So first. I want to... Update my max price to $1,500 because I'm on a tighter budget, then search for apartments in Dallas that fit that budget, and then. Check the walking time from whatever you find to the grocery store because I want to be close to one."}
+{"t": 1790461674.4973314, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461674.6432362, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461674.6545084, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14372390002245083, "duration": 0.15599570001359098, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_16f5bb3b4a7f"}
+{"t": 1790461676.1019363, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461676.1019363, "kind": "agent_state", "state": "listening"}

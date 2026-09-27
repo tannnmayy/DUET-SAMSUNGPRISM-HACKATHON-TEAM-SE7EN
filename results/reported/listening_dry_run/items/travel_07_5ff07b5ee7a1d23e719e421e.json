@@ -1,0 +1,224 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "travel_07",
+  "category": "travel_identity",
+  "title": "Driver License Update",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:36:24.176163",
+  "inference_time_s": 48.56,
+  "room_name": "eval-c6923be7",
+  "stream_start_time": 1790462187.049744,
+  "input_transcript": "Uh, um, the new driver's license number is D -L -5 -5 -5. Could you swap out the old one and put this new one in there?",
+  "input_asr_chunks": [
+    {
+      "text": "Uh,",
+      "timestamp": [
+        0.11,
+        0.81
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        1.55,
+        1.87
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        2.43,
+        2.55
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        2.55,
+        2.75
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        2.75,
+        3.39
+      ]
+    },
+    {
+      "text": "license",
+      "timestamp": [
+        3.39,
+        3.81
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        3.81,
+        4.19
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        4.19,
+        4.51
+      ]
+    },
+    {
+      "text": "D",
+      "timestamp": [
+        4.51,
+        4.97
+      ]
+    },
+    {
+      "text": "-L",
+      "timestamp": [
+        4.97,
+        6.31
+      ]
+    },
+    {
+      "text": "-5",
+      "timestamp": [
+        6.31,
+        7.51
+      ]
+    },
+    {
+      "text": "-5",
+      "timestamp": [
+        7.51,
+        8.95
+      ]
+    },
+    {
+      "text": "-5.",
+      "timestamp": [
+        8.95,
+        10.13
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        10.35,
+        10.99
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.99,
+        11.13
+      ]
+    },
+    {
+      "text": "swap",
+      "timestamp": [
+        11.13,
+        11.51
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        11.51,
+        11.69
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        11.69,
+        11.85
+      ]
+    },
+    {
+      "text": "old",
+      "timestamp": [
+        11.85,
+        12.05
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        12.05,
+        12.27
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        12.27,
+        12.41
+      ]
+    },
+    {
+      "text": "put",
+      "timestamp": [
+        12.41,
+        12.63
+      ]
+    },
+    {
+      "text": "this",
+      "timestamp": [
+        12.63,
+        12.99
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        12.99,
+        13.27
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        13.27,
+        13.57
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        13.57,
+        13.81
+      ]
+    },
+    {
+      "text": "there?",
+      "timestamp": [
+        13.81,
+        14.11
+      ]
+    }
+  ],
+  "user_speech_end_rel": 14.11,
+  "latency": {
+    "input_duration_s": 45.0,
+    "output_duration_s": 45.0,
+    "first_speech_s": 18.3
+  },
+  "user_done_unix": 1790462201.1597438,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        18.1,
+        18.6
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.99,
+  "audio_agent_speech_start": 18.1,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,371 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "housing_25",
+  "category": "housing_location",
+  "title": "Full Chain: Filters + Search + Correction",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:30:01.795446",
+  "inference_time_s": 55.87,
+  "room_name": "eval-e28536b7",
+  "stream_start_time": 1790461805.134955,
+  "input_transcript": "You know, you know, alright. First set the filter so pets are allowed and set the max price to $3000. Then search for places in San Francisco. Wait, actually change the max price to $3500 instead. San Francisco is expensive so I need more room in the budget.",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.69,
+        1.17
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        1.17,
+        1.41
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        1.67,
+        1.75
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        1.75,
+        1.95
+      ]
+    },
+    {
+      "text": "alright.",
+      "timestamp": [
+        2.17,
+        2.39
+      ]
+    },
+    {
+      "text": "First",
+      "timestamp": [
+        2.63,
+        3.05
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        3.05,
+        3.27
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.27,
+        3.39
+      ]
+    },
+    {
+      "text": "filter",
+      "timestamp": [
+        3.39,
+        3.73
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        3.73,
+        4.01
+      ]
+    },
+    {
+      "text": "pets",
+      "timestamp": [
+        4.01,
+        4.29
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        4.29,
+        4.45
+      ]
+    },
+    {
+      "text": "allowed",
+      "timestamp": [
+        4.45,
+        4.85
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        4.85,
+        5.45
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        5.45,
+        6.05
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        6.05,
+        6.21
+      ]
+    },
+    {
+      "text": "max",
+      "timestamp": [
+        6.21,
+        6.45
+      ]
+    },
+    {
+      "text": "price",
+      "timestamp": [
+        6.45,
+        6.69
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.69,
+        6.89
+      ]
+    },
+    {
+      "text": "$3000.",
+      "timestamp": [
+        6.89,
+        7.27
+      ]
+    },
+    {
+      "text": "Then",
+      "timestamp": [
+        8.01,
+        8.59
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        8.59,
+        8.99
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        8.99,
+        9.17
+      ]
+    },
+    {
+      "text": "places",
+      "timestamp": [
+        9.17,
+        9.47
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        9.47,
+        10.01
+      ]
+    },
+    {
+      "text": "San",
+      "timestamp": [
+        10.01,
+        10.45
+      ]
+    },
+    {
+      "text": "Francisco.",
+      "timestamp": [
+        10.45,
+        10.97
+      ]
+    },
+    {
+      "text": "Wait,",
+      "timestamp": [
+        11.39,
+        11.51
+      ]
+    },
+    {
+      "text": "actually",
+      "timestamp": [
+        11.73,
+        12.05
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        12.05,
+        12.85
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.85,
+        13.01
+      ]
+    },
+    {
+      "text": "max",
+      "timestamp": [
+        13.01,
+        13.25
+      ]
+    },
+    {
+      "text": "price",
+      "timestamp": [
+        13.25,
+        13.49
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.49,
+        13.87
+      ]
+    },
+    {
+      "text": "$3500",
+      "timestamp": [
+        13.87,
+        14.65
+      ]
+    },
+    {
+      "text": "instead.",
+      "timestamp": [
+        14.65,
+        15.19
+      ]
+    },
+    {
+      "text": "San",
+      "timestamp": [
+        15.85,
+        15.99
+      ]
+    },
+    {
+      "text": "Francisco",
+      "timestamp": [
+        15.99,
+        16.35
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        16.35,
+        16.69
+      ]
+    },
+    {
+      "text": "expensive",
+      "timestamp": [
+        16.69,
+        17.13
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        17.13,
+        17.59
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        17.59,
+        18.39
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        18.39,
+        18.61
+      ]
+    },
+    {
+      "text": "more",
+      "timestamp": [
+        18.61,
+        18.83
+      ]
+    },
+    {
+      "text": "room",
+      "timestamp": [
+        18.83,
+        19.13
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        19.13,
+        19.43
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        19.43,
+        19.51
+      ]
+    },
+    {
+      "text": "budget.",
+      "timestamp": [
+        19.51,
+        19.75
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.75,
+  "latency": {
+    "input_duration_s": 51.48,
+    "output_duration_s": 51.48,
+    "first_speech_s": 23.95
+  },
+  "user_done_unix": 1790461824.884955,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        23.73,
+        24.21
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.98,
+  "audio_agent_speech_start": 23.73,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

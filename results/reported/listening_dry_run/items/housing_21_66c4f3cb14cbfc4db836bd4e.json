@@ -1,0 +1,371 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "housing_21",
+  "category": "housing_location",
+  "title": "Multi-Correction Across Statements",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:25:02.259122",
+  "inference_time_s": 53.25,
+  "room_name": "eval-c99e3523",
+  "stream_start_time": 1790461505.1078951,
+  "input_transcript": "So, well, so you know, I want to search for a place with two bedrooms. Wait, actually, I mean, I meant three bedrooms. We decided we need a home office. Also, check the transit time to the train station. Actually, I'd rather walk, so make that walking time.",
+  "input_asr_chunks": [
+    {
+      "text": "So,",
+      "timestamp": [
+        0.98,
+        1.44
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        1.64,
+        2.06
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        2.24,
+        2.34
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.34,
+        2.52
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        2.52,
+        2.74
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.98,
+        3.38
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        3.38,
+        3.76
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        3.76,
+        3.92
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        3.92,
+        4.14
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        4.14,
+        4.38
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        4.38,
+        4.5
+      ]
+    },
+    {
+      "text": "place",
+      "timestamp": [
+        4.5,
+        4.76
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        4.76,
+        4.96
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        4.96,
+        5.08
+      ]
+    },
+    {
+      "text": "bedrooms.",
+      "timestamp": [
+        5.08,
+        5.46
+      ]
+    },
+    {
+      "text": "Wait,",
+      "timestamp": [
+        6.04,
+        6.5
+      ]
+    },
+    {
+      "text": "actually,",
+      "timestamp": [
+        6.76,
+        7.12
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        7.22,
+        7.6
+      ]
+    },
+    {
+      "text": "mean,",
+      "timestamp": [
+        7.6,
+        7.78
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        7.88,
+        8.0
+      ]
+    },
+    {
+      "text": "meant",
+      "timestamp": [
+        8.0,
+        8.18
+      ]
+    },
+    {
+      "text": "three",
+      "timestamp": [
+        8.18,
+        8.4
+      ]
+    },
+    {
+      "text": "bedrooms.",
+      "timestamp": [
+        8.4,
+        8.82
+      ]
+    },
+    {
+      "text": "We",
+      "timestamp": [
+        9.06,
+        9.4
+      ]
+    },
+    {
+      "text": "decided",
+      "timestamp": [
+        9.4,
+        9.72
+      ]
+    },
+    {
+      "text": "we",
+      "timestamp": [
+        9.72,
+        9.94
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        9.94,
+        10.16
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        10.16,
+        10.32
+      ]
+    },
+    {
+      "text": "home",
+      "timestamp": [
+        10.32,
+        10.62
+      ]
+    },
+    {
+      "text": "office.",
+      "timestamp": [
+        10.62,
+        11.14
+      ]
+    },
+    {
+      "text": "Also,",
+      "timestamp": [
+        11.54,
+        12.02
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        12.18,
+        12.36
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.36,
+        12.62
+      ]
+    },
+    {
+      "text": "transit",
+      "timestamp": [
+        12.62,
+        13.18
+      ]
+    },
+    {
+      "text": "time",
+      "timestamp": [
+        13.18,
+        13.48
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.48,
+        13.66
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        13.66,
+        13.76
+      ]
+    },
+    {
+      "text": "train",
+      "timestamp": [
+        13.76,
+        14.02
+      ]
+    },
+    {
+      "text": "station.",
+      "timestamp": [
+        14.02,
+        14.42
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        14.94,
+        15.42
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        15.5,
+        15.78
+      ]
+    },
+    {
+      "text": "rather",
+      "timestamp": [
+        15.78,
+        15.98
+      ]
+    },
+    {
+      "text": "walk,",
+      "timestamp": [
+        15.98,
+        16.38
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        16.48,
+        16.6
+      ]
+    },
+    {
+      "text": "make",
+      "timestamp": [
+        16.6,
+        16.84
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        16.84,
+        17.18
+      ]
+    },
+    {
+      "text": "walking",
+      "timestamp": [
+        17.18,
+        18.46
+      ]
+    },
+    {
+      "text": "time.",
+      "timestamp": [
+        18.46,
+        18.82
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.82,
+  "latency": {
+    "input_duration_s": 49.725,
+    "output_duration_s": 49.725,
+    "first_speech_s": 22.3
+  },
+  "user_done_unix": 1790461523.927895,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        22.1,
+        22.6
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.28,
+  "audio_agent_speech_start": 22.1,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

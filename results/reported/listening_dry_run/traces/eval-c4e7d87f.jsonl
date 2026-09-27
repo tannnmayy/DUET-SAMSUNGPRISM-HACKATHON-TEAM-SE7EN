@@ -1,0 +1,36 @@
+{"t": 1790459326.255915, "kind": "session_start", "room": "eval-c4e7d87f", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459326.396396, "kind": "agent_state", "state": "listening"}
+{"t": 1790459329.3063786, "kind": "user_state", "state": "speaking"}
+{"t": 1790459334.2524333, "kind": "user_state", "state": "listening"}
+{"t": 1790459334.9408755, "kind": "metrics", "type": "stt_metrics", "duration": 0.6867801999906078, "audio_duration": 5.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459334.9556255, "kind": "heard", "text": "Well, I want to calculate how much 100 euros would be in US dollars."}
+{"t": 1790459334.9582436, "kind": "dry_run_reply", "text": "Well, I want to calculate how much 100 euros would be in US dollars."}
+{"t": 1790459334.960115, "kind": "user_turn", "text": "Well, I want to calculate how much 100 euros would be in US dollars."}
+{"t": 1790459334.960115, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0573782920837402, "transcription_delay": 1.0541930198669434, "on_user_turn_completed_delay": 0.00048290000995621085, "speech_id": "speech_e3e28f39220d"}
+{"t": 1790459334.9622195, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459335.094517, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459335.1061697, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12683459999971092, "duration": 0.13898419999168254, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e3e28f39220d"}
+{"t": 1790459335.2056363, "kind": "user_state", "state": "speaking"}
+{"t": 1790459336.5613475, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459336.5613475, "kind": "agent_state", "state": "listening"}
+{"t": 1790459340.3224778, "kind": "user_state", "state": "listening"}
+{"t": 1790459340.599278, "kind": "user_state", "state": "speaking"}
+{"t": 1790459340.933372, "kind": "metrics", "type": "stt_metrics", "duration": 0.6105687000090256, "audio_duration": 4.212, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459340.93494, "kind": "heard", "text": "The wrong invoice, it's actually 150 euros, not 100."}
+{"t": 1790459340.9372408, "kind": "dry_run_reply", "text": "The wrong invoice, it's actually 150 euros, not 100."}
+{"t": 1790459342.9003446, "kind": "user_state", "state": "listening"}
+{"t": 1790459343.3405304, "kind": "user_turn", "text": "The wrong invoice, it's actually 150 euros, not 100."}
+{"t": 1790459343.3405304, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7921857833862305, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004862000059802085, "speech_id": "speech_ba5782b40fa0"}
+{"t": 1790459343.3419685, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459343.4899685, "kind": "metrics", "type": "stt_metrics", "duration": 0.5887427999987267, "audio_duration": 2.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459343.4910197, "kind": "heard", "text": "So 150 euros to US dollars."}
+{"t": 1790459343.4917493, "kind": "agent_state", "state": "listening"}
+{"t": 1790459343.5029464, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.1586661999754142, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ba5782b40fa0"}
+{"t": 1790459344.2926266, "kind": "user_turn", "text": "So 150 euros to US dollars."}
+{"t": 1790459344.2926266, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004813999985344708, "speech_id": "speech_9eea9615d939"}
+{"t": 1790459344.2946358, "kind": "dry_run_reply", "text": "The wrong invoice, it's actually 150 euros, not 100. So 150 euros to US dollars."}
+{"t": 1790459344.2946358, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459344.431358, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459344.4426196, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13453350000781938, "duration": 0.1465324999880977, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_9eea9615d939"}
+{"t": 1790459345.9005115, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459345.9005115, "kind": "agent_state", "state": "listening"}

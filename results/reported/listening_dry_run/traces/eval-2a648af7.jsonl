@@ -1,0 +1,26 @@
+{"t": 1790461369.900879, "kind": "session_start", "room": "eval-2a648af7", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461369.973896, "kind": "agent_state", "state": "listening"}
+{"t": 1790461372.2424436, "kind": "user_state", "state": "speaking"}
+{"t": 1790461379.4144883, "kind": "user_state", "state": "listening"}
+{"t": 1790461379.7270684, "kind": "user_state", "state": "speaking"}
+{"t": 1790461379.9820778, "kind": "metrics", "type": "stt_metrics", "duration": 0.5653357999981381, "audio_duration": 7.796, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461379.9856124, "kind": "heard", "text": "Well, calculate the transit time to the office. Wait, no, I wouldn't be going to the office. I'd be going to the gym."}
+{"t": 1790461379.9882522, "kind": "dry_run_reply", "text": "Well, calculate the transit time to the office. Wait, no, I wouldn't be going to the office. I'd be going to the gym."}
+{"t": 1790461385.134352, "kind": "user_state", "state": "listening"}
+{"t": 1790461385.5846953, "kind": "user_turn", "text": "Well, calculate the transit time to the office. Wait, no, I wouldn't be going to the office. I'd be going to the gym."}
+{"t": 1790461385.5857291, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8013451099395752, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003795000084210187, "speech_id": "speech_cb8ced6a6a8c"}
+{"t": 1790461385.58673, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461385.8458753, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461385.8590689, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2576984000043012, "duration": 0.27059420000296086, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cb8ced6a6a8c"}
+{"t": 1790461385.873667, "kind": "metrics", "type": "stt_metrics", "duration": 0.727123799995752, "audio_duration": 6.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461385.8756046, "kind": "heard", "text": "And actually, now that I think about it, I drive there and not take transit. So make it driving to the gym from my house."}
+{"t": 1790461386.6657045, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461386.6657045, "kind": "agent_state", "state": "listening"}
+{"t": 1790461386.667125, "kind": "user_turn", "text": "And actually, now that I think about it, I drive there and not take transit. So make it driving to the gym from my house."}
+{"t": 1790461386.6681778, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0007229000038933009, "speech_id": "speech_20d55ba54a0f"}
+{"t": 1790461386.671041, "kind": "dry_run_reply", "text": "And actually, now that I think about it, I drive there and not take transit. So make it driving to the gym from my house."}
+{"t": 1790461386.672864, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461386.765024, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461386.7755318, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08815679998951964, "duration": 0.10088829998858273, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_20d55ba54a0f"}
+{"t": 1790461388.2407436, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461388.2422469, "kind": "agent_state", "state": "listening"}

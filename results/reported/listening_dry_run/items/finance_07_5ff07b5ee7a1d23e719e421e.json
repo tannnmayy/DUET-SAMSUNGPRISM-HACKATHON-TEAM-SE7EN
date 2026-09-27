@@ -1,0 +1,259 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "finance_07",
+  "category": "finance_billing",
+  "title": "False Start then Autopay",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:41:15.444892",
+  "inference_time_s": 51.15,
+  "room_name": "eval-1d0e50e4",
+  "stream_start_time": 1790458878.2947354,
+  "input_transcript": "I was going to ask about my account balance, but never mind. I'll check online later. For now, could you change the mortgage auto pay so it pulls from my savings account?",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        1.04,
+        1.72
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        1.72,
+        1.94
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        1.94,
+        2.34
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.34,
+        3.94
+      ]
+    },
+    {
+      "text": "ask",
+      "timestamp": [
+        3.94,
+        4.22
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        4.22,
+        4.5
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        4.5,
+        4.74
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        4.74,
+        5.08
+      ]
+    },
+    {
+      "text": "balance,",
+      "timestamp": [
+        5.08,
+        5.68
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        5.96,
+        6.32
+      ]
+    },
+    {
+      "text": "never",
+      "timestamp": [
+        6.32,
+        7.6
+      ]
+    },
+    {
+      "text": "mind.",
+      "timestamp": [
+        7.6,
+        7.94
+      ]
+    },
+    {
+      "text": "I'll",
+      "timestamp": [
+        8.2,
+        8.74
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        8.74,
+        8.96
+      ]
+    },
+    {
+      "text": "online",
+      "timestamp": [
+        8.96,
+        9.5
+      ]
+    },
+    {
+      "text": "later.",
+      "timestamp": [
+        9.5,
+        10.04
+      ]
+    },
+    {
+      "text": "For",
+      "timestamp": [
+        10.28,
+        10.74
+      ]
+    },
+    {
+      "text": "now,",
+      "timestamp": [
+        10.74,
+        11.12
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        11.4,
+        11.52
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        11.52,
+        11.66
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        11.66,
+        12.44
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.44,
+        12.74
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        12.74,
+        13.14
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        13.14,
+        13.54
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        13.54,
+        13.88
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        13.88,
+        14.62
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        14.62,
+        14.76
+      ]
+    },
+    {
+      "text": "pulls",
+      "timestamp": [
+        14.76,
+        15.06
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        15.06,
+        15.3
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        15.3,
+        15.52
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        15.52,
+        15.98
+      ]
+    },
+    {
+      "text": "account?",
+      "timestamp": [
+        15.98,
+        16.42
+      ]
+    }
+  ],
+  "user_speech_end_rel": 16.42,
+  "latency": {
+    "input_duration_s": 47.64,
+    "output_duration_s": 47.64,
+    "first_speech_s": 20.85
+  },
+  "user_done_unix": 1790458894.7147355,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        20.69,
+        21.15
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.27,
+  "audio_agent_speech_start": 20.69,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

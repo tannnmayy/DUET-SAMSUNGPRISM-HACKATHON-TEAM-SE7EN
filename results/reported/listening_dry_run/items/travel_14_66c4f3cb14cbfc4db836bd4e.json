@@ -1,0 +1,287 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "travel_14",
+  "category": "travel_identity",
+  "title": "Hesitation with Date",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:41:44.597167",
+  "inference_time_s": 45.08,
+  "room_name": "eval-3252c710",
+  "stream_start_time": 1790462507.4531815,
+  "input_transcript": "So I want to look at flights to Seoul and the date I was thinking of it is let me let me think I'm pretty sure it's March 22nd. Yeah. Yeah. Could you search for that?",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        0.82,
+        1.22
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.22,
+        1.48
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        1.48,
+        1.7
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.7,
+        1.88
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        1.88,
+        2.06
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        2.06,
+        2.18
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        2.18,
+        2.48
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.48,
+        2.8
+      ]
+    },
+    {
+      "text": "Seoul",
+      "timestamp": [
+        2.8,
+        3.18
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.18,
+        3.6
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.6,
+        3.8
+      ]
+    },
+    {
+      "text": "date",
+      "timestamp": [
+        3.8,
+        4.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.16,
+        5.1
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        5.1,
+        5.26
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        5.26,
+        5.46
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        5.46,
+        5.7
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        5.7,
+        5.86
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        5.86,
+        6.08
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        6.08,
+        6.26
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.26,
+        6.4
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        6.4,
+        6.5
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.5,
+        6.66
+      ]
+    },
+    {
+      "text": "think",
+      "timestamp": [
+        6.66,
+        6.8
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        6.8,
+        7.22
+      ]
+    },
+    {
+      "text": "pretty",
+      "timestamp": [
+        7.22,
+        7.34
+      ]
+    },
+    {
+      "text": "sure",
+      "timestamp": [
+        7.34,
+        7.5
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        7.5,
+        7.68
+      ]
+    },
+    {
+      "text": "March",
+      "timestamp": [
+        7.68,
+        7.96
+      ]
+    },
+    {
+      "text": "22nd.",
+      "timestamp": [
+        7.96,
+        8.66
+      ]
+    },
+    {
+      "text": "Yeah.",
+      "timestamp": [
+        8.88,
+        9.04
+      ]
+    },
+    {
+      "text": "Yeah.",
+      "timestamp": [
+        9.56,
+        9.8
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        9.94,
+        10.04
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.04,
+        10.16
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        10.16,
+        10.4
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.4,
+        10.6
+      ]
+    },
+    {
+      "text": "that?",
+      "timestamp": [
+        10.6,
+        10.8
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.8,
+  "latency": {
+    "input_duration_s": 41.541,
+    "output_duration_s": 41.541,
+    "first_speech_s": 14.25
+  },
+  "user_done_unix": 1790462518.2531815,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        14.03,
+        14.53
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.23,
+  "audio_agent_speech_start": 14.03,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

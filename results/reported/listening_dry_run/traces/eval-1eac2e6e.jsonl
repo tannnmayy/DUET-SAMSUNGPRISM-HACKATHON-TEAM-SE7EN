@@ -1,0 +1,43 @@
+{"t": 1790462845.7376094, "kind": "session_start", "room": "eval-1eac2e6e", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462845.8840036, "kind": "agent_state", "state": "listening"}
+{"t": 1790462848.6376712, "kind": "user_state", "state": "speaking"}
+{"t": 1790462849.4823968, "kind": "user_state", "state": "listening"}
+{"t": 1790462849.683964, "kind": "user_state", "state": "speaking"}
+{"t": 1790462850.055699, "kind": "metrics", "type": "stt_metrics", "duration": 0.57291030001943, "audio_duration": 1.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462850.0576136, "kind": "heard", "text": "You know..."}
+{"t": 1790462850.0601716, "kind": "dry_run_reply", "text": "You know..."}
+{"t": 1790462850.8402913, "kind": "user_state", "state": "listening"}
+{"t": 1790462851.139644, "kind": "user_state", "state": "speaking"}
+{"t": 1790462851.1581836, "kind": "metrics", "type": "stt_metrics", "duration": 0.31610640001599677, "audio_duration": 1.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462851.1591442, "kind": "heard", "text": "Okay, so..."}
+{"t": 1790462851.1614172, "kind": "dry_run_reply", "text": "You know... Okay, so..."}
+{"t": 1790462851.8901825, "kind": "user_state", "state": "listening"}
+{"t": 1790462851.9815197, "kind": "user_state", "state": "speaking"}
+{"t": 1790462852.2037034, "kind": "metrics", "type": "stt_metrics", "duration": 0.312220600026194, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462852.204705, "kind": "heard", "text": "Um,"}
+{"t": 1790462852.2072184, "kind": "dry_run_reply", "text": "You know... Okay, so... Um,"}
+{"t": 1790462853.9764695, "kind": "user_state", "state": "listening"}
+{"t": 1790462854.384559, "kind": "user_state", "state": "speaking"}
+{"t": 1790462854.4482844, "kind": "metrics", "type": "stt_metrics", "duration": 0.47110960001009516, "audio_duration": 2.612, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462854.4500847, "kind": "heard", "text": "I need to find flights to..."}
+{"t": 1790462862.8262675, "kind": "user_state", "state": "listening"}
+{"t": 1790462862.9258087, "kind": "user_state", "state": "speaking"}
+{"t": 1790462863.5262253, "kind": "metrics", "type": "stt_metrics", "duration": 0.6985539000015706, "audio_duration": 9.044, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462863.527627, "kind": "heard", "text": "I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790462867.7764933, "kind": "user_state", "state": "listening"}
+{"t": 1790462868.2078862, "kind": "user_turn", "text": "You know... Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790462868.2088885, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7833929061889648, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005221000174060464, "speech_id": "speech_e3fb8942f75d"}
+{"t": 1790462868.2110364, "kind": "dry_run_reply", "text": "You know... Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790462868.2110364, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462868.3561556, "kind": "metrics", "type": "stt_metrics", "duration": 0.5787011999927927, "audio_duration": 5.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462868.3582249, "kind": "heard", "text": "Oh, and while you're at it, could you also update my visa number to V77?"}
+{"t": 1790462868.3587325, "kind": "agent_state", "state": "listening"}
+{"t": 1790462868.369279, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.15508969998336397, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e3fb8942f75d"}
+{"t": 1790462869.1493545, "kind": "user_turn", "text": "Oh, and while you're at it, could you also update my visa number to V77?"}
+{"t": 1790462869.1503925, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004180000105407089, "speech_id": "speech_b1bc8ce05bcc"}
+{"t": 1790462869.1514065, "kind": "dry_run_reply", "text": "You know... Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis. Oh, and while you're at it, could you also update my visa number to V77?"}
+{"t": 1790462869.1514065, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462869.2902422, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462869.3027236, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1360149999964051, "duration": 0.14889129999210127, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_b1bc8ce05bcc"}
+{"t": 1790462870.7553713, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462870.756373, "kind": "agent_state", "state": "listening"}

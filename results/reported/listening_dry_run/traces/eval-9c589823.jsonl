@@ -1,0 +1,33 @@
+{"t": 1790456971.1477556, "kind": "session_start", "room": "eval-9c589823", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456971.29406, "kind": "agent_state", "state": "listening"}
+{"t": 1790456974.2015505, "kind": "user_state", "state": "speaking"}
+{"t": 1790456975.2519217, "kind": "user_state", "state": "listening"}
+{"t": 1790456975.551556, "kind": "user_state", "state": "speaking"}
+{"t": 1790456975.885232, "kind": "metrics", "type": "stt_metrics", "duration": 0.6324451999971643, "audio_duration": 1.652, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456975.9000046, "kind": "heard", "text": "So, um,"}
+{"t": 1790456975.9023309, "kind": "dry_run_reply", "text": "So, um,"}
+{"t": 1790456977.3014555, "kind": "user_state", "state": "listening"}
+{"t": 1790456977.614226, "kind": "metrics", "type": "stt_metrics", "duration": 0.31232379999710247, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456977.61592, "kind": "heard", "text": "Yeah, you know..."}
+{"t": 1790456977.6180637, "kind": "dry_run_reply", "text": "So, um, Yeah, you know..."}
+{"t": 1790456977.8009589, "kind": "user_state", "state": "speaking"}
+{"t": 1790456981.1019983, "kind": "user_state", "state": "listening"}
+{"t": 1790456981.2508404, "kind": "user_state", "state": "speaking"}
+{"t": 1790456981.689013, "kind": "metrics", "type": "stt_metrics", "duration": 0.5858583999797702, "audio_duration": 3.924, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456981.6904182, "kind": "heard", "text": "I want a mechanical keyboard and I'm trying to."}
+{"t": 1790456981.6931083, "kind": "dry_run_reply", "text": "So, um, Yeah, you know... I want a mechanical keyboard and I'm trying to."}
+{"t": 1790456983.8500514, "kind": "user_state", "state": "listening"}
+{"t": 1790456984.151753, "kind": "user_state", "state": "speaking"}
+{"t": 1790456984.4201114, "kind": "metrics", "type": "stt_metrics", "duration": 0.5684677000099327, "audio_duration": 3.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456984.4211538, "kind": "heard", "text": "Keep my budget under $200."}
+{"t": 1790456986.000373, "kind": "user_state", "state": "listening"}
+{"t": 1790456986.3131914, "kind": "metrics", "type": "stt_metrics", "duration": 0.31208210001932457, "audio_duration": 2.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456986.3145077, "kind": "heard", "text": "Do you have anything like that?"}
+{"t": 1790456986.441048, "kind": "user_turn", "text": "So, um, Yeah, you know... I want a mechanical keyboard and I'm trying to. Keep my budget under $200. Do you have anything like that?"}
+{"t": 1790456986.4420493, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7926750183105469, "transcription_delay": 0.6661348342895508, "on_user_turn_completed_delay": 0.0004564999835565686, "speech_id": "speech_a9f1975f2432"}
+{"t": 1790456986.44305, "kind": "dry_run_reply", "text": "So, um, Yeah, you know... I want a mechanical keyboard and I'm trying to. Keep my budget under $200. Do you have anything like that?"}
+{"t": 1790456986.4440494, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456986.572846, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456986.5827153, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12639749998925254, "duration": 0.13838920000125654, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a9f1975f2432"}
+{"t": 1790456988.0421877, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456988.0421877, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,26 @@
+{"t": 1790456635.6875029, "kind": "session_start", "room": "eval-e709a9e8", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456635.8202114, "kind": "agent_state", "state": "listening"}
+{"t": 1790456638.6249845, "kind": "user_state", "state": "speaking"}
+{"t": 1790456648.9243195, "kind": "user_state", "state": "listening"}
+{"t": 1790456649.6804078, "kind": "metrics", "type": "stt_metrics", "duration": 0.7553390999964904, "audio_duration": 10.932, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456649.6824412, "kind": "heard", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?"}
+{"t": 1790456649.684629, "kind": "user_turn", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?"}
+{"t": 1790456649.684629, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.1117825508117676, "transcription_delay": 1.110121726989746, "on_user_turn_completed_delay": 0.00037140000495128334, "speech_id": "speech_73cb087c0152"}
+{"t": 1790456649.6866355, "kind": "dry_run_reply", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?"}
+{"t": 1790456649.6880972, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456649.8317854, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456649.8422706, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14096310001332313, "duration": 0.1524906000122428, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_73cb087c0152"}
+{"t": 1790456651.312076, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456651.312076, "kind": "agent_state", "state": "listening"}
+{"t": 1790456667.1730988, "kind": "user_state", "state": "speaking"}
+{"t": 1790456667.775747, "kind": "user_state", "state": "listening"}
+{"t": 1790456668.3803265, "kind": "metrics", "type": "stt_metrics", "duration": 0.6042133999872021, "audio_duration": 1.204, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456668.3816855, "kind": "heard", "text": "Thank you."}
+{"t": 1790456668.3849027, "kind": "dry_run_reply", "text": "Thank you."}
+{"t": 1790456668.3867838, "kind": "user_turn", "text": "Thank you."}
+{"t": 1790456668.3867838, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9616847038269043, "transcription_delay": 0.9585456848144531, "on_user_turn_completed_delay": 0.00040359998820349574, "speech_id": "speech_c7d4d07fb147"}
+{"t": 1790456668.3880758, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456668.4858172, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456668.4992695, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.09546579999732785, "duration": 0.10890099999960512, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c7d4d07fb147"}
+{"t": 1790456669.9624665, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456669.9624665, "kind": "agent_state", "state": "listening"}

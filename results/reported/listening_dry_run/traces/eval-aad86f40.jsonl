@@ -1,0 +1,43 @@
+{"t": 1790461167.0350776, "kind": "session_start", "room": "eval-aad86f40", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461167.194828, "kind": "agent_state", "state": "listening"}
+{"t": 1790461169.8886642, "kind": "user_state", "state": "speaking"}
+{"t": 1790461170.4820914, "kind": "user_state", "state": "listening"}
+{"t": 1790461170.7279046, "kind": "user_state", "state": "speaking"}
+{"t": 1790461170.9588857, "kind": "metrics", "type": "stt_metrics", "duration": 0.47589840000728145, "audio_duration": 1.204, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461170.9730256, "kind": "heard", "text": "Like,"}
+{"t": 1790461170.9763842, "kind": "dry_run_reply", "text": "Like,"}
+{"t": 1790461171.2880018, "kind": "user_state", "state": "listening"}
+{"t": 1790461171.587421, "kind": "metrics", "type": "stt_metrics", "duration": 0.298168799985433, "audio_duration": 1.172, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461171.5882251, "kind": "heard", "text": "Like..."}
+{"t": 1790461171.5907233, "kind": "dry_run_reply", "text": "Like, Like..."}
+{"t": 1790461171.6794662, "kind": "user_state", "state": "speaking"}
+{"t": 1790461172.4318395, "kind": "user_state", "state": "listening"}
+{"t": 1790461172.6352305, "kind": "user_state", "state": "speaking"}
+{"t": 1790461172.7301934, "kind": "metrics", "type": "stt_metrics", "duration": 0.2976358000014443, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461172.7316637, "kind": "heard", "text": "Um..."}
+{"t": 1790461172.7347069, "kind": "dry_run_reply", "text": "Like, Like... Um..."}
+{"t": 1790461176.3328395, "kind": "user_state", "state": "listening"}
+{"t": 1790461176.4303834, "kind": "user_state", "state": "speaking"}
+{"t": 1790461176.9462364, "kind": "metrics", "type": "stt_metrics", "duration": 0.612247799988836, "audio_duration": 4.308, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461176.9477317, "kind": "heard", "text": "So calculate the transit time to the office from there."}
+{"t": 1790461178.1790745, "kind": "user_state", "state": "listening"}
+{"t": 1790461178.4933388, "kind": "metrics", "type": "stt_metrics", "duration": 0.31361589999869466, "audio_duration": 2.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461178.4947777, "kind": "heard", "text": "Wait, no, actually."}
+{"t": 1790461178.6411655, "kind": "user_state", "state": "speaking"}
+{"t": 1790461185.1308827, "kind": "user_state", "state": "listening"}
+{"t": 1790461185.5773323, "kind": "user_turn", "text": "Like, Like... Um... So calculate the transit time to the office from there. Wait, no, actually."}
+{"t": 1790461185.578333, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7984495162963867, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047820000327192247, "speech_id": "speech_d6f37bc11e83"}
+{"t": 1790461185.5793319, "kind": "dry_run_reply", "text": "Like, Like... Um... So calculate the transit time to the office from there. Wait, no, actually."}
+{"t": 1790461185.5793319, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461185.8827186, "kind": "metrics", "type": "stt_metrics", "duration": 0.7508072000055108, "audio_duration": 7.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461185.8849046, "kind": "heard", "text": "Um, I just remembered I'd be driving, so make it driving time to the office from my house instead."}
+{"t": 1790461185.8849046, "kind": "agent_state", "state": "listening"}
+{"t": 1790461185.8975878, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.3155128000071272, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d6f37bc11e83"}
+{"t": 1790461186.698806, "kind": "user_turn", "text": "Um, I just remembered I'd be driving, so make it driving time to the office from my house instead."}
+{"t": 1790461186.6998062, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004847999953199178, "speech_id": "speech_773ff3f2acfe"}
+{"t": 1790461186.7011409, "kind": "dry_run_reply", "text": "Like, Like... Um... So calculate the transit time to the office from there. Wait, no, actually. Um, I just remembered I'd be driving, so make it driving time to the office from my house instead."}
+{"t": 1790461186.7022254, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461186.8790364, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461186.890469, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1751730999967549, "duration": 0.1871353999886196, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_773ff3f2acfe"}
+{"t": 1790461188.3491476, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461188.3501556, "kind": "agent_state", "state": "listening"}

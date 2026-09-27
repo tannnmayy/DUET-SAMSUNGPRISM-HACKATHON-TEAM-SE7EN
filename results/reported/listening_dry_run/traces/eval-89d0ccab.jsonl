@@ -1,0 +1,14 @@
+{"t": 1790459788.1281302, "kind": "session_start", "room": "eval-89d0ccab", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459788.2477236, "kind": "agent_state", "state": "listening"}
+{"t": 1790459790.992603, "kind": "user_state", "state": "speaking"}
+{"t": 1790459811.8985634, "kind": "user_state", "state": "listening"}
+{"t": 1790459812.7331438, "kind": "metrics", "type": "stt_metrics", "duration": 0.844451700017089, "audio_duration": 21.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459812.7469354, "kind": "heard", "text": "Well, here's my situation. I want to check what 1,000 US dollars is in euros right now. If the exchange rate looks good to me, then go ahead and change my mortgage autopay to pull from checking. But if the rate isn't great, just leave everything as is and keep it on the savings."}
+{"t": 1790459812.7497733, "kind": "user_turn", "text": "Well, here's my situation. I want to check what 1,000 US dollars is in euros right now. If the exchange rate looks good to me, then go ahead and change my mortgage autopay to pull from checking. But if the rate isn't great, just leave everything as is and keep it on the savings."}
+{"t": 1790459812.7508671, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.2016611099243164, "transcription_delay": 1.2000703811645508, "on_user_turn_completed_delay": 0.00038419998600147665, "speech_id": "speech_8f006cbf71f8"}
+{"t": 1790459812.7524986, "kind": "dry_run_reply", "text": "Well, here's my situation. I want to check what 1,000 US dollars is in euros right now. If the exchange rate looks good to me, then go ahead and change my mortgage autopay to pull from checking. But if the rate isn't great, just leave everything as is and keep it on the savings."}
+{"t": 1790459812.7541952, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459812.9118986, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459812.9238212, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1555192999949213, "duration": 0.16782589998911135, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8f006cbf71f8"}
+{"t": 1790459814.373991, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459814.373991, "kind": "agent_state", "state": "listening"}

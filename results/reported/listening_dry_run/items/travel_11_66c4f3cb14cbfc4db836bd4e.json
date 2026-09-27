@@ -1,0 +1,231 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "travel_11",
+  "category": "travel_identity",
+  "title": "Search and Book with Name",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:40:42.989449",
+  "inference_time_s": 44.52,
+  "room_name": "eval-1a7dfa2a",
+  "stream_start_time": 1790462445.8686662,
+  "input_transcript": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling.",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        1.14,
+        1.58
+      ]
+    },
+    {
+      "text": "we",
+      "timestamp": [
+        1.58,
+        1.72
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        1.72,
+        1.88
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        1.88,
+        2.0
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        2.0,
+        2.34
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.34,
+        2.76
+      ]
+    },
+    {
+      "text": "Austin",
+      "timestamp": [
+        2.76,
+        3.16
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        3.16,
+        3.38
+      ]
+    },
+    {
+      "text": "February",
+      "timestamp": [
+        3.38,
+        3.74
+      ]
+    },
+    {
+      "text": "2nd",
+      "timestamp": [
+        3.74,
+        4.32
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        4.32,
+        4.56
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        4.56,
+        5.04
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        5.04,
+        5.24
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.24,
+        5.4
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        5.4,
+        5.64
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        5.64,
+        5.76
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        5.76,
+        6.0
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        6.0,
+        6.24
+      ]
+    },
+    {
+      "text": "same",
+      "timestamp": [
+        6.24,
+        6.52
+      ]
+    },
+    {
+      "text": "Morgan",
+      "timestamp": [
+        6.52,
+        6.9
+      ]
+    },
+    {
+      "text": "Smith.",
+      "timestamp": [
+        6.9,
+        7.32
+      ]
+    },
+    {
+      "text": "That's",
+      "timestamp": [
+        7.52,
+        8.0
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        8.0,
+        8.76
+      ]
+    },
+    {
+      "text": "person",
+      "timestamp": [
+        8.76,
+        9.02
+      ]
+    },
+    {
+      "text": "who",
+      "timestamp": [
+        9.02,
+        9.24
+      ]
+    },
+    {
+      "text": "will",
+      "timestamp": [
+        9.24,
+        9.42
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        9.42,
+        9.58
+      ]
+    },
+    {
+      "text": "traveling.",
+      "timestamp": [
+        9.58,
+        10.0
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.0,
+  "latency": {
+    "input_duration_s": 40.971,
+    "output_duration_s": 40.971,
+    "first_speech_s": 13.9
+  },
+  "user_done_unix": 1790462455.8686662,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        13.65,
+        14.17
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.65,
+  "audio_agent_speech_start": 13.65,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

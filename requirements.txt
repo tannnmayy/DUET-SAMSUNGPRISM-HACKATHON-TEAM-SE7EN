@@ -1,38 +1,30 @@
-# Graded agent dependencies ONLY. Mirrored exactly in submission.yaml
-# (tests/test_packaging.py fails on any drift between the two).
-#
-# Installed by the evaluation portal from public PyPI. Every version is pinned
-# to the one we tested: scoring happens after the deadline, and an unpinned
-# dependency can change underneath us in between.
-#
-# Microphone / sandbox dependencies live in requirements-app.txt: duet/ never
-# imports app/, so a missing app dependency cannot affect the scored run.
+# DUET voice agent (Linux x86_64, Python 3.10-3.12, NVIDIA GPU with a CUDA 12/13 driver).
+# Exact versions of the run we report. The benchmark runner has its own file
+# (requirements-bench.txt) because NVIDIA NeMo pins heavy dependencies.
 
-# --- CUDA 12 stack ----------------------------------------------------------
-# torch 2.10.0 is the LAST PyPI release built on CUDA 12 (12.8); 2.11 onwards
-# is CUDA 13. The speech engine (CTranslate2 4.8.2, below) is a CUDA 12 build
-# that needs cuBLAS 12 and cuDNN 9 at run time - which torch 2.10.0 brings as
-# its own dependencies (nvidia-cublas-cu12, nvidia-cudnn-cu12) on Linux, and
-# duet/perception/cuda.py makes visible. One CUDA runtime, shipped by pip, so
-# only the machine's driver matters, not its installed toolkit.
-torch==2.10.0
-torchvision==0.25.0
+# LiveKit Agents: transport, VAD, end-of-turn detection, TTS playback, barge-in
+livekit-agents[silero,turn-detector,google,openai]==1.8.3
+livekit-local-inference==0.2.7
 
-# --- speech -----------------------------------------------------------------
-# faster-whisper: CTranslate2 inference, word-level probabilities (what M5's
-# confidence gate is built on), and an MP3/WAV decoder (PyAV) that needs no
-# system ffmpeg.
+# Thinker and talker (Gemini API); openai is the client of the offline proxy judge
+google-genai==2.25.0
+openai==2.54.0
+
+# Ears: faster-whisper large-v3-turbo on the GPU (CUDA libraries come with torch)
 faster-whisper==1.2.1
 ctranslate2==4.8.2
 
-# --- vision -----------------------------------------------------------------
-# transformers + accelerate: the vision-language model (device_map="auto"
-# requires accelerate). sentence-transformers: CLIP frame embeddings.
-transformers==5.4.0
-accelerate==1.15.0
-sentence-transformers==5.3.0
-huggingface-hub==1.8.0
+# Voice: Kokoro-82M
+torch==2.10.0
+kokoro==0.9.4
+misaki[en]==0.9.4
+transformers==5.17.0
+soundfile==0.14.0
+# Kokoro's English phonemizer (misaki) needs this spaCy model; pinned here instead
+# of letting misaki download whatever is current on first use
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
 
-# --- shared -----------------------------------------------------------------
-numpy==1.26.4
-pillow==12.2.0
+# numpy 2.3+ needs Python 3.11; Ubuntu 22.04's Python 3.10 gets the last 3.10 release
+numpy==2.4.6; python_version >= "3.11"
+numpy==2.2.6; python_version < "3.11"
+python-dotenv==1.2.3

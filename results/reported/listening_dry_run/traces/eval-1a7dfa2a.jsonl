@@ -1,0 +1,14 @@
+{"t": 1790462444.0648165, "kind": "session_start", "room": "eval-1a7dfa2a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462444.1649425, "kind": "agent_state", "state": "listening"}
+{"t": 1790462447.5644324, "kind": "user_state", "state": "speaking"}
+{"t": 1790462456.814208, "kind": "user_state", "state": "listening"}
+{"t": 1790462457.4679744, "kind": "metrics", "type": "stt_metrics", "duration": 0.652575500018429, "audio_duration": 9.812, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462457.4785547, "kind": "heard", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling."}
+{"t": 1790462457.4809763, "kind": "user_turn", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling."}
+{"t": 1790462457.4809763, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0181567668914795, "transcription_delay": 1.0168519020080566, "on_user_turn_completed_delay": 0.0003589999978430569, "speech_id": "speech_88524db65bbf"}
+{"t": 1790462457.482706, "kind": "dry_run_reply", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling."}
+{"t": 1790462457.4841254, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462457.6458683, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462457.6583652, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15561950000119396, "duration": 0.16820839999127202, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88524db65bbf"}
+{"t": 1790462459.1033974, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462459.1046848, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,231 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "finance_08",
+  "category": "finance_billing",
+  "title": "Simple Exchange with Hesitation",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:43:28.599477",
+  "inference_time_s": 45.07,
+  "room_name": "eval-8345b71a",
+  "stream_start_time": 1790459011.4450138,
+  "input_transcript": "I'm trying to figure out how much money I'd have if I converted, let me think, about 200 euros into US dollars. What would that come out to?",
+  "input_asr_chunks": [
+    {
+      "text": "I'm",
+      "timestamp": [
+        0.27,
+        0.81
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        0.81,
+        1.01
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.01,
+        1.17
+      ]
+    },
+    {
+      "text": "figure",
+      "timestamp": [
+        1.17,
+        1.37
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        1.37,
+        1.57
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        1.57,
+        1.75
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        1.75,
+        1.97
+      ]
+    },
+    {
+      "text": "money",
+      "timestamp": [
+        1.97,
+        2.19
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        2.19,
+        2.51
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        2.51,
+        2.89
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        2.89,
+        3.31
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.31,
+        4.35
+      ]
+    },
+    {
+      "text": "converted,",
+      "timestamp": [
+        4.35,
+        4.87
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        4.87,
+        5.31
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        5.31,
+        5.49
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        5.49,
+        5.87
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        6.65,
+        6.91
+      ]
+    },
+    {
+      "text": "200",
+      "timestamp": [
+        6.91,
+        7.77
+      ]
+    },
+    {
+      "text": "euros",
+      "timestamp": [
+        7.77,
+        8.21
+      ]
+    },
+    {
+      "text": "into",
+      "timestamp": [
+        8.21,
+        8.59
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        8.59,
+        8.95
+      ]
+    },
+    {
+      "text": "dollars.",
+      "timestamp": [
+        8.95,
+        9.37
+      ]
+    },
+    {
+      "text": "What",
+      "timestamp": [
+        9.37,
+        9.93
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        9.93,
+        10.07
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        10.07,
+        10.25
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        10.25,
+        10.53
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        10.53,
+        10.77
+      ]
+    },
+    {
+      "text": "to?",
+      "timestamp": [
+        10.77,
+        10.99
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.99,
+  "latency": {
+    "input_duration_s": 41.58,
+    "output_duration_s": 41.58,
+    "first_speech_s": 15.95
+  },
+  "user_done_unix": 1790459022.4350138,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        15.73,
+        16.23
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.74,
+  "audio_agent_speech_start": 15.73,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

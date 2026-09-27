@@ -1,0 +1,4795 @@
+{
+  "benchmark_name": "In-the-Wild Speech & Multi-Step Tool Calling",
+  "evaluated_at": "2026-09-27T06:53:46.291100",
+  "total_scenarios": 100,
+  "turn_taking": {
+    "total": 100,
+    "turn_taken": 100,
+    "no_response": 0,
+    "turn_take_rate": 1.0
+  },
+  "by_metric": {
+    "tool_selection_acc": 0.0,
+    "argument_acc": 0.0,
+    "response_qual": null,
+    "tool_selection_acc_all": 0.0,
+    "argument_acc_all": 0.0,
+    "note": "*_all includes no-response samples (scored 0); default metrics are turn-taken only"
+  },
+  "latency": {
+    "total_samples": 100,
+    "interruption_count": 12,
+    "interruption_rate": 0.12,
+    "avg_response_latency_s": 4.09,
+    "std_response_latency_s": 1.072,
+    "min_latency_s": 1.24,
+    "max_latency_s": 11.1,
+    "note": "avg/std/min/max exclude interruption samples; computed on turn-taken samples only"
+  },
+  "by_domain": {
+    "ecommerce_support": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "finance_billing": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "housing_location": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "travel_identity": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    }
+  },
+  "by_difficulty": {
+    "easy": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "medium": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "hard": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    }
+  },
+  "by_domain_turn_taken": {
+    "ecommerce_support": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "finance_billing": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "housing_location": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "travel_identity": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    }
+  },
+  "by_difficulty_turn_taken": {
+    "easy": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "medium": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    },
+    "hard": {
+      "tool_selection_acc": 0.0,
+      "argument_acc": 0.0
+    }
+  },
+  "scenario_results": [
+    {
+      "scenario_id": "ecommerce_01",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Order Tracking",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.23,
+        "audio_agent_speech_start": 19.47,
+        "agent_response_latency_s": 4.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_01",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Order Tracking",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.27,
+        "audio_agent_speech_start": 5.84,
+        "agent_response_latency_s": -12.43,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_02",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Product Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.19,
+        "audio_agent_speech_start": 15.22,
+        "agent_response_latency_s": 3.03,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_04",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Order Tracking with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.21,
+        "audio_agent_speech_start": 14.16,
+        "agent_response_latency_s": 3.95,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_05",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Product Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 7.16,
+        "audio_agent_speech_start": 15.22,
+        "agent_response_latency_s": 8.06,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_06",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.73,
+        "audio_agent_speech_start": 17.17,
+        "agent_response_latency_s": 3.44,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_07",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "False Start Before Track",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.98,
+        "audio_agent_speech_start": 20.91,
+        "agent_response_latency_s": 3.93,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_08",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.36,
+        "audio_agent_speech_start": 4.72,
+        "agent_response_latency_s": -9.64,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_08",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.39,
+        "audio_agent_speech_start": 15.44,
+        "agent_response_latency_s": 3.05,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_09",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Product Search Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.35,
+        "audio_agent_speech_start": 16.59,
+        "agent_response_latency_s": 3.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_10",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Track + Search Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.54,
+        "audio_agent_speech_start": 23.15,
+        "agent_response_latency_s": 3.61,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_11",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Quantity Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.06,
+        "audio_agent_speech_start": 13.33,
+        "agent_response_latency_s": 3.27,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_12",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Hesitation with Category",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.33,
+        "audio_agent_speech_start": 14.38,
+        "agent_response_latency_s": 4.05,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_13",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Cart + Track Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart",
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.12,
+        "audio_agent_speech_start": 24.37,
+        "agent_response_latency_s": 4.25,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_13",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Cart + Track Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart",
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 26.09,
+        "audio_agent_speech_start": 29.3,
+        "agent_response_latency_s": 3.21,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_14",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.96,
+        "audio_agent_speech_start": 23.06,
+        "agent_response_latency_s": 4.1,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_14",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.36,
+        "audio_agent_speech_start": 23.7,
+        "agent_response_latency_s": 4.34,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_15",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Order Track with Pause and Filler",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.34,
+        "audio_agent_speech_start": 20.4,
+        "agent_response_latency_s": 4.06,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_15",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Order Track with Pause and Filler",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.81,
+        "audio_agent_speech_start": 20.27,
+        "agent_response_latency_s": 4.46,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_16",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Search with Hesitation Before Item",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.86,
+        "audio_agent_speech_start": 6.54,
+        "agent_response_latency_s": -9.32,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_17",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "False Start then Track",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.81,
+        "audio_agent_speech_start": 17.9,
+        "agent_response_latency_s": 3.09,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_18",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Search + Cart + Track Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products",
+            "add_to_cart",
+            "track_order"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.32,
+        "audio_agent_speech_start": 17.78,
+        "agent_response_latency_s": 4.46,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_19",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Product + Quantity Double Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.81,
+        "audio_agent_speech_start": 22.7,
+        "agent_response_latency_s": 3.89,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_20",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Conditional Logic: Price Check then Cart",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 23.93,
+        "audio_agent_speech_start": 27.5,
+        "agent_response_latency_s": 3.57,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_21",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Hesitant Tracking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 24.22,
+        "audio_agent_speech_start": 28.53,
+        "agent_response_latency_s": 4.31,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_21",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Hesitant Tracking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 24.75,
+        "audio_agent_speech_start": 15.95,
+        "agent_response_latency_s": -8.8,
+        "is_interruption": true
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_23",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Unsupported Tool (Refund) + Valid Requests",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.3,
+        "audio_agent_speech_start": 24.72,
+        "agent_response_latency_s": 4.42,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_25",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "False Start into Complex Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.93,
+        "audio_agent_speech_start": 23.02,
+        "agent_response_latency_s": 4.09,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_25",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "False Start into Complex Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "track_order",
+            "search_products",
+            "add_to_cart"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 22.72,
+        "audio_agent_speech_start": 22.03,
+        "agent_response_latency_s": -0.69,
+        "is_interruption": true
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_01",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Currency Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.8,
+        "audio_agent_speech_start": 14.1,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_01",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Currency Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.37,
+        "audio_agent_speech_start": 12.53,
+        "agent_response_latency_s": 3.16,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_02",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Check Card Benefits",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_card_benefits"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 8.99,
+        "audio_agent_speech_start": 13.55,
+        "agent_response_latency_s": 4.56,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_03",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Modify Autopay with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.76,
+        "audio_agent_speech_start": 16.08,
+        "agent_response_latency_s": 4.32,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_03",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Modify Autopay with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.79,
+        "audio_agent_speech_start": 20.53,
+        "agent_response_latency_s": 4.74,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_04",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Exchange with Pause Before Currency",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 8.8,
+        "audio_agent_speech_start": 7.73,
+        "agent_response_latency_s": -1.07,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_06",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Card Benefits with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_card_benefits"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.33,
+        "audio_agent_speech_start": 15.34,
+        "agent_response_latency_s": 4.01,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_07",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "False Start then Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.42,
+        "audio_agent_speech_start": 20.69,
+        "agent_response_latency_s": 4.27,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_07",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "False Start then Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.73,
+        "audio_agent_speech_start": 17.49,
+        "agent_response_latency_s": 3.76,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_08",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Exchange with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.99,
+        "audio_agent_speech_start": 15.73,
+        "agent_response_latency_s": 4.74,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_08",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Exchange with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.12,
+        "audio_agent_speech_start": 9.36,
+        "agent_response_latency_s": -3.76,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_10",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Benefits + Exchange Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_card_benefits",
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.59,
+        "audio_agent_speech_start": 19.79,
+        "agent_response_latency_s": 4.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_11",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Autopay with Filler Words",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.66,
+        "audio_agent_speech_start": 12.98,
+        "agent_response_latency_s": 3.32,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_12",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Amount Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.34,
+        "audio_agent_speech_start": 16.11,
+        "agent_response_latency_s": 3.77,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_12",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Amount Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.22,
+        "audio_agent_speech_start": 8.72,
+        "agent_response_latency_s": -5.5,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_14",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Two Currency Conversions",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate",
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.38,
+        "audio_agent_speech_start": 19.34,
+        "agent_response_latency_s": 4.96,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_15",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Autopay Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.16,
+        "audio_agent_speech_start": 16.34,
+        "agent_response_latency_s": 4.18,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_16",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Hesitant Exchange Query",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 5.78,
+        "audio_agent_speech_start": 16.88,
+        "agent_response_latency_s": 11.1,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_17",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "False Start then Benefits Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_card_benefits"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.96,
+        "audio_agent_speech_start": 17.36,
+        "agent_response_latency_s": 4.4,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_18",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Exchange + Autopay + Benefits Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate",
+            "modify_autopay",
+            "get_card_benefits"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.96,
+        "audio_agent_speech_start": 23.41,
+        "agent_response_latency_s": 4.45,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_19",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Double Self-Correction in Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.94,
+        "audio_agent_speech_start": 18.19,
+        "agent_response_latency_s": 4.25,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_20",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Conditional Autopay Based on Exchange Rate",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate",
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.92,
+        "audio_agent_speech_start": 24.85,
+        "agent_response_latency_s": 3.93,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_21",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Hesitant Multi-Task",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_card_benefits",
+            "get_exchange_rate"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.3,
+        "audio_agent_speech_start": 20.72,
+        "agent_response_latency_s": 4.42,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_22",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Dual Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay",
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.1,
+        "audio_agent_speech_start": 23.12,
+        "agent_response_latency_s": 4.02,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_23",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "False Start + Autopay Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.12,
+        "audio_agent_speech_start": 21.36,
+        "agent_response_latency_s": 4.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_01",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Simple Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.56,
+        "audio_agent_speech_start": 13.04,
+        "agent_response_latency_s": 3.48,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_02",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Simple Commute Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.67,
+        "audio_agent_speech_start": 18.64,
+        "agent_response_latency_s": 4.97,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_03",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Filter Update with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.15,
+        "audio_agent_speech_start": 21.3,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_04",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Apartment Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.92,
+        "audio_agent_speech_start": 14.64,
+        "agent_response_latency_s": -3.28,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_05",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Pet-Friendly Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.0,
+        "audio_agent_speech_start": 4.34,
+        "agent_response_latency_s": -13.66,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_05",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Pet-Friendly Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.4,
+        "audio_agent_speech_start": 24.59,
+        "agent_response_latency_s": 5.19,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_06",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Walking Commute Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.02,
+        "audio_agent_speech_start": 18.93,
+        "agent_response_latency_s": 4.91,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_08",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "False Start Before Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.82,
+        "audio_agent_speech_start": 17.49,
+        "agent_response_latency_s": 4.67,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_09",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "City Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.66,
+        "audio_agent_speech_start": 18.67,
+        "agent_response_latency_s": 4.01,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_10",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute + Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute",
+            "update_search_filter"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.49,
+        "audio_agent_speech_start": 20.56,
+        "agent_response_latency_s": 4.07,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_11",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Bedroom and Price Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.5,
+        "audio_agent_speech_start": 13.84,
+        "agent_response_latency_s": 3.34,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_13",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Dual Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter",
+            "update_search_filter"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.75,
+        "audio_agent_speech_start": 21.62,
+        "agent_response_latency_s": 4.87,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_14",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.65,
+        "audio_agent_speech_start": 21.71,
+        "agent_response_latency_s": 4.06,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_14",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.1,
+        "audio_agent_speech_start": 24.11,
+        "agent_response_latency_s": 4.01,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_15",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "False Start then Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.7,
+        "audio_agent_speech_start": 21.9,
+        "agent_response_latency_s": 4.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_15",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "False Start then Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.05,
+        "audio_agent_speech_start": 23.82,
+        "agent_response_latency_s": 4.77,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_17",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute Mode Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.28,
+        "audio_agent_speech_start": 19.92,
+        "agent_response_latency_s": 4.64,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_17",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute Mode Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.53,
+        "audio_agent_speech_start": 19.73,
+        "agent_response_latency_s": 4.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_18",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Search + Commute Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.74,
+        "audio_agent_speech_start": 19.95,
+        "agent_response_latency_s": 3.21,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_19",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Double Commute Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.76,
+        "audio_agent_speech_start": 16.05,
+        "agent_response_latency_s": 3.29,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_20",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Conditional Search Logic",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments",
+            "calculate_commute",
+            "update_search_filter"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.66,
+        "audio_agent_speech_start": 19.89,
+        "agent_response_latency_s": 3.23,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_21",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Multi-Correction Across Statements",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.82,
+        "audio_agent_speech_start": 22.1,
+        "agent_response_latency_s": 3.28,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_22",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Filler-Heavy Multi-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter",
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.6,
+        "audio_agent_speech_start": 22.93,
+        "agent_response_latency_s": 4.33,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_24",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Hesitant Three-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter",
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 25.44,
+        "audio_agent_speech_start": 29.58,
+        "agent_response_latency_s": 4.14,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_24",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Hesitant Three-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter",
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 27.86,
+        "audio_agent_speech_start": 30.93,
+        "agent_response_latency_s": 3.07,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_25",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Full Chain: Filters + Search + Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_search_filter",
+            "update_search_filter",
+            "search_apartments"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_search_filter",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.75,
+        "audio_agent_speech_start": 23.73,
+        "agent_response_latency_s": 3.98,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_01",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Simple Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 5.98,
+        "audio_agent_speech_start": 9.52,
+        "agent_response_latency_s": 3.54,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_02",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Update Passport Number",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.78,
+        "audio_agent_speech_start": 17.04,
+        "agent_response_latency_s": 4.26,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_03",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.44,
+        "audio_agent_speech_start": 16.56,
+        "agent_response_latency_s": 4.12,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_03",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.1,
+        "audio_agent_speech_start": 16.18,
+        "agent_response_latency_s": 4.08,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_05",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.65,
+        "audio_agent_speech_start": 15.15,
+        "agent_response_latency_s": 5.5,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_07",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Driver License Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.11,
+        "audio_agent_speech_start": 18.1,
+        "agent_response_latency_s": 3.99,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_07",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Driver License Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.55,
+        "audio_agent_speech_start": 15.54,
+        "agent_response_latency_s": 3.99,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_08",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "False Start Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.98,
+        "audio_agent_speech_start": 7.73,
+        "agent_response_latency_s": -2.25,
+        "is_interruption": true
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_10",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Date Correction with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 7.22,
+        "audio_agent_speech_start": 8.46,
+        "agent_response_latency_s": 1.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_11",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Search and Book with Name",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.0,
+        "audio_agent_speech_start": 13.65,
+        "agent_response_latency_s": 3.65,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_14",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Hesitation with Date",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.8,
+        "audio_agent_speech_start": 14.03,
+        "agent_response_latency_s": 3.23,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_16",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.81,
+        "audio_agent_speech_start": 18.03,
+        "agent_response_latency_s": 4.22,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_18",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Search + Book + Passport Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.73,
+        "audio_agent_speech_start": 23.92,
+        "agent_response_latency_s": 3.19,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_19",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Double Destination + Date Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.93,
+        "audio_agent_speech_start": 20.14,
+        "agent_response_latency_s": 3.21,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_20",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Conditional Booking Under Budget",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.8,
+        "audio_agent_speech_start": 19.25,
+        "agent_response_latency_s": 3.45,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_21",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Hesitant Booking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.24,
+        "audio_agent_speech_start": 23.6,
+        "agent_response_latency_s": 4.36,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_21",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Hesitant Booking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 22.42,
+        "audio_agent_speech_start": 25.78,
+        "agent_response_latency_s": 3.36,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_23",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Document Updates",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_identity_doc",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 21.93,
+        "audio_agent_speech_start": 26.0,
+        "agent_response_latency_s": 4.07,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_23",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Document Updates",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "update_identity_doc",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 1.25,
+        "audio_agent_speech_start": 4.4,
+        "agent_response_latency_s": 3.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_24",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Unsupported Tool Request (Hotel)",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": null,
+          "explanation": "LLM judge disabled; response accuracy skipped."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 25.63,
+        "audio_agent_speech_start": 13.1,
+        "agent_response_latency_s": -12.53,
+        "is_interruption": true
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{"t": 1790458812.6838925, "kind": "session_start", "room": "eval-0e265afb", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458812.7847147, "kind": "agent_state", "state": "listening"}
+{"t": 1790458815.5514529, "kind": "user_state", "state": "speaking"}
+{"t": 1790458821.853589, "kind": "user_state", "state": "listening"}
+{"t": 1790458822.397999, "kind": "user_state", "state": "speaking"}
+{"t": 1790458822.5193517, "kind": "metrics", "type": "stt_metrics", "duration": 0.6650790999992751, "audio_duration": 6.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458822.533386, "kind": "heard", "text": "Um, so, uh, I was wondering what the benefits are for the travel card."}
+{"t": 1790458822.5356266, "kind": "dry_run_reply", "text": "Um, so, uh, I was wondering what the benefits are for the travel card."}
+{"t": 1790458823.6477854, "kind": "user_state", "state": "listening"}
+{"t": 1790458823.788141, "kind": "user_state", "state": "speaking"}
+{"t": 1790458823.9565766, "kind": "metrics", "type": "stt_metrics", "duration": 0.3077071000006981, "audio_duration": 1.876, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458823.9579227, "kind": "heard", "text": "I think that's..."}
+{"t": 1790458823.960641, "kind": "dry_run_reply", "text": "Um, so, uh, I was wondering what the benefits are for the travel card. I think that's..."}
+{"t": 1790458826.4438272, "kind": "user_state", "state": "listening"}
+{"t": 1790458826.8869383, "kind": "user_turn", "text": "Um, so, uh, I was wondering what the benefits are for the travel card. I think that's..."}
+{"t": 1790458826.8879368, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7941079139709473, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00045659998431801796, "speech_id": "speech_f4910d0712a8"}
+{"t": 1790458826.8889406, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458827.0666113, "kind": "metrics", "type": "stt_metrics", "duration": 0.6216167000238784, "audio_duration": 3.252, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458827.0676196, "kind": "heard", "text": "The one my coworker recommended for me."}
+{"t": 1790458827.0681922, "kind": "agent_state", "state": "listening"}
+{"t": 1790458827.0763502, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.1855883999960497, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f4910d0712a8"}
+{"t": 1790458827.856788, "kind": "user_turn", "text": "The one my coworker recommended for me."}
+{"t": 1790458827.856788, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000505700008943677, "speech_id": "speech_5a1bab06f118"}
+{"t": 1790458827.857788, "kind": "dry_run_reply", "text": "Um, so, uh, I was wondering what the benefits are for the travel card. I think that's... The one my coworker recommended for me."}
+{"t": 1790458827.8587885, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458827.9507236, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458827.9627302, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08971749999909662, "duration": 0.10249950000434183, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5a1bab06f118"}
+{"t": 1790458829.4261374, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458829.4261374, "kind": "agent_state", "state": "listening"}

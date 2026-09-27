@@ -1,0 +1,259 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "finance_11",
+  "category": "finance_billing",
+  "title": "Autopay with Filler Words",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:46:40.950218",
+  "inference_time_s": 44.52,
+  "room_name": "eval-1e28ee8d",
+  "stream_start_time": 1790459203.8151584,
+  "input_transcript": "um so i want to set my credit card payment to pull from like my savings account instead of where it is from now can you switch that over for me",
+  "input_asr_chunks": [
+    {
+      "text": "um",
+      "timestamp": [
+        0.02,
+        0.58
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        0.58,
+        0.98
+      ]
+    },
+    {
+      "text": "i",
+      "timestamp": [
+        0.98,
+        2.1
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        2.1,
+        2.26
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.26,
+        2.42
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        2.42,
+        3.12
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        3.12,
+        3.28
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        3.28,
+        3.56
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        3.56,
+        3.74
+      ]
+    },
+    {
+      "text": "payment",
+      "timestamp": [
+        3.74,
+        4.08
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.08,
+        4.32
+      ]
+    },
+    {
+      "text": "pull",
+      "timestamp": [
+        4.32,
+        4.58
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        4.58,
+        4.86
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        4.86,
+        5.06
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        5.06,
+        5.24
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        5.24,
+        5.62
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        5.62,
+        6.06
+      ]
+    },
+    {
+      "text": "instead",
+      "timestamp": [
+        6.06,
+        6.74
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        6.74,
+        6.92
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        6.92,
+        7.1
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        7.1,
+        7.22
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        7.22,
+        7.34
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        7.34,
+        7.52
+      ]
+    },
+    {
+      "text": "now",
+      "timestamp": [
+        7.52,
+        7.84
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        7.84,
+        8.42
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.42,
+        8.54
+      ]
+    },
+    {
+      "text": "switch",
+      "timestamp": [
+        8.54,
+        8.78
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        8.78,
+        8.98
+      ]
+    },
+    {
+      "text": "over",
+      "timestamp": [
+        8.98,
+        9.24
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.24,
+        9.46
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        9.46,
+        9.66
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.66,
+  "latency": {
+    "input_duration_s": 41.04,
+    "output_duration_s": 41.04,
+    "first_speech_s": 13.15
+  },
+  "user_done_unix": 1790459213.4751585,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        12.98,
+        13.54
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        13.84,
+        14.4
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.32,
+  "audio_agent_speech_start": 12.98,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

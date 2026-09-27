@@ -1,0 +1,24 @@
+{"t": 1790459650.194266, "kind": "session_start", "room": "eval-b124ba11", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459650.368886, "kind": "agent_state", "state": "listening"}
+{"t": 1790459653.0563579, "kind": "user_state", "state": "speaking"}
+{"t": 1790459663.1056724, "kind": "user_state", "state": "listening"}
+{"t": 1790459663.260274, "kind": "user_state", "state": "speaking"}
+{"t": 1790459663.6780326, "kind": "metrics", "type": "stt_metrics", "duration": 0.5715956000203732, "audio_duration": 10.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459663.69233, "kind": "heard", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card."}
+{"t": 1790459663.6948824, "kind": "dry_run_reply", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card."}
+{"t": 1790459672.0092902, "kind": "user_state", "state": "listening"}
+{"t": 1790459672.4505606, "kind": "user_turn", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card."}
+{"t": 1790459672.4515598, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7932703495025635, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00041710000368766487, "speech_id": "speech_c7eaf6c867e5"}
+{"t": 1790459672.4515598, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459672.6934764, "kind": "metrics", "type": "stt_metrics", "duration": 0.6885691000206862, "audio_duration": 9.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459672.6951613, "kind": "heard", "text": "And finally, can you tell me what kind of benefits the premium card has?"}
+{"t": 1790459672.6956675, "kind": "agent_state", "state": "listening"}
+{"t": 1790459672.7082977, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.25456620001932606, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c7eaf6c867e5"}
+{"t": 1790459673.473616, "kind": "user_turn", "text": "And finally, can you tell me what kind of benefits the premium card has?"}
+{"t": 1790459673.4746222, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005109999910928309, "speech_id": "speech_43ce1d071b94"}
+{"t": 1790459673.4756215, "kind": "dry_run_reply", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card. And finally, can you tell me what kind of benefits the premium card has?"}
+{"t": 1790459673.476622, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459673.608317, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459673.6192026, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12937539999256842, "duration": 0.14133149999543093, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_43ce1d071b94"}
+{"t": 1790459675.0894647, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459675.0894647, "kind": "agent_state", "state": "listening"}

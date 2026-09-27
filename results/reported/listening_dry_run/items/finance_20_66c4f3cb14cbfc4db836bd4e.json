@@ -1,0 +1,413 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "finance_20",
+  "category": "finance_billing",
+  "title": "Conditional Autopay Based on Exchange Rate",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:56:27.037515",
+  "inference_time_s": 56.21,
+  "room_name": "eval-89d0ccab",
+  "stream_start_time": 1790459789.963621,
+  "input_transcript": "Well, here's my situation. I want to check what $1 ,000 is in Euros right now. If the exchange rate looks good to me, then go ahead and change my mortgage auto pay to pull from checking. But if the rate isn't great, just leave everything as is and keep it on the savings.",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.46,
+        1.1
+      ]
+    },
+    {
+      "text": "here's",
+      "timestamp": [
+        1.38,
+        1.6
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        1.6,
+        1.74
+      ]
+    },
+    {
+      "text": "situation.",
+      "timestamp": [
+        1.74,
+        2.3
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.58,
+        2.74
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        2.74,
+        3.22
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        3.22,
+        3.38
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        3.38,
+        3.64
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        3.64,
+        4.04
+      ]
+    },
+    {
+      "text": "$1",
+      "timestamp": [
+        4.04,
+        4.38
+      ]
+    },
+    {
+      "text": ",000",
+      "timestamp": [
+        4.38,
+        4.76
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        4.76,
+        5.78
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        5.78,
+        6.54
+      ]
+    },
+    {
+      "text": "Euros",
+      "timestamp": [
+        6.54,
+        6.88
+      ]
+    },
+    {
+      "text": "right",
+      "timestamp": [
+        6.88,
+        7.26
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        7.26,
+        7.58
+      ]
+    },
+    {
+      "text": "If",
+      "timestamp": [
+        7.76,
+        8.28
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        8.28,
+        8.44
+      ]
+    },
+    {
+      "text": "exchange",
+      "timestamp": [
+        8.44,
+        8.78
+      ]
+    },
+    {
+      "text": "rate",
+      "timestamp": [
+        8.78,
+        9.18
+      ]
+    },
+    {
+      "text": "looks",
+      "timestamp": [
+        9.18,
+        9.7
+      ]
+    },
+    {
+      "text": "good",
+      "timestamp": [
+        9.7,
+        9.98
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        9.98,
+        10.18
+      ]
+    },
+    {
+      "text": "me,",
+      "timestamp": [
+        10.18,
+        10.42
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        10.62,
+        10.78
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        10.78,
+        11.36
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        11.36,
+        11.62
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.62,
+        11.84
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        11.84,
+        12.12
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        12.12,
+        12.32
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        12.32,
+        12.76
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        12.76,
+        13.28
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        13.28,
+        13.56
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.56,
+        13.8
+      ]
+    },
+    {
+      "text": "pull",
+      "timestamp": [
+        13.8,
+        14.08
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        14.08,
+        14.3
+      ]
+    },
+    {
+      "text": "checking.",
+      "timestamp": [
+        14.3,
+        14.68
+      ]
+    },
+    {
+      "text": "But",
+      "timestamp": [
+        14.94,
+        15.36
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        15.36,
+        15.46
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        15.46,
+        15.54
+      ]
+    },
+    {
+      "text": "rate",
+      "timestamp": [
+        15.54,
+        15.74
+      ]
+    },
+    {
+      "text": "isn't",
+      "timestamp": [
+        15.74,
+        16.16
+      ]
+    },
+    {
+      "text": "great,",
+      "timestamp": [
+        16.16,
+        16.48
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        16.98,
+        17.62
+      ]
+    },
+    {
+      "text": "leave",
+      "timestamp": [
+        17.62,
+        17.9
+      ]
+    },
+    {
+      "text": "everything",
+      "timestamp": [
+        17.9,
+        18.38
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        18.38,
+        18.7
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        18.7,
+        18.98
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        18.98,
+        19.22
+      ]
+    },
+    {
+      "text": "keep",
+      "timestamp": [
+        19.22,
+        19.7
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        19.7,
+        19.94
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        19.94,
+        20.18
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        20.18,
+        20.54
+      ]
+    },
+    {
+      "text": "savings.",
+      "timestamp": [
+        20.54,
+        20.92
+      ]
+    }
+  ],
+  "user_speech_end_rel": 20.92,
+  "latency": {
+    "input_duration_s": 52.576,
+    "output_duration_s": 52.576,
+    "first_speech_s": 25.05
+  },
+  "user_done_unix": 1790459810.883621,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        24.85,
+        25.33
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.93,
+  "audio_agent_speech_start": 24.85,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

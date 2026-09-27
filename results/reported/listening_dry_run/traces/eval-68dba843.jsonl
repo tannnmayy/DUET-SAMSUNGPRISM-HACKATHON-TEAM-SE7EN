@@ -1,0 +1,26 @@
+{"t": 1790461434.3573601, "kind": "session_start", "room": "eval-68dba843", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461434.5000777, "kind": "agent_state", "state": "listening"}
+{"t": 1790461436.863952, "kind": "user_state", "state": "speaking"}
+{"t": 1790461442.5655026, "kind": "user_state", "state": "listening"}
+{"t": 1790461442.8743842, "kind": "user_state", "state": "speaking"}
+{"t": 1790461443.150912, "kind": "metrics", "type": "stt_metrics", "duration": 0.5836693000164814, "audio_duration": 6.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461443.1650524, "kind": "heard", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000."}
+{"t": 1790461443.167496, "kind": "dry_run_reply", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000."}
+{"t": 1790461453.463679, "kind": "user_state", "state": "listening"}
+{"t": 1790461453.902525, "kind": "user_turn", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000."}
+{"t": 1790461453.9030306, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7903413772583008, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004532999882940203, "speech_id": "speech_3361449726f4"}
+{"t": 1790461453.9030306, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461454.240296, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461454.2573276, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.33452809997834265, "duration": 0.35219839998171665, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3361449726f4"}
+{"t": 1790461454.3051288, "kind": "metrics", "type": "stt_metrics", "duration": 0.8393637999834027, "audio_duration": 11.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461454.3065493, "kind": "heard", "text": "Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work."}
+{"t": 1790461455.1105785, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461455.1105785, "kind": "agent_state", "state": "listening"}
+{"t": 1790461455.1115785, "kind": "user_turn", "text": "Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work."}
+{"t": 1790461455.1126308, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0006746999861206859, "speech_id": "speech_64d21f6c9e36"}
+{"t": 1790461455.1156805, "kind": "dry_run_reply", "text": "Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work."}
+{"t": 1790461455.1172595, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461455.259992, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461455.2718985, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13891309997416101, "duration": 0.15068279998376966, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_64d21f6c9e36"}
+{"t": 1790461456.7419314, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461456.7419314, "kind": "agent_state", "state": "listening"}

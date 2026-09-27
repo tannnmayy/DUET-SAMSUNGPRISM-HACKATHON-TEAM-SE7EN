@@ -1,0 +1,336 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "ecommerce_19",
+  "category": "ecommerce_support",
+  "title": "Product + Quantity Double Correction",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:25:23.466003",
+  "inference_time_s": 55.36,
+  "room_name": "eval-aee5260a",
+  "stream_start_time": 1790457926.315188,
+  "input_transcript": "Okay, so search for a laptop. Wait, no. No, actually, I need a tablet. Not a laptop, a tablet. And add two of them to the cart. Actually, no. No, just one. Just one. I only have the budget for one right now.",
+  "input_asr_chunks": [
+    {
+      "text": "Okay,",
+      "timestamp": [
+        0.59,
+        1.25
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.95,
+        2.29
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        2.29,
+        4.49
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        4.49,
+        4.67
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        4.67,
+        4.81
+      ]
+    },
+    {
+      "text": "laptop.",
+      "timestamp": [
+        4.81,
+        5.17
+      ]
+    },
+    {
+      "text": "Wait,",
+      "timestamp": [
+        5.63,
+        5.79
+      ]
+    },
+    {
+      "text": "no.",
+      "timestamp": [
+        5.97,
+        6.15
+      ]
+    },
+    {
+      "text": "No,",
+      "timestamp": [
+        6.59,
+        6.73
+      ]
+    },
+    {
+      "text": "actually,",
+      "timestamp": [
+        6.83,
+        7.11
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        7.11,
+        7.53
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        7.53,
+        7.67
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        7.67,
+        7.81
+      ]
+    },
+    {
+      "text": "tablet.",
+      "timestamp": [
+        7.81,
+        8.15
+      ]
+    },
+    {
+      "text": "Not",
+      "timestamp": [
+        9.23,
+        9.67
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        9.67,
+        9.77
+      ]
+    },
+    {
+      "text": "laptop,",
+      "timestamp": [
+        9.77,
+        10.05
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        10.13,
+        10.31
+      ]
+    },
+    {
+      "text": "tablet.",
+      "timestamp": [
+        10.31,
+        10.59
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        11.41,
+        11.85
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        11.85,
+        12.25
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        12.25,
+        12.49
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        12.49,
+        12.63
+      ]
+    },
+    {
+      "text": "them",
+      "timestamp": [
+        12.63,
+        12.75
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        12.75,
+        12.89
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.89,
+        12.97
+      ]
+    },
+    {
+      "text": "cart.",
+      "timestamp": [
+        12.97,
+        13.19
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        13.31,
+        13.51
+      ]
+    },
+    {
+      "text": "no.",
+      "timestamp": [
+        13.61,
+        13.77
+      ]
+    },
+    {
+      "text": "No,",
+      "timestamp": [
+        13.99,
+        14.11
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        14.23,
+        14.39
+      ]
+    },
+    {
+      "text": "one.",
+      "timestamp": [
+        14.39,
+        14.69
+      ]
+    },
+    {
+      "text": "Just",
+      "timestamp": [
+        14.93,
+        15.37
+      ]
+    },
+    {
+      "text": "one.",
+      "timestamp": [
+        15.37,
+        15.59
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        15.75,
+        16.17
+      ]
+    },
+    {
+      "text": "only",
+      "timestamp": [
+        16.17,
+        16.51
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        16.51,
+        17.05
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        17.05,
+        17.51
+      ]
+    },
+    {
+      "text": "budget",
+      "timestamp": [
+        17.51,
+        17.77
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        17.77,
+        18.05
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        18.05,
+        18.39
+      ]
+    },
+    {
+      "text": "right",
+      "timestamp": [
+        18.39,
+        18.59
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        18.59,
+        18.81
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.81,
+  "latency": {
+    "input_duration_s": 51.84,
+    "output_duration_s": 51.84,
+    "first_speech_s": 22.9
+  },
+  "user_done_unix": 1790457945.1251879,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        22.7,
+        23.18
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.89,
+  "audio_agent_speech_start": 22.7,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

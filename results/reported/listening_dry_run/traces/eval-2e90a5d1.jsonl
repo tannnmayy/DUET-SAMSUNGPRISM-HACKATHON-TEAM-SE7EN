@@ -1,0 +1,19 @@
+{"t": 1790462060.9063008, "kind": "session_start", "room": "eval-2e90a5d1", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462061.0030754, "kind": "agent_state", "state": "listening"}
+{"t": 1790462063.8778741, "kind": "user_state", "state": "speaking"}
+{"t": 1790462075.467543, "kind": "user_state", "state": "listening"}
+{"t": 1790462076.0149024, "kind": "user_state", "state": "speaking"}
+{"t": 1790462076.1738086, "kind": "metrics", "type": "stt_metrics", "duration": 0.7050406000053044, "audio_duration": 12.148, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462076.1753964, "kind": "heard", "text": "Um, yeah, well, I've been looking for flights and I was wondering if you could like maybe check what's available to London around August 20th for me."}
+{"t": 1790462076.1776206, "kind": "dry_run_reply", "text": "Um, yeah, well, I've been looking for flights and I was wondering if you could like maybe check what's available to London around August 20th for me."}
+{"t": 1790462076.4201515, "kind": "user_state", "state": "listening"}
+{"t": 1790462076.7231166, "kind": "metrics", "type": "stt_metrics", "duration": 0.30076320000807755, "audio_duration": 0.98, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462076.7248938, "kind": "heard", "text": "Thank you."}
+{"t": 1790462076.7275236, "kind": "dry_run_reply", "text": "Um, yeah, well, I've been looking for flights and I was wondering if you could like maybe check what's available to London around August 20th for me. Thank you."}
+{"t": 1790462076.8543224, "kind": "user_turn", "text": "Um, yeah, well, I've been looking for flights and I was wondering if you could like maybe check what's available to London around August 20th for me. Thank you."}
+{"t": 1790462076.8543224, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7851698398590088, "transcription_delay": 0.6567423343658447, "on_user_turn_completed_delay": 0.0004563999827951193, "speech_id": "speech_57cf7cdb2dc8"}
+{"t": 1790462076.8560648, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462077.003236, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462077.0153742, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1413913999858778, "duration": 0.1538754999928642, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_57cf7cdb2dc8"}
+{"t": 1790462078.4759355, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462078.4769354, "kind": "agent_state", "state": "listening"}

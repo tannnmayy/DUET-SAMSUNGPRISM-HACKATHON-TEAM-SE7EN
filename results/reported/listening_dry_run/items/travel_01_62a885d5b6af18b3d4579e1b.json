@@ -1,0 +1,224 @@
+{
+  "pid": "62a885d5b6af18b3d4579e1b",
+  "example_id": "travel_01",
+  "category": "travel_identity",
+  "title": "Simple Flight Search",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:31:15.039685",
+  "inference_time_s": 40.06,
+  "room_name": "eval-f445293b",
+  "stream_start_time": 1790461878.0949883,
+  "input_transcript": "Well, I'm trying to go to Tokyo and I was thinking about leaving around July 15th. Could you look up what flights are available for that day?",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.0,
+        0.56
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        0.8,
+        0.94
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        0.94,
+        1.06
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.06,
+        1.2
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        1.2,
+        1.28
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.28,
+        1.42
+      ]
+    },
+    {
+      "text": "Tokyo",
+      "timestamp": [
+        1.42,
+        1.82
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        1.82,
+        2.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.16,
+        2.22
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        2.22,
+        2.34
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        2.34,
+        2.46
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        2.46,
+        2.62
+      ]
+    },
+    {
+      "text": "leaving",
+      "timestamp": [
+        2.62,
+        2.84
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        2.84,
+        3.04
+      ]
+    },
+    {
+      "text": "July",
+      "timestamp": [
+        3.04,
+        3.26
+      ]
+    },
+    {
+      "text": "15th.",
+      "timestamp": [
+        3.26,
+        3.9
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        4.04,
+        4.3
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        4.3,
+        4.38
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        4.38,
+        4.52
+      ]
+    },
+    {
+      "text": "up",
+      "timestamp": [
+        4.52,
+        4.62
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        4.62,
+        4.74
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        4.74,
+        4.98
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        4.98,
+        5.12
+      ]
+    },
+    {
+      "text": "available",
+      "timestamp": [
+        5.12,
+        5.42
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        5.42,
+        5.62
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        5.62,
+        5.78
+      ]
+    },
+    {
+      "text": "day?",
+      "timestamp": [
+        5.78,
+        5.98
+      ]
+    }
+  ],
+  "user_speech_end_rel": 5.98,
+  "latency": {
+    "input_duration_s": 36.36,
+    "output_duration_s": 36.36,
+    "first_speech_s": 9.8
+  },
+  "user_done_unix": 1790461884.0749884,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        9.52,
+        10.08
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.54,
+  "audio_agent_speech_start": 9.52,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

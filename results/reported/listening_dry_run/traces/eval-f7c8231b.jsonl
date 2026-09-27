@@ -1,0 +1,14 @@
+{"t": 1790459263.0073054, "kind": "session_start", "room": "eval-f7c8231b", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459263.1026566, "kind": "agent_state", "state": "listening"}
+{"t": 1790459265.8143542, "kind": "user_state", "state": "speaking"}
+{"t": 1790459277.903982, "kind": "user_state", "state": "listening"}
+{"t": 1790459278.6690316, "kind": "metrics", "type": "stt_metrics", "duration": 0.763483599992469, "audio_duration": 12.724, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459278.6700315, "kind": "heard", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars."}
+{"t": 1790459278.856988, "kind": "user_turn", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars."}
+{"t": 1790459278.8579895, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8036322593688965, "transcription_delay": 0.616675853729248, "on_user_turn_completed_delay": 0.00047790000098757446, "speech_id": "speech_54af0813ac6e"}
+{"t": 1790459278.8579895, "kind": "dry_run_reply", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars."}
+{"t": 1790459278.8594944, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459279.0377579, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459279.0506356, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1733583000022918, "duration": 0.18610089999856427, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_54af0813ac6e"}
+{"t": 1790459280.497312, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459280.497312, "kind": "agent_state", "state": "listening"}

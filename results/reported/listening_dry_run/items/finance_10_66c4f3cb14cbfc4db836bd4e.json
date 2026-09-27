@@ -1,0 +1,266 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "finance_10",
+  "category": "finance_billing",
+  "title": "Benefits + Exchange Combo",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:45:34.293962",
+  "inference_time_s": 49.78,
+  "room_name": "eval-39995d5d",
+  "stream_start_time": 1790459137.110443,
+  "input_transcript": "Firstly, could you tell me what the benefits are for the travel card? Considering applying and then separately, I also need to know how much 200 British pounds would be in Japanese yen.",
+  "input_asr_chunks": [
+    {
+      "text": "Firstly,",
+      "timestamp": [
+        0.91,
+        2.19
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        2.77,
+        3.31
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        3.31,
+        3.45
+      ]
+    },
+    {
+      "text": "tell",
+      "timestamp": [
+        3.45,
+        3.73
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        3.73,
+        4.01
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        4.01,
+        4.59
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        4.59,
+        4.71
+      ]
+    },
+    {
+      "text": "benefits",
+      "timestamp": [
+        4.71,
+        5.11
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        5.11,
+        5.39
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        5.39,
+        5.61
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.61,
+        5.75
+      ]
+    },
+    {
+      "text": "travel",
+      "timestamp": [
+        5.75,
+        6.07
+      ]
+    },
+    {
+      "text": "card?",
+      "timestamp": [
+        6.07,
+        6.45
+      ]
+    },
+    {
+      "text": "Considering",
+      "timestamp": [
+        7.07,
+        7.83
+      ]
+    },
+    {
+      "text": "applying",
+      "timestamp": [
+        7.83,
+        8.39
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        8.39,
+        8.89
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        8.89,
+        9.29
+      ]
+    },
+    {
+      "text": "separately,",
+      "timestamp": [
+        9.29,
+        9.75
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        10.11,
+        10.95
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        10.95,
+        11.23
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        11.23,
+        11.49
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        11.49,
+        11.67
+      ]
+    },
+    {
+      "text": "know",
+      "timestamp": [
+        11.67,
+        11.97
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        11.97,
+        12.37
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        12.37,
+        12.77
+      ]
+    },
+    {
+      "text": "200",
+      "timestamp": [
+        12.77,
+        13.29
+      ]
+    },
+    {
+      "text": "British",
+      "timestamp": [
+        13.29,
+        13.67
+      ]
+    },
+    {
+      "text": "pounds",
+      "timestamp": [
+        13.67,
+        14.13
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        14.13,
+        14.37
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        14.37,
+        14.55
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        14.55,
+        14.71
+      ]
+    },
+    {
+      "text": "Japanese",
+      "timestamp": [
+        14.71,
+        15.21
+      ]
+    },
+    {
+      "text": "yen.",
+      "timestamp": [
+        15.21,
+        15.59
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.59,
+  "latency": {
+    "input_duration_s": 46.331,
+    "output_duration_s": 46.331,
+    "first_speech_s": 20.0
+  },
+  "user_done_unix": 1790459152.700443,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.79,
+        20.29
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.2,
+  "audio_agent_speech_start": 19.79,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

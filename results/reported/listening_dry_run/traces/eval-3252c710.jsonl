@@ -1,0 +1,19 @@
+{"t": 1790462505.6033647, "kind": "session_start", "room": "eval-3252c710", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462505.7052681, "kind": "agent_state", "state": "listening"}
+{"t": 1790462508.1806324, "kind": "user_state", "state": "speaking"}
+{"t": 1790462517.159815, "kind": "user_state", "state": "listening"}
+{"t": 1790462517.371752, "kind": "user_state", "state": "speaking"}
+{"t": 1790462517.8598304, "kind": "metrics", "type": "stt_metrics", "duration": 0.6980943999951705, "audio_duration": 9.588, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462517.873515, "kind": "heard", "text": "So I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay."}
+{"t": 1790462517.8758273, "kind": "dry_run_reply", "text": "So I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay."}
+{"t": 1790462519.0099146, "kind": "user_state", "state": "listening"}
+{"t": 1790462519.330084, "kind": "metrics", "type": "stt_metrics", "duration": 0.3197045000270009, "audio_duration": 2.26, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462519.3319378, "kind": "heard", "text": "Yeah, could you search for that?"}
+{"t": 1790462519.3345034, "kind": "dry_run_reply", "text": "So I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay. Yeah, could you search for that?"}
+{"t": 1790462519.4490445, "kind": "user_turn", "text": "So I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay. Yeah, could you search for that?"}
+{"t": 1790462519.4503345, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7911298274993896, "transcription_delay": 0.674527645111084, "on_user_turn_completed_delay": 0.0005109999910928309, "speech_id": "speech_8071021b9e33"}
+{"t": 1790462519.4503345, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462519.5837831, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462519.597455, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.130927000020165, "duration": 0.1451668000081554, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8071021b9e33"}
+{"t": 1790462521.0440001, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462521.0440001, "kind": "agent_state", "state": "listening"}

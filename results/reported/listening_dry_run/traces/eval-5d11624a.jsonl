@@ -1,0 +1,41 @@
+{"t": 1790457719.2101038, "kind": "session_start", "room": "eval-5d11624a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457719.3182168, "kind": "agent_state", "state": "listening"}
+{"t": 1790457721.4774895, "kind": "user_state", "state": "speaking"}
+{"t": 1790457724.9897044, "kind": "user_state", "state": "listening"}
+{"t": 1790457725.6571922, "kind": "metrics", "type": "stt_metrics", "duration": 0.6657383999845479, "audio_duration": 4.052, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457725.6581948, "kind": "heard", "text": "Um, like, uh, I need a new..."}
+{"t": 1790457725.6614037, "kind": "dry_run_reply", "text": "Um, like, uh, I need a new..."}
+{"t": 1790457725.6624272, "kind": "user_turn", "text": "Um, like, uh, I need a new..."}
+{"t": 1790457725.6629324, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0242629051208496, "transcription_delay": 1.021078109741211, "on_user_turn_completed_delay": 0.0003491999814286828, "speech_id": "speech_8b5c05149259"}
+{"t": 1790457725.6641405, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457725.7980764, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457725.8107502, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13130189999355935, "duration": 0.14412839998840354, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8b5c05149259"}
+{"t": 1790457725.9295604, "kind": "user_state", "state": "speaking"}
+{"t": 1790457727.2694573, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457727.2694573, "kind": "agent_state", "state": "listening"}
+{"t": 1790457728.1358633, "kind": "user_state", "state": "listening"}
+{"t": 1790457728.2767243, "kind": "user_state", "state": "speaking"}
+{"t": 1790457728.611905, "kind": "metrics", "type": "stt_metrics", "duration": 0.4737705999868922, "audio_duration": 1.364, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457728.6124542, "kind": "heard", "text": "Hold."}
+{"t": 1790457728.6148512, "kind": "dry_run_reply", "text": "Hold."}
+{"t": 1790457730.6268504, "kind": "user_state", "state": "listening"}
+{"t": 1790457730.9263332, "kind": "user_state", "state": "speaking"}
+{"t": 1790457731.1639576, "kind": "metrics", "type": "stt_metrics", "duration": 0.5353683000139426, "audio_duration": 2.932, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457731.1649582, "kind": "heard", "text": "A coffee maker. Yeah."}
+{"t": 1790457731.1670938, "kind": "dry_run_reply", "text": "Hold. A coffee maker. Yeah."}
+{"t": 1790457737.776275, "kind": "user_state", "state": "listening"}
+{"t": 1790457738.2171018, "kind": "user_turn", "text": "Hold. A coffee maker. Yeah."}
+{"t": 1790457738.2171018, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7903242111206055, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004361000028438866, "speech_id": "speech_e2dde303e9a3"}
+{"t": 1790457738.2171018, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457738.5483022, "kind": "metrics", "type": "stt_metrics", "duration": 0.7692692000127863, "audio_duration": 7.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457738.5501132, "kind": "heard", "text": "I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal."}
+{"t": 1790457738.5506177, "kind": "agent_state", "state": "listening"}
+{"t": 1790457738.5605721, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.3387316999724135, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e2dde303e9a3"}
+{"t": 1790457739.3473864, "kind": "user_turn", "text": "I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal."}
+{"t": 1790457739.3473864, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004819000023417175, "speech_id": "speech_a4268277d1e0"}
+{"t": 1790457739.3493953, "kind": "dry_run_reply", "text": "Hold. A coffee maker. Yeah. I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal."}
+{"t": 1790457739.3493953, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457739.4417517, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457739.4531903, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08958289999281988, "duration": 0.10152039999957196, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a4268277d1e0"}
+{"t": 1790457740.902222, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457740.902222, "kind": "agent_state", "state": "listening"}

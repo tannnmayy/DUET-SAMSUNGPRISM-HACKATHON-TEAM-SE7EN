@@ -1,0 +1,196 @@
+{
+  "pid": "62a885d5b6af18b3d4579e1b",
+  "example_id": "finance_04",
+  "category": "finance_billing",
+  "title": "Exchange with Pause Before Currency",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:39:12.240403",
+  "inference_time_s": 43.06,
+  "room_name": "eval-4367ee8a",
+  "stream_start_time": 1790458755.1232991,
+  "input_transcript": "I need to figure out how much 1 ,000 US dollars would be in British pounds. Do you know the current rate?",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        0.0,
+        0.26
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        0.26,
+        0.54
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        0.54,
+        1.26
+      ]
+    },
+    {
+      "text": "figure",
+      "timestamp": [
+        1.26,
+        1.5
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        1.5,
+        1.68
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        1.68,
+        1.8
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        1.8,
+        2.06
+      ]
+    },
+    {
+      "text": "1",
+      "timestamp": [
+        2.06,
+        2.32
+      ]
+    },
+    {
+      "text": ",000",
+      "timestamp": [
+        2.32,
+        2.72
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        2.72,
+        2.94
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        2.94,
+        3.3
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        3.3,
+        3.58
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        3.58,
+        3.96
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        3.96,
+        4.48
+      ]
+    },
+    {
+      "text": "British",
+      "timestamp": [
+        4.48,
+        6.72
+      ]
+    },
+    {
+      "text": "pounds.",
+      "timestamp": [
+        6.72,
+        7.22
+      ]
+    },
+    {
+      "text": "Do",
+      "timestamp": [
+        7.54,
+        7.96
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        7.96,
+        8.04
+      ]
+    },
+    {
+      "text": "know",
+      "timestamp": [
+        8.04,
+        8.18
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        8.18,
+        8.34
+      ]
+    },
+    {
+      "text": "current",
+      "timestamp": [
+        8.34,
+        8.56
+      ]
+    },
+    {
+      "text": "rate?",
+      "timestamp": [
+        8.56,
+        8.8
+      ]
+    }
+  ],
+  "user_speech_end_rel": 8.8,
+  "latency": {
+    "input_duration_s": 39.54,
+    "output_duration_s": 39.54,
+    "first_speech_s": 8.05
+  },
+  "user_done_unix": 1790458763.923299,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        7.73,
+        8.43
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        11.87,
+        12.51
+      ]
+    }
+  ],
+  "perceived_total_latency": -1.07,
+  "audio_agent_speech_start": 7.73,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

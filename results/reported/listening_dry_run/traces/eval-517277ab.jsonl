@@ -1,0 +1,63 @@
+{"t": 1790460276.51513, "kind": "session_start", "room": "eval-517277ab", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790460276.6104703, "kind": "agent_state", "state": "listening"}
+{"t": 1790460278.85835, "kind": "user_state", "state": "speaking"}
+{"t": 1790460279.861286, "kind": "user_state", "state": "listening"}
+{"t": 1790460280.1106107, "kind": "user_state", "state": "speaking"}
+{"t": 1790460280.422837, "kind": "metrics", "type": "stt_metrics", "duration": 0.5612177999864798, "audio_duration": 1.588, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460280.424386, "kind": "heard", "text": "Well..."}
+{"t": 1790460280.4281514, "kind": "dry_run_reply", "text": "Well..."}
+{"t": 1790460281.0058541, "kind": "user_state", "state": "listening"}
+{"t": 1790460281.3056018, "kind": "metrics", "type": "stt_metrics", "duration": 0.2980766999826301, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460281.306386, "kind": "heard", "text": "Um."}
+{"t": 1790460281.3087656, "kind": "dry_run_reply", "text": "Well... Um."}
+{"t": 1790460282.4950728, "kind": "user_state", "state": "speaking"}
+{"t": 1790460283.646645, "kind": "user_state", "state": "listening"}
+{"t": 1790460284.195273, "kind": "metrics", "type": "stt_metrics", "duration": 0.547388899984071, "audio_duration": 1.78, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460284.1962726, "kind": "heard", "text": "Uh, you know..."}
+{"t": 1790460284.1995738, "kind": "dry_run_reply", "text": "Well... Um. Uh, you know..."}
+{"t": 1790460284.844821, "kind": "user_state", "state": "speaking"}
+{"t": 1790460287.0504913, "kind": "user_state", "state": "listening"}
+{"t": 1790460287.493156, "kind": "user_turn", "text": "Well... Um. Uh, you know..."}
+{"t": 1790460287.4941697, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7946646213531494, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00040610000723972917, "speech_id": "speech_f415642e0e67"}
+{"t": 1790460287.4941697, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460287.64154, "kind": "metrics", "type": "stt_metrics", "duration": 0.5882864999875892, "audio_duration": 2.772, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460287.6424165, "kind": "heard", "text": "I'm looking for an apartment in Denver."}
+{"t": 1790460287.64292, "kind": "agent_state", "state": "listening"}
+{"t": 1790460287.652582, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.15626560000237077, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f415642e0e67"}
+{"t": 1790460288.1449769, "kind": "user_state", "state": "speaking"}
+{"t": 1790460289.6962175, "kind": "user_state", "state": "listening"}
+{"t": 1790460290.1306777, "kind": "user_turn", "text": "I'm looking for an apartment in Denver."}
+{"t": 1790460290.1306777, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7854592800140381, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005050000036135316, "speech_id": "speech_8f8ef116f31f"}
+{"t": 1790460290.1321838, "kind": "dry_run_reply", "text": "Well... Um. Uh, you know... I'm looking for an apartment in Denver."}
+{"t": 1790460290.1321838, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460290.2155387, "kind": "metrics", "type": "stt_metrics", "duration": 0.5181145999813452, "audio_duration": 2.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460290.216626, "kind": "heard", "text": "It has one bedroom."}
+{"t": 1790460290.2171319, "kind": "agent_state", "state": "listening"}
+{"t": 1790460290.2290702, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.09409800000139512, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8f8ef116f31f"}
+{"t": 1790460290.998506, "kind": "user_turn", "text": "It has one bedroom."}
+{"t": 1790460290.998506, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005588999774772674, "speech_id": "speech_80e7fcf91c34"}
+{"t": 1790460290.9995062, "kind": "dry_run_reply", "text": "Well... Um. Uh, you know... I'm looking for an apartment in Denver. It has one bedroom."}
+{"t": 1790460290.9995062, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460291.091552, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460291.1021154, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.0878880999807734, "duration": 0.10006029999931343, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_80e7fcf91c34"}
+{"t": 1790460291.1688693, "kind": "user_state", "state": "speaking"}
+{"t": 1790460292.5544703, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460292.5544703, "kind": "agent_state", "state": "listening"}
+{"t": 1790460292.651221, "kind": "user_state", "state": "listening"}
+{"t": 1790460293.9005294, "kind": "user_state", "state": "speaking"}
+{"t": 1790460294.8458974, "kind": "user_state", "state": "listening"}
+{"t": 1790460294.966406, "kind": "user_state", "state": "speaking"}
+{"t": 1790460295.4078026, "kind": "metrics", "type": "stt_metrics", "duration": 0.5553585999878123, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460295.4088283, "kind": "heard", "text": "Um..."}
+{"t": 1790460295.4113002, "kind": "dry_run_reply", "text": "Um..."}
+{"t": 1790460297.050691, "kind": "user_state", "state": "listening"}
+{"t": 1790460297.4027414, "kind": "metrics", "type": "stt_metrics", "duration": 0.3515062000078615, "audio_duration": 2.676, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790460297.4042811, "kind": "heard", "text": "So I don't need anything too big."}
+{"t": 1790460297.4074554, "kind": "dry_run_reply", "text": "Um... So I don't need anything too big."}
+{"t": 1790460297.4983869, "kind": "user_turn", "text": "Um... So I don't need anything too big."}
+{"t": 1790460297.499385, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7996959686279297, "transcription_delay": 0.7060959339141846, "on_user_turn_completed_delay": 0.0004504999960772693, "speech_id": "speech_75306de95ef5"}
+{"t": 1790460297.5004308, "kind": "agent_state", "state": "thinking"}
+{"t": 1790460297.6333618, "kind": "agent_state", "state": "speaking"}
+{"t": 1790460297.6458662, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13112720000208355, "duration": 0.14386179999564774, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_75306de95ef5"}
+{"t": 1790460299.095143, "kind": "agent_said", "text": "Okay."}
+{"t": 1790460299.0962255, "kind": "agent_state", "state": "listening"}

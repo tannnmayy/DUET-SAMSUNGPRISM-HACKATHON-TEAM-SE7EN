@@ -1,0 +1,62 @@
+{"t": 1790461095.649604, "kind": "session_start", "room": "eval-7f745486", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790461095.7582662, "kind": "agent_state", "state": "listening"}
+{"t": 1790461098.0589197, "kind": "user_state", "state": "speaking"}
+{"t": 1790461099.7136397, "kind": "user_state", "state": "listening"}
+{"t": 1790461099.8224952, "kind": "user_state", "state": "speaking"}
+{"t": 1790461100.3557699, "kind": "metrics", "type": "stt_metrics", "duration": 0.6405032000038773, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461100.369754, "kind": "heard", "text": "So..."}
+{"t": 1790461100.3723083, "kind": "dry_run_reply", "text": "So..."}
+{"t": 1790461106.2721028, "kind": "user_state", "state": "listening"}
+{"t": 1790461106.5604136, "kind": "user_state", "state": "speaking"}
+{"t": 1790461106.7958612, "kind": "metrics", "type": "stt_metrics", "duration": 0.5225894999748562, "audio_duration": 7.028, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461106.7970326, "kind": "heard", "text": "So I wanted to check the commute from that one listing."}
+{"t": 1790461106.7993426, "kind": "dry_run_reply", "text": "So... So I wanted to check the commute from that one listing."}
+{"t": 1790461112.4740644, "kind": "user_state", "state": "listening"}
+{"t": 1790461112.8651066, "kind": "user_state", "state": "speaking"}
+{"t": 1790461113.0557249, "kind": "metrics", "type": "stt_metrics", "duration": 0.5805048999900464, "audio_duration": 6.484, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461113.0572522, "kind": "heard", "text": "Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta?"}
+{"t": 1790461113.0600245, "kind": "dry_run_reply", "text": "So... So I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta?"}
+{"t": 1790461117.2104955, "kind": "user_state", "state": "listening"}
+{"t": 1790461117.652891, "kind": "user_turn", "text": "So... So I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta?"}
+{"t": 1790461117.6538954, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7943954467773438, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003843999875243753, "speech_id": "speech_0ce18e0d7086"}
+{"t": 1790461117.6538954, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461117.8208816, "kind": "metrics", "type": "stt_metrics", "duration": 0.6092529000015929, "audio_duration": 4.948, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461117.821793, "kind": "heard", "text": "That's pet friendly. I've got two cats too."}
+{"t": 1790461117.8222983, "kind": "agent_state", "state": "listening"}
+{"t": 1790461117.8342714, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.17817079997621477, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0ce18e0d7086"}
+{"t": 1790461118.01927, "kind": "user_state", "state": "speaking"}
+{"t": 1790461118.8109393, "kind": "user_state", "state": "listening"}
+{"t": 1790461119.1096258, "kind": "metrics", "type": "stt_metrics", "duration": 0.29992979997769, "audio_duration": 1.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461119.1096258, "kind": "heard", "text": "Thank you."}
+{"t": 1790461119.1135983, "kind": "dry_run_reply", "text": "So... So I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta? That's pet friendly. I've got two cats too. Thank you."}
+{"t": 1790461119.2565374, "kind": "user_turn", "text": "That's pet friendly. I've got two cats too. Thank you."}
+{"t": 1790461119.2565374, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7965977191925049, "transcription_delay": 0.6522426605224609, "on_user_turn_completed_delay": 0.0004448999825399369, "speech_id": "speech_3caa2344d7d6"}
+{"t": 1790461119.2575405, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461119.3799055, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461119.390298, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1182762999960687, "duration": 0.12944629997946322, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3caa2344d7d6"}
+{"t": 1790461120.8542774, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461120.8542774, "kind": "agent_state", "state": "listening"}
+{"t": 1790461122.459361, "kind": "user_state", "state": "speaking"}
+{"t": 1790461123.1726224, "kind": "user_state", "state": "listening"}
+{"t": 1790461123.7563653, "kind": "metrics", "type": "stt_metrics", "duration": 0.5831107000121847, "audio_duration": 1.268, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461123.7582994, "kind": "heard", "text": "Mm-hmm."}
+{"t": 1790461123.760956, "kind": "dry_run_reply", "text": "Mm-hmm."}
+{"t": 1790461123.7628856, "kind": "user_turn", "text": "Mm-hmm."}
+{"t": 1790461123.763903, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9403336048126221, "transcription_delay": 0.9376769065856934, "on_user_turn_completed_delay": 0.00036949999048374593, "speech_id": "speech_c96c36838bbb"}
+{"t": 1790461123.765461, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461123.873919, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461123.8863895, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.10428420000243932, "duration": 0.11703389999456704, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c96c36838bbb"}
+{"t": 1790461125.3456454, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461125.3456454, "kind": "agent_state", "state": "listening"}
+{"t": 1790461127.3187773, "kind": "user_state", "state": "speaking"}
+{"t": 1790461128.1602812, "kind": "user_state", "state": "listening"}
+{"t": 1790461128.7593572, "kind": "metrics", "type": "stt_metrics", "duration": 0.5997367999807466, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790461128.7603061, "kind": "heard", "text": "And I'll see you next time."}
+{"t": 1790461128.7628777, "kind": "dry_run_reply", "text": "And I'll see you next time."}
+{"t": 1790461128.7647388, "kind": "user_turn", "text": "And I'll see you next time."}
+{"t": 1790461128.7647388, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9551939964294434, "transcription_delay": 0.9520249366760254, "on_user_turn_completed_delay": 0.00041909998981282115, "speech_id": "speech_d9031995abb1"}
+{"t": 1790461128.7663562, "kind": "agent_state", "state": "thinking"}
+{"t": 1790461128.9156024, "kind": "agent_state", "state": "speaking"}
+{"t": 1790461128.9265416, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14615660000708885, "duration": 0.1577032000059262, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d9031995abb1"}
+{"t": 1790461130.3747175, "kind": "agent_said", "text": "Okay."}
+{"t": 1790461130.3747175, "kind": "agent_state", "state": "listening"}

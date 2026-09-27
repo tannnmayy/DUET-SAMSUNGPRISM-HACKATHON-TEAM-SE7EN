@@ -1,0 +1,280 @@
+{
+  "pid": "5f4a4da1575d605c43bef871",
+  "example_id": "finance_22",
+  "category": "finance_billing",
+  "title": "Heavy Fillers + Dual Autopay",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:58:50.274001",
+  "inference_time_s": 54.48,
+  "room_name": "eval-b7ecf134",
+  "stream_start_time": 1790459933.116336,
+  "input_transcript": "I want to change my mortgage auto pay so it pulls from savings that's the right account for that then I also want to set my credit card payment to come from my check -in.",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        3.7,
+        4.34
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        4.34,
+        4.56
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.56,
+        4.64
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        4.64,
+        4.9
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        4.9,
+        5.16
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        5.16,
+        5.56
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        5.56,
+        5.94
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        5.94,
+        6.26
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        6.26,
+        6.98
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        6.98,
+        7.14
+      ]
+    },
+    {
+      "text": "pulls",
+      "timestamp": [
+        7.14,
+        7.48
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        7.48,
+        8.0
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        8.0,
+        9.34
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        9.34,
+        10.66
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.66,
+        10.78
+      ]
+    },
+    {
+      "text": "right",
+      "timestamp": [
+        10.78,
+        10.96
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        10.96,
+        11.3
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.3,
+        11.5
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        11.5,
+        11.74
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.74,
+        12.88
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.88,
+        14.66
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        14.66,
+        15.08
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        15.08,
+        15.46
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.46,
+        15.94
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        15.94,
+        16.18
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        16.18,
+        16.36
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        16.36,
+        16.64
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        16.64,
+        16.94
+      ]
+    },
+    {
+      "text": "payment",
+      "timestamp": [
+        16.94,
+        17.5
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        17.5,
+        17.8
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        17.8,
+        18.06
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        18.06,
+        18.4
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        18.4,
+        18.64
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        18.64,
+        18.94
+      ]
+    },
+    {
+      "text": "-in.",
+      "timestamp": [
+        18.94,
+        19.1
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.1,
+  "latency": {
+    "input_duration_s": 50.941,
+    "output_duration_s": 50.941,
+    "first_speech_s": 23.35
+  },
+  "user_done_unix": 1790459952.216336,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        23.12,
+        23.64
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.02,
+  "audio_agent_speech_start": 23.12,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

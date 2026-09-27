@@ -1,0 +1,46 @@
+{"t": 1790462250.450241, "kind": "session_start", "room": "eval-2b237a84", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462250.6271405, "kind": "agent_state", "state": "listening"}
+{"t": 1790462253.8793788, "kind": "user_state", "state": "speaking"}
+{"t": 1790462254.7392528, "kind": "user_state", "state": "listening"}
+{"t": 1790462254.987503, "kind": "user_state", "state": "speaking"}
+{"t": 1790462255.2521214, "kind": "metrics", "type": "stt_metrics", "duration": 0.5113014999951702, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462255.2536664, "kind": "heard", "text": "Um..."}
+{"t": 1790462255.256126, "kind": "dry_run_reply", "text": "Um..."}
+{"t": 1790462258.1288254, "kind": "user_state", "state": "listening"}
+{"t": 1790462258.5831623, "kind": "user_state", "state": "speaking"}
+{"t": 1790462258.6608157, "kind": "metrics", "type": "stt_metrics", "duration": 0.5304372000100557, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462258.6617286, "kind": "heard", "text": "The new driver's license number is DL."}
+{"t": 1790462258.6643162, "kind": "dry_run_reply", "text": "Um... The new driver's license number is DL."}
+{"t": 1790462260.6236749, "kind": "user_state", "state": "listening"}
+{"t": 1790462260.9771872, "kind": "user_state", "state": "speaking"}
+{"t": 1790462261.157858, "kind": "metrics", "type": "stt_metrics", "duration": 0.5330771000008099, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462261.159561, "kind": "heard", "text": "five five five"}
+{"t": 1790462261.161869, "kind": "dry_run_reply", "text": "Um... The new driver's license number is DL. five five five"}
+{"t": 1790462264.4780715, "kind": "user_state", "state": "listening"}
+{"t": 1790462264.925037, "kind": "user_turn", "text": "Um... The new driver's license number is DL. five five five"}
+{"t": 1790462264.926035, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7989654541015625, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004434000002220273, "speech_id": "speech_fdbe9c05d53d"}
+{"t": 1790462264.926035, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462265.0936208, "kind": "metrics", "type": "stt_metrics", "duration": 0.6135145000007469, "audio_duration": 4.084, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462265.0947113, "kind": "heard", "text": "Could you swap out the old one and put this new one in there?"}
+{"t": 1790462265.095216, "kind": "agent_state", "state": "listening"}
+{"t": 1790462265.1060724, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.17592410001088865, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_fdbe9c05d53d"}
+{"t": 1790462265.8936834, "kind": "user_turn", "text": "Could you swap out the old one and put this new one in there?"}
+{"t": 1790462265.8946846, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004808999947272241, "speech_id": "speech_880309256eaf"}
+{"t": 1790462265.8953776, "kind": "dry_run_reply", "text": "Um... The new driver's license number is DL. five five five Could you swap out the old one and put this new one in there?"}
+{"t": 1790462265.8963845, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462266.0307612, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462266.0452478, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13115959998685867, "duration": 0.14717049998580478, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_880309256eaf"}
+{"t": 1790462267.4983308, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462267.4983308, "kind": "agent_state", "state": "listening"}
+{"t": 1790462283.077988, "kind": "user_state", "state": "speaking"}
+{"t": 1790462283.5219445, "kind": "user_state", "state": "listening"}
+{"t": 1790462284.0307548, "kind": "metrics", "type": "stt_metrics", "duration": 0.506885799986776, "audio_duration": 1.044, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462284.0315702, "kind": "heard", "text": "Thank you."}
+{"t": 1790462284.0340745, "kind": "dry_run_reply", "text": "Thank you."}
+{"t": 1790462284.0360873, "kind": "user_turn", "text": "Thank you."}
+{"t": 1790462284.0365942, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8636653423309326, "transcription_delay": 0.8606295585632324, "on_user_turn_completed_delay": 0.00048680001054890454, "speech_id": "speech_c25aef79d749"}
+{"t": 1790462284.0374477, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462284.1371996, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462284.1502516, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.09775190000073053, "duration": 0.11130170000251383, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c25aef79d749"}
+{"t": 1790462285.610641, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462285.610641, "kind": "agent_state", "state": "listening"}

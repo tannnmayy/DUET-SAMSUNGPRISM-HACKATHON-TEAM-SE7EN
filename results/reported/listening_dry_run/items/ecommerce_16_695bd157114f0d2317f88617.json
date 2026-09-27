@@ -1,0 +1,294 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "ecommerce_16",
+  "category": "ecommerce_support",
+  "title": "Search with Hesitation Before Item",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:21:58.210993",
+  "inference_time_s": 50.93,
+  "room_name": "eval-5d11624a",
+  "stream_start_time": 1790457721.0446513,
+  "input_transcript": "um like uh i need a new let me think what is it called a coffee maker yeah i'm looking for a new coffee maker that's what it's called something under 50 dollars would be ideal",
+  "input_asr_chunks": [
+    {
+      "text": "um",
+      "timestamp": [
+        0.0,
+        0.62
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        0.62,
+        1.42
+      ]
+    },
+    {
+      "text": "uh",
+      "timestamp": [
+        1.42,
+        1.86
+      ]
+    },
+    {
+      "text": "i",
+      "timestamp": [
+        1.86,
+        2.42
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        2.42,
+        2.7
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        2.9,
+        3.18
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        3.18,
+        4.8
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        4.8,
+        4.94
+      ]
+    },
+    {
+      "text": "think",
+      "timestamp": [
+        4.94,
+        5.22
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        5.22,
+        5.44
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        5.44,
+        5.64
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        5.64,
+        5.8
+      ]
+    },
+    {
+      "text": "called",
+      "timestamp": [
+        5.8,
+        6.34
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        6.34,
+        7.14
+      ]
+    },
+    {
+      "text": "coffee",
+      "timestamp": [
+        7.14,
+        7.58
+      ]
+    },
+    {
+      "text": "maker",
+      "timestamp": [
+        7.58,
+        8.02
+      ]
+    },
+    {
+      "text": "yeah",
+      "timestamp": [
+        8.02,
+        8.84
+      ]
+    },
+    {
+      "text": "i'm",
+      "timestamp": [
+        8.84,
+        9.8
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        9.8,
+        10.06
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.06,
+        10.6
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        10.6,
+        10.94
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        10.94,
+        11.2
+      ]
+    },
+    {
+      "text": "coffee",
+      "timestamp": [
+        11.2,
+        11.8
+      ]
+    },
+    {
+      "text": "maker",
+      "timestamp": [
+        11.8,
+        12.28
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        12.28,
+        12.82
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        12.82,
+        12.94
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        12.94,
+        13.12
+      ]
+    },
+    {
+      "text": "called",
+      "timestamp": [
+        13.12,
+        13.4
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        13.4,
+        14.2
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        14.2,
+        14.44
+      ]
+    },
+    {
+      "text": "50",
+      "timestamp": [
+        14.44,
+        14.82
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        14.82,
+        15.16
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        15.16,
+        15.36
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        15.36,
+        15.5
+      ]
+    },
+    {
+      "text": "ideal",
+      "timestamp": [
+        15.5,
+        15.86
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.86,
+  "latency": {
+    "input_duration_s": 47.46,
+    "output_duration_s": 47.46,
+    "first_speech_s": 6.85
+  },
+  "user_done_unix": 1790457736.9046512,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        6.54,
+        7.26
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        20.15,
+        20.75
+      ]
+    }
+  ],
+  "perceived_total_latency": -9.32,
+  "audio_agent_speech_start": 6.54,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

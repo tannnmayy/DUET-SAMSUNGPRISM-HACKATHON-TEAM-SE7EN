@@ -1,0 +1,43 @@
+{"t": 1790458686.1843185, "kind": "session_start", "room": "eval-de380ccd", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458686.2980855, "kind": "agent_state", "state": "listening"}
+{"t": 1790458688.952387, "kind": "user_state", "state": "speaking"}
+{"t": 1790458690.0548332, "kind": "user_state", "state": "listening"}
+{"t": 1790458690.7047424, "kind": "metrics", "type": "stt_metrics", "duration": 0.6487637000100221, "audio_duration": 1.716, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458690.7065036, "kind": "heard", "text": "So, um,"}
+{"t": 1790458690.709425, "kind": "dry_run_reply", "text": "So, um,"}
+{"t": 1790458691.7679389, "kind": "user_state", "state": "speaking"}
+{"t": 1790458693.0038176, "kind": "user_state", "state": "listening"}
+{"t": 1790458693.4713666, "kind": "metrics", "type": "stt_metrics", "duration": 0.46663530002115294, "audio_duration": 1.812, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458693.4724777, "kind": "heard", "text": "so"}
+{"t": 1790458693.475714, "kind": "dry_run_reply", "text": "So, um, so"}
+{"t": 1790458693.8642497, "kind": "user_state", "state": "speaking"}
+{"t": 1790458695.4129055, "kind": "user_state", "state": "listening"}
+{"t": 1790458695.8932798, "kind": "metrics", "type": "stt_metrics", "duration": 0.47981829999480397, "audio_duration": 2.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458695.8951497, "kind": "heard", "text": "I want to change."}
+{"t": 1790458695.897576, "kind": "dry_run_reply", "text": "So, um, so I want to change."}
+{"t": 1790458696.0048127, "kind": "user_state", "state": "speaking"}
+{"t": 1790458701.556868, "kind": "user_state", "state": "listening"}
+{"t": 1790458701.96318, "kind": "user_state", "state": "speaking"}
+{"t": 1790458702.1432886, "kind": "metrics", "type": "stt_metrics", "duration": 0.5843476000009105, "audio_duration": 6.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458702.1450312, "kind": "heard", "text": "I want to change my mortgage autopay to pull from like my savings account."}
+{"t": 1790458704.5561173, "kind": "user_state", "state": "listening"}
+{"t": 1790458705.0013173, "kind": "user_turn", "text": "So, um, so I want to change. I want to change my mortgage autopay to pull from like my savings account."}
+{"t": 1790458705.0023177, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7971999645233154, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004896000027656555, "speech_id": "speech_0cef07a7ab32"}
+{"t": 1790458705.0033176, "kind": "dry_run_reply", "text": "So, um, so I want to change. I want to change my mortgage autopay to pull from like my savings account."}
+{"t": 1790458705.0033176, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458705.1378167, "kind": "metrics", "type": "stt_metrics", "duration": 0.5799219000036828, "audio_duration": 3.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458705.1391506, "kind": "heard", "text": "You know, instead of where it's pulling from now."}
+{"t": 1790458705.1396563, "kind": "agent_state", "state": "listening"}
+{"t": 1790458705.1495345, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.14302620000671595, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0cef07a7ab32"}
+{"t": 1790458705.1640615, "kind": "user_state", "state": "speaking"}
+{"t": 1790458706.0538876, "kind": "user_state", "state": "listening"}
+{"t": 1790458706.3687162, "kind": "metrics", "type": "stt_metrics", "duration": 0.3138401999894995, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458706.3704576, "kind": "heard", "text": "I'm sorry, I'm sorry."}
+{"t": 1790458706.373039, "kind": "dry_run_reply", "text": "So, um, so I want to change. I want to change my mortgage autopay to pull from like my savings account. You know, instead of where it's pulling from now. I'm sorry, I'm sorry."}
+{"t": 1790458706.4989574, "kind": "user_turn", "text": "You know, instead of where it's pulling from now. I'm sorry, I'm sorry."}
+{"t": 1790458706.5003765, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.797069787979126, "transcription_delay": 0.6685700416564941, "on_user_turn_completed_delay": 0.0004667000030167401, "speech_id": "speech_f3abe77b858f"}
+{"t": 1790458706.5003765, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458706.6451955, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458706.658729, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14250439999159425, "duration": 0.15614479998475872, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f3abe77b858f"}
+{"t": 1790458708.112469, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458708.112469, "kind": "agent_state", "state": "listening"}

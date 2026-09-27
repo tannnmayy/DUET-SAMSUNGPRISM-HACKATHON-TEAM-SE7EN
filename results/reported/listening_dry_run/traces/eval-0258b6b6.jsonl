@@ -1,0 +1,28 @@
+{"t": 1790462375.8800044, "kind": "session_start", "room": "eval-0258b6b6", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462376.021627, "kind": "agent_state", "state": "listening"}
+{"t": 1790462380.6214435, "kind": "user_state", "state": "speaking"}
+{"t": 1790462383.6240597, "kind": "user_state", "state": "listening"}
+{"t": 1790462384.2207341, "kind": "metrics", "type": "stt_metrics", "duration": 0.5956533999997191, "audio_duration": 3.572, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462384.23537, "kind": "heard", "text": "Looking at flights to Miami on October 5th."}
+{"t": 1790462384.2393148, "kind": "dry_run_reply", "text": "Looking at flights to Miami on October 5th."}
+{"t": 1790462384.2407582, "kind": "user_turn", "text": "Looking at flights to Miami on October 5th."}
+{"t": 1790462384.2412672, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9669599533081055, "transcription_delay": 0.9629902839660645, "on_user_turn_completed_delay": 0.00033549999352544546, "speech_id": "speech_decd75db741a"}
+{"t": 1790462384.2440524, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462384.3845875, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462384.397725, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1378913999942597, "duration": 0.15086579998023808, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_decd75db741a"}
+{"t": 1790462384.5228512, "kind": "user_state", "state": "speaking"}
+{"t": 1790462385.526272, "kind": "user_state", "state": "listening"}
+{"t": 1790462385.858416, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462385.8594234, "kind": "agent_state", "state": "listening"}
+{"t": 1790462388.5729203, "kind": "user_state", "state": "speaking"}
+{"t": 1790462395.1334755, "kind": "user_state", "state": "listening"}
+{"t": 1790462395.822517, "kind": "metrics", "type": "stt_metrics", "duration": 0.687603800004581, "audio_duration": 7.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462395.8235207, "kind": "heard", "text": "My schedule just changed. My meeting got moved, so actually make it October 7th instead."}
+{"t": 1790462395.826014, "kind": "dry_run_reply", "text": "My schedule just changed. My meeting got moved, so actually make it October 7th instead."}
+{"t": 1790462397.2788355, "kind": "user_turn", "text": "My schedule just changed. My meeting got moved, so actually make it October 7th instead."}
+{"t": 1790462397.2788355, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4960620403289795, "transcription_delay": 1.0420451164245605, "on_user_turn_completed_delay": 0.0005139999848324805, "speech_id": "speech_03aebca0c2d1"}
+{"t": 1790462397.2798338, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462397.4146388, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462397.426197, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13006169997970574, "duration": 0.14255759998923168, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_03aebca0c2d1"}
+{"t": 1790462398.874288, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462398.875461, "kind": "agent_state", "state": "listening"}

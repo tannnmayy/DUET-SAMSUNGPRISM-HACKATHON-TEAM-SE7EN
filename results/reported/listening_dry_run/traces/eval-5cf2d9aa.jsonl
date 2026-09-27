@@ -1,0 +1,29 @@
+{"t": 1790459521.4908, "kind": "session_start", "room": "eval-5cf2d9aa", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459521.5879092, "kind": "agent_state", "state": "listening"}
+{"t": 1790459523.955578, "kind": "user_state", "state": "speaking"}
+{"t": 1790459526.0429018, "kind": "user_state", "state": "listening"}
+{"t": 1790459526.6605668, "kind": "metrics", "type": "stt_metrics", "duration": 0.6168616999930236, "audio_duration": 2.74, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459526.674796, "kind": "heard", "text": "Like, okay, so..."}
+{"t": 1790459526.6777627, "kind": "dry_run_reply", "text": "Like, okay, so..."}
+{"t": 1790459527.0404484, "kind": "user_state", "state": "speaking"}
+{"t": 1790459530.1840985, "kind": "user_state", "state": "listening"}
+{"t": 1790459530.8388247, "kind": "metrics", "type": "stt_metrics", "duration": 0.6539106999989599, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459530.8398314, "kind": "heard", "text": "I need to know how much. Let me see."}
+{"t": 1790459530.8427486, "kind": "dry_run_reply", "text": "Like, okay, so... I need to know how much. Let me see."}
+{"t": 1790459532.0359807, "kind": "user_state", "state": "speaking"}
+{"t": 1790459537.08797, "kind": "user_state", "state": "listening"}
+{"t": 1790459537.5241494, "kind": "user_turn", "text": "Like, okay, so... I need to know how much. Let me see."}
+{"t": 1790459537.5252795, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7881793975830078, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005614999972749501, "speech_id": "speech_4ad11126fc67"}
+{"t": 1790459537.5262873, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459537.7635899, "kind": "metrics", "type": "stt_metrics", "duration": 0.6732824000064284, "audio_duration": 5.684, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459537.7645905, "kind": "heard", "text": "500 yen would be in dollars. I'm trying to figure out if this online purchase is worth it."}
+{"t": 1790459537.765125, "kind": "agent_state", "state": "listening"}
+{"t": 1790459537.7755544, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.24753799999598414, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4ad11126fc67"}
+{"t": 1790459538.1770182, "kind": "user_turn", "text": "500 yen would be in dollars. I'm trying to figure out if this online purchase is worth it."}
+{"t": 1790459538.1780179, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004940000071655959, "speech_id": "speech_6d8676f637a8"}
+{"t": 1790459538.1797884, "kind": "dry_run_reply", "text": "Like, okay, so... I need to know how much. Let me see. 500 yen would be in dollars. I'm trying to figure out if this online purchase is worth it."}
+{"t": 1790459538.1797884, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459538.3088076, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459538.318976, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12706060000346042, "duration": 0.13806430000113323, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6d8676f637a8"}
+{"t": 1790459539.770658, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459539.7711623, "kind": "agent_state", "state": "listening"}

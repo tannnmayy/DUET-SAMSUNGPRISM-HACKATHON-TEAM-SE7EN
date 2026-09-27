@@ -1,0 +1,24 @@
+{"t": 1790456569.8770635, "kind": "session_start", "room": "eval-627dcb97", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790456570.028726, "kind": "agent_state", "state": "listening"}
+{"t": 1790456574.8788495, "kind": "user_state", "state": "speaking"}
+{"t": 1790456577.5784779, "kind": "user_state", "state": "listening"}
+{"t": 1790456577.6796176, "kind": "user_state", "state": "speaking"}
+{"t": 1790456578.2294962, "kind": "metrics", "type": "stt_metrics", "duration": 0.6493401000043377, "audio_duration": 3.284, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456578.2434118, "kind": "heard", "text": "I'm looking for a pair of wireless headphones."}
+{"t": 1790456578.246401, "kind": "dry_run_reply", "text": "I'm looking for a pair of wireless headphones."}
+{"t": 1790456583.078682, "kind": "user_state", "state": "listening"}
+{"t": 1790456583.3783083, "kind": "user_state", "state": "speaking"}
+{"t": 1790456583.6366491, "kind": "metrics", "type": "stt_metrics", "duration": 0.5570385000028182, "audio_duration": 5.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456583.6384454, "kind": "heard", "text": "And I'd like to track it under $100 if possible."}
+{"t": 1790456583.6404037, "kind": "dry_run_reply", "text": "I'm looking for a pair of wireless headphones. And I'd like to track it under $100 if possible."}
+{"t": 1790456584.5276637, "kind": "user_state", "state": "listening"}
+{"t": 1790456584.834388, "kind": "metrics", "type": "stt_metrics", "duration": 0.30531409999821335, "audio_duration": 1.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790456584.8353846, "kind": "heard", "text": "What do you have?"}
+{"t": 1790456584.838333, "kind": "dry_run_reply", "text": "I'm looking for a pair of wireless headphones. And I'd like to track it under $100 if possible. What do you have?"}
+{"t": 1790456584.9692113, "kind": "user_turn", "text": "I'm looking for a pair of wireless headphones. And I'd like to track it under $100 if possible. What do you have?"}
+{"t": 1790456584.9702177, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7924809455871582, "transcription_delay": 0.659311056137085, "on_user_turn_completed_delay": 0.0005277000018395483, "speech_id": "speech_4513100f1322"}
+{"t": 1790456584.9702177, "kind": "agent_state", "state": "thinking"}
+{"t": 1790456585.1076128, "kind": "agent_state", "state": "speaking"}
+{"t": 1790456585.1205893, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13416750001488253, "duration": 0.14768970001023263, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4513100f1322"}
+{"t": 1790456586.5696814, "kind": "agent_said", "text": "Okay."}
+{"t": 1790456586.5696814, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,52 @@
+{
+ "stamp": "20260927_045953",
+ "provider": "duet_dry_final",
+ "dry_run": true,
+ "scoring_asr": "whisper",
+ "only": "",
+ "agent": {
+  "thinker_model": "gemini-3.7-flash",
+  "thinker_thinking": "low",
+  "max_tool_steps": 8,
+  "seed": 7,
+  "temperature": "",
+  "talker_enabled": true,
+  "talker_model": "gemini-3.5-flash-lite",
+  "talker_timeout_s": 1.2,
+  "asr_backend": "whisper",
+  "asr_model": "large-v3-turbo",
+  "asr_device": "auto",
+  "asr_max_no_speech_prob": 0.6,
+  "asr_min_avg_logprob": -1.0,
+  "vad_activation": 0.5,
+  "vad_min_silence_s": 0.35,
+  "endpoint_min_s": 0.8,
+  "endpoint_max_s": 2.5,
+  "commit_hold_s": 1.1,
+  "revising_hold_s": 1.8,
+  "dangling_hold_s": 2.2,
+  "tts_backend": "kokoro",
+  "tts_voice": "af_heart",
+  "fdb_dir": "E:\\Full-Duplex-Bench\\v3",
+  "tool_log": "/tmp/agent_tool_calls.log",
+  "heartbeat_log": "/tmp/agent_heartbeat.log",
+  "latency_profile": "instant",
+  "trace_dir": "E:\\duet_fdb\\results\\live\\20260927_045953\\traces",
+  "thinker_sampling": {
+   "temperature": 1.0,
+   "seed": 7
+  },
+  "talker_sampling": {
+   "temperature": 1.0,
+   "seed": 7
+  }
+ },
+ "overrides": {
+  "FDB_V3_DIR": "E:\\Full-Duplex-Bench\\v3",
+  "FDB_DATA_DIR": "E:/fdb_data/fdb_v3_data_released",
+  "DUET_SCORING_DEVICE": "cpu",
+  "DUET_TRACE_DIR": "E:\\duet_fdb\\results\\live\\20260927_045953\\traces",
+  "DUET_DRY_RUN": "1"
+ },
+ "livekit": "local dev server"
+}

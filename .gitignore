@@ -12,3 +12,14 @@ models/
 results/*.json
 !results/.gitkeep
 node_modules/
+
+# FDB-v3 work
+.env.local
+.venv/
+results/offline/
+results/live/
+third_party/
+*.wav
+_tmp*
+results/plumbing/
+.env.livekit

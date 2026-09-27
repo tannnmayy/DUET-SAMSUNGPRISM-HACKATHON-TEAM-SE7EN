@@ -1,0 +1,24 @@
+{"t": 1790459861.7215538, "kind": "session_start", "room": "eval-f8c6f592", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459861.818217, "kind": "agent_state", "state": "listening"}
+{"t": 1790459864.6387854, "kind": "user_state", "state": "speaking"}
+{"t": 1790459872.7772188, "kind": "user_state", "state": "listening"}
+{"t": 1790459873.3388772, "kind": "user_state", "state": "speaking"}
+{"t": 1790459873.41801, "kind": "metrics", "type": "stt_metrics", "duration": 0.6408694999990985, "audio_duration": 8.724, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459873.4332054, "kind": "heard", "text": "All right. So first, I want to know what the benefits are for the gold card because I'm comparing a few options."}
+{"t": 1790459873.4357657, "kind": "dry_run_reply", "text": "All right. So first, I want to know what the benefits are for the gold card because I'm comparing a few options."}
+{"t": 1790459880.782544, "kind": "user_state", "state": "listening"}
+{"t": 1790459881.2289915, "kind": "user_turn", "text": "All right. So first, I want to know what the benefits are for the gold card because I'm comparing a few options."}
+{"t": 1790459881.2300365, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7973728179931641, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0015315000200644135, "speech_id": "speech_0867484633f1"}
+{"t": 1790459881.2300365, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459881.4395878, "kind": "metrics", "type": "stt_metrics", "duration": 0.6557917000027373, "audio_duration": 8.052, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459881.4412267, "kind": "heard", "text": "And then I also need to convert 500 US dollars to yen because I'm buying something from Japan."}
+{"t": 1790459881.4412267, "kind": "agent_state", "state": "listening"}
+{"t": 1790459881.4491212, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.21648639999330044, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0867484633f1"}
+{"t": 1790459882.215552, "kind": "user_turn", "text": "And then I also need to convert 500 US dollars to yen because I'm buying something from Japan."}
+{"t": 1790459882.216668, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004484000091906637, "speech_id": "speech_8bf28539167e"}
+{"t": 1790459882.217667, "kind": "dry_run_reply", "text": "All right. So first, I want to know what the benefits are for the gold card because I'm comparing a few options. And then I also need to convert 500 US dollars to yen because I'm buying something from Japan."}
+{"t": 1790459882.217667, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459882.3650596, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459882.376848, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14509159998851828, "duration": 0.15680539997993037, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8bf28539167e"}
+{"t": 1790459883.824031, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459883.824031, "kind": "agent_state", "state": "listening"}

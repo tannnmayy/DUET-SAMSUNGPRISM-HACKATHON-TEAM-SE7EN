@@ -1,0 +1,76 @@
+{"t": 1790458366.4688728, "kind": "session_start", "room": "eval-0f92be9a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790458366.5640824, "kind": "agent_state", "state": "listening"}
+{"t": 1790458369.5159242, "kind": "user_state", "state": "speaking"}
+{"t": 1790458371.614806, "kind": "user_state", "state": "listening"}
+{"t": 1790458372.2085502, "kind": "metrics", "type": "stt_metrics", "duration": 0.5926007999805734, "audio_duration": 2.676, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458372.2095606, "kind": "heard", "text": "You know, well..."}
+{"t": 1790458372.7115495, "kind": "dry_run_reply", "text": "You know, well..."}
+{"t": 1790458372.856899, "kind": "user_state", "state": "speaking"}
+{"t": 1790458373.9651172, "kind": "user_state", "state": "listening"}
+{"t": 1790458374.2767391, "kind": "user_state", "state": "speaking"}
+{"t": 1790458374.450354, "kind": "metrics", "type": "stt_metrics", "duration": 0.4835517999890726, "audio_duration": 2.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458374.45193, "kind": "heard", "text": "Can, um..."}
+{"t": 1790458374.4541655, "kind": "dry_run_reply", "text": "You know, well... Can, um..."}
+{"t": 1790458375.927395, "kind": "user_state", "state": "listening"}
+{"t": 1790458376.234784, "kind": "metrics", "type": "stt_metrics", "duration": 0.3057242000068072, "audio_duration": 2.26, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458376.2359138, "kind": "heard", "text": "I return my..."}
+{"t": 1790458376.2389789, "kind": "dry_run_reply", "text": "You know, well... Can, um... I return my..."}
+{"t": 1790458376.3666332, "kind": "user_state", "state": "speaking"}
+{"t": 1790458378.7164216, "kind": "user_state", "state": "listening"}
+{"t": 1790458379.1600971, "kind": "user_turn", "text": "You know, well... Can, um... I return my..."}
+{"t": 1790458379.1610963, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.79567551612854, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00042019999818876386, "speech_id": "speech_2145db8ff324"}
+{"t": 1790458379.1610963, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458379.2157354, "kind": "user_state", "state": "speaking"}
+{"t": 1790458379.2410007, "kind": "metrics", "type": "stt_metrics", "duration": 0.5237986999854911, "audio_duration": 2.964, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458379.2419999, "kind": "heard", "text": "Never mind, forget the return."}
+{"t": 1790458379.2428005, "kind": "agent_state", "state": "listening"}
+{"t": 1790458379.2525673, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.08714439999312162, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2145db8ff324"}
+{"t": 1790458381.3659067, "kind": "user_state", "state": "listening"}
+{"t": 1790458381.826924, "kind": "user_turn", "text": "Never mind, forget the return."}
+{"t": 1790458381.826924, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8118388652801514, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004606999864336103, "speech_id": "speech_d94ff17e6070"}
+{"t": 1790458381.8284311, "kind": "dry_run_reply", "text": "You know, well... Can, um... I return my... Never mind, forget the return."}
+{"t": 1790458381.8284311, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458381.9576375, "kind": "metrics", "type": "stt_metrics", "duration": 0.5898606999835465, "audio_duration": 2.772, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458381.9586403, "kind": "heard", "text": "Let me focus on what I actually need."}
+{"t": 1790458381.9594164, "kind": "agent_state", "state": "listening"}
+{"t": 1790458381.973342, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.14153160000569187, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d94ff17e6070"}
+{"t": 1790458382.339793, "kind": "user_state", "state": "speaking"}
+{"t": 1790458384.6723382, "kind": "user_state", "state": "listening"}
+{"t": 1790458385.120531, "kind": "user_turn", "text": "Let me focus on what I actually need."}
+{"t": 1790458385.1220353, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8001928329467773, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00044800000614486635, "speech_id": "speech_9052c5dfda1b"}
+{"t": 1790458385.1220353, "kind": "dry_run_reply", "text": "You know, well... Can, um... I return my... Never mind, forget the return. Let me focus on what I actually need."}
+{"t": 1790458385.1231132, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458385.264807, "kind": "user_state", "state": "speaking"}
+{"t": 1790458385.2765305, "kind": "metrics", "type": "stt_metrics", "duration": 0.6026770000171382, "audio_duration": 2.964, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458385.2765305, "kind": "heard", "text": "Check order CAT for me."}
+{"t": 1790458385.2786217, "kind": "agent_state", "state": "listening"}
+{"t": 1790458385.2869701, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15857679999317043, "duration": 0.15924309997353703, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_9052c5dfda1b"}
+{"t": 1790458387.765306, "kind": "user_state", "state": "listening"}
+{"t": 1790458388.2129743, "kind": "user_turn", "text": "Check order CAT for me."}
+{"t": 1790458388.2139745, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7991628646850586, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00043200000072829425, "speech_id": "speech_5329b1e8bc29"}
+{"t": 1790458388.2153409, "kind": "dry_run_reply", "text": "You know, well... Can, um... I return my... Never mind, forget the return. Let me focus on what I actually need. Check order CAT for me."}
+{"t": 1790458388.2153409, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458388.439826, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458388.4451158, "kind": "metrics", "type": "stt_metrics", "duration": 0.6778148999728728, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458388.448983, "kind": "heard", "text": "Then search for cat food because I'm running low."}
+{"t": 1790458388.4561968, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.22195740000461228, "duration": 0.23881390001042746, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5329b1e8bc29"}
+{"t": 1790458388.5764241, "kind": "user_state", "state": "speaking"}
+{"t": 1790458389.9020038, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458389.9020038, "kind": "agent_state", "state": "listening"}
+{"t": 1790458391.5717936, "kind": "user_state", "state": "listening"}
+{"t": 1790458392.0133762, "kind": "user_turn", "text": "Then search for cat food because I'm running low."}
+{"t": 1790458392.0133762, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7915768623352051, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004518000059761107, "speech_id": "speech_040929376343"}
+{"t": 1790458392.0143738, "kind": "dry_run_reply", "text": "Then search for cat food because I'm running low."}
+{"t": 1790458392.0153747, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458392.210153, "kind": "metrics", "type": "stt_metrics", "duration": 0.637394299992593, "audio_duration": 2.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790458392.2117414, "kind": "heard", "text": "You're fine to my card."}
+{"t": 1790458392.2122495, "kind": "agent_state", "state": "listening"}
+{"t": 1790458392.224991, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.20683300000382587, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_040929376343"}
+{"t": 1790458393.0237012, "kind": "user_turn", "text": "You're fine to my card."}
+{"t": 1790458393.0237012, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004885999951511621, "speech_id": "speech_9ac69bba9997"}
+{"t": 1790458393.0247028, "kind": "dry_run_reply", "text": "Then search for cat food because I'm running low. You're fine to my card."}
+{"t": 1790458393.0257027, "kind": "agent_state", "state": "thinking"}
+{"t": 1790458393.117363, "kind": "agent_state", "state": "speaking"}
+{"t": 1790458393.1305866, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08837869999115355, "duration": 0.10200759998406284, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_9ac69bba9997"}
+{"t": 1790458394.5826917, "kind": "agent_said", "text": "Okay."}
+{"t": 1790458394.5826917, "kind": "agent_state", "state": "listening"}

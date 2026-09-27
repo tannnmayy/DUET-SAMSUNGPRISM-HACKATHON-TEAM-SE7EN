@@ -1,0 +1,336 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "housing_18",
+  "category": "housing_location",
+  "title": "Search + Commute Chain",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T06:21:40.405836",
+  "inference_time_s": 51.22,
+  "room_name": "eval-49624d1d",
+  "stream_start_time": 1790461303.2646697,
+  "input_transcript": "Well, so first, search for a one -bedroom in Portland that's under $800 per month. Then, once you find the cheapest option, check how long it would take to bike from there to the coffee shop on Fifth Street where I work.",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.62,
+        1.22
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.9,
+        2.3
+      ]
+    },
+    {
+      "text": "first,",
+      "timestamp": [
+        2.3,
+        2.66
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        3.0,
+        3.46
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        3.46,
+        3.72
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        3.72,
+        3.92
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        3.92,
+        4.28
+      ]
+    },
+    {
+      "text": "-bedroom",
+      "timestamp": [
+        4.28,
+        4.76
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        4.76,
+        5.0
+      ]
+    },
+    {
+      "text": "Portland",
+      "timestamp": [
+        5.0,
+        5.52
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        5.52,
+        6.4
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        6.4,
+        6.76
+      ]
+    },
+    {
+      "text": "$800",
+      "timestamp": [
+        6.76,
+        7.22
+      ]
+    },
+    {
+      "text": "per",
+      "timestamp": [
+        7.22,
+        7.46
+      ]
+    },
+    {
+      "text": "month.",
+      "timestamp": [
+        7.46,
+        7.86
+      ]
+    },
+    {
+      "text": "Then,",
+      "timestamp": [
+        8.02,
+        8.4
+      ]
+    },
+    {
+      "text": "once",
+      "timestamp": [
+        8.56,
+        8.78
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.78,
+        8.94
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        8.94,
+        9.2
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        9.2,
+        9.36
+      ]
+    },
+    {
+      "text": "cheapest",
+      "timestamp": [
+        9.36,
+        9.74
+      ]
+    },
+    {
+      "text": "option,",
+      "timestamp": [
+        9.74,
+        10.46
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        10.92,
+        11.14
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        11.14,
+        11.4
+      ]
+    },
+    {
+      "text": "long",
+      "timestamp": [
+        11.4,
+        11.66
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        11.66,
+        11.88
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        11.88,
+        12.0
+      ]
+    },
+    {
+      "text": "take",
+      "timestamp": [
+        12.0,
+        12.36
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        12.36,
+        12.66
+      ]
+    },
+    {
+      "text": "bike",
+      "timestamp": [
+        12.66,
+        13.0
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        13.0,
+        13.26
+      ]
+    },
+    {
+      "text": "there",
+      "timestamp": [
+        13.26,
+        13.5
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        13.5,
+        13.7
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        13.7,
+        13.8
+      ]
+    },
+    {
+      "text": "coffee",
+      "timestamp": [
+        13.8,
+        14.1
+      ]
+    },
+    {
+      "text": "shop",
+      "timestamp": [
+        14.1,
+        14.46
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        14.46,
+        14.74
+      ]
+    },
+    {
+      "text": "Fifth",
+      "timestamp": [
+        14.74,
+        14.96
+      ]
+    },
+    {
+      "text": "Street",
+      "timestamp": [
+        14.96,
+        15.26
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        15.26,
+        15.66
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        15.66,
+        16.36
+      ]
+    },
+    {
+      "text": "work.",
+      "timestamp": [
+        16.36,
+        16.74
+      ]
+    }
+  ],
+  "user_speech_end_rel": 16.74,
+  "latency": {
+    "input_duration_s": 47.685,
+    "output_duration_s": 47.685,
+    "first_speech_s": 20.1
+  },
+  "user_done_unix": 1790461320.0046697,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        19.95,
+        20.49
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        20.81,
+        21.35
+      ]
+    }
+  ],
+  "perceived_total_latency": 3.21,
+  "audio_agent_speech_start": 19.95,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

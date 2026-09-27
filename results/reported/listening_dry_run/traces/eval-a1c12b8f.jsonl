@@ -1,0 +1,19 @@
+{"t": 1790462124.413692, "kind": "session_start", "room": "eval-a1c12b8f", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462124.5814288, "kind": "agent_state", "state": "listening"}
+{"t": 1790462127.0791645, "kind": "user_state", "state": "speaking"}
+{"t": 1790462133.929599, "kind": "user_state", "state": "listening"}
+{"t": 1790462134.2349343, "kind": "user_state", "state": "speaking"}
+{"t": 1790462134.5409226, "kind": "metrics", "type": "stt_metrics", "duration": 0.6150920999934897, "audio_duration": 7.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462134.5423753, "kind": "heard", "text": "So I need to get to Chicago sometime around, let me think, I believe it's December 12th, yeah."}
+{"t": 1790462134.5446138, "kind": "dry_run_reply", "text": "So I need to get to Chicago sometime around, let me think, I believe it's December 12th, yeah."}
+{"t": 1790462137.26623, "kind": "user_state", "state": "listening"}
+{"t": 1790462137.45354, "kind": "metrics", "type": "stt_metrics", "duration": 0.5296046000148635, "audio_duration": 3.284, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462137.455115, "kind": "heard", "text": "Could you look up flights for the day?"}
+{"t": 1790462137.457734, "kind": "dry_run_reply", "text": "So I need to get to Chicago sometime around, let me think, I believe it's December 12th, yeah. Could you look up flights for the day?"}
+{"t": 1790462139.4072175, "kind": "user_turn", "text": "So I need to get to Chicago sometime around, let me think, I believe it's December 12th, yeah. Could you look up flights for the day?"}
+{"t": 1790462139.408221, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4919896125793457, "transcription_delay": 0.5398871898651123, "on_user_turn_completed_delay": 0.00045919997501187027, "speech_id": "speech_9d3487fb3139"}
+{"t": 1790462139.408221, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462139.5740752, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462139.5862052, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16201539998291992, "duration": 0.17522149998694658, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_9d3487fb3139"}
+{"t": 1790462141.0463254, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462141.0463254, "kind": "agent_state", "state": "listening"}

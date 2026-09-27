@@ -1,0 +1,196 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "ecommerce_12",
+  "category": "ecommerce_support",
+  "title": "Hesitation with Category",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:13:49.064341",
+  "inference_time_s": 44.74,
+  "room_name": "eval-67809376",
+  "stream_start_time": 1790457231.9039679,
+  "input_transcript": "Like, you know, I'm thinking something in the, let me think, electronics section would be great. He's really into gadgets and tech stuff.",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.37,
+        0.93
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        1.07,
+        1.11
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        1.11,
+        1.33
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        1.59,
+        2.85
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        2.85,
+        3.35
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        3.35,
+        3.87
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        3.87,
+        4.15
+      ]
+    },
+    {
+      "text": "the,",
+      "timestamp": [
+        4.15,
+        4.31
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        4.37,
+        4.77
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        4.77,
+        4.91
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        4.91,
+        5.25
+      ]
+    },
+    {
+      "text": "electronics",
+      "timestamp": [
+        5.51,
+        6.03
+      ]
+    },
+    {
+      "text": "section",
+      "timestamp": [
+        6.03,
+        6.65
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        6.65,
+        6.89
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        6.89,
+        7.01
+      ]
+    },
+    {
+      "text": "great.",
+      "timestamp": [
+        7.01,
+        7.31
+      ]
+    },
+    {
+      "text": "He's",
+      "timestamp": [
+        7.71,
+        8.29
+      ]
+    },
+    {
+      "text": "really",
+      "timestamp": [
+        8.29,
+        8.57
+      ]
+    },
+    {
+      "text": "into",
+      "timestamp": [
+        8.57,
+        8.91
+      ]
+    },
+    {
+      "text": "gadgets",
+      "timestamp": [
+        8.91,
+        9.35
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        9.35,
+        9.73
+      ]
+    },
+    {
+      "text": "tech",
+      "timestamp": [
+        9.73,
+        10.01
+      ]
+    },
+    {
+      "text": "stuff.",
+      "timestamp": [
+        10.01,
+        10.33
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.33,
+  "latency": {
+    "input_duration_s": 41.264,
+    "output_duration_s": 41.264,
+    "first_speech_s": 14.6
+  },
+  "user_done_unix": 1790457242.2339678,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        14.38,
+        14.9
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.05,
+  "audio_agent_speech_start": 14.38,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

@@ -1,0 +1,33 @@
+{"t": 1790457786.6899612, "kind": "session_start", "room": "eval-3361cb21", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790457786.7890534, "kind": "agent_state", "state": "listening"}
+{"t": 1790457791.1432548, "kind": "user_state", "state": "speaking"}
+{"t": 1790457793.0442662, "kind": "user_state", "state": "listening"}
+{"t": 1790457793.2930276, "kind": "user_state", "state": "speaking"}
+{"t": 1790457793.6150029, "kind": "metrics", "type": "stt_metrics", "duration": 0.5700763000058942, "audio_duration": 2.516, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457793.628496, "kind": "heard", "text": "Can you cancel my..."}
+{"t": 1790457793.6318984, "kind": "dry_run_reply", "text": "Can you cancel my..."}
+{"t": 1790457796.1467028, "kind": "user_state", "state": "listening"}
+{"t": 1790457796.3020558, "kind": "user_state", "state": "speaking"}
+{"t": 1790457796.7369354, "kind": "metrics", "type": "stt_metrics", "duration": 0.5886860000027809, "audio_duration": 3.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457796.738233, "kind": "heard", "text": "Actually, never mind the cancellation."}
+{"t": 1790457796.7397442, "kind": "dry_run_reply", "text": "Can you cancel my... Actually, never mind the cancellation."}
+{"t": 1790457798.0480506, "kind": "user_state", "state": "listening"}
+{"t": 1790457798.2049205, "kind": "user_state", "state": "speaking"}
+{"t": 1790457798.3553011, "kind": "metrics", "type": "stt_metrics", "duration": 0.3070845000038389, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457798.3570635, "kind": "heard", "text": "I changed my mind about that."}
+{"t": 1790457798.3597426, "kind": "dry_run_reply", "text": "Can you cancel my... Actually, never mind the cancellation. I changed my mind about that."}
+{"t": 1790457801.9433937, "kind": "user_state", "state": "listening"}
+{"t": 1790457802.1939623, "kind": "user_state", "state": "speaking"}
+{"t": 1790457802.5896, "kind": "metrics", "type": "stt_metrics", "duration": 0.6457955999940168, "audio_duration": 4.34, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457802.591453, "kind": "heard", "text": "Can you just track order GG5 for me instead?"}
+{"t": 1790457803.9445517, "kind": "user_state", "state": "listening"}
+{"t": 1790457804.261159, "kind": "metrics", "type": "stt_metrics", "duration": 0.3152772000175901, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790457804.262272, "kind": "heard", "text": "I want to see where it is."}
+{"t": 1790457804.3837514, "kind": "user_turn", "text": "Can you cancel my... Actually, never mind the cancellation. I changed my mind about that. Can you just track order GG5 for me instead? I want to see where it is."}
+{"t": 1790457804.3847494, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7911996841430664, "transcription_delay": 0.6697201728820801, "on_user_turn_completed_delay": 0.0005064999859314412, "speech_id": "speech_e5a97235a03f"}
+{"t": 1790457804.3857481, "kind": "dry_run_reply", "text": "Can you cancel my... Actually, never mind the cancellation. I changed my mind about that. Can you just track order GG5 for me instead? I want to see where it is."}
+{"t": 1790457804.3867476, "kind": "agent_state", "state": "thinking"}
+{"t": 1790457804.5161088, "kind": "agent_state", "state": "speaking"}
+{"t": 1790457804.5266056, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12715509999543428, "duration": 0.1385852000094019, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e5a97235a03f"}
+{"t": 1790457805.9814417, "kind": "agent_said", "text": "Okay."}
+{"t": 1790457805.9814417, "kind": "agent_state", "state": "listening"}

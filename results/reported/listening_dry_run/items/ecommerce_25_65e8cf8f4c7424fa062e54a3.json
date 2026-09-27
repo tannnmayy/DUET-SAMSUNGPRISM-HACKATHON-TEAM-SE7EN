@@ -1,0 +1,364 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "ecommerce_25",
+  "category": "ecommerce_support",
+  "title": "False Start into Complex Chain",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:31:35.411244",
+  "inference_time_s": 52.89,
+  "room_name": "eval-7b8910b8",
+  "stream_start_time": 1790458298.2656004,
+  "input_transcript": "You know, well, can, um, I return my, never mind, forget the return. Let me focus on what I actually need. Track order C -A -T for me, then search for cat food because I'm running low, and add three of whatever you find to my cart.",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.53,
+        1.03
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        1.03,
+        1.29
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        1.77,
+        2.21
+      ]
+    },
+    {
+      "text": "can,",
+      "timestamp": [
+        2.59,
+        2.75
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        3.03,
+        3.97
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.77,
+        5.01
+      ]
+    },
+    {
+      "text": "return",
+      "timestamp": [
+        5.01,
+        5.39
+      ]
+    },
+    {
+      "text": "my,",
+      "timestamp": [
+        5.39,
+        5.65
+      ]
+    },
+    {
+      "text": "never",
+      "timestamp": [
+        5.89,
+        6.49
+      ]
+    },
+    {
+      "text": "mind,",
+      "timestamp": [
+        6.49,
+        6.69
+      ]
+    },
+    {
+      "text": "forget",
+      "timestamp": [
+        6.85,
+        7.01
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        7.01,
+        7.17
+      ]
+    },
+    {
+      "text": "return.",
+      "timestamp": [
+        7.17,
+        7.47
+      ]
+    },
+    {
+      "text": "Let",
+      "timestamp": [
+        7.81,
+        8.23
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        8.23,
+        8.37
+      ]
+    },
+    {
+      "text": "focus",
+      "timestamp": [
+        8.37,
+        8.71
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        8.71,
+        8.95
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        8.95,
+        9.11
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        9.11,
+        9.23
+      ]
+    },
+    {
+      "text": "actually",
+      "timestamp": [
+        9.23,
+        9.63
+      ]
+    },
+    {
+      "text": "need.",
+      "timestamp": [
+        9.63,
+        9.99
+      ]
+    },
+    {
+      "text": "Track",
+      "timestamp": [
+        10.37,
+        10.93
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        10.93,
+        11.35
+      ]
+    },
+    {
+      "text": "C",
+      "timestamp": [
+        11.35,
+        11.79
+      ]
+    },
+    {
+      "text": "-A",
+      "timestamp": [
+        11.79,
+        12.19
+      ]
+    },
+    {
+      "text": "-T",
+      "timestamp": [
+        12.19,
+        12.51
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        12.51,
+        12.99
+      ]
+    },
+    {
+      "text": "me,",
+      "timestamp": [
+        12.99,
+        13.25
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        13.43,
+        13.85
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        13.85,
+        14.21
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        14.21,
+        14.41
+      ]
+    },
+    {
+      "text": "cat",
+      "timestamp": [
+        14.41,
+        14.73
+      ]
+    },
+    {
+      "text": "food",
+      "timestamp": [
+        14.73,
+        14.97
+      ]
+    },
+    {
+      "text": "because",
+      "timestamp": [
+        14.97,
+        15.21
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        15.21,
+        15.43
+      ]
+    },
+    {
+      "text": "running",
+      "timestamp": [
+        15.43,
+        15.65
+      ]
+    },
+    {
+      "text": "low,",
+      "timestamp": [
+        15.65,
+        16.01
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        16.19,
+        16.85
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        16.85,
+        17.21
+      ]
+    },
+    {
+      "text": "three",
+      "timestamp": [
+        17.21,
+        17.45
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        17.45,
+        17.63
+      ]
+    },
+    {
+      "text": "whatever",
+      "timestamp": [
+        17.63,
+        17.87
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        17.87,
+        18.13
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        18.13,
+        18.35
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        18.35,
+        18.51
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        18.51,
+        18.65
+      ]
+    },
+    {
+      "text": "cart.",
+      "timestamp": [
+        18.65,
+        18.93
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.93,
+  "latency": {
+    "input_duration_s": 49.38,
+    "output_duration_s": 49.38,
+    "first_speech_s": 23.2
+  },
+  "user_done_unix": 1790458317.1956005,
+  "transcript": "Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        23.02,
+        23.5
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.09,
+  "audio_agent_speech_start": 23.02,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

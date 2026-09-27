@@ -1,0 +1,31 @@
+{"t": 1790462777.8727593, "kind": "session_start", "room": "eval-74644fe8", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790462777.9781125, "kind": "agent_state", "state": "listening"}
+{"t": 1790462780.2582786, "kind": "user_state", "state": "speaking"}
+{"t": 1790462784.127278, "kind": "user_state", "state": "listening"}
+{"t": 1790462784.2844741, "kind": "user_state", "state": "speaking"}
+{"t": 1790462784.762369, "kind": "metrics", "type": "stt_metrics", "duration": 0.6327949000115041, "audio_duration": 4.5, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462784.763374, "kind": "heard", "text": "Here's the thing, I need to fly to Toronto on July 20th."}
+{"t": 1790462784.7659485, "kind": "dry_run_reply", "text": "Here's the thing, I need to fly to Toronto on July 20th."}
+{"t": 1790462786.8478522, "kind": "user_state", "state": "listening"}
+{"t": 1790462787.0823574, "kind": "user_state", "state": "speaking"}
+{"t": 1790462787.4338434, "kind": "metrics", "type": "stt_metrics", "duration": 0.5842465000168886, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462787.4347641, "kind": "heard", "text": "If there happens to be a flight under $300,"}
+{"t": 1790462787.437389, "kind": "dry_run_reply", "text": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300,"}
+{"t": 1790462796.2321286, "kind": "user_state", "state": "listening"}
+{"t": 1790462796.6693377, "kind": "user_turn", "text": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300,"}
+{"t": 1790462796.6693377, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7892091274261475, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004474000015761703, "speech_id": "speech_45bfb75642c8"}
+{"t": 1790462796.6708903, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462797.0286467, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462797.0421054, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3550316000182647, "duration": 0.3702969000150915, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_45bfb75642c8"}
+{"t": 1790462797.0515203, "kind": "metrics", "type": "stt_metrics", "duration": 0.8235598999890499, "audio_duration": 9.78, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790462797.0525033, "kind": "heard", "text": "Go ahead and book it for Riley Kim, but if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead."}
+{"t": 1790462797.8519146, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462797.8529196, "kind": "agent_state", "state": "listening"}
+{"t": 1790462797.8550594, "kind": "user_turn", "text": "Go ahead and book it for Riley Kim, but if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead."}
+{"t": 1790462797.8560696, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0006540000031236559, "speech_id": "speech_1fa39c4708b2"}
+{"t": 1790462797.8595915, "kind": "dry_run_reply", "text": "Go ahead and book it for Riley Kim, but if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead."}
+{"t": 1790462797.8609061, "kind": "agent_state", "state": "thinking"}
+{"t": 1790462798.022563, "kind": "agent_state", "state": "speaking"}
+{"t": 1790462798.033789, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1592808999994304, "duration": 0.17080900000291876, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1fa39c4708b2"}
+{"t": 1790462799.4912558, "kind": "agent_said", "text": "Okay."}
+{"t": 1790462799.492255, "kind": "agent_state", "state": "listening"}

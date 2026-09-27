@@ -1,0 +1,210 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "ecommerce_08",
+  "category": "ecommerce_support",
+  "title": "Search with Pause",
+  "provider": "duet_dry_final",
+  "evaluated_at": "2026-09-27T05:08:24.751335",
+  "inference_time_s": 49.21,
+  "room_name": "eval-76b7b92f",
+  "stream_start_time": 1790456907.5507193,
+  "input_transcript": "Ah, hmm. You know, I want a mechanical keyboard and I'm trying to keep my budget under $200. Do you have anything like that?",
+  "input_asr_chunks": [
+    {
+      "text": "Ah,",
+      "timestamp": [
+        0.0,
+        0.54
+      ]
+    },
+    {
+      "text": "hmm.",
+      "timestamp": [
+        1.22,
+        1.6
+      ]
+    },
+    {
+      "text": "You",
+      "timestamp": [
+        2.44,
+        2.9
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        2.9,
+        3.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.46,
+        4.74
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        4.74,
+        4.94
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        4.94,
+        5.08
+      ]
+    },
+    {
+      "text": "mechanical",
+      "timestamp": [
+        5.08,
+        5.6
+      ]
+    },
+    {
+      "text": "keyboard",
+      "timestamp": [
+        5.6,
+        6.22
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        6.22,
+        6.58
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        6.58,
+        6.76
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        6.76,
+        7.28
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.28,
+        8.8
+      ]
+    },
+    {
+      "text": "keep",
+      "timestamp": [
+        8.8,
+        9.0
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        9.0,
+        9.2
+      ]
+    },
+    {
+      "text": "budget",
+      "timestamp": [
+        9.2,
+        9.64
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        9.64,
+        10.18
+      ]
+    },
+    {
+      "text": "$200.",
+      "timestamp": [
+        10.18,
+        11.92
+      ]
+    },
+    {
+      "text": "Do",
+      "timestamp": [
+        12.66,
+        13.04
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        13.04,
+        13.12
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        13.12,
+        13.3
+      ]
+    },
+    {
+      "text": "anything",
+      "timestamp": [
+        13.3,
+        13.68
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        13.68,
+        14.02
+      ]
+    },
+    {
+      "text": "that?",
+      "timestamp": [
+        14.02,
+        14.36
+      ]
+    }
+  ],
+  "user_speech_end_rel": 14.36,
+  "latency": {
+    "input_duration_s": 45.78,
+    "output_duration_s": 45.78,
+    "first_speech_s": 5.05
+  },
+  "user_done_unix": 1790456921.9107192,
+  "transcript": "Okay. Okay.",
+  "asr_chunks": [
+    {
+      "text": "Okay.",
+      "timestamp": [
+        4.72,
+        5.46
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        17.27,
+        17.87
+      ]
+    }
+  ],
+  "perceived_total_latency": -9.64,
+  "audio_agent_speech_start": 4.72,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

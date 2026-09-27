@@ -1,0 +1,28 @@
+{"t": 1790459009.6103675, "kind": "session_start", "room": "eval-8345b71a", "dry_run": true, "thinker": "gemini-3.7-flash", "thinking": "low", "talker": "gemini-3.5-flash-lite", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790459009.7545502, "kind": "agent_state", "state": "listening"}
+{"t": 1790459012.2533517, "kind": "user_state", "state": "speaking"}
+{"t": 1790459017.8522706, "kind": "user_state", "state": "listening"}
+{"t": 1790459018.3019376, "kind": "user_state", "state": "speaking"}
+{"t": 1790459018.458747, "kind": "metrics", "type": "stt_metrics", "duration": 0.6061520999937784, "audio_duration": 6.196, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459018.472749, "kind": "heard", "text": "I'm trying to figure out how much money I'd have if I converted, let me think."}
+{"t": 1790459018.4757016, "kind": "dry_run_reply", "text": "I'm trying to figure out how much money I'd have if I converted, let me think."}
+{"t": 1790459023.103515, "kind": "user_state", "state": "listening"}
+{"t": 1790459023.5506518, "kind": "user_turn", "text": "I'm trying to figure out how much money I'd have if I converted, let me think."}
+{"t": 1790459023.5506518, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7981374263763428, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00040240000816993415, "speech_id": "speech_80c9e81f8ece"}
+{"t": 1790459023.5517116, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459023.7085583, "kind": "metrics", "type": "stt_metrics", "duration": 0.603383700014092, "audio_duration": 5.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459023.7094295, "kind": "heard", "text": "About 200 euros into U.S. dollars. What would that come out to?"}
+{"t": 1790459023.709936, "kind": "agent_state", "state": "listening"}
+{"t": 1790459023.7205482, "kind": "metrics", "type": "tts_metrics", "ttfb": -1.0, "duration": 0.163661200000206, "audio_duration": 0.0, "cancelled": true, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_80c9e81f8ece"}
+{"t": 1790459024.308922, "kind": "user_state", "state": "speaking"}
+{"t": 1790459024.7123132, "kind": "user_state", "state": "listening"}
+{"t": 1790459025.0148575, "kind": "metrics", "type": "stt_metrics", "duration": 0.301999400020577, "audio_duration": 1.012, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790459025.0163603, "kind": "heard", "text": "Thank you."}
+{"t": 1790459025.018777, "kind": "dry_run_reply", "text": "I'm trying to figure out how much money I'd have if I converted, let me think. About 200 euros into U.S. dollars. What would that come out to? Thank you."}
+{"t": 1790459025.1730688, "kind": "user_turn", "text": "About 200 euros into U.S. dollars. What would that come out to? Thank you."}
+{"t": 1790459025.1730688, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8122525215148926, "transcription_delay": 0.6560471057891846, "on_user_turn_completed_delay": 0.00041310000233352184, "speech_id": "speech_bd11bc901efd"}
+{"t": 1790459025.1740725, "kind": "agent_state", "state": "thinking"}
+{"t": 1790459025.3059034, "kind": "agent_state", "state": "speaking"}
+{"t": 1790459025.3179643, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12886029999936, "duration": 0.1419226999860257, "audio_duration": 1.46, "cancelled": false, "characters_count": 5, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_bd11bc901efd"}
+{"t": 1790459026.7705386, "kind": "agent_said", "text": "Okay."}
+{"t": 1790459026.77209, "kind": "agent_state", "state": "listening"}
