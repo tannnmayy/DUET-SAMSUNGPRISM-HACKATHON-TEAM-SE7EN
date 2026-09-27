@@ -23,3 +23,6 @@ third_party/
 _tmp*
 results/plumbing/
 .env.livekit
+results/llm_server/
+doctor_report.txt
+duet_results_*.tar.gz

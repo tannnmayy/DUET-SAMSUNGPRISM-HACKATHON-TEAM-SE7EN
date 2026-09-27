@@ -17,8 +17,8 @@ flowchart LR
     end
     subgraph DUET["DUET: the brain"]
         C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
-        T["Talker (fast mind)<br/>Gemini Flash-Lite<br/>one truthful acknowledgement"]
-        K["Thinker (slow mind)<br/>Gemini Flash, own tool loop<br/>transcript + optional turn audio"]
+        T["Talker (fast mind)<br/>Qwen3-30B-A3B, short prompt<br/>one truthful acknowledgement"]
+        K["Thinker (slow mind)<br/>Qwen3-30B-A3B, own tool loop<br/>the open request as text"]
     end
     S -->|final segments| C
     E -->|turn closed| C
@@ -38,11 +38,18 @@ one short sentence that shows they were understood ("Sure, checking those
 flights now"). It names the task but never a value, because the user may still
 be correcting it. It never states a result, because it has none.
 
-**Thinker.** Gemini with the twelve tools, run by DUET's own loop rather than
-the framework's: every call goes through the coordinator. It keeps its own
-native conversation state (function calls, results and Gemini's thought
-signatures) and, optionally, hears the turn's audio as well as the transcript,
-so a mis-heard word or a spelled id can be recovered from the sound.
+**Thinker.** A language model with the twelve tools, run by DUET's own loop
+rather than the framework's: every call goes through the coordinator. It keeps
+its own conversation state (tool calls and results, not just text).
+
+**One model behind both minds.** Qwen3-30B-A3B-Instruct-2507 (open weights,
+Apache-2.0) runs on the same GPU, served by vLLM (`bench/llm_server.py`) through
+an OpenAI-compatible API on 127.0.0.1. vLLM's `hermes` parser turns Qwen3's tool
+calls into standard ones, and a call the parser misses is recovered from the
+text. The Gemini API is a drop-in alternative (`DUET_LLM_BACKEND=gemini`,
+`duet_voice/thinker.py`), with the same loop and the same events. Only there does
+the thinker keep Gemini's thought signatures, and can it hear the turn's audio
+as well as the transcript.
 
 Both start together when a turn ends, or earlier: LiveKit runs generation
 *preemptively* during a pause, so the plan is often ready by the time the turn
@@ -50,10 +57,11 @@ closes. DUET raises LiveKit's limits (10 s into a turn, 3 attempts) to 120 s and
 20 attempts, because FDB-v3's requests are long and full of pauses. Planning
 early is safe because acting early is not allowed.
 
-**Model availability.** Each role (thinker, talker) has a list of current
-Gemini models. At start-up the worker makes one tiny request per role. If the
-API refuses the declared model (as it began doing for some Gemini 2.5 models in
-September 2026), the next one in the list is used and the choice is logged.
+**Before any run.** The runner checks that the model server answers, serves our
+model, and returns a real tool call for a test request. With Gemini, each role
+instead has a list of current models: if the API refuses the declared one (as it
+began doing for some Gemini 2.5 models in September 2026), the next is used and
+the choice is logged.
 
 ## When the agent speaks, and when it keeps listening
 
@@ -118,7 +126,16 @@ voice agent:
 
 ## Resource use
 
-Everything local fits in about 4 GB of GPU memory (Whisper turbo in float16, and
-Kokoro); the 48 GB evaluation GPU is far more than needed. The thinker and
-talker run on the Gemini API. They are Gemini-only today; serving an open-weight
-model on the same GPU would mean a second backend for the thinker's tool loop.
+Everything runs on one GPU, sized for Samsung's 48 GB card (about 45 GiB usable):
+
+| Process | GPU memory |
+|---|---|
+| Model server (vLLM, Qwen3-30B-A3B FP8: 29.1 GiB weights, working memory, ~22k tokens of KV cache) | 33 GiB, fixed |
+| Agent (Whisper turbo in float16, Kokoro, CUDA context) | ~3.5 GiB |
+| The benchmark's scoring recognizer (Parakeet, in the runner) | ~4-5 GiB |
+
+vLLM gets a fixed budget in GiB rather than a fraction of the GPU. So it takes the
+same memory on an 80 GB H100 as on a 48 GB card, and a run on a bigger GPU
+measures the real footprint (`summary.json` records the peak). GPUs older than
+Ada cannot run the FP8 build's block-wise kernels. There the server loads Red
+Hat's 4-bit build instead (16.7 GB, in a 22 GiB budget).

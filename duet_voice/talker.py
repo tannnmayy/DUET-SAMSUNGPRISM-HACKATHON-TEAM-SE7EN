@@ -30,6 +30,17 @@ async def acknowledgement(user_text: str, context: str = "", usage: Optional[dic
     `usage`, if given, receives the call's token counts (for the cost analysis)."""
     if not CONFIG.talker_enabled or not user_text.strip():
         return None
+    if CONFIG.llm_backend == "local":
+        from . import llm_local
+        try:
+            text = await asyncio.wait_for(llm_local.acknowledge(user_text, usage), timeout=CONFIG.talker_timeout_s)
+        except asyncio.TimeoutError:
+            log.info("talker timed out after %.1f s", CONFIG.talker_timeout_s)
+            return None
+        except Exception as exc:
+            log.warning("talker failed: %s", exc)
+            return None
+        return None if (not text or SILENT in text) else text
     from google.genai import types
 
     prompt = (("Earlier in this call: " + context + "\n") if context else "") + "User: " + user_text

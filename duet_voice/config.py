@@ -29,23 +29,34 @@ def _env_bool(name: str, default: bool) -> bool:
 
 @dataclass(frozen=True)
 class Config:
+    # --- the language model behind both minds --------------------------------------
+    # "local" (default): Qwen3-30B-A3B-Instruct-2507, open weights (Apache-2.0), served
+    #   by vLLM on the same GPU as everything else (bench/llm_server.py). No API key,
+    #   nothing billed, and it fits Samsung's single 48 GB GPU.
+    # "gemini": the Gemini API (GOOGLE_API_KEY), kept as an alternative.
+    llm_backend: str = field(default_factory=lambda: _env("DUET_LLM_BACKEND", "local"))
+    # the local server's OpenAI-compatible endpoint, and the name it serves the model as
+    llm_base_url: str = field(default_factory=lambda: _env("DUET_LLM_BASE_URL", "http://127.0.0.1:18000/v1"))
+    llm_model: str = field(default_factory=lambda: _env("DUET_LLM_MODEL", "qwen3-30b-a3b-instruct-2507"))
+
     # --- thinker (slow mind): plans and runs tool chains ---------------------
-    # Gemini 2.5 Flash-Lite and 2.5 Pro are "no longer available to new users" (the
-    # API's own words, Sep 2026), and a re-run uses a new key: DUET declares the
-    # current generation (3.5 and later), which any key can reach.
-    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", "gemini-3.7-flash"))
-    # minimal | low | medium | high: thinking level (a token budget on Gemini 2.5)
+    # empty: the backend's default (the local model, or gemini-3.7-flash; Gemini 2.5
+    # Flash-Lite and 2.5 Pro are "no longer available to new users" since Sep 2026)
+    thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", ""))
+    # Gemini only: minimal | low | medium | high (a token budget on Gemini 2.5).
+    # Qwen3-30B-A3B-Instruct-2507 is a non-thinking model.
     thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))
     # fixed sampling seed for every model call (the guide: "pin seeds and versions")
     seed: int = field(default_factory=lambda: _env_int("DUET_SEED", 7))
-    # empty: the model family's recommended value (0 on Gemini 2.x; 1.0 on Gemini 3,
-    # where Google advises against lowering it: it can cause looping)
+    # empty: the model authors' recommendation (Qwen3-2507: 0.7 with top-p 0.8 and
+    # top-k 20; Gemini 2.x: 0; Gemini 3: 1.0, where Google advises against lowering it)
     temperature: str = field(default_factory=lambda: _env("DUET_TEMPERATURE", ""))
 
     # --- talker (fast mind): acknowledgements, progress, never tools -----------
     talker_enabled: bool = field(default_factory=lambda: _env_bool("DUET_TALKER", True))
-    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", "gemini-3.5-flash-lite"))
+    # empty: the backend's default (the same local model, or gemini-3.5-flash-lite)
+    talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", ""))
     talker_timeout_s: float = field(default_factory=lambda: _env_float("DUET_TALKER_TIMEOUT", 1.2))
 
     # --- perception ------------------------------------------------------------
@@ -88,6 +99,13 @@ class Config:
     heartbeat_log: str = field(default_factory=lambda: _env("FDB_HEARTBEAT_LOG", "/tmp/agent_heartbeat.log"))
     latency_profile: str = field(default_factory=lambda: _env("FDB_LATENCY_PROFILE", "instant"))
     trace_dir: str = field(default_factory=lambda: _env("DUET_TRACE_DIR", ""))
+
+    def __post_init__(self) -> None:
+        local = self.llm_backend == "local"
+        if not self.thinker_model:
+            object.__setattr__(self, "thinker_model", self.llm_model if local else "gemini-3.7-flash")
+        if not self.talker_model:
+            object.__setattr__(self, "talker_model", self.llm_model if local else "gemini-3.5-flash-lite")
 
 
 CONFIG = Config()

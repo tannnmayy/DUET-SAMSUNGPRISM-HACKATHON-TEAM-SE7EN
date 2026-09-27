@@ -16,6 +16,8 @@ quiet while it waits:
     to cover, and never claims a result it doesn't have.
   - A **thinker** (a reasoning model with the tools) plans, calls tools and
     speaks the outcome.
+  - Both run on one open-weights model, **Qwen3-30B-A3B-Instruct-2507**, on the
+    same GPU as the speech models: no API key, nothing billed, one 48 GB GPU.
 - **One coordinator** decides *when acting is allowed*:
   - No tool runs while the user is still speaking, or before the turn has
     closed and the user has been quiet for a short hold. The hold is longer
@@ -61,8 +63,8 @@ flowchart LR
         TTS["TTS: Kokoro-82M"] --> O[Room audio out]
     end
     subgraph DUET["DUET: the brain"]
-        T["Talker: Gemini 3.5 Flash-Lite<br/>one truthful acknowledgement"]
-        K["Thinker: Gemini 3.7 Flash<br/>own tool loop"]
+        T["Talker: Qwen3-30B-A3B<br/>one truthful acknowledgement"]
+        K["Thinker: Qwen3-30B-A3B<br/>own tool loop"]
         C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
     end
     S --> K
@@ -73,6 +75,11 @@ flowchart LR
     B --> K
     T -->|only when there is work| TTS
     K -->|answer with the key facts| TTS
+    subgraph GPU["the same GPU"]
+        L["vLLM: Qwen3-30B-A3B-Instruct-2507<br/>open weights, local"]
+    end
+    T -.-> L
+    K -.-> L
 ```
 
 Details, and why each piece exists: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -84,79 +91,89 @@ realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Thinker (reasoning, tool calls) | Google `gemini-3.7-flash` (thinking level low, temperature 1.0, seed 7) | Gemini API (hosted) |
-| Talker (acknowledgements) | Google `gemini-3.5-flash-lite` (thinking level minimal, temperature 1.0, seed 7) | Gemini API (hosted) |
+| Thinker (reasoning, tool calls) | **Qwen3-30B-A3B-Instruct-2507** (Apache-2.0 open weights; `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` @ `5a5a776`, or `RedHatAI/Qwen3-30B-A3B-Instruct-2507-quantized.w4a16` @ `e9c59cd` on pre-Ada GPUs); temperature 0.7, top-p 0.8, top-k 20 (the model card's values), seed 7 | **Local GPU**, served by vLLM 0.19.1 |
+| Talker (acknowledgements) | The same model, same server | Local GPU |
 | Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
 | Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
 | Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
 | End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
 
-**Why Gemini 3.5, not 2.5.** In September 2026 the Gemini API answers requests
-for `gemini-2.5-flash-lite` and `gemini-2.5-pro` with *"no longer available to
-new users"*, naming the 3.5 generation as the replacement. The thinker uses
-`gemini-3.7-flash` (August 2026), which on a first sample matched or beat
-`gemini-3.5-flash` and currently costs half as much. Samsung's re-run will
-use a key of its own, possibly a new one, so DUET declares models that any key
-can reach. Temperature stays at the Gemini 3 default (1.0), because Google
-advises that lowering it can cause looping; the seed is fixed. Every setting
-can be overridden (`DUET_THINKER_MODEL`, `DUET_TALKER_MODEL`, `DUET_TEMPERATURE`,
-`DUET_THINKER_THINKING`), and each run records the effective values in
-`run_config.json`.
+**Why a local open-weights model.** Everything runs on the one GPU Samsung
+provides:
+- **No API key and nothing billed.** The re-run does not depend on a key's quota,
+  tier, region or on a hosted model being withdrawn. In September 2026 two
+  Gemini 2.5 models began refusing new keys.
+- **It fits the 48 GB budget.** Qwen3-30B-A3B is a mixture-of-experts model: 30.5B
+  parameters, of which about 3.3B are active per token, so it answers fast.
+  - Its official FP8 build (31.2 GB) runs in a fixed 33 GiB budget.
+  - That leaves room for the speech models (~3.5 GiB) and the benchmark's own
+    scoring recognizer (~4-5 GiB).
+  - Every run records its peak GPU memory in `summary.json`.
+- **It runs on either GPU generation.** On GPUs older than Ada, whose kernels
+  cannot run that FP8 build, the server loads Red Hat's 4-bit build (16.7 GB) in a
+  22 GiB budget. The choice is automatic.
 
-Local models use about 4 GB of GPU memory, far below the 48 GB evaluation GPU.
-The thinker and talker are Gemini-only today. A backend for open-weight models
-on the same GPU (for example Gemma served by vLLM) is future work: the
-thinker's tool loop is the only piece that would change.
+The Gemini API remains available as an alternative (`DUET_LLM_BACKEND=gemini`,
+with `gemini-3.7-flash` and `gemini-3.5-flash-lite`). Every setting can be
+overridden (`DUET_LLM_*`, `DUET_TEMPERATURE`, and the rest in
+`duet_voice/config.py`), and each run records the effective values in
+`run_config.json`.
 
 ## API keys: which ones, and where they go
 
-Set these as environment variables, or put them in `.env.local` at the
-repository root (the file is git-ignored). No key is included in this
-repository.
+**None is required.** The language model runs locally. Optional variables
+(environment, or `.env.local` at the repository root, which is git-ignored; no
+key is included in this repository):
 
 | Variable | Needed for | Required? |
 |---|---|---|
-| `GOOGLE_API_KEY` | DUET's thinker and talker (Gemini API). Use a key from a project with billing enabled (Tier 1): one 100-item run makes a few hundred requests, while the free tier allows 5 requests per minute per model and serves them slowly (we measured 4-38 s per request). Alternatively Vertex AI: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and application-default credentials | **Yes** |
-| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | For judged scores |
-| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) in dev mode | Optional |
+| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency). Without it our own reports use the local model as a labelled proxy judge | Optional |
+| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) on free local ports | Optional |
+| `GOOGLE_API_KEY` with `DUET_LLM_BACKEND=gemini` | Only for the Gemini alternative (a billing-enabled key: the free tier allows 20 requests per model per day) | Optional |
 
 ## Reproduce the benchmark: one command
 
 ```bash
-export GOOGLE_API_KEY=...        # required
-export OPENAI_API_KEY=...        # the official gpt-4o judge
+bash scripts/doctor.sh           # optional: is this machine ready?
 bash reproduce.sh                # all 100 items, then the three official evaluations
-bash reproduce.sh --only travel_19,housing_04   # a quick subset
+bash reproduce.sh --only travel_19_695bd157114f0d2317f88617   # a quick check first
 ```
 
-- **Target machine:** Linux x86_64, one NVIDIA GPU (CUDA 12 or 13 driver), with
-  `ffmpeg`, `git`, `curl` and `unzip` installed. Python 3.10-3.12 (3.11 preferred,
-  the version of our runs). If there is none, or the `venv` module is missing
-  (stock Ubuntu without `python3-venv`), the script uses a pinned `uv` to create
-  the environments and, if needed, to supply Python 3.11.
+- **Target machine:** Linux x86_64 with one NVIDIA GPU of 48 GB and a driver
+  for CUDA 12.x or 13.x, plus `git`, `curl`, a C compiler (vLLM's Triton kernels
+  build small helpers with it), internet access and about 90 GB of disk. No sudo
+  and no system Python needed: a pinned `uv` supplies Python 3.11, and `ffmpeg`
+  and the LiveKit server are fetched into `third_party/`. With several GPUs, the
+  one with the most free memory is used (or set `CUDA_VISIBLE_DEVICES`).
 - **Runtime:** about 2 hours. The benchmark streams every recording in real
-  time, and each is about 47 s long.
+  time, and each is about 47 s long. The first run also installs (about 15
+  minutes) and downloads about 36 GB of models.
+- **Step by step on a remote GPU machine:** [DGX_RUNBOOK.md](DGX_RUNBOOK.md).
 
 What the script does, in order:
-1. Creates two virtual environments and installs each from its lock file, so
-   every package, direct and transitive, is at the version of our runs:
-   `.venv` for the agent (`requirements.lock`, from `requirements.txt`) and
-   `.venv-bench` for the benchmark runner (`requirements-bench.lock`, from
-   `requirements-bench.txt`, with NVIDIA NeMo for the scoring ASR). Both use the
-   CUDA 12.8 build of torch 2.10, which runs on CUDA 12.x and 13.x drivers.
+1. Creates three Python environments with uv (Python 3.11) and installs each
+   from its lock file, so every package, direct and transitive, is at the version
+   of our runs. `.venv` is the agent (`requirements.lock`). `.venv-bench` is the
+   benchmark runner (`requirements-bench.lock`, with NVIDIA NeMo for the scoring
+   recognizer). `.venv-llm` is the model server (`requirements-llm.lock`: vLLM
+   0.19.1, the newest release on torch 2.10). All three use torch's CUDA 12.8
+   build, which runs on CUDA 12.x and 13.x drivers.
 2. Clones Full-Duplex-Bench and checks out the pinned commit `3e799c4`.
 3. Downloads the benchmark audio from the Google Drive link in the v3 README and
-   verifies its SHA-256.
-4. Uses your LiveKit Cloud project, or starts a local LiveKit dev server.
-5. Pre-downloads every model, so the timed run is not a download.
+   verifies its SHA-256 (retried; an existing copy can be used via `FDB_DATA_DIR`).
+4. Uses your LiveKit Cloud project, or starts a local LiveKit server on free ports.
+5. Pre-downloads every model (speech models, the language model's weights for
+   this GPU, the scoring recognizer), so the timed run is not a download.
 6. Runs `bench/run_live.py`:
+   - starts the model server (`bench/llm_server.py`) and checks that it answers
+     and that tool calling works;
    - starts the agent (`python -m duet_voice.agent start`);
    - runs the benchmark's **unmodified** `run_tool_benchmark_all_released.py
      --provider duet`;
    - runs its three evaluation scripts (`evaluate_tool_calls.py`,
      `evaluate_pass_rate.py`, `analyze_tool_latency.py`) with `--use-llm`;
-   - prints the headline numbers.
+   - prints the headline numbers, including the GPU's peak memory.
 
 ### Running the agent under your own harness
 
@@ -165,12 +182,14 @@ than ours. It joins every new room in the LiveKit project (no agent name, no
 explicit dispatch), so run only this worker in that project.
 
 ```bash
-export GOOGLE_API_KEY=... LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...
-.venv/bin/python -m duet_voice.prefetch          # once: download and warm the models
+export LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...
+.venv/bin/python -m duet_voice.prefetch          # once: download and warm the speech models
+.venv-llm/bin/python bench/llm_server.py serve & # the language model on 127.0.0.1:18000
 .venv/bin/python -m duet_voice.agent start      # FDB_V3_DIR=... if the benchmark is elsewhere
 ```
 
-The worker is ready when its log shows `registered worker` and `ready in`. Then
+The model server is ready when `python bench/llm_server.py health` says so, and
+the worker when its log shows `registered worker` and `ready in`. Then
 run the benchmark's own runner and evaluations with `--provider duet` (or any
 name). Tool calls go to `/tmp/agent_tool_calls.log` in the benchmark's format.
 The agent's tool backend is the benchmark's own `mock_apis.py`, found in
@@ -185,7 +204,8 @@ without audio, to the committed `results/reported/` folder with
 | File | Content |
 |---|---|
 | `run_config.json` | The agent's effective settings (models, thinking level, temperature, seed, listening thresholds), any `DUET_*`/`FDB_*` overrides, the LiveKit target and the scoring ASR. |
-| `summary.json` | Headline metrics, plus what the agent did (thinker errors, keep-listening decisions, talker lines, tool calls) and the Gemini tokens and cost of the run. |
+| `summary.json` | Headline metrics, plus what the agent did (thinker errors, keep-listening decisions, talker lines, tool calls), the tokens used, and the GPU's peak memory. |
+| `llm_server.log`, `llm_plan.json` | The model server's log, and which weights and memory budget it used on this GPU. |
 | `duet_evaluation_report.json`, `duet_pass_rate_report.json`, `duet_latency_report.json` | The benchmark's own reports. |
 | `items/*.json` | The benchmark's per-item results: transcripts, tool calls, timings. |
 | `traces/*.jsonl` | Our per-conversation trace: every heard segment, turn decision, talker line, thinker step, tool call with arguments and outcome, token usage, and STT/TTS/end-of-turn timings. |
@@ -198,11 +218,13 @@ python -m duet_voice.agent console          # talk to the agent with your own mi
 python bench/run_live.py --only travel_19   # one benchmark item, official scripts
 python bench/run_live.py --dry-run          # no model, no key: checks listening and plumbing
 python bench/offline_asr.py                 # what the agent's ears hear on all 100 inputs
-python bench/offline_eval.py --judge        # the thinker alone on those transcripts, officially scored
-python bench/cost_report.py results/live/<run>   # Gemini tokens and dollars, from the traces
+python bench/offline_eval.py --start-server --judge   # the thinker alone on those transcripts, officially scored
+bash scripts/offline_eval.sh                # the same, on a machine set up by reproduce.sh
+python bench/llm_server.py plan             # which weights and memory budget this GPU gets
+python bench/cost_report.py results/live/<run>   # tokens (and dollars, for the Gemini API), from the traces
 python -m pytest tests -q
-python tests/fake_gemini.py &               # a scripted stand-in for the Gemini API (no key):
-GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:8765 GOOGLE_API_KEY=fake python bench/run_live.py --no-judge
+python tests/fake_openai.py &               # a scripted stand-in for the model server (no GPU):
+DUET_LLM_BASE_URL=http://127.0.0.1:8766/v1 python bench/run_live.py --only travel_19
                                             #   exercises the model-driven path end to end
 ```
 
@@ -213,16 +235,20 @@ GOOGLE_GEMINI_BASE_URL=http://127.0.0.1:8765 GOOGLE_API_KEY=fake python bench/ru
   argument value the benchmark expects appears in any string the agent contains.
 - **Nothing is cached across scenarios.** Each LiveKit room gets a fresh
   coordinator, toolbox and conversation state. Only model weights are shared.
-- **No calls to our own servers.** The only remote services are the Gemini API and
-  LiveKit.
+- **No calls to our own servers.** The language model runs on the evaluation
+  machine itself (listening on 127.0.0.1 only). The only remote service is
+  LiveKit, and only when a LiveKit Cloud project is used.
 - **Pinned:**
   - every Python package, including transitive ones (`requirements*.lock`);
   - the benchmark commit, the data checksum and the LiveKit server version;
-  - the exact Hugging Face snapshots of the speech models;
-  - sampling (temperature 0, seed 7) and greedy speech recognition.
-- **Transient API errors are retried.** A rate limit or a brief server error
-  from the Gemini API is retried with backoff (up to three times), so it does not
-  fail a conversation on the re-run machine.
+  - the exact Hugging Face revisions of the speech models and of the language
+    model's weights;
+  - a fixed seed on every model call, and greedy speech recognition.
+- **Robust on someone else's machine.**
+  - The language model gets the same fixed memory budget on any GPU.
+  - The local LiveKit server takes free ports and never reuses another user's.
+  - The model server listens on its own port (18000).
+  - Downloads and caches stay inside the repository folder.
 - **Tool schemas.** Names, argument names and the call log format are the
   benchmark's. Arguments that a real API would treat as optional (for example an
   apartment budget) are optional here, rather than forcing the model to invent a
@@ -238,8 +264,10 @@ Research behind the choice: [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.m
 ## Repository map
 
 ```
-duet_voice/        the agent: LiveKit entrypoint, talker, thinker, coordinator, tools, speech models
-bench/             benchmark drivers: live runner, offline evaluators, judge adapter
+duet_voice/        the agent: LiveKit entrypoint, talker, thinker (local model or Gemini), coordinator, tools, speech models
+bench/             benchmark drivers: live runner, model server launcher, offline evaluators, judge adapter
+scripts/           machine check, fast offline evaluation, packing results (for remote GPU machines)
+DGX_RUNBOOK.md     step-by-step instructions for running everything on a remote GPU machine
 tests/             coordinator, speaking-flow and integrity tests
 docs/              architecture, use-case research
 reproduce.sh       one-command reproduction

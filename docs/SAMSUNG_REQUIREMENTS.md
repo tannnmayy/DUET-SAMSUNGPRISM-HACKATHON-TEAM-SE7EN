@@ -28,10 +28,10 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Deliverable | Where | Status |
 |---|---|---|
 | README: architecture (one diagram), exact setup and run steps, extension marked | `README.md` | 🟡 results and extension sections pending |
-| One-command reproduction (install, configure, evaluate) | `reproduce.sh`: lock-file installs, Python 3.10-3.12 auto-picked (uv fallback), pinned benchmark, data and LiveKit. Both environments resolve for Linux on Python 3.10-3.12 (`docs/FINDINGS.md` §5) | 🟡 resolved for Linux; clean-machine run pending (`docs/CLEAN_MACHINE_TEST.md`) |
-| Declaration of model provider / custom agent | `README.md`, section "Models and providers": custom LiveKit agent; Gemini `gemini-3.7-flash` (thinker) and `gemini-3.5-flash-lite` (talker), which a new key can reach (2.5 Flash-Lite and 2.5 Pro are closed to new users) | ✅ |
-| Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/` (`run_config.json` with the effective models, sampling and seed; `summary.json` with scores, agent statistics and cost; official reports, per-item JSON, traces, logs). The reported run is copied to a committed folder | 🟡 pipeline ready, best run pending billing |
-| API keys documented, not included | `README.md`, section "API keys" | ✅ |
+| One-command reproduction (install, configure, evaluate) | `reproduce.sh`: no API key; three environments from lock files (uv, Python 3.11); the model server (vLLM) started and checked; pinned benchmark, data, LiveKit and model revisions. Step by step for a remote machine: `DGX_RUNBOOK.md` | 🟡 first run on a clean GPU machine (the DGX) pending |
+| Declaration of model provider / custom agent | `README.md`, section "Models and providers": custom LiveKit agent; Qwen3-30B-A3B-Instruct-2507 (open weights, Apache-2.0) served locally by vLLM on the same GPU; the Gemini API as an alternative | ✅ |
+| Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/` (`run_config.json` with the effective models, sampling and seed; `summary.json` with scores, agent statistics and the GPU's peak memory; official reports, per-item JSON, traces, logs). The reported run is copied to a committed folder | 🟡 pipeline ready; best run on the DGX pending |
+| API keys documented, not included | `README.md`, section "API keys": none required (the language model is local); optional keys listed | ✅ |
 | Demo video, 3-5 min | team | ⬜ |
 | Slides, at most 8 | team | ⬜ |
 
@@ -39,8 +39,8 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 
 | Point | How we handle it | Status |
 |---|---|---|
-| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | Local models need about 4 GB; hosted: Gemini API only, with models a new key can reach. Both environments use the CUDA 12.8 torch build, which runs on CUDA 12.x and 13.x drivers. Gemini calls retry rate limits and server errors | 🟡 clean-machine test pending |
-| LLM judge enabled, single pinned judge | The official scripts run unmodified with `--use-llm`. Our numbers use gpt-4o when a probe call succeeds; otherwise a Gemini proxy judge, labelled as such. `--rescore` re-judges saved results later | ✅ · 🟡 our OpenAI account needs credits |
+| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | Everything on the one GPU: model server 33 GiB (fixed budget), speech ~3.5 GiB, scoring recognizer ~4-5 GiB. FP8 weights on Ada/Hopper, 4-bit on older GPUs, chosen automatically. All environments use torch's CUDA 12.8 build (vLLM 0.19.1 is the newest on it), which runs on CUDA 12.x and 13.x drivers. No hosted API | 🟡 clean-machine run pending (DGX) |
+| LLM judge enabled, single pinned judge | The official scripts run unmodified with `--use-llm`; Samsung's gpt-4o is used whenever a working OpenAI key is present. Our own numbers otherwise use the local model as a proxy judge, labelled as such; `--rescore` re-judges saved results | ✅ |
 | Ties break on strict pass rate | Pass@1 is the metric we optimise first | ✅ |
 
 ## Dos and don'ts
@@ -48,9 +48,9 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Rule | How we comply | Status |
 |---|---|---|
 | Cite public checkpoints and hosted APIs | `README.md`, sections "Models and providers" and "References" | ✅ |
-| Pin seeds and versions | Every package, transitive included (`requirements*.lock`); Hugging Face snapshots of Whisper and Kokoro; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; seed 7 on every model call (temperature at the Gemini 3 default, as Google advises); greedy ASR; effective settings recorded per run | ✅ |
-| Test the reproduction on a machine that is not ours | Google Cloud GPU VM, procedure in `docs/CLEAN_MACHINE_TEST.md` | ⬜ needs the team's Google Cloud account |
+| Pin seeds and versions | Every package, transitive included (`requirements*.lock`, including vLLM's); Hugging Face revisions of Whisper, Kokoro and both Qwen builds; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; seed 7 on every model call and on the server; greedy ASR; effective settings recorded per run | ✅ |
+| Test the reproduction on a machine that is not ours | A DGX (not ours), step by step in `DGX_RUNBOOK.md`; `scripts/doctor.sh` checks the machine first | ⬜ scheduled |
 | Keep the extension honest | The extension will be marked and scoped | ⬜ |
 | Don't hardcode or memorise test items | `tests/test_voice_integrity.py` fails on any benchmark value in the agent's strings | ✅ |
-| Don't call your own servers | Only the Gemini API and LiveKit | ✅ |
+| Don't call your own servers | The model server runs on the evaluation machine itself (127.0.0.1); the only remote service is LiveKit, and only with a Cloud project | ✅ |
 | Don't cache across scenarios | Per-room coordinator, toolbox and thinker state; only model weights are shared | ✅ |

@@ -65,21 +65,22 @@ PACE = None  # set in main() when --rpm is given
 async def run_item(sem, args, item, text: str, segments) -> Dict[str, Any]:
     from duet_voice.coordinator import Coordinator
     from duet_voice.fdb_tools import FdbToolbox
-    from duet_voice.thinker import RESPOND_NOW_NOTE, Thinker
+    from duet_voice.thinker import RESPOND_NOW_NOTE, make_thinker
 
     async with sem:
         example_id, speaker, folder, meta = item
         coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
         coord.turn_committed()  # offline, the whole utterance is already in
         toolbox = FdbToolbox("offline-" + folder.name, coord)
-        thinker = Thinker(model=args.model, thinking=args.thinking)
+        thinker = make_thinker(model=args.model, thinking=args.thinking)
         if PACE is not None:
-            generate = thinker._generate
+            attr = "_create" if hasattr(thinker, "_create") else "_generate"
+            request = getattr(thinker, attr)
 
-            async def paced(contents, config):
+            async def paced(*a, **kw):
                 await PACE.wait()
-                return await generate(contents, config)
-            thinker._generate = paced
+                return await request(*a, **kw)
+            setattr(thinker, attr, paced)
         audio = turn_audio(folder, segments) if args.audio and segments else None
         t = time.time()
         final_text, error, steps, listened = "", "", 0, ""
@@ -112,7 +113,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--text", choices=["asr", "script"], default="asr")
     ap.add_argument("--asr-file", default=str(REPO / "results" / "offline" / "asr_large-v3-turbo.json"))
-    ap.add_argument("--model", default=os.environ.get("DUET_THINKER_MODEL", "gemini-3.7-flash"))
+    from duet_voice.config import CONFIG
+    ap.add_argument("--model", default=CONFIG.thinker_model)
     ap.add_argument("--thinking", default=os.environ.get("DUET_THINKER_THINKING", "low"))
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="", help="comma-separated example ids")
@@ -121,11 +123,29 @@ def main() -> int:
     ap.add_argument("--judge", action="store_true", help="LLM judge for arguments and responses")
     ap.add_argument("--audio", action="store_true", help="the thinker also hears the request audio")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--start-server", action="store_true",
+                    help="start the local model server if none is running (and stop it at the end)")
     ap.add_argument("--rescore", default="",
                     help="score a saved results/offline/eval_*.json again (e.g. with the judge) "
                          "without calling the thinker")
     args = ap.parse_args()
 
+    server = None
+    if CONFIG.llm_backend == "local" and (not args.rescore or args.judge):
+        from bench import llm_server
+        if args.start_server:
+            server = llm_server.start(llm_server.default_python(), REPO / "results" / "llm_server")
+        elif not llm_server.healthy():
+            sys.exit("No model server at %s: start one (python bench/llm_server.py serve) "
+                     "or pass --start-server." % CONFIG.llm_base_url)
+    try:
+        return evaluate(args, CONFIG)
+    finally:
+        if server is not None:
+            llm_server.stop(server)
+
+
+def evaluate(args, CONFIG) -> int:
     os.environ.setdefault("FDB_V3_DIR", str(FDB_DIR))
     os.environ["FDB_TOOL_LOG"] = str(REPO / "results" / "offline" / "tool_calls_offline.log")
     sys.path.insert(0, str(FDB_DIR))

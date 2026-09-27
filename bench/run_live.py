@@ -28,15 +28,18 @@ import argparse
 import json
 import os
 import shutil
+import glob
 import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
+from bench import llm_server  # noqa: E402
 from bench.common import DATA_DIR, FDB_DIR  # noqa: E402
 
 PROVIDER = "duet"
@@ -48,29 +51,83 @@ def port_open(host: str, port: int) -> bool:
         return s.connect_ex((host, port)) == 0
 
 
+def udp_free(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        try:
+            s.bind(("127.0.0.1", port))
+            return True
+        except OSError:
+            return False
+
+
 def start_livekit(env: dict, logs: Path) -> subprocess.Popen | None:
+    """Our own local LiveKit server on free ports (7880-7882, else 17880-17882, ...).
+    A server that is already running is never reused: on a shared machine it may
+    be someone else's, and their agents would join our benchmark rooms."""
     if env.get("LIVEKIT_URL"):
         print("LiveKit: using", env["LIVEKIT_URL"])
-        return None
-    env.update(LIVEKIT_URL="ws://127.0.0.1:7880", LIVEKIT_API_KEY="devkey", LIVEKIT_API_SECRET="secret")
-    if port_open("127.0.0.1", 7880):
-        print("LiveKit: a local server is already running on :7880")
         return None
     binary = shutil.which("livekit-server") or os.environ.get("LIVEKIT_SERVER_BIN", "")
     if not binary or not Path(binary).exists():
         sys.exit("No LIVEKIT_URL and no livekit-server binary. Set LIVEKIT_URL/KEY/SECRET "
-                 "(LiveKit Cloud) or put livekit-server on PATH (scripts/get_livekit_server.sh).")
-    proc = subprocess.Popen([binary, "--dev", "--bind", "127.0.0.1"], stdout=open(logs / "livekit_server.log", "w"),
-                            stderr=subprocess.STDOUT)
+                 "(LiveKit Cloud) or put livekit-server on PATH (reproduce.sh downloads it).")
+    base = next((b for b in (7880, 17880, 27880, 37880, 47880)
+                 if not port_open("127.0.0.1", b) and not port_open("127.0.0.1", b + 1) and udp_free(b + 2)), None)
+    if base is None:
+        sys.exit("No free ports for a local LiveKit server (tried 7880, 17880, ..., 47880).")
+    cfg = logs / "livekit.yaml"
+    cfg.write_text("port: %d\nrtc:\n  tcp_port: %d\n  udp_port: %d\n  use_external_ip: false\n"
+                   "keys:\n  devkey: secret\n" % (base, base + 1, base + 2), encoding="utf-8")
+    env.update(LIVEKIT_URL="ws://127.0.0.1:%d" % base, LIVEKIT_API_KEY="devkey", LIVEKIT_API_SECRET="secret")
+    proc = subprocess.Popen([binary, "--config", str(cfg), "--dev", "--bind", "127.0.0.1"],
+                            stdout=open(logs / "livekit_server.log", "w"), stderr=subprocess.STDOUT)
     for _ in range(60):
-        if port_open("127.0.0.1", 7880):
-            print("LiveKit: local dev server up (pid %d)" % proc.pid)
+        if port_open("127.0.0.1", base):
+            print("LiveKit: local server up on port %d (pid %d)" % (base, proc.pid))
             return proc
         time.sleep(0.5)
     sys.exit("livekit-server did not start; see " + str(logs / "livekit_server.log"))
 
 
+class GpuMonitor(threading.Thread):
+    """Peak memory on the GPU this run uses, sampled every 2 s: the evidence that
+    the whole stack (model server, agent, scoring recognizer) fits the budget."""
+
+    def __init__(self) -> None:
+        super().__init__(daemon=True)
+        self.index = os.environ.get("CUDA_VISIBLE_DEVICES", "0").split(",")[0].strip() or "0"
+        self.peak_mib = 0
+        self.total_mib = 0
+        self.name = ""
+        self._halt = threading.Event()
+
+    def run(self) -> None:
+        while not self._halt.is_set():
+            try:
+                line = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.used,memory.total",
+                                       "--format=csv,noheader,nounits", "-i", self.index],
+                                      capture_output=True, text=True, timeout=20).stdout.strip().splitlines()[0]
+                name, used, total = [x.strip() for x in line.split(",")]
+                self.name, self.total_mib = name, int(float(total))
+                self.peak_mib = max(self.peak_mib, int(float(used)))
+            except Exception:
+                pass
+            self._halt.wait(2.0)
+
+    def result(self) -> dict:
+        self._halt.set()
+        return {"gpu": self.name, "index": self.index, "total_mib": self.total_mib, "peak_used_mib": self.peak_mib,
+                "peak_used_gib": round(self.peak_mib / 1024, 1)}
+
+
 def start_agent(env: dict, logs: Path) -> subprocess.Popen:
+    env = dict(env)
+    if os.name != "nt":
+        # the pip-installed CUDA libraries that faster-whisper (CTranslate2) loads by
+        # name; only this process gets them (the model server has its own)
+        libs = sorted(glob.glob(os.path.join(sys.prefix, "lib", "python3*", "site-packages", "nvidia", "*", "lib")))
+        if libs:
+            env["LD_LIBRARY_PATH"] = os.pathsep.join(libs + [env.get("LD_LIBRARY_PATH", "")]).rstrip(os.pathsep)
     agent_log = open(logs / "agent.log", "w", encoding="utf-8")
     proc = subprocess.Popen([sys.executable, "-m", "duet_voice.agent", "start"], cwd=str(REPO), env=env,
                             stdout=agent_log, stderr=subprocess.STDOUT)
@@ -216,11 +273,13 @@ def collect(args, out: Path) -> None:
             shutil.copy(p, out / Path(p).name)
 
 
-def preflight(env: dict, out: Path) -> None:
-    """Before a two-hour run: can this key reach the models, and at what tier?
-    A refused key stops here instead of producing 100 apologies."""
-    proc = subprocess.run([sys.executable, "-m", "duet_voice.gemini"], cwd=str(REPO), env=env,
-                          capture_output=True, text=True, timeout=180)
+def preflight(env: dict, out: Path, backend: str) -> None:
+    """Before a two-hour run: does the language model answer, and does tool
+    calling work? (Gemini: can this key reach the models, and at what tier?)
+    A failure stops here instead of producing 100 apologies."""
+    module = "duet_voice.llm_local" if backend == "local" else "duet_voice.gemini"
+    proc = subprocess.run([sys.executable, "-m", module], cwd=str(REPO), env=env,
+                          capture_output=True, text=True, timeout=300)
     lines = [l for l in proc.stdout.splitlines() if l.startswith("{")]
     models = json.loads(lines[-1]) if lines else {"error": (proc.stderr or proc.stdout)[-500:]}
     cfg_path = out / "run_config.json"
@@ -230,17 +289,22 @@ def preflight(env: dict, out: Path) -> None:
     print("Models:", models.get("thinker"), "(thinker),", models.get("talker"), "(talker)")
     for note in models.get("notes", []):
         print("WARNING:", note)
+    if models.get("error"):
+        print("ERROR:", models["error"])
     if proc.returncode != 0 or "error" in models:
-        sys.exit("Preflight failed: the Gemini key cannot be used (see above). Nothing was run.")
+        sys.exit("Preflight failed: the language model cannot be used (see above). Nothing was run.")
+    if backend == "local":
+        print("Tool calling:", models.get("tool_calling"))
 
 
 def effective_config(env: dict) -> dict:
     """The settings the agent process will run with: its defaults plus overrides,
     resolved exactly as the agent resolves them, and the sampling actually used."""
-    code = ("import json, dataclasses; from duet_voice.config import CONFIG; from duet_voice import gemini; "
-            "c = dataclasses.asdict(CONFIG); "
-            "c['thinker_sampling'] = gemini.sampling(CONFIG.thinker_model); "
-            "c['talker_sampling'] = gemini.sampling(CONFIG.talker_model); print(json.dumps(c))")
+    code = ("import json, dataclasses; from duet_voice.config import CONFIG; from duet_voice import gemini, llm_local; "
+            "c = dataclasses.asdict(CONFIG); local = CONFIG.llm_backend == 'local'; "
+            "c['thinker_sampling'] = llm_local.sampling() if local else gemini.sampling(CONFIG.thinker_model); "
+            "c['talker_sampling'] = llm_local.sampling() if local else gemini.sampling(CONFIG.talker_model); "
+            "print(json.dumps(c))")
     try:
         out = subprocess.run([sys.executable, "-c", code], cwd=str(REPO), env=env, capture_output=True,
                              text=True, timeout=120, check=True).stdout
@@ -267,8 +331,12 @@ def main() -> int:
                     help="interpreter for the benchmark runner and evaluations (its own venv)")
     ap.add_argument("--scoring-asr", choices=["parakeet", "whisper"],
                     default="whisper" if os.name == "nt" else "parakeet")
+    ap.add_argument("--llm-python", default=llm_server.default_python(),
+                    help="interpreter of the model server's environment (.venv-llm), to start vLLM")
     args = ap.parse_args()
     PROVIDER = args.provider
+    from duet_voice.config import CONFIG
+    backend = CONFIG.llm_backend
 
     stamp = time.strftime("%Y%m%d_%H%M%S")
     out = Path(args.run_dir) if args.run_dir else REPO / "results" / "live" / stamp
@@ -280,6 +348,7 @@ def main() -> int:
     ffmpeg_dir = os.environ.get("FFMPEG_DIR")
     if ffmpeg_dir:
         env["PATH"] = ffmpeg_dir + os.pathsep + env.get("PATH", "")
+
     (out / "run_config.json").write_text(json.dumps({
         "stamp": stamp, "provider": PROVIDER, "dry_run": args.dry_run,
         "scoring_asr": args.scoring_asr, "only": args.only,
@@ -289,11 +358,16 @@ def main() -> int:
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
     }, indent=1), encoding="utf-8")
 
-    if not args.eval_only and not args.dry_run:
-        preflight(env, out)
-
-    server = agent = None
+    monitor = GpuMonitor()
+    monitor.start()
+    server = agent = llm = None
     try:
+        if backend == "local" and not args.dry_run:
+            # the model server first: the preflight tests it, and the evaluations'
+            # local proxy judge uses it too
+            llm = llm_server.start(args.llm_python, out, env)
+        if not args.eval_only and not args.dry_run:
+            preflight(env, out, backend)
         if not args.eval_only:
             log_path = Path("/tmp/agent_tool_calls.log")  # fixed by the benchmark's runner
             try:
@@ -312,11 +386,17 @@ def main() -> int:
             collect(args, out)
         if not args.no_eval:
             summary = run_evaluations(env, args, out)
+            summary["gpu"] = monitor.result()
+            (out / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
             print(json.dumps(summary, indent=1))
         print("Run folder:", out)
     finally:
         for proc in (agent, server):
             stop(proc)
+        llm_server.stop(llm)
+        gpu = monitor.result()
+        print("GPU %s: peak %.1f GiB used of %.1f GiB" % (gpu["gpu"] or gpu["index"], gpu["peak_used_mib"] / 1024,
+                                                         gpu["total_mib"] / 1024))
     return 0
 
 
