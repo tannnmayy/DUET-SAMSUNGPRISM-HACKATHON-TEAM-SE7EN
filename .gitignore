@@ -26,3 +26,5 @@ results/plumbing/
 results/llm_server/
 doctor_report.txt
 duet_results_*.tar.gz
+.venv-bench/
+.venv-llm/
