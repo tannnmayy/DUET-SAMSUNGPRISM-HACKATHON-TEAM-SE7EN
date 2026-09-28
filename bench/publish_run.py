@@ -20,7 +20,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 KEEP = ("run_config.json", "summary.json", "*_evaluation_report.json", "*_pass_rate_report.json",
-        "*_latency_report.json", "eval_*.log", "runner.log", "agent.log", "agent_tool_calls.log")
+        "*_latency_report.json", "eval_*.log", "runner.log", "agent.log", "agent_tool_calls.log",
+        "llm_plan.json", "llm_server.log")
 # (the local LiveKit server's own log is left out: in --dev mode it is ~100 MB of debug lines)
 
 

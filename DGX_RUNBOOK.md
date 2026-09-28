@@ -139,13 +139,18 @@ DUET_TEMPERATURE=0 bash scripts/offline_eval.sh --tag greedy                  # 
 ## 6. Run the full benchmark
 
 ```bash
-bash reproduce.sh
+bash reproduce.sh --force
 ```
 
 It takes about 2 hours: each of the 100 recordings is streamed in real time,
 then scored. Detach from tmux (`Ctrl-b d`) and come back later with
 `tmux attach -t duet`. It ends with the summary, the run folder and the GPU's
 peak memory.
+
+`--force` matters: the benchmark's runner skips any recording that already has
+a result (here, the one from step 4), and would otherwise reuse it. Use
+`--force` on every run after the first, or after any change, so every score
+comes from this run. Without it, the run prints a warning with the count.
 
 ## 7. Send the results back
 

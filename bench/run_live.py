@@ -273,6 +273,25 @@ def collect(args, out: Path) -> None:
             shutil.copy(p, out / Path(p).name)
 
 
+def warn_earlier_results(args) -> None:
+    """The benchmark's runner skips a recording that already has a result filed
+    under this provider name, and its evaluations score every such result in the
+    data folder. Say so before a new run is quietly mixed with an earlier one."""
+    done = [p.parent for p in Path(args.data_dir).glob("*/result_%s.json" % PROVIDER)]
+    if not done:
+        return
+    if not args.force:
+        print("WARNING: %d recordings already have results filed under '%s' from an earlier run. "
+              "The runner skips them and the scores reuse them. After any change, add --force."
+              % (len(done), PROVIDER))
+    if args.only:
+        wanted = set(args.only.split(","))
+        others = [f for f in done if f.name not in wanted and f.name.rsplit("_", 1)[0] not in wanted]
+        if others:
+            print("WARNING: the scores also include %d other recordings' earlier results. To score "
+                  "this subset alone, file it under a new name: --provider duet_<something>." % len(others))
+
+
 def preflight(env: dict, out: Path, backend: str) -> None:
     """Before a two-hour run: does the language model answer, and does tool
     calling work? (Gemini: can this key reach the models, and at what tier?)
@@ -358,6 +377,8 @@ def main() -> int:
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
     }, indent=1), encoding="utf-8")
 
+    if not args.eval_only:
+        warn_earlier_results(args)
     monitor = GpuMonitor()
     monitor.start()
     server = agent = llm = None
