@@ -5,7 +5,7 @@
 
 With a usable OPENAI_API_KEY this is exactly the official command (gpt-4o judge).
 Otherwise the scripts' OpenAI client is redirected to a proxy judge,
-Gemma 4 31B through Google's API (see bench/judge.py), and
+Gemma 4 through Google's API (see bench/judge.py), and
 every report says so.
 """
 

@@ -10,13 +10,15 @@
 # The language model is Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's
 # API. Needs one of:
 #   GOOGLE_API_KEY=key                  a key from a Google AI Studio project on the free tier:
-#                                       Google serves Gemma free of charge there, not on paid
-#                                       (billing-enabled) projects
-#   GOOGLE_API_KEYS=key1,key2,...       several keys; keys from different projects add up their
-#                                       per-minute limits (16,000 input tokens per minute each)
+#                                       Google serves Gemma free of charge there and lists no
+#                                       paid-tier offer for it
+#   GOOGLE_API_KEYS=key1,key2,...       recommended: two or three keys from different free-tier
+#                                       projects; their per-minute limits add up (16,000 input
+#                                       tokens per minute each, and one conversation with a long
+#                                       tool chain can use most of one key's minute)
 # Optional:
 #   OPENAI_API_KEY                                  the official gpt-4o judge (otherwise a labelled
-#                                                   proxy judge: Gemma 4 31B)
+#                                                   proxy judge: Gemma 4)
 #   LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET  LiveKit Cloud instead of a local LiveKit server
 #   FDB_DATA_DIR                                    the benchmark audio, if you already have it extracted
 #   CUDA_VISIBLE_DEVICES                            which GPU (default: the one with the most free memory)
@@ -47,8 +49,10 @@ need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 
 # --- 0. what this machine has ---------------------------------------------------------------
 need git "install git"; need curl "install curl"; need tar "install tar"; need sha256sum "install coreutils"
-if [ "$DRY_RUN" = 0 ] && [ -z "${GOOGLE_API_KEYS:-}" ] && [ -z "${GOOGLE_API_KEY:-}" ]; then
-  echo "The language model is Gemma 4 through Google's API: set GOOGLE_API_KEY (or GOOGLE_API_KEYS=key1,key2)."
+if [ "$DRY_RUN" = 0 ] && [ -z "${GOOGLE_API_KEYS:-}" ] && [ -z "${GOOGLE_API_KEY:-}" ] \
+   && ! grep -qE '^[[:space:]]*(export[[:space:]]+)?GOOGLE_API_KEYS?[[:space:]]*=[[:space:]]*[^[:space:]]' .env.local 2>/dev/null; then
+  echo "The language model is Gemma 4 through Google's API: set GOOGLE_API_KEY (or GOOGLE_API_KEYS=key1,key2),"
+  echo "in the environment or in .env.local here."
   echo "Create a key at https://aistudio.google.com (Get API key, in a project WITHOUT billing: Google"
   echo "serves Gemma free of charge on the free tier only). Or run with --dry-run to check the plumbing."
   exit 1

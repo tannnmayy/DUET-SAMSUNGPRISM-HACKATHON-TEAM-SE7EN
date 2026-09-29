@@ -42,12 +42,14 @@ through the coordinator. It keeps the model's native conversation state (tool ca
 results, thoughts and their signatures, not just text). Gemma 4 thinks before it
 answers; the API takes no setting for it.
 
-**Fast voice.** The moment the thinker decides there is work to do, the user hears
-"One moment.", and "Still working on it." every 6 s while it runs. It never names a
-value (the user may still be correcting it) and never states a result. With a local
-model the fast voice is itself a model (a short acknowledgement naming the task, as in
-the phone app); with a hosted model a call takes seconds, too slow for a line that
-must come at once, so it is a fixed line.
+**Fast voice.** Once the user has clearly finished (1.6 s of quiet, which by the
+benchmark's own rule is past the end of the turn) and the thinker has not answered
+yet, or the moment it decides there is work to do, the user hears "One moment.",
+then "Still working on it." every 6 s while tools run. It never names a value (the
+user may still be correcting it) and never states a result. With a local model the
+fast voice is itself a model (a short acknowledgement naming the task, as in the
+phone app); with a hosted model a call takes seconds, too slow for a line that must
+come at once, so it is a fixed line.
 
 **The model, through Google's API** (`duet_voice/gemma_api.py`). Google serves Gemma
 free of charge on free-tier projects, with 16,000 input tokens per minute per model
@@ -60,17 +62,27 @@ must never wait out a rate limit or die on a transient error:
 | **Key pool** | `GOOGLE_API_KEYS=key1,key2,...`; keys from different projects add up their limits. Each call goes to the key with the most room for that model. |
 | **Token budget** | 15,000 input tokens per key, model and minute (`DUET_GEMMA_TPM`). A call is booked before it is sent and waits for room rather than being refused; the booking is corrected to the real count afterwards. |
 | **Refusals** | A 429 rests that key for the delay Google asks for, and the call moves to another key at once. |
-| **Transient errors** | 500, 503, 504 and timeouts (frequent on the free tier) are retried within 0.3-0.7 s, inside one deadline per call (20 s): past it the recording's window is gone. A bad key, a model the key cannot use, or a malformed request fails at once. |
+| **Transient errors** | 500, 503, 504 and timeouts (frequent on the free tier) are retried within 0.3-0.7 s, inside one deadline per call (28 s): past it the recording's window is gone. A bad key, a model the key cannot use, or a malformed request fails at once. |
+| **Backup requests** | A request with no answer after 6 s (answers take 3 s at the median, 7 s at the 95th percentile) gets a backup on the key with the most room; the first answer wins and the others are cancelled. At most four are in flight. In one night's run 26 of about 350 requests hung for good; before backups, two hangs in a row lost the whole recording. |
 | **Fallback model** | If Google stops serving `gemma-4-26b-a4b-it` to a key, `gemma-4-31b-it` is used (slower, its own quota). |
 
-**No wasted calls.** LiveKit can plan *preemptively* during a user's pause. With a
-hosted model that is switched off: every early plan is a call counted against the
-per-minute budget, and most are thrown away when the user goes on.
+**No wasted calls.** Every call counts against the per-minute budget, including one
+the agent later throws away:
+- LiveKit can plan *preemptively* during a user's pause; with a hosted model that is
+  switched off, since most early plans are discarded when the user goes on.
+- The end-of-turn detector can close a turn while the user's last words are still
+  being transcribed (on the laptop GPU, a third of all turns). Their transcript
+  would void any plan made without them, so the thinker first waits for it (at most
+  1.5 s after the speech ended; a noise burst has no words). A turn whose words are
+  all in waits for nothing.
 
 **Before any run.** The runner checks, in seconds, that every key can use Gemma 4
 and that a test request with a correction ("K 7, no wait, K 4 Q 2") returns the right
-tool call. A key on a paid project (where Google does not serve Gemma), a wrong key or
-no network stops the run there, with the fix, instead of producing 100 failures.
+tool call. A key that cannot use Gemma, a wrong key or no network stops the run there,
+with the fix, instead of producing 100 failures. Then one throwaway conversation
+(`bench/warmup.py`) pays the agent's one-time start-up costs: the first room a process
+joins starts WebRTC, which took 16 s on a fresh WSL2 machine, and the benchmark's
+runner starts streaming 2 s after it joins, without waiting for the agent.
 
 ## When the agent speaks, and when it keeps listening
 
@@ -82,7 +94,8 @@ thinker's first look at a turn decides whether the user has finished:
 | The thinker decides | What the user hears |
 |---|---|
 | **The user is not finished** (cut off mid-sentence, or announced a detail not yet given): it calls `keep_listening` | Nothing. Nothing is done or remembered. Once the user has been quiet for 2.5 s, the thinker looks again with `keep_listening` removed. It acts, or asks for exactly what is missing. If the user resumes first, the next turn re-reads everything. |
-| **Tools are needed** | "One moment." at once, then the thinker's answer after the tool results: no dead air, and no claim. "Still working on it." every 6 s while it works. |
+| **Tools are needed** | "One moment." at once (if not already said), then the thinker's answer after the tool results: no dead air, and no claim. "Still working on it." every 6 s while it works. |
+| **Still deciding** after the user has clearly finished | "One moment.", then whatever the thinker decides. |
 | **No tool is needed** (a greeting, a question, a clarification) | Only the thinker's answer. |
 | **Noise, not speech** (`<silent>`) | Nothing. |
 | **The thinker fails** (after retries) | "Sorry, something went wrong on my side. Could you say that once more?" The user is never left in silence. |
@@ -131,6 +144,11 @@ voice agent:
 3. **The log records what the agent asked for.** Where the mock's Python
    signature needs a value the schema leaves optional, the adapter fills a
    neutral backend default; the logged call keeps the agent's arguments.
+
+Arguments are cleaned the way a real API would take them (`coerce` in
+`fdb_tools.py`): a filter value is a number, a yes/no or text (the reference schema
+makes it a string: "1800", "true"); a date is month and day ("August 20", not
+"20th"); an id the user spelled out is joined ("Q-4" is "Q4"), as the schemas ask.
 
 ## Resource use
 

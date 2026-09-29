@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The thinker alone on all 100 recordings, scored by the benchmark's own scorers
-# (with Gemma 4 31B as a labelled proxy judge unless gpt-4o is available): minutes
+# (with Gemma 4 as a labelled proxy judge unless gpt-4o is available): minutes
 # instead of hours, so this is the loop for comparing settings.
 #
 #   bash scripts/offline_eval.sh                          # our own transcripts (what the agent hears)

@@ -14,9 +14,9 @@ quiet while it waits:
 - **Two minds.**
   - A **thinker**, **Gemma 4 26B-A4B-it** (Google's open-weights model, Apache 2.0),
     reasons over the whole request, calls the tools and speaks the outcome.
-  - A **fast voice** covers the wait the moment there is work to do ("One
-    moment."), gives progress on slow steps, and never claims a result it does not
-    have.
+  - A **fast voice** covers the wait as soon as the user has clearly finished
+    ("One moment."), gives progress on slow steps, and never claims a result it
+    does not have.
 - **One coordinator** decides *when acting is allowed*:
   - No tool runs while the user is still speaking, or before the turn has
     closed and the user has been quiet for a short hold. The hold is longer
@@ -96,7 +96,7 @@ realtime-provider presets.
 | Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
 | End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
-| Our own proxy judge (only without gpt-4o) | `gemma-4-31b-it`, labelled "PROXY judge" in every report | Google's API |
+| Our own proxy judge (only without gpt-4o) | `gemma-4-26b-a4b-it` (`DUET_PROXY_JUDGE_MODEL` to change), labelled "PROXY judge" in every report | Google's API |
 
 **Why Gemma 4 through Google's API.**
 - **Samsung's preference, and strong at tools.** Gemma 4 26B-A4B is a
@@ -119,9 +119,9 @@ No key is included in this repository.
 
 | Variable | Needed for | Required? |
 |---|---|---|
-| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create it at [aistudio.google.com](https://aistudio.google.com) (Get API key) **in a project without billing**: Google serves Gemma free on the free tier and lists it as "not available" on paid projects | **Yes** (or the next line) |
-| `GOOGLE_API_KEYS` | Several keys, comma-separated. Keys from different projects add up their limits (16,000 input tokens per minute each); a call always goes to the key with the most room | Optional, recommended |
-| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency). Without it our own reports use Gemma 4 31B as a labelled proxy judge | Optional |
+| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create it at [aistudio.google.com](https://aistudio.google.com) (Get API key) **in a project without billing**: Google serves Gemma free of charge on the free tier and lists no paid-tier offer for it, and a project whose prepaid credits are used up cannot call any model | **Yes** (or the next line) |
+| `GOOGLE_API_KEYS` | Several keys, comma-separated, **recommended: two or three from different free-tier projects**. Each project allows 16,000 input tokens per minute, and a benchmark conversation with a long tool chain can use most of that; a call always goes to the key with the most room | Optional, recommended |
+| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency). Without it our own reports use Gemma 4 as a labelled proxy judge | Optional |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) on free local ports | Optional |
 
 ## Reproduce the benchmark: one command
@@ -159,7 +159,8 @@ What the script does, in order:
    - checks, in seconds, that every Google key can use Gemma 4 and that tool calling
      works (a key on a paid project, a wrong key or no network stops the run here,
      with the fix, instead of producing 100 failures);
-   - starts the agent (`python -m duet_voice.agent start`);
+   - starts the agent (`python -m duet_voice.agent start`) and holds one throwaway
+     warm-up conversation with it;
    - runs the benchmark's **unmodified** `run_tool_benchmark_all_released.py
      --provider duet`;
    - runs its three evaluation scripts (`evaluate_tool_calls.py`,
@@ -199,10 +200,23 @@ recording. `duet_voice/gemma_api.py` is built for that:
   If Google still refuses one (429), that key rests for the delay Google asks for
   and the call moves to another at once.
 - **Fast retries** of Google's transient errors (500, 503, 504, timeouts), common
-  on the free tier, within one deadline per call (`DUET_GEMMA_DEADLINE_S`, 20 s).
+  on the free tier, within one deadline per call (`DUET_GEMMA_DEADLINE_S`, 28 s: a recording's room closes about 30 s after the request anyway).
   A bad key, a model the key cannot use, or a malformed request fails at once.
-- **No wasted calls:** planning during the user's pauses (LiveKit's preemptive
-  generation) is off with a hosted model, and the fast voice needs no model.
+- **Backup requests.** Now and then a request simply hangs. A request with no
+  answer after 6 s (`DUET_GEMMA_HEDGE_S`; answers take 3 s at the median) is not
+  abandoned: a second one goes to the key with the most room, and the first answer
+  wins. At most four are in flight.
+- **No wasted calls:**
+  - planning during the user's pauses (LiveKit's preemptive generation) is off
+    with a hosted model, and the fast voice needs no model;
+  - a turn that closed while the user's last words were still being transcribed
+    waits for that transcript instead of sending a call the new words would void.
+- **The first recording is not the first conversation.** Before the benchmark
+  starts, `bench/warmup.py` holds one throwaway conversation, so the agent's
+  one-time start-up (WebRTC, the first session) never eats a request.
+- **Every request is logged** in `agent.log` (`gemma: ... answered on key 2 in
+  3.4 s (2,412 input tokens)`, refusals, retries and cancellations), so a run on
+  a slow or busy day can be told apart from a wrong answer.
 
 ## Run logs
 

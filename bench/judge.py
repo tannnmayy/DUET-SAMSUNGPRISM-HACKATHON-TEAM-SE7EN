@@ -6,9 +6,12 @@ own numbers use, in this order:
   1. gpt-4o, when OPENAI_API_KEY works (one tiny probe request decides: a key on
      an account with no credits would otherwise fail every call under an official
      label). Then nothing here changes anything.
-  2. Gemma 4 31B through Google's API (the same keys as the agent; the 31B has its
-     own per-minute quota, so judging never slows the 26B thinker), answering the
-     official prompts unchanged.
+  2. Gemma 4 26B-A4B through Google's API (the same keys as the agent), answering
+     the official prompts unchanged. The official scripts judge one call at a time,
+     several per item, so the judge's speed decides how long scoring takes: about
+     half an hour for 100 items with the 26B, hours with the dense 31B
+     (DUET_PROXY_JUDGE_MODEL=gemma-4-31b-it). Scoring runs after the recordings, so
+     it never competes with the thinker for quota.
 Reports from 2 are labelled "PROXY judge" and never presented as official.
 DUET_JUDGE=openai|gemma|none forces a choice (default: auto).
 """
@@ -27,7 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def gemma_model() -> str:
-    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemma-4-31b-it")
+    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemma-4-26b-a4b-it")
 
 
 class _GemmaCompletions:

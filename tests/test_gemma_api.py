@@ -4,6 +4,7 @@ tier's per-minute token limit and inside each recording's answer window.
 - a call goes to the key with room; a full key waits for room instead of failing;
 - a refused call (429) rests that key for the delay asked and moves to another;
 - transient server errors are retried; permanent ones are raised at once;
+- a request that hangs gets a backup on another key, and the first answer wins;
 - nothing waits past the deadline (the recording's window would be gone).
 """
 
@@ -84,9 +85,9 @@ def test_transient_server_errors_are_retried(monkeypatch):
     assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
 
 
-def test_a_hung_attempt_is_cut_short_and_asked_again_on_another_key(monkeypatch):
+def test_a_request_that_hangs_gets_a_backup_on_another_key(monkeypatch):
     with_keys(monkeypatch, 2)
-    monkeypatch.setenv("DUET_GEMMA_ATTEMPT_S", "0.5")
+    monkeypatch.setenv("DUET_GEMMA_HEDGE_S", "0.5")
     calls = fake_clients(monkeypatch, {0: [("hang", 30.0)], 1: [2300]})
     start = time.monotonic()
     resp = run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=8))
@@ -94,12 +95,22 @@ def test_a_hung_attempt_is_cut_short_and_asked_again_on_another_key(monkeypatch)
     assert time.monotonic() - start < 2.0
 
 
-def test_the_last_attempt_gets_all_the_time_left(monkeypatch):
-    with_keys(monkeypatch, 1)
-    monkeypatch.setenv("DUET_GEMMA_ATTEMPT_S", "5")
-    fake_clients(monkeypatch, {0: [("hang", 1.5)]})
-    # 3 s left is too little for a second 5 s attempt, so this one is not cut at 1 s
-    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=3)).key == 0
+def test_a_slow_answer_is_not_abandoned_when_the_backup_goes_out(monkeypatch):
+    with_keys(monkeypatch, 2)
+    monkeypatch.setenv("DUET_GEMMA_HEDGE_S", "0.6")   # the backup goes out at 0.6 s, the answer comes at 1.0 s
+    calls = fake_clients(monkeypatch, {0: [("hang", 1.0)], 1: [("hang", 30.0)]})
+    resp = run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=8))
+    assert resp.key == 0 and calls == [0, 1]   # the first answer wins; the backup is cancelled
+
+
+def test_at_most_four_requests_and_nothing_past_the_deadline(monkeypatch):
+    with_keys(monkeypatch, 5)
+    monkeypatch.setenv("DUET_GEMMA_HEDGE_S", "0.2")
+    calls = fake_clients(monkeypatch, {k: [("hang", 30.0)] for k in range(5)})
+    start = time.monotonic()
+    with pytest.raises(RuntimeError, match="unanswered"):
+        run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=4))
+    assert len(calls) == gemma_api.MAX_IN_FLIGHT == 4 and time.monotonic() - start < 4.6
 
 
 def test_a_permanent_error_is_raised_at_once(monkeypatch):

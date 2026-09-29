@@ -286,8 +286,8 @@ What we measured before building around it:
 
 - **Where it is served.** Google serves `gemma-4-26b-a4b-it` and `gemma-4-31b-it`
   free of charge on free-tier projects. On our billing-enabled project every call
-  failed ("prepayment credits are depleted"); the pricing page lists Gemma as not
-  available on the paid tier. So the key must come from a project without billing,
+  failed ("prepayment credits are depleted", which blocks every model); the pricing
+  page lists no paid-tier offer for Gemma. So the key should come from a project without billing,
   and the preflight says so when it does not.
 - **Tool calling is right, including corrections.** "Track my order, it's K 7, uh,
   no wait, K 4 Q 2, and set an alarm for 6:30" gave exactly two calls,
@@ -298,7 +298,7 @@ What we measured before building around it:
 - **Speed.** 3-8 s per call for the 26B-A4B, 15-28 s for the 31B. The 26B is the
   thinker; the 31B is the fallback and our proxy judge.
 - **The free tier fails often.** On the night of 30 Sep, 6 of 12 calls returned
-  "500 Internal error". Retries absorb it; a 20 s deadline per call keeps the
+  "500 Internal error". Retries absorb it; a 22 s deadline per call keeps the
   retries inside a recording's answer window.
 - **The limit that matters: 16,000 input tokens per minute per model per
   project** (a 429 names the quota `GenerateContentInputTokensPerModelPerMinute-FreeTier`).
@@ -309,3 +309,63 @@ What we measured before building around it:
 - **Consequences for the agent.** The talker is off with a hosted model (a call
   takes seconds; the fast voice is a fixed line instead), and preemptive planning is
   off (each early plan is a call against the budget).
+
+## 10. What the live pilot and the fresh clone exposed (30 Sep 2026)
+
+A fresh Linux clone (WSL2 Ubuntu, `/root/duet/results/live/20260930_021455`) and a
+three-recording pilot on Windows (`results/live/20260930_023855`) ran the whole
+official pipeline with Gemma. Each exposed something no unit test could:
+
+- **The first room is slow.** On the fresh clone, the agent took 16 s from the job
+  arriving to listening: the first room a process joins starts WebRTC, which probes
+  the GPU's video decoders, and on WSL2 that is slow. The benchmark's runner starts
+  streaming 2 s after it has joined, without waiting for the agent, so the agent
+  heard only the end of the request ("June 3rd works better for me. Sorry about
+  that.") and the item failed. *Fix:* `bench/warmup.py` holds one throwaway
+  conversation before the first recording. On Windows the agent then listens 0.6 s
+  after joining.
+- **Silence while Gemma thinks.** With the talker model off, the fixed "One moment."
+  played only once the thinker had decided on a tool, 3-8 s after the turn, and a
+  hung request meant 20 s of silence. *Fix:* the fixed line also covers a thinker
+  that is still deciding, once the user has been quiet for 1.6 s; the benchmark
+  itself ends a turn at the first silence over 2 s, so this cannot land inside the
+  user's turn. Pilot: first response 4.38 s as the benchmark measures it, against
+  the 4.09 s floor of the no-model run, and no interruptions.
+- **Calls spent on turns that were already stale.** In one pause-heavy recording
+  the thinker started six times. Half of those turns had closed about 0.4 s before
+  the transcript of the user's last words arrived (Whisper on the laptop GPU needs
+  ~0.6 s per segment); the late words voided each plan, but the request had already
+  been sent and counted against the per-minute budget. On one free-tier key such a
+  recording uses most of a minute's 16,000 tokens. *Fix:* before its first call the
+  thinker waits for a transcript that is still due (`Coordinator.settle`, at most
+  1.5 s after the speech ended); a turn whose words are all in waits for nothing.
+- **A misconfigured judge fails silently.** Our own `.env.local` still said
+  `DUET_JUDGE=gemini`, which matched no judge, so the official scripts called
+  gpt-4o with a key that has no credits: response quality 0 and exact-match
+  arguments ("April 10th" failed against "April 10"). *Fix:* an unknown value now
+  means "choose automatically", with a warning.
+- **Hung requests decide whole recordings.** In the first full live run
+  (`results/live/20260930_025146`, 02:51-04:52 on 30 Sep, three keys) Google answered
+  196 requests in 3.1 s at the median (7.1 s at the 95th percentile). But 103 requests
+  failed with "500 Internal" (each back within about 1.5 s, so retries absorbed them)
+  and 26 hung with no answer at all. Two hangs in a row used up a call's 22 s deadline,
+  and 12 recordings lost every tool call that way; offline, all 12 are solved.
+  *Fix:* backup requests. A request with no answer after 6 s is left running and a
+  second one goes to the key with the most room; the first answer wins and the rest
+  are cancelled (at most three in flight). The re-run of those 12 recordings is below.
+
+**Gemma 4 on the exact scripts** (`bench/offline_eval.py --text script`, all 100):
+71/100 pass by exact match. Of the 29 misses:
+- 23 are formats the official judge accepts ("August 20th" for "August 20", "Vegas"
+  for "Las Vegas", "the Gym", "1800" for 1800). The arguments are now also cleaned
+  as a real API would take them: typed filter values, dates without ordinals,
+  spelled-out ids joined (`fdb_tools.coerce`); a re-test of the affected items
+  passed.
+- 2 cannot be passed by anyone (see section 1).
+- 3 are conditional requests whose expected calls contradict the benchmark's own
+  mock data: "book it if there is a flight under $300" expects `book_flight` *and*
+  the else-branch's call, while the mock's only flight costs $450; "add two if it's
+  under $50" expects `add_to_cart` for a $99.99 product. DUET follows the data, as a
+  real agent must; we do not special-case these items.
+- 1 is a real miss: a request for a gift idea "in the electronics section" got a
+  question back instead of a search.

@@ -5,7 +5,7 @@ Google's Gemini API with the google-genai SDK. Google serves Gemma free of charg
 on free-tier projects, with a limit of 16,000 input tokens per minute per model
 per project. A benchmark recording gives DUET about 30 seconds after the request
 ends before the room closes, so a call that waits out a rate limit, or dies on a
-transient server error, is a failed recording. Three things here prevent that:
+transient server error, is a failed recording. Four things here prevent that:
 
 1. Several keys. GOOGLE_API_KEYS=key1,key2,... (or one GOOGLE_API_KEY); keys from
    different projects add up their limits. Each call goes to the key with the most
@@ -14,9 +14,14 @@ transient server error, is a failed recording. Three things here prevent that:
    a call is booked before it is sent and waits for room rather than being refused.
    If the API still refuses (429), that key rests for the delay the API asks for,
    and the call moves to another key at once.
-3. Quick retries of transient failures (server errors and timeouts), frequent on
-   the free tier, inside one deadline per call (DUET_GEMMA_DEADLINE_S): past it,
-   the recording's answer window has closed anyway, so the error is reported.
+3. Quick retries of transient failures (server errors), frequent on the free tier,
+   inside one deadline per call (DUET_GEMMA_DEADLINE_S): past it, the recording's
+   answer window has closed anyway, so the error is reported.
+4. Backup requests. Now and then a request hangs with no answer at all (26 of about
+   350 in one night's run, while answers took 3.1 s at the median and 7.1 s at the
+   95th percentile). A request unanswered after DUET_GEMMA_HEDGE_S (6 s) is not
+   abandoned: a second one goes out to the key with the most room, and whichever
+   answers first is used. At most four are in flight; the rest are cancelled.
 
 Errors that no retry can fix (a bad key, a model this key cannot use, a malformed
 request) are raised at once.
@@ -67,13 +72,15 @@ def _tpm() -> float:
 
 
 def _deadline_s() -> float:
-    return float(os.environ.get("DUET_GEMMA_DEADLINE_S", "22"))
+    return float(os.environ.get("DUET_GEMMA_DEADLINE_S", "28"))
 
 
-def _attempt_s() -> float:
-    """The longest one attempt may take (a normal thinker call takes 3-8 s): a request
-    that hangs is abandoned and sent again, on another key, inside the deadline."""
-    return float(os.environ.get("DUET_GEMMA_ATTEMPT_S", "11"))
+def _hedge_s() -> float:
+    """How long a request may go unanswered before a backup request is sent."""
+    return float(os.environ.get("DUET_GEMMA_HEDGE_S", "6"))
+
+
+MAX_IN_FLIGHT = 4  # requests for one call at once: the first and up to three backups
 
 
 # --- the token budget ---------------------------------------------------------------------
@@ -237,55 +244,98 @@ def _transient(exc: BaseException) -> bool:
 async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[float] = None):
     """One generate_content call through the key pool (see the module notes)."""
     p = pool()
-    end = time.monotonic() + (deadline_s if deadline_s is not None else _deadline_s())
+    start = time.monotonic()
+    end = start + (deadline_s if deadline_s is not None else _deadline_s())
     need = p.estimate(model)
     last: Optional[BaseException] = None
-    while True:
-        i, booking, wait = p.take(model, need)
-        if i is None:
-            if time.monotonic() + wait > end:
-                raise RuntimeError("no key has room for %s within the deadline: this minute's input-token "
-                                   "budget is spent%s" % (model, " (last error: %s)" % str(last)[:160] if last else ""))
-            await asyncio.sleep(wait)
-            continue
-        left = end - time.monotonic()
-        if left <= 0.5:
-            raise last or RuntimeError("no answer from %s within the deadline" % model)
-        # A hung attempt is cut short while another one still fits; the last one gets all the time left.
-        limit = _attempt_s() if left - _attempt_s() >= 5.0 else left
-        sent = time.monotonic()
-        try:
-            resp = await asyncio.wait_for(
-                client_for(i).aio.models.generate_content(model=model, contents=contents, config=config),
-                timeout=max(1.0, limit))
-        except asyncio.CancelledError:
-            # the plan was overtaken (the user spoke again); the request still counts against the key
-            log.info("gemma: %s on key %d cancelled after %.1f s", model, i + 1, time.monotonic() - sent)
-            raise
-        except Exception as exc:
-            code = error_code(exc)
-            if code == 429:
-                last = exc
-                p.settle(model, booking, 0)
-                p.rest(i, model, retry_delay(exc))
-                log.info("gemma: key %d refused %s (rate limit); resting it %.0f s", i + 1, model, retry_delay(exc))
+    flights: Dict[Any, Tuple[int, list, float]] = {}   # request -> (key index, booking, time sent)
+    pause_until = 0.0                                    # a short pause after a server error
+    answered = False
+
+    def send(i: int, booking: list) -> None:
+        task = asyncio.ensure_future(
+            client_for(i).aio.models.generate_content(model=model, contents=contents, config=config))
+        flights[task] = (i, booking, time.monotonic())
+
+    try:
+        while True:
+            now = time.monotonic()
+            if now >= end:
+                break
+            newest = max((f[2] for f in flights.values()), default=0.0)
+            if not flights:
+                if now < pause_until:
+                    await asyncio.sleep(min(pause_until, end) - now)
+                    continue
+                i, booking, wait = p.take(model, need)
+                if i is None:
+                    if now + wait > end:
+                        why = ("every key is resting after Google refused it (rate limit; another program "
+                               "using the same keys?)" if last is not None and error_code(last) == 429
+                               else "this minute's input-token budget is spent")
+                        raise RuntimeError("no key has room for %s within the deadline: %s%s" % (
+                            model, why, " (last error: %s)" % str(last)[:160] if last else ""))
+                    await asyncio.sleep(wait)
+                    continue
+                send(i, booking)
                 continue
-            if isinstance(exc, asyncio.TimeoutError):
-                last = RuntimeError("no answer from %s within %.0f s (key %d)" % (model, limit, i + 1))
-                log.info("gemma: %s on key %d gave no answer within %.0f s; asking again", model, i + 1, limit)
-                continue
-            last = exc
-            if _transient(exc):
-                log.info("gemma: %s on key %d failed (%s); asking again", model, i + 1, str(exc)[:80])
-                await asyncio.sleep(0.3 + random.random() * 0.4)
-                continue
-            raise
-        u = getattr(resp, "usage_metadata", None)
-        tokens = float(getattr(u, "prompt_token_count", 0) or 0) or None
-        p.settle(model, booking, tokens)
-        log.info("gemma: %s answered on key %d in %.1f s (%d input tokens)", model, i + 1,
-                 time.monotonic() - sent, tokens or 0)
-        return resp
+            hedge_at = newest + _hedge_s()
+            if len(flights) < MAX_IN_FLIGHT and now >= hedge_at and end - now >= 3.0:
+                # the newest request is unanswered for longer than answers take: send a backup
+                # (only if a key has room right now; the requests in flight keep running)
+                i, booking, _ = p.take(model, need)
+                if i is not None:
+                    log.info("gemma: %s unanswered after %.1f s; asking key %d as well", model, now - newest, i + 1)
+                    send(i, booking)
+                    continue
+                hedge_at = now + 1.0  # no room for a backup yet: look again in a second
+            timeout = end - now
+            if len(flights) < MAX_IN_FLIGHT and hedge_at > now:
+                timeout = min(timeout, hedge_at - now)
+            done, _ = await asyncio.wait(list(flights), timeout=max(0.01, timeout),
+                                         return_when=asyncio.FIRST_COMPLETED)
+            for task in done:
+                i, booking, sent = flights.pop(task)
+                if task.cancelled():  # not by us (we cancel only on the way out): treat it as a failure
+                    last = RuntimeError("a request to %s on key %d was cancelled" % (model, i + 1))
+                    pause_until = time.monotonic() + 0.3
+                    continue
+                exc = task.exception()
+                if exc is None:
+                    resp = task.result()
+                    u = getattr(resp, "usage_metadata", None)
+                    tokens = float(getattr(u, "prompt_token_count", 0) or 0) or None
+                    p.settle(model, booking, tokens)
+                    log.info("gemma: %s answered on key %d in %.1f s (%d input tokens)", model, i + 1,
+                             time.monotonic() - sent, tokens or 0)
+                    answered = True
+                    return resp
+                code = error_code(exc)
+                if code == 429:
+                    last = exc
+                    p.settle(model, booking, 0)
+                    p.rest(i, model, retry_delay(exc))
+                    log.info("gemma: key %d refused %s (rate limit); resting it %.0f s", i + 1, model,
+                             retry_delay(exc))
+                elif _transient(exc):
+                    last = exc
+                    log.info("gemma: %s on key %d failed (%s); asking again", model, i + 1, str(exc)[:80])
+                    pause_until = time.monotonic() + 0.3 + random.random() * 0.4
+                else:
+                    raise exc
+        waiting = len(flights)
+        raise RuntimeError("no answer from %s within %.0f s%s%s" % (
+            model, end - start, " (%d request(s) unanswered)" % waiting if waiting else "",
+            "; last error: %s" % str(last)[:160] if last else ""))
+    finally:
+        # Requests still in flight: backups after an answer, or all of them when the
+        # plan was overtaken (the user spoke again). They still count against their keys.
+        if flights:
+            oldest = min(f[2] for f in flights.values())
+            log.info("gemma: %s: %d request(s) %s after %.1f s", model, len(flights),
+                     "no longer needed" if answered else "cancelled", time.monotonic() - oldest)
+        for task in flights:
+            task.cancel()
 
 
 def generate_sync(model: str, contents: Any, config: Any = None, deadline_s: float = 60.0,

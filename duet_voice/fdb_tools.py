@@ -126,7 +126,8 @@ TOOL_SPECS: List[Dict[str, Any]] = [
      "description": "Search the product catalog.",
      "parameters": _obj({
          "query": {**S, "description": "What the user is looking for, e.g. 'running shoes'."},
-         "max_price": {**N, "description": "Price cap, only if the user gave one."},
+         "max_price": {**N, "description": "Price cap, only if the user gave one: the most they will pay, also "
+                                          "when their plan depends on it (\"if one is under $X, add it\")."},
          "category": {**S, "description": "Product category, only if the user named one."},
      }, ["query"])},
     {"name": "add_to_cart", "kind": "write",
@@ -207,7 +208,7 @@ def coerce_props(props: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
         if key == "date" and isinstance(value, str):
             value = re.sub(r"\b(\d{1,2})(?:st|nd|rd|th)\b", r"\1", value)  # "August 20th" -> "August 20"
         elif key in ID_KEYS and isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]*", value.strip()):
-            value = re.sub(r"[ -]", "", value.strip())  # a spelled-out id: "K-2" -> "K2", "E77 2211" -> "E772211"
+            value = re.sub(r"[ -]", "", value.strip())  # a spelled-out id: "Q-4" -> "Q4", "M12 3456" -> "M123456"
         out[key] = value
     return out
 

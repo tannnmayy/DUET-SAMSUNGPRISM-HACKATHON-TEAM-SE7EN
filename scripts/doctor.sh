@@ -64,7 +64,8 @@ else
 fi
 
 # the language model: Gemma 4 through Google's API
-if [ -n "${GOOGLE_API_KEYS:-}${GOOGLE_API_KEY:-}" ]; then
+if [ -n "${GOOGLE_API_KEYS:-}${GOOGLE_API_KEY:-}" ] \
+   || grep -qE '^[[:space:]]*(export[[:space:]]+)?GOOGLE_API_KEYS?[[:space:]]*=[[:space:]]*[^[:space:]]' .env.local 2>/dev/null; then
   if [ -x "$PY_AGENT" ]; then
     res=$("$PY_AGENT" -m duet_voice.gemma_api 2>/dev/null | tail -1)
     if echo "$res" | grep -q '"tool_calling": "ok"'; then line OK "Gemma 4 through Google's API: $res"
