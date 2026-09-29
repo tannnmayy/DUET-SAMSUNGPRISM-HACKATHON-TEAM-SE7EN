@@ -215,7 +215,7 @@ async def entrypoint(ctx: JobContext) -> None:
         turn_handling={
             "turn_detection": base.build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
-            "preemptive_generation": {"enabled": True,
+            "preemptive_generation": {"enabled": CONFIG.preemptive,
                                       "max_speech_duration": CONFIG.preempt_max_speech_s,
                                       "max_retries": CONFIG.preempt_max_retries},
         },

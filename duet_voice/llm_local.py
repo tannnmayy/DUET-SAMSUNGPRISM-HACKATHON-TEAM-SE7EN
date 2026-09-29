@@ -1,11 +1,11 @@
-"""The local model: Qwen3-30B-A3B-Instruct-2507, served by vLLM on the same GPU.
+"""A local model on an OpenAI-compatible server: the phone app's laptop mode.
 
-DUET reaches it through the OpenAI-compatible chat API that vLLM exposes; vLLM's
-`hermes` tool parser turns Qwen3's tool-call format into standard tool calls.
-The thinker's loop is the same as with Gemini (thinker.py): every tool call
-passes the coordinator, the first look at a turn may decide to keep listening,
-and a plan the user's words have overtaken never acts. Only the wire format
-differs, so the agent does not know which backend it is talking to.
+The benchmark submission uses Gemma 4 through Google's API (gemma_api.py). The
+DUET for Galaxy app can also run fully offline on a laptop GPU, with a small model
+served by llama.cpp (or any OpenAI-compatible server) at DUET_LLM_BASE_URL. The
+thinker's loop is the same as thinker.py's: every tool call passes the
+coordinator, the first look at a turn may decide to keep listening, and a plan the
+user's words have overtaken never acts. Only the wire format differs.
 
     python -m duet_voice.llm_local     # preflight: is the server up, does tool calling work?
 """
@@ -176,7 +176,7 @@ class LocalThinker:
                 content = clean(getattr(msg, "content", None) or "")
                 if not calls and "<tool_call>" in content:
                     calls, content = salvage_calls(content)
-                # an empty reply is asked once more, like a malformed one on Gemini
+                # an empty reply is asked once more, as in thinker.py
                 if calls or content or attempt == 2:
                     break
                 log.warning("thinker step %d: empty reply, asking again", step)
@@ -288,7 +288,7 @@ def check() -> Dict[str, Any]:
             got or (resp.choices[0].message.content or "")[:160])
         if out["tool_calling"] != "ok":
             out["notes"].append("tool calling did not return track_order; check that the server runs with "
-                                "--enable-auto-tool-choice --tool-call-parser hermes")
+                                "tool calling on (llama.cpp: --jinja)")
     except Exception as exc:
         out["error"] = "tool-calling test failed (%s)" % str(exc)[:200]
     return out

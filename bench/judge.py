@@ -3,62 +3,71 @@
 The official scripts create `openai.OpenAI()` and ask for "gpt-4o". Samsung runs
 them with their own pinned judge (gpt-4o), so that is the judge that counts. Our
 own numbers use, in this order:
-
   1. gpt-4o, when OPENAI_API_KEY works (one tiny probe request decides: a key on
      an account with no credits would otherwise fail every call under an official
      label). Then nothing here changes anything.
-  2. The local model (Qwen3-30B-A3B-Instruct-2507 on our vLLM server), when that
-     server is running.
-  3. Gemini through its OpenAI-compatible endpoint, when a Gemini key is set.
-
-Reports from 2 or 3 are labelled "PROXY judge" and never presented as official.
-DUET_JUDGE=openai|local|gemini|none forces a choice (default: auto).
+  2. Gemma 4 31B through Google's API (the same keys as the agent; the 31B has its
+     own per-minute quota, so judging never slows the 26B thinker), answering the
+     official prompts unchanged.
+Reports from 2 are labelled "PROXY judge" and never presented as official.
+DUET_JUDGE=openai|gemma|none forces a choice (default: auto).
 """
 
 from __future__ import annotations
 
-import json
 import os
+import sys
 import threading
 import time
-import urllib.request
-from typing import Any, Optional
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any, List, Optional
 
-GEMINI_OPENAI_BASE = "https://generativelanguage.googleapis.com/v1beta/openai/"
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
-class _Completions:
-    """DUET_JUDGE_RPM paces the calls, for keys with a per-minute request limit."""
+def gemma_model() -> str:
+    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemma-4-31b-it")
 
-    def __init__(self, client: Any, model: str) -> None:
-        self._client, self._model = client, model
+
+class _GemmaCompletions:
+    """chat.completions.create(), answered by Gemma through duet_voice.gemma_api (key
+    pool, token budget, retries). DUET_JUDGE_RPM paces the calls further if needed."""
+
+    def __init__(self, model: str) -> None:
+        self._model = model
         rpm = float(os.environ.get("DUET_JUDGE_RPM", "0") or 0)
         self._gap = 60.0 / rpm if rpm > 0 else 0.0
         self._next = 0.0
         self._lock = threading.Lock()
 
-    def create(self, *, model: str, **kwargs: Any) -> Any:
-        kwargs.pop("max_tokens", None)  # thinking models count thoughts against it
+    def create(self, *, model: str = "", messages: List[dict], **kwargs: Any) -> Any:
+        from google.genai import types
+        from duet_voice import gemma_api
         if self._gap:
             with self._lock:
                 now = time.monotonic()
                 start = max(now, self._next)
                 self._next = start + self._gap
             time.sleep(start - now)
-        return self._client.chat.completions.create(model=self._model, **kwargs)
-
-
-class _Chat:
-    def __init__(self, client: Any, model: str) -> None:
-        self.completions = _Completions(client, model)
+        system = "\n\n".join(str(m.get("content", "")) for m in messages if m.get("role") == "system")
+        turns = [types.Content(role="model" if m.get("role") == "assistant" else "user",
+                               parts=[types.Part(text=str(m.get("content", "")))])
+                 for m in messages if m.get("role") != "system"]
+        config = types.GenerateContentConfig(
+            system_instruction=system or None, seed=7,
+            temperature=float(kwargs.get("temperature", 0) or 0))
+        resp = gemma_api.generate_sync(self._model, turns, config, deadline_s=180.0)
+        parts = (resp.candidates[0].content.parts or []) if resp.candidates else []
+        text = "".join(p.text for p in parts if getattr(p, "text", None) and not getattr(p, "thought", False))
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=text))])
 
 
 class ProxyJudge:
-    """An OpenAI-compatible client that answers the official prompts with another model."""
+    """An OpenAI-compatible client that answers the official prompts with Gemma."""
 
-    def __init__(self, base_url: str, api_key: str, model: str) -> None:
-        from openai import OpenAI
-        self.chat = _Chat(OpenAI(api_key=api_key, base_url=base_url, timeout=120, max_retries=2), model)
+    def __init__(self, model: str) -> None:
+        self.chat = SimpleNamespace(completions=_GemmaCompletions(model))
         self.model = model
 
 
@@ -76,18 +85,6 @@ class NoJudge:
 
 def mode() -> str:
     return os.environ.get("DUET_JUDGE", "auto").strip().lower() or "auto"
-
-
-def local_base() -> str:
-    return os.environ.get("DUET_LLM_BASE_URL", "http://127.0.0.1:18000/v1").rstrip("/")
-
-
-def local_model() -> str:
-    return os.environ.get("DUET_LLM_MODEL", "qwen3-30b-a3b-instruct-2507")
-
-
-def gemini_model() -> str:
-    return os.environ.get("DUET_PROXY_JUDGE_MODEL", "gemini-3.5-flash")
 
 
 _openai_ok: Optional[bool] = None
@@ -111,27 +108,15 @@ def openai_usable() -> bool:
     return _openai_ok
 
 
-def local_usable() -> bool:
-    """Whether the local model server answers and serves our model."""
-    try:
-        with urllib.request.urlopen(local_base() + "/models", timeout=5) as r:
-            served = [m.get("id") for m in json.loads(r.read().decode("utf-8")).get("data", [])]
-        return local_model() in served
-    except Exception:
-        return False
-
-
 def choice() -> str:
-    """openai | local | gemini | none, decided once."""
+    """openai | gemma | none, decided once."""
     global _choice
     if _choice is None:
         m = mode()
         if m in ("auto", "openai") and openai_usable():
             _choice = "openai"
-        elif m in ("auto", "local") and local_usable():
-            _choice = "local"
-        elif m in ("auto", "gemini") and (os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")):
-            _choice = "gemini"
+        elif m in ("auto", "gemma") and (os.environ.get("GOOGLE_API_KEYS") or os.environ.get("GOOGLE_API_KEY")):
+            _choice = "gemma"
         else:
             _choice = "none"
     return _choice
@@ -141,21 +126,13 @@ def judge_label() -> str:
     c = choice()
     if c == "openai":
         return "gpt-4o (official judge)"
-    if c == "local":
-        return "%s on the local model server (PROXY judge, not official)" % local_model()
-    if c == "gemini":
-        return "%s via Gemini's OpenAI-compatible endpoint (PROXY judge, not official)" % gemini_model()
+    if c == "gemma":
+        return "%s through Google's API (PROXY judge, not official)" % gemma_model()
     return "none (exact-match arguments, response quality skipped)"
 
 
 def proxy_client() -> Optional[ProxyJudge]:
-    c = choice()
-    if c == "local":
-        return ProxyJudge(local_base(), os.environ.get("DUET_LLM_API_KEY", "local"), local_model())
-    if c == "gemini":
-        return ProxyJudge(GEMINI_OPENAI_BASE, os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY"),
-                          gemini_model())
-    return None
+    return ProxyJudge(gemma_model()) if choice() == "gemma" else None
 
 
 def install(*modules: Any) -> Optional[str]:

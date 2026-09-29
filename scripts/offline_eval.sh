@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The thinker alone on all 100 recordings, scored by the benchmark's own scorers
-# (with the local model as a labelled proxy judge): minutes instead of hours, so
-# this is the loop for comparing settings. Starts the model server if none is up.
+# (with Gemma 4 31B as a labelled proxy judge unless gpt-4o is available): minutes
+# instead of hours, so this is the loop for comparing settings.
 #
 #   bash scripts/offline_eval.sh                          # our own transcripts (what the agent hears)
 #   bash scripts/offline_eval.sh --text script            # the exact scripts (the reasoning ceiling)
@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/env.sh
-if [ ! -f .venv/.duet-installed ] || [ ! -f .venv-llm/.duet-installed ] || [ ! -d "$FDB_DATA_DIR" ]; then
+if [ ! -f .venv/.duet-installed ] || [ ! -d "$FDB_DATA_DIR" ]; then
   echo "Not installed yet. Run once: bash reproduce.sh --only travel_19_695bd157114f0d2317f88617"
   exit 1
 fi
@@ -23,4 +23,4 @@ if [ ! -f results/offline/asr_large-v3-turbo.json ]; then
   CUDA_VISIBLE_DEVICES="${DUET_AGENT_GPUS-${CUDA_VISIBLE_DEVICES:-}}" \
     LD_LIBRARY_PATH="${libs}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$PY_AGENT" bench/offline_asr.py
 fi
-"$PY_AGENT" bench/offline_eval.py --start-server --judge "$@"
+"$PY_AGENT" bench/offline_eval.py --judge --concurrency 3 "$@"

@@ -58,7 +58,8 @@ logging.getLogger("duet").setLevel(logging.INFO)
 # how long the talker waits for the thinker's first decision before speaking anyway
 ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
 # speak a progress line when tools keep the user waiting this long
-PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5"))
+# (a hosted Gemma call takes seconds, so the line comes less often than with a local model)
+PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5" if CONFIG.llm_backend == "local" else "6"))
 THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
 # how long the user must stay quiet, after the thinker decided they had not finished,
 # before it answers anyway (the benchmark counts a gap over 2 s as the end of a turn)
@@ -373,10 +374,12 @@ class DuetAgent(Agent):
 
 
 def talker_model() -> str:
-    """The model actually answering as the talker (after any Gemini fallback)."""
+    """The model answering as the talker, or "fixed" when the talker is off."""
+    if not CONFIG.talker_enabled:
+        return "fixed acknowledgement (no model)"
     if CONFIG.llm_backend == "local":
         return CONFIG.talker_model
-    from .gemini import resolved
+    from .gemma_api import resolved
     return resolved("talker", CONFIG.talker_model)
 
 
@@ -387,13 +390,16 @@ def prewarm(proc: JobProcess) -> None:
     if not DRY_RUN and CONFIG.llm_backend == "local":
         log.info("language model: %s on the local server %s", CONFIG.llm_model, CONFIG.llm_base_url)
     elif not DRY_RUN:
-        # the models this key can actually use (a declared model may have been
-        # withdrawn from new keys); one tiny request each, once per process
-        from . import gemini
-        for role, preferred in (("thinker", CONFIG.thinker_model), ("talker", CONFIG.talker_model)):
-            chosen = gemini.resolve(role, preferred)
-            log.info("%s model: %s", role, chosen)
-        for note in gemini._notes:
+        # the Gemma model these keys can actually use (Google may stop serving one to a
+        # key); one tiny request, once per process
+        from . import gemma_api
+        roles = [("thinker", CONFIG.thinker_model)]
+        if CONFIG.talker_enabled:
+            roles.append(("talker", CONFIG.talker_model))
+        for role, preferred in roles:
+            log.info("%s model: %s (%d API key(s))", role, gemma_api.resolve(role, preferred),
+                     len(gemma_api.api_keys()))
+        for note in gemma_api._notes:
             log.warning(note)
     speech_models.whisper()
     if CONFIG.tts_backend == "kokoro":
@@ -443,7 +449,7 @@ async def entrypoint(ctx: JobContext) -> None:
         turn_handling={
             "turn_detection": build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
-            "preemptive_generation": {"enabled": True,
+            "preemptive_generation": {"enabled": CONFIG.preemptive,
                                       "max_speech_duration": CONFIG.preempt_max_speech_s,
                                       "max_retries": CONFIG.preempt_max_retries},
         },

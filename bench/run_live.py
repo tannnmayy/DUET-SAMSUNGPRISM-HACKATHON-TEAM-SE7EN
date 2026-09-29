@@ -8,7 +8,8 @@
 Steps:
   1. LiveKit: use LIVEKIT_URL if set (e.g. LiveKit Cloud); otherwise start a local
      `livekit-server --dev` (keys devkey/secret) - no account needed.
-  2. Start the agent worker (`python -m duet_voice.agent start`).
+  2. Check that the Google API keys reach Gemma 4 and that tool calling works, then
+     start the agent worker (`python -m duet_voice.agent start`).
   3. Run the benchmark's own `run_tool_benchmark_all_released.py --provider duet`,
      which streams each input.wav into a fresh room, records the agent's audio,
      runs ASR and collects tool calls from /tmp/agent_tool_calls.log.
@@ -39,7 +40,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
-from bench import llm_server  # noqa: E402
 from bench.common import DATA_DIR, FDB_DIR, provenance  # noqa: E402
 
 PROVIDER = "duet"
@@ -90,21 +90,17 @@ def start_livekit(env: dict, logs: Path) -> subprocess.Popen | None:
 
 
 def our_pids() -> set:
-    """This run's processes: everything started from here (model server, agent and its
-    job processes, LiveKit, the benchmark's runner), plus a model server this user
-    started separately (llm_server.py serve), with all their children. Linux only."""
+    """This run's processes: everything started from here (the agent and its job
+    processes, LiveKit, the benchmark's runner), with all their children. Linux only."""
     if not os.path.isdir("/proc"):
         return set()
-    children, roots, uid = {}, {os.getpid()}, os.getuid()
+    children, roots = {}, {os.getpid()}
     for d in os.listdir("/proc"):
         if not d.isdigit():
             continue
         try:
             stat = Path("/proc/%s/stat" % d).read_text()
             children.setdefault(int(stat.rsplit(")", 1)[1].split()[1]), []).append(int(d))
-            if os.stat("/proc/" + d).st_uid == uid and \
-                    b"vllm.entrypoints" in Path("/proc/%s/cmdline" % d).read_bytes():
-                roots.add(int(d))
         except (OSError, ValueError, IndexError):
             continue
     found, todo = set(roots), list(roots)
@@ -117,8 +113,8 @@ def our_pids() -> set:
 
 
 class GpuMonitor(threading.Thread):
-    """GPU memory, sampled every 2 s: the evidence that the whole stack (model server,
-    agent, scoring recognizer) fits Samsung's 48 GB card.
+    """GPU memory, sampled every 2 s: the evidence that the whole stack (the agent's
+    speech models and the benchmark's scoring recognizer) fits Samsung's 48 GB card.
       - ours: the memory of this run's own processes, summed over every GPU they use.
         On a shared machine this is the number that counts: it leaves out other
         people's jobs, and it adds up the parts when they are placed on several GPUs.
@@ -384,10 +380,9 @@ def warn_earlier_results(args) -> None:
 
 
 def preflight(env: dict, out: Path, backend: str) -> None:
-    """Before a two-hour run: does the language model answer, and does tool
-    calling work? (Gemini: can this key reach the models, and at what tier?)
-    A failure stops here instead of producing 100 apologies."""
-    module = "duet_voice.llm_local" if backend == "local" else "duet_voice.gemini"
+    """Before a two-hour run: can every Google API key reach Gemma 4, and does tool
+    calling work? A failure stops here instead of producing 100 apologies."""
+    module = "duet_voice.llm_local" if backend == "local" else "duet_voice.gemma_api"
     proc = subprocess.run([sys.executable, "-m", module], cwd=str(REPO), env=env,
                           capture_output=True, text=True, timeout=300)
     lines = [l for l in proc.stdout.splitlines() if l.startswith("{")]
@@ -396,24 +391,26 @@ def preflight(env: dict, out: Path, backend: str) -> None:
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
     cfg["models_in_use"] = models
     cfg_path.write_text(json.dumps(cfg, indent=1), encoding="utf-8")
-    print("Models:", models.get("thinker"), "(thinker),", models.get("talker"), "(talker)")
+    print("Model:", models.get("thinker"), "(thinker);", "%s of %s API key(s) usable" % (
+        models.get("keys_ok", "?"), models.get("keys", "?")))
     for note in models.get("notes", []):
         print("WARNING:", note)
     if models.get("error"):
         print("ERROR:", models["error"])
     if proc.returncode != 0 or "error" in models:
         sys.exit("Preflight failed: the language model cannot be used (see above). Nothing was run.")
-    if backend == "local":
-        print("Tool calling:", models.get("tool_calling"))
+    print("Tool calling:", models.get("tool_calling"))
 
 
 def effective_config(env: dict) -> dict:
     """The settings the agent process will run with: its defaults plus overrides,
     resolved exactly as the agent resolves them, and the sampling actually used."""
-    code = ("import json, dataclasses; from duet_voice.config import CONFIG; from duet_voice import gemini, llm_local; "
+    code = ("import json, dataclasses; from duet_voice.config import CONFIG; "
+            "from duet_voice import gemma_api, llm_local; "
             "c = dataclasses.asdict(CONFIG); local = CONFIG.llm_backend == 'local'; "
-            "c['thinker_sampling'] = llm_local.sampling() if local else gemini.sampling(CONFIG.thinker_model); "
-            "c['talker_sampling'] = llm_local.sampling() if local else gemini.sampling(CONFIG.talker_model); "
+            "c['thinker_sampling'] = llm_local.sampling() if local else gemma_api.sampling(CONFIG.thinker_model); "
+            "c['api_keys'] = 0 if local else len(gemma_api.api_keys()); "
+            "c['tokens_per_minute_per_key'] = None if local else gemma_api._tpm(); "
             "print(json.dumps(c))")
     try:
         out = subprocess.run([sys.executable, "-c", code], cwd=str(REPO), env=env, capture_output=True,
@@ -441,15 +438,11 @@ def main() -> int:
                     help="interpreter for the benchmark runner and evaluations (its own venv)")
     ap.add_argument("--scoring-asr", choices=["parakeet", "whisper"],
                     default="whisper" if os.name == "nt" else "parakeet")
-    ap.add_argument("--llm-python", default=llm_server.default_python(),
-                    help="interpreter of the model server's environment (.venv-llm), to start vLLM")
     args = ap.parse_args()
     # the runner and the evaluations run inside the benchmark's folder, so a relative
     # path given here must not be looked up from there (a bare command name stays as is)
-    for name in ("bench_python", "llm_python"):
-        path = getattr(args, name)
-        if path and os.path.dirname(path):
-            setattr(args, name, os.path.abspath(path))
+    if args.bench_python and os.path.dirname(args.bench_python):
+        args.bench_python = os.path.abspath(args.bench_python)
     args.data_dir = os.path.abspath(args.data_dir)
     if args.run_dir:
         args.run_dir = os.path.abspath(args.run_dir)
@@ -477,8 +470,9 @@ def main() -> int:
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
         # the code version, machine, GPUs and placement that produced this run
         "provenance": provenance(),
-        "model_server": "started by this run" if backend == "local" and not args.dry_run
-                        and not llm_server.healthy() else "already running at " + CONFIG.llm_base_url,
+        "language_model": "none (dry run)" if args.dry_run else (
+            CONFIG.thinker_model + (" on the local server " + CONFIG.llm_base_url if backend == "local"
+                                    else " through Google's API")),
     }, indent=1), encoding="utf-8")
 
     if not args.eval_only:
@@ -486,12 +480,8 @@ def main() -> int:
         warn_earlier_results(args)
     monitor = GpuMonitor()
     monitor.start()
-    server = agent = llm = None
+    server = agent = None
     try:
-        if backend == "local" and not args.dry_run:
-            # the model server first: the preflight tests it, and the evaluations'
-            # local proxy judge uses it too
-            llm = llm_server.start(args.llm_python, out, env)
         if not args.eval_only and not args.dry_run:
             preflight(env, out, backend)
         if not args.eval_only:
@@ -520,7 +510,6 @@ def main() -> int:
     finally:
         for proc in (agent, server):
             stop(proc)
-        llm_server.stop(llm)
         gpu = monitor.result()
         print("GPU %s: peak %.1f GiB used of %.1f GiB (the whole card, other users' jobs included)"
               % (gpu["gpu"] or gpu["index"], gpu["peak_used_mib"] / 1024, gpu["total_mib"] / 1024))

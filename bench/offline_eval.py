@@ -143,26 +143,12 @@ def main() -> int:
     ap.add_argument("--judge", action="store_true", help="LLM judge for arguments and responses")
     ap.add_argument("--audio", action="store_true", help="the thinker also hears the request audio")
     ap.add_argument("--tag", default="")
-    ap.add_argument("--start-server", action="store_true",
-                    help="start the local model server if none is running (and stop it at the end)")
     ap.add_argument("--rescore", default="",
                     help="score a saved results/offline/eval_*.json again (e.g. with the judge) "
                          "without calling the thinker")
     args = ap.parse_args()
 
-    server = None
-    if CONFIG.llm_backend == "local" and (not args.rescore or args.judge):
-        from bench import llm_server
-        if args.start_server:
-            server = llm_server.start(llm_server.default_python(), REPO / "results" / "llm_server")
-        elif not llm_server.healthy():
-            sys.exit("No model server at %s: start one (python bench/llm_server.py serve) "
-                     "or pass --start-server." % CONFIG.llm_base_url)
-    try:
-        return evaluate(args, CONFIG)
-    finally:
-        if server is not None:
-            llm_server.stop(server)
+    return evaluate(args, CONFIG)
 
 
 def evaluate(args, CONFIG) -> int:

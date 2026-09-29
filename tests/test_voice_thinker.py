@@ -92,30 +92,25 @@ def test_a_keep_listening_next_to_real_work_is_answered_not_deleted():
     assert [p.function_response.name for p in tool_turn.parts] == ["keep_listening", "track_order"]
 
 
-def test_sampling_follows_the_model_family(monkeypatch):
+def test_sampling_is_googles_recommendation_for_gemma_with_a_fixed_seed(monkeypatch):
     import dataclasses
-    from duet_voice import config, gemini
-    assert gemini.sampling("gemini-2.5-flash") == {"temperature": 0.0, "seed": 7}
-    assert gemini.sampling("gemini-3.5-flash") == {"temperature": 1.0, "seed": 7}
+    from duet_voice import config, gemma_api
+    assert gemma_api.sampling("gemma-4-26b-a4b-it") == {"temperature": 1.0, "top_p": 0.95, "top_k": 64, "seed": 7}
     monkeypatch.setattr(config, "CONFIG", dataclasses.replace(config.CONFIG, temperature="0.3"))
-    assert gemini.sampling("gemini-3.5-flash")["temperature"] == 0.3
+    assert gemma_api.sampling("gemma-4-26b-a4b-it")["temperature"] == 0.3
 
 
-def test_thinking_is_a_budget_on_2_5_and_a_level_on_3():
-    from duet_voice.gemini import thinking_config
-    assert thinking_config("gemini-2.5-flash", "low").thinking_budget == 512
-    assert thinking_config("gemini-2.5-flash", "minimal").thinking_budget == 0
-    assert str(thinking_config("gemini-3.5-flash", "low").thinking_level).lower().endswith("low")
-    assert str(thinking_config("gemini-3.5-flash-lite", "minimal").thinking_level).lower().endswith("minimal")
+def test_gemma_gets_no_thinking_setting_because_the_api_refuses_one():
+    from duet_voice.gemma_api import thinking_config
+    assert thinking_config("gemma-4-26b-a4b-it", "low") is None
 
 
-def test_a_withdrawn_model_falls_back_to_the_next_one_but_a_rate_limit_does_not(monkeypatch):
-    from duet_voice import gemini
-    verdicts = {"model-a": "unavailable", "model-b": "rate_limited", "model-c": "ok"}
-    monkeypatch.setattr(gemini, "probe", lambda m: (verdicts.get(m, "ok"), ""))
-    monkeypatch.setattr(gemini, "FALLBACKS", {"thinker": ["model-a", "model-b", "model-c"]})
-    monkeypatch.setattr(gemini, "_resolved", {})
-    monkeypatch.setattr(gemini, "_notes", [])
-    assert gemini.resolve("thinker", "model-a") == "model-b"   # withdrawn: skipped; rate limit: kept
-    assert gemini.resolved("thinker", "x") == "model-b"
-    assert gemini.resolved("talker", "model-z") == "model-z"   # nothing resolved: the preferred one
+def test_a_model_not_served_falls_back_to_the_other_gemma_but_a_rate_limit_does_not(monkeypatch):
+    from duet_voice import gemma_api
+    verdicts = {"gemma-4-26b-a4b-it": "unavailable", "gemma-4-31b-it": "rate_limited"}
+    monkeypatch.setattr(gemma_api, "probe", lambda m, key=None: (verdicts.get(m, "ok"), ""))
+    monkeypatch.setattr(gemma_api, "_resolved", {})
+    monkeypatch.setattr(gemma_api, "_notes", [])
+    assert gemma_api.resolve("thinker", "gemma-4-26b-a4b-it") == "gemma-4-31b-it"
+    assert gemma_api.resolved("thinker", "x") == "gemma-4-31b-it"
+    assert gemma_api.resolved("talker", "model-z") == "model-z"   # nothing resolved: the preferred one
