@@ -13,6 +13,9 @@ Read section 0 first; it is the whole plan on one page. The other sections
 explain each step in detail. Keep this file open while you work.
 
 > **Related files.**
+> - [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md): the guide for the shared SRM DGX:
+>   experiments, the full live run, the clean single-GPU run, and pushing every
+>   result and log to GitHub.
 > - [DGX_RUNBOOK.md](DGX_RUNBOOK.md): the short, copy-paste version of the
 >   benchmark run, for whoever types the commands on the GPU machine.
 > - [README.md](README.md): what Samsung reads.

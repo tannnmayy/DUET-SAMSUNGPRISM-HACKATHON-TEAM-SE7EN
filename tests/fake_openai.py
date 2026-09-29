@@ -84,7 +84,9 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/health"):
             self._send(200, {})
         elif self.path.startswith("/v1/models"):
-            self._send(200, {"object": "list", "data": [{"id": MODEL, "object": "model"}]})
+            # like vLLM, "root" names the checkpoint the server loaded
+            self._send(200, {"object": "list", "data": [{"id": MODEL, "object": "model",
+                                                         "root": "RedHatAI/Qwen3-30B-A3B-Instruct-2507-quantized.w4a16"}]})
         else:
             self._send(404, {"error": "not found"})
 
