@@ -120,3 +120,13 @@ def test_a_failed_consent_check_does_not_block_the_user():
         raise RuntimeError("model server down")
     box.consent = broken
     assert call(box, "send_message", {"to": "Priya", "text": "running late"})["status"] == "ok"
+
+
+def test_a_held_back_call_is_remembered_for_the_request_only():
+    box, sent, _ = make()
+    stale = box.coord.epoch
+    box.coord.user_started_speaking()
+    asyncio.run(box.call("set_alarm", {"time": "15:30"}, epoch=stale))
+    assert box.held_back == [{"tool": "set_alarm", "args": {"time": "15:30"}}]
+    box.new_request()
+    assert box.held_back == []

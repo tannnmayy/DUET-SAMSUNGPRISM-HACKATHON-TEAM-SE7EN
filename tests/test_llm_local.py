@@ -217,3 +217,21 @@ def test_a_second_look_calls_the_action_the_draft_only_claimed():
 def test_the_benchmark_thinker_takes_no_second_look():
     evs, box, sent, th = run([reply("Hello!")])
     assert [e.kind for e in evs] == ["decided", "say"] and th.review is None
+
+
+def test_a_second_look_whose_action_was_held_back_keeps_the_draft():
+    th = LocalThinker(model="qwen-test", review="Second look")
+    script = [reply("It's the screen. Want me to dim it?"), reply(calls=[("set_brightness", {"percent": 50})]),
+              reply("I'll dim it to 50%, okay?")]
+    th._create = lambda messages, tools: asyncio.sleep(0, result=script.pop(0))
+
+    class Held(Box):
+        async def call(self, tool, args, epoch=None):
+            self.calls.append((tool, args))
+            return json.dumps({"status": "not_executed", "reason": "the user has not asked for this"})
+    box = Held()
+
+    async def go():
+        return [ev async for ev in th.run("why does my battery drain", box)]
+    evs = asyncio.run(go())
+    assert evs[-1].text == "It's the screen. Want me to dim it?" and box.calls == [("set_brightness", {"percent": 50})]

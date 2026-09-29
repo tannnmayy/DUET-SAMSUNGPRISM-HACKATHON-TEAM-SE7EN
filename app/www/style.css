@@ -215,3 +215,18 @@ input:focus, textarea:focus { border-color: var(--accent); outline: none; }
 body.mode-care { font-size: 18px; }
 body.mode-care .chat li { font-size: 19px; }
 body.mode-care .orb { --size: 120px; }
+
+/* inside the demo stage's phone frame (index.html?demo=...&embed=1): the stage shows the
+   timeline large, so the phone shows the conversation and the mode's panel */
+body.embed .screen { padding: 10px 12px; min-height: 0; }
+body.embed .timeline-card { display: none; }
+body.embed .stage { grid-template-columns: 1fr !important; gap: 10px; }
+body.embed .talk { padding: 12px; gap: 8px; }
+body.embed .orb { --size: 70px; }
+body.embed .orb-wrap { padding: 0; gap: 6px; }
+body.embed .chat { max-height: 290px; }
+body.embed .chat li { font-size: 15px; padding: 8px 12px; }
+body.embed .card { padding: 14px; }
+body.embed .bar { padding: 2px 0 8px; }
+body.embed .icon-btn { width: 42px; height: 42px; }
+body.embed::-webkit-scrollbar { display: none; }

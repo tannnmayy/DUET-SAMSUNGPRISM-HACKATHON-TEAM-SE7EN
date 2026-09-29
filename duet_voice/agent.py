@@ -192,6 +192,10 @@ class DuetAgent(Agent):
                 "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
         return ""
 
+    def polish(self, words: str) -> str:
+        """The answer as it will be spoken; unchanged for the benchmark."""
+        return words
+
     def turn_note(self) -> str:
         """Extra context for the thinker on this turn; none for the benchmark. The phone
         app adds the time and what the user heard of an answer they interrupted."""
@@ -352,7 +356,7 @@ class DuetAgent(Agent):
                     spoke = True
                 elif kind == "say":
                     # spoken, not displayed: markdown symbols would be read aloud
-                    words = re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip()
+                    words = self.polish(re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip())
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
                     # the thinker finished: this request is answered once the reply lands

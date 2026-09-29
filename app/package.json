@@ -14,5 +14,8 @@
     "jsqr": "^1.4.0",
     "livekit-client": "^2.22.3",
     "qrcode-generator": "^1.4.4"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
   }
 }

@@ -96,18 +96,24 @@
     chat.appendChild(li); chat.scrollTop = chat.scrollHeight;
     return li;
   }
+  // the page that embeds the app (the demo stage), if any, gets a copy of every step
+  const toParent = (msg) => { if (window.parent !== window) window.parent.postMessage(msg, "*"); };
+  let stepId = 0;
   function addStep(cls, icon, html, sub) {
     const li = document.createElement("li");
+    li.dataset.sid = String(++stepId);
     li.className = cls;
     li.innerHTML = "<i>" + icon + "</i><div>" + html + (sub ? "<small>" + sub + "</small>" : "") + "</div>";
     timeline.appendChild(li); timeline.scrollTop = timeline.scrollHeight;
     while (timeline.children.length > 60) timeline.removeChild(timeline.firstChild);
+    toParent({ type: "step", id: li.dataset.sid, cls, icon, html, sub: sub || "" });
     return li;
   }
   function setStep(li, cls, icon, html, sub) {
     li.className = cls;
     li.innerHTML = "<i>" + icon + "</i><div>" + html + (sub ? "<small>" + sub + "</small>" : "") + "</div>";
     moment(cls, icon + "  " + li.querySelector("div").firstChild.textContent);
+    toParent({ type: "step", id: li.dataset.sid, cls, icon, html, sub: sub || "" });
   }
   // the latest DUET moment, under the orb, for a phone screen
   function moment(cls, text) {
@@ -128,7 +134,12 @@
     $("orb-label").textContent = ORB_TEXT[state] || "";
   }
 
+  // demo mode (demo-driver.js): a scripted voice instead of the microphone, and a recorder
+  const hooks = { events: [], mic: null, remoteAudio: null };
+
   function onEvent(ev) {
+    hooks.events.forEach((fn) => { try { fn(ev); } catch (e) { console.error(e); } });
+    toParent({ type: "duet", ev });
     switch (ev.kind) {
       case "session_start":
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
@@ -189,7 +200,9 @@
         const li = toolRows.get(k) || addStep("", "", "");
         toolRows.delete(k);
         const what = esc(toolText(ev.tool, ev.args));
-        if (ev.kind === "tool_done") setStep(li, "t-done", "✓", "Done: " + what, esc(summary(ev.result)));
+        if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && ev.result && ev.result.cancelled === false) {
+          setStep(li, "t-cached", "=", "Nothing to cancel: " + esc(P.spoken(ev.args.time)) + " was never set", "DUET had held it back");
+        } else if (ev.kind === "tool_done") setStep(li, "t-done", "✓", "Done: " + what, esc(summary(ev.result)));
         if (ev.kind === "tool_dropped") setStep(li, "t-drop", "✕", "Never ran: " + what, "you corrected yourself before it committed");
         if (ev.kind === "tool_cached") setStep(li, "t-cached", "=", "Not repeated: " + what, "it already ran for this request");
         if (ev.kind === "tool_asked") setStep(li, "t-cached", "?", "Asked first: " + what, "you hadn't asked for this, so DUET offers it instead");
@@ -257,9 +270,17 @@
     el.innerHTML = html;
     if (what && what.device) { const d = el.querySelector('[data-id="' + what.device + '"]'); if (d) d.classList.add("flash"); }
     const near = $("ev-near");
-    if (near) near.onclick = () => { const v = P.skipAhead(10); if (v) phoneEvent("The car is 10 minutes from " + v.destination + ", arriving at " + v.arrival + "."); };
+    if (near) near.onclick = () => simulate("near");
     const med = $("ev-med");
-    if (med) med.onclick = () => phoneEvent("It is medicine time: the evening dose of Metformin 500 mg is due now.");
+    if (med) med.onclick = () => simulate("medicine");
+  }
+  // the demo buttons: a phone or car event DUET reacts to without being asked
+  function simulate(kind) {
+    if (kind === "near") {
+      const v = P.skipAhead(10);
+      if (v) phoneEvent("The car is 10 minutes from " + v.destination + ".");
+    }
+    if (kind === "medicine") phoneEvent("It is medicine time: the evening dose of Metformin 500 mg is due now.");
   }
   function stat(label, value, hot) { return '<div class="stat' + (hot ? " hot" : "") + '"><small>' + label + "</small><b>" + esc(value) + "</b></div>"; }
 
@@ -291,7 +312,8 @@
     const base = serverBase();
     if (!creds && !base) { $("settings").open = true; $("set-server").focus(); toast("Enter the server address first, or scan the laptop's code"); return; }
     mode = m;
-    document.body.className = "mode-" + m;
+    document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
+    document.body.classList.add("mode-" + m);
     $("home").hidden = true; $("session").hidden = false;
     $("mode-title").textContent = { assistant: "Assistant", care: "Care", drive: "Drive" }[m];
     $("conn").textContent = "Connecting…";
@@ -324,14 +346,18 @@
         try { onEvent(JSON.parse(dec.decode(payload))); } catch (e) { console.warn(e); }
       });
       room.on(LK.RoomEvent.TrackSubscribed, (track) => {
-        if (track.kind === "audio") { const a = track.attach(); a.autoplay = true; document.body.appendChild(a); }
+        if (track.kind === "audio") {
+          const a = track.attach(); a.autoplay = true; document.body.appendChild(a);
+          if (hooks.remoteAudio) hooks.remoteAudio(track);
+        }
       });
       room.on(LK.RoomEvent.Disconnected, () => { orb("ended"); $("conn").textContent = "Disconnected"; room = null; });
       room.on(LK.RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /agent/.test(p.identity)) { orb("ended"); $("conn").textContent = "DUET left the room"; } });
 
       await room.connect(url, token);
       await room.startAudio();
-      await room.localParticipant.setMicrophoneEnabled(true);
+      if (hooks.mic) await hooks.mic(room);
+      else await room.localParticipant.setMicrophoneEnabled(true);
       if (P.NATIVE) {  // after the microphone: WebRTC has switched the phone to call audio by now
         try { await P.native.audioRoute({}); await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
       }
@@ -349,7 +375,8 @@
     if (room) { try { await room.disconnect(); } catch (e) { /* already gone */ } room = null; }
     if (P.NATIVE) { try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ } }
     document.querySelectorAll("body > audio").forEach((a) => a.remove());
-    $("session").hidden = true; $("home").hidden = false; document.body.className = "";
+    $("session").hidden = true; $("home").hidden = false;
+    document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
   }
 
   document.querySelectorAll(".mode-card").forEach((b) => b.addEventListener("click", () => start(b.dataset.mode)));
@@ -409,5 +436,5 @@
     $("orb").style.setProperty("--level", Math.min(1, level * 2.5).toFixed(2));
   }, 100);
 
-  window.DuetApp = { start, end, onEvent, phoneEvent };
+  window.DuetApp = { start, end, onEvent, phoneEvent, simulate, hooks, settings: S, get room() { return room; } };
 })();

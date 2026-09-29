@@ -114,3 +114,25 @@ npm run sync
 cd android
 ./gradlew assembleDebug
 ```
+
+## Record the demo video (no phone needed)
+
+The film `results/galaxy/video/DUET_for_Galaxy_demo.mp4` is made from live runs of the real
+stack: the model, the agent and LiveKit Cloud. Only the user is scripted:
+- The lines in `app/www/demo/scenes.json` are spoken by Kokoro voices (`app/www/demo/audio/`).
+- `demo-driver.js` plays each line into the room instead of a microphone. It waits for DUET's
+  reply, or cuts in while DUET is talking, as a person would.
+- `demo.html` is the 1920×1080 stage: the app in a phone frame, DUET's steps live, and captions.
+
+```bash
+python scripts/galaxy_demo_voices.py                  # once: the scripted user's lines
+bash scripts/galaxy_demo.sh                           # the model, agent and token server (see above)
+cd app && npm install
+TAKE=1 node tools/record_demo.js all                  # one take of every scene (Chrome + ffmpeg)
+cp ../results/galaxy/video/correction_t1.mp4 ../results/galaxy/video/correction.mp4   # choose takes
+node tools/build_film.js                              # cards + scenes -> DUET_for_Galaxy_demo.mp4
+```
+
+Each take is a new live conversation, so takes differ. Record two or three and keep the best
+one of each scene. Every take's full log is in `results/galaxy/traces/<room>.jsonl`; the room
+name is printed when the take is recorded.

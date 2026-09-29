@@ -54,11 +54,14 @@ class PhoneToolbox:
         self.consent = consent
         self.last_tool_start = 0.0
         self.last_tool_end = 0.0
+        # calls of this request that the gate held back (the user kept talking): they never ran
+        self.held_back: List[Dict[str, Any]] = []
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
         """The last request was answered. Repeatable actions ("call her again") and
         screens may run again; everything else stays exactly-once."""
+        self.held_back = []
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") == "ui":
@@ -100,8 +103,8 @@ class PhoneToolbox:
             if not allowed:
                 self.emit({"kind": "tool_asked", "tool": tool, "args": args})
                 return json.dumps({"status": "not_executed", "reason":
-                                   "the user has not asked for this change. Do not do it: offer it in "
-                                   "one short question, and do it only if they say yes"})
+                                   "not done yet: the user has not asked for this. Offer it in one short "
+                                   "question; if they say yes, call this tool again"})
 
         async def run() -> Any:
             try:
@@ -122,6 +125,7 @@ class PhoneToolbox:
                                               epoch=epoch)
         except Superseded:
             log.info("held back at the gate: %s %s", tool, args)
+            self.held_back.append({"tool": tool, "args": args})
             self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
                        "why": "you kept talking, so this plan was never carried out"})
             return json.dumps({"status": "not_executed", "reason":

@@ -69,6 +69,35 @@ _OK_TAIL = re.compile(r"(?:(?<=[.!?])|\n)\s*OK\.?\s*$")  # a second look's "OK" 
 _RAW_CALL = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S)
 
 
+def _any_ran(messages: List[Dict[str, Any]]) -> bool:
+    """Did any tool call among these messages actually run (not held back)?"""
+    for m in messages:
+        if m.get("role") == "tool":
+            try:
+                status = json.loads(m.get("content") or "{}").get("status")
+            except (ValueError, AttributeError):
+                status = None
+            if status != "not_executed":
+                return True
+    return False
+
+
+def _carried_out(messages: List[Dict[str, Any]]) -> str:
+    """The actions that really ran in these messages, for the second look: it compares its
+    draft against facts, not against its own reading of the conversation."""
+    results = {m.get("tool_call_id"): m.get("content") or "" for m in messages if m.get("role") == "tool"}
+    done = []
+    for m in messages:
+        for c in m.get("tool_calls") or []:
+            try:
+                status = json.loads(results.get(c["id"], "{}")).get("status", "ok")
+            except (ValueError, AttributeError):
+                status = "ok"
+            if status not in ("not_executed", "error", "needs_permission", "unknown_outcome"):
+                done.append("%s(%s)" % (c["function"]["name"], c["function"]["arguments"]))
+    return "; ".join(done) if done else "none"
+
+
 def clean(text: str) -> str:
     """Model text without reasoning blocks (the Instruct model should not emit any)."""
     return _THINK.sub("", text or "").strip()
@@ -174,7 +203,8 @@ class LocalThinker:
                 if (self.review and review_at is None and step < CONFIG.max_tool_steps
                         and content and "<silent>" not in content):
                     draft, review_at = content, len(messages)
-                    messages.append({"role": "user", "content": self.review})
+                    messages.append({"role": "user", "content": self.review.replace(
+                        "{done}", _carried_out(messages[len(prefix):]))})
                     yield ThinkEvent("review", text=draft)
                     continue
                 if review_at is not None and len(messages) == review_at + 2:
@@ -182,6 +212,8 @@ class LocalThinker:
                     # model wrote), and the history is kept as if it had not been asked.
                     final_text = draft
                     del messages[review_at:]
+                elif review_at is not None and not _any_ran(messages[review_at:]):
+                    final_text = draft            # what it added was held back: nothing changed
                 else:
                     final_text = _OK_TAIL.sub("", content).strip() if review_at is not None else content
                 break

@@ -254,10 +254,11 @@
     const direct = !!settings().direct;
     if (NATIVE) {
       const r = await Native.call({ number: c.number, direct });
-      return ok({ calling: c.name, how: r.direct ? "calling now" : "the dialer is open; the user taps call" });
+      return ok({ calling: c.name, state: r.direct ? "ringing" : "the dialer is open; the user taps call",
+        note: "nothing is known yet about the conversation itself" });
     }
     toast("Calling " + c.name + "… (simulated)");
-    return ok({ calling: c.name, how: "simulated call" });
+    return ok({ calling: c.name, state: "ringing (simulated call)", note: "nothing is known yet about the conversation itself" });
   };
 
   T.send_message = async ({ to, text }) => {

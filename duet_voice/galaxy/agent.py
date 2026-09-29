@@ -23,6 +23,7 @@ import datetime as dt
 import json
 import logging
 import os
+import re
 from typing import Any, Dict, Optional
 
 from dotenv import load_dotenv
@@ -46,13 +47,15 @@ log = logging.getLogger("duet.galaxy")
 AGENT_NAME = os.environ.get("DUET_GALAXY_AGENT", "duet-galaxy")
 
 # the second look before an answer is spoken (DUET_REVIEW=0 turns it off)
-REVIEW = ("Second look before your answer is spoken: did the user ask, in their latest words, for an "
-          "action that has no successful tool result above yet? If so, call that tool now. If not, "
-          "reply with exactly: OK")
+REVIEW = ("Second look before your answer is spoken. Actions carried out in this turn: {done}. "
+          "Did the user ask, in their latest words, for an action that is not in that list? If so, call "
+          "that tool now. If not, reply with exactly: OK")
 
-CONSENT = ("You check one action a phone assistant is about to take. Answer yes only if the user's "
-           "words ask for this action, or say yes to the assistant offering it. A question about a "
-           "problem is not a request to change anything. Answer with one word: yes or no.")
+# chosen on 11 real cases from recorded conversations (11/11 on the laptop's 4B model)
+CONSENT = ("You check one action a phone assistant is about to take. First, is the user's last sentence "
+           "a question? A user who asks a question wants an answer, not this action: then answer no, "
+           "unless they are saying yes to the assistant's offer. Otherwise answer yes only if the user's "
+           "words ask for this action or accept the assistant's offer of it. Answer with one word: yes or no.")
 
 
 async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str) -> bool:
@@ -70,6 +73,8 @@ async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str)
     answer = (resp.choices[0].message.content or "").strip().lower()
     return answer.startswith("yes")
 
+
+FILLER = re.compile(r"(just )?(let me know|feel free|is there anything else|anything else)", re.I)
 
 # what the phone's timeline shows, and which fields of each event it needs
 SHOWN = {
@@ -117,12 +122,26 @@ class GalaxyAgent(base.DuetAgent):
                 "the matching tool first, then do what they want now: " + "; ".join(
                     "%s(%s)" % (r.tool, json.dumps(r.args)) for r in fresh))
 
+    def polish(self, words: str) -> str:
+        """Spoken, not read: drop a closing filler sentence ("Let me know if you need anything
+        else."), which a small model adds however often it is told not to."""
+        parts = re.split(r"(?<=[.!?])\s+", " ".join((words or "").split()))
+        while len(parts) > 1 and FILLER.match(parts[-1]):
+            parts.pop()
+        return " ".join(parts)
+
     def turn_note(self) -> str:
         now = dt.datetime.now()
         lines = ["Now: %s, %s." % (now.strftime("%A %d %B %Y"), now.strftime("%H:%M"))]
         if self.cut_off:
             lines.append('Your last answer was cut off. The user heard only: "%s"' % self.cut_off)
             self.cut_off = None
+        ran = {(r.tool, json.dumps(r.args, sort_keys=True)) for r in self._coord.history if r.outcome == "ok"}
+        never = ["%s(%s)" % (c["tool"], json.dumps(c["args"])) for c in self._toolbox.held_back
+                 if (c["tool"], json.dumps(c["args"], sort_keys=True)) not in ran]
+        if never:
+            lines.append("Planned but never carried out, because the user kept talking (it did not happen, "
+                         "so there is nothing to undo): " + "; ".join(never))
         return "\n".join(lines)
 
     def reply_delivered(self) -> None:
@@ -245,7 +264,7 @@ async def entrypoint(ctx: JobContext) -> None:
         text = str(msg.get("text", "")).strip()
         if not text or coord.user_speaking:
             return
-        trace("phone_event", kind=msg.get("kind"), text=text)
+        trace("phone_event", event=msg.get("kind"), text=text)
         user_input = text if msg.get("kind") == "text" else "[Phone event] " + text
         session.generate_reply(user_input=user_input)
 
