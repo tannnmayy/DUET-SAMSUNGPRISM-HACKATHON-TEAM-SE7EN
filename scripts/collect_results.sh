@@ -35,7 +35,7 @@ if [ -n "$PUSH" ]; then
   here=$(git rev-parse --abbrev-ref HEAD)
   branch="results-$PUSH-$(date +%Y%m%d-%H%M)"
   git checkout -q -b "$branch"
-  git add "results/reported/$PUSH"
+  git add -f "results/reported/$PUSH"   # -f: the run logs (*.log) are git-ignored elsewhere
   git commit -q -m "Results: $PUSH (run $(basename "$RUN"))" \
     || { echo "git commit failed: set your name and email (git config user.name/user.email) and retry"; exit 1; }
   git push -q -u origin "$branch" && echo "Pushed to branch $branch on GitHub."

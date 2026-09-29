@@ -126,16 +126,27 @@ voice agent:
 
 ## Resource use
 
-Everything runs on one GPU, sized for Samsung's 48 GB card (about 45 GiB usable):
+Everything runs on one GPU, sized for Samsung's 48 GB card (about 44.7 GiB usable):
 
 | Process | GPU memory |
 |---|---|
-| Model server (vLLM, Qwen3-30B-A3B FP8: 29.1 GiB weights, working memory, ~22k tokens of KV cache) | 33 GiB, fixed |
+| Model server (vLLM, Qwen3-30B-A3B in Red Hat's 4-bit build: 15.6 GiB weights, working memory, ~50k tokens of KV cache) | 22 GiB, fixed |
 | Agent (Whisper turbo in float16, Kokoro, CUDA context) | ~3.5 GiB |
 | The benchmark's scoring recognizer (Parakeet, in the runner) | ~4-5 GiB |
+| **Total** | **about 31 GiB**, leaving ~13 GiB spare on a 48 GB card |
 
 vLLM gets a fixed budget in GiB rather than a fraction of the GPU. So it takes the
 same memory on an 80 GB H100 as on a 48 GB card, and a run on a bigger GPU
-measures the real footprint (`summary.json` records the peak). GPUs older than
-Ada cannot run the FP8 build's block-wise kernels. There the server loads Red
-Hat's 4-bit build instead (16.7 GB, in a 22 GiB budget).
+measures the real footprint. `summary.json` records the peak memory of the run's
+own processes, summed over every GPU they use, so it stays meaningful on a shared
+machine where other jobs sit on the same cards.
+
+The 4-bit build is the default on every GPU because its kernels run on Ampere,
+Ada and Hopper alike: Samsung's re-run uses exactly the configuration we measured,
+whatever its card. Qwen's FP8 build (29.1 GiB weights in a 33 GiB budget; Ada or
+later) remains selectable with `DUET_LLM_VARIANT=fp8` for comparison runs.
+
+On a shared machine with no single free GPU, the pieces can be placed on
+different GPUs and the model split over two (`bench/place_gpus.py`,
+`DUET_LLM_GPUS`, `DUET_AGENT_GPUS`, `DUET_SCORING_GPUS`). That is for our own
+experiments; the submission runs on one GPU.

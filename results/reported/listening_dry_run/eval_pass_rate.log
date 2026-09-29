@@ -1,0 +1,45 @@
+WARNING: OPENAI_API_KEY is set but gpt-4o cannot be called (Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organizati); using the Gemini PROXY judge instead.
+judge: none (exact match)
+📖 Loading benchmark data from benchmark_data_v2.json...
+📁 Scanning E:\fdb_data\fdb_v3_data_released for provider 'duet_dry_final'...
+🔍 Found 100 valid result files matching benchmark scenarios.
+
+📊 PASS RATE REPORT — DUET_DRY_FINAL
+========================================================
+  Total Scenarios : 100
+  ✅ Passed       : 0
+  ❌ Failed       : 100
+  📈 Pass Rate    : 0.0%
+
+  Failure Breakdown:
+    Wrong Tools     : 100
+    Wrong Arguments : 0
+
+  By Domain:
+    ecommerce_support: 0.0%
+    finance_billing: 0.0%
+    housing_location: 0.0%
+    travel_identity: 0.0%
+
+  By Difficulty:
+    easy: 0.0%
+    medium: 0.0%
+    hard: 0.0%
+
+  By Num Tool Calls:
+    1 tools: 0.0%
+    2 tools: 0.0%
+    3 tools: 0.0%
+
+  By Disfluency Feature:
+    PAUSE: 0.0%
+    FILLER: 0.0%
+    HESITATION: 0.0%
+    FALSE_START: 0.0%
+    SELF_CORRECTION: 0.0%
+
+  State Rollback:
+    With rollback:    0.0%
+    Without rollback: 0.0%
+
+  📄 Report saved: E:\duet_fdb\results\live\20260927_045953\duet_dry_final_pass_rate_report.json

@@ -27,9 +27,29 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dotenv import load_dotenv  # noqa: E402
 
-from bench.common import FDB_DIR, REPO, discover  # noqa: E402
+from bench.common import FDB_DIR, REPO, discover, provenance  # noqa: E402
 
 load_dotenv(REPO / ".env.local")
+
+
+def settings(CONFIG) -> Dict[str, Any]:
+    """The thinker's effective settings, and which weights the model server really
+    serves (vLLM reports the checkpoint it loaded as the model's "root")."""
+    s: Dict[str, Any] = {"backend": CONFIG.llm_backend, "seed": CONFIG.seed}
+    if CONFIG.llm_backend == "local":
+        from duet_voice import llm_local
+        smp = llm_local.sampling()
+        s.update(temperature=smp["temperature"], top_p=smp["top_p"], top_k=smp["extra_body"]["top_k"],
+                 base_url=CONFIG.llm_base_url, served_model=CONFIG.llm_model)
+        try:
+            import urllib.request
+            with urllib.request.urlopen(CONFIG.llm_base_url.rstrip("/") + "/models", timeout=10) as r:
+                s["weights"] = json.loads(r.read().decode())["data"][0].get("root")
+        except Exception as exc:
+            s["weights"] = "unknown (%s)" % type(exc).__name__
+    else:
+        s["temperature"] = CONFIG.temperature or "model default"
+    return s
 
 
 def turn_audio(folder: Path, segments: List[Dict[str, Any]]):
@@ -225,6 +245,11 @@ def evaluate(args, CONFIG) -> int:
         for f in r["disfluency"] or ["NONE"]:
             by.setdefault("disfluency:" + f, []).append(r["passed"])
     summary["pass_by"] = {k: "%.3f (%d)" % (sum(v) / len(v), len(v)) for k, v in sorted(by.items())}
+    summary["tag"] = args.tag
+    summary["settings"] = settings(CONFIG) if saved is None else saved["summary"].get("settings")
+    summary["provenance"] = provenance()
+    if saved is not None:
+        summary["rescored_from"] = args.rescore
     out_dir = REPO / "results" / "offline"
     out_dir.mkdir(parents=True, exist_ok=True)
     stamp = time.strftime("%Y%m%d_%H%M%S")

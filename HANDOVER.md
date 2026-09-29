@@ -13,6 +13,9 @@ Read section 0 first; it is the whole plan on one page. The other sections
 explain each step in detail. Keep this file open while you work.
 
 > **Related files.**
+> - [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md): the guide for the shared SRM DGX:
+>   experiments, the full live run, the clean single-GPU run, and pushing every
+>   result and log to GitHub.
 > - [DGX_RUNBOOK.md](DGX_RUNBOOK.md): the short, copy-paste version of the
 >   benchmark run, for whoever types the commands on the GPU machine.
 > - [README.md](README.md): what Samsung reads.
@@ -93,7 +96,7 @@ is zero. The extension comes before the video because the video has to show it.
    torch 2.10 and transformers 5.5.4. They exist so the install works on CUDA 12
    and 13 drivers.
 6. **Don't raise GPU memory use.** Samsung's card has 48 GB, about 44.7 GiB
-   usable, and our peak must stay under it. Leave the model's 33 GiB budget and
+   usable, and our peak must stay under it. Leave the model's 22 GiB budget and
    12288-token context alone.
 7. **Git hygiene.** Never force-push `main` or rewrite history. Make small commits
    with plain descriptive messages. Team convention: no AI-tool attribution lines
@@ -318,13 +321,13 @@ The user says: *"Can you track my order, it's 1234, no wait, 1243."*
   3.3B active per token, so it answers fast. It is good at tool calling and
   Apache-2.0 licensed.
 - **How it fits in 48 GB:**
-  - **Weights.** The official FP8 build (31.2 GB) runs under vLLM 0.19.1 in a
-    fixed 33 GiB budget.
+  - **Weights.** Red Hat's 4-bit build (16.7 GB) runs under vLLM 0.19.1 in a
+    fixed 22 GiB budget, on every GPU generation. It is the build that ran on the
+    DGX A100 on 28 Sep, so Samsung's re-run uses what we measured.
   - **Everything else.** The speech models take about 3.5 GiB and the
-    benchmark's scoring recognizer about 4-5 GiB.
-  - **Older GPUs.** GPUs before Ada (A6000, A40, A100) can't run FP8 kernels. On
-    those the server loads Red Hat's 4-bit build (16.7 GB) in 22 GiB instead,
-    automatically.
+    benchmark's scoring recognizer about 4-5 GiB: about 31 GiB in all.
+  - **FP8.** Qwen's own FP8 build (31.2 GB, 33 GiB budget, Ada or later) is kept
+    for comparison runs only (`DUET_LLM_VARIANT=fp8`).
 - **Sampling.** The model card's values (temperature 0.7, top-p 0.8, top-k 20),
   with seed 7.
 - **Where it runs.** The server listens on `127.0.0.1:18000`: part of the
@@ -424,9 +427,9 @@ These are created on the machine that runs things:
 | Need | Why |
 |---|---|
 | Linux x86_64 | vLLM and NeMo run on Linux only |
-| One NVIDIA GPU with **44 GiB free** | Everything runs on one GPU, as on Samsung's 48 GB machine |
+| One NVIDIA GPU with **34 GiB free** (on a shared machine: see [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md)) | Everything runs on one GPU, as on Samsung's 48 GB machine |
 | NVIDIA driver for CUDA 12.x or 13.x | All GPU packages are CUDA 12.8 builds |
-| ~90 GB free disk | Environments ~25 GB, models ~36 GB, caches |
+| ~80 GB free disk | Environments ~25 GB, models ~22 GB, caches |
 | `git`, `curl`, `tar`, `gcc` | vLLM's kernels compile small helpers with gcc |
 | Internet to pypi.org, huggingface.co, github.com, astral.sh, drive.google.com | Packages, weights, the benchmark, its audio |
 
@@ -441,7 +444,7 @@ No sudo, Docker, system Python or API key is needed.
 - **A cloud VM** (A100 80 GB or H100): [docs/CLEAN_MACHINE_TEST.md](docs/CLEAN_MACHINE_TEST.md).
   This costs money (about US$1-4 an hour); delete it afterwards.
 
-Your own laptop cannot run the model: it needs about 44 GiB of GPU memory. You
+Your own laptop cannot run the model: it needs about 31 GiB of GPU memory. You
 can still read and edit code there, and run the unit tests (section 15).
 
 ### Optional accounts
@@ -491,7 +494,7 @@ interrupted install resumes.
    Cloud variables are set.
 8. **Pre-downloads every model**, so the timed run is not a download:
    - Whisper, Kokoro and the turn detector;
-   - the Qwen weights chosen for this GPU (31 GB for FP8);
+   - the Qwen weights (the 4-bit build, 17 GB);
    - Parakeet.
 9. **Runs `bench/run_live.py`**, which:
    - starts the model server (`bench/llm_server.py`) and waits until it answers;
@@ -684,7 +687,7 @@ Don't clean up until the submission is in: you may need to re-run.
 | `agent.keep_listening` | Times the thinker decided the user wasn't finished | some; proof the mechanism works |
 | `agent.superseded` | Plans discarded because the user kept talking | some; proof the epochs work |
 | `agent.tool_calls` | Tool calls made | roughly 150-250 for 100 items (1-3 each) |
-| `gpu` | The GPU's name and peak memory used | **≤ 44 GiB** of memory used. That is what fits on Samsung's 48 GB card. The figure counts every process on that GPU, so use an idle GPU for a meaningful number. |
+| `gpu` | `ours_peak_gib`: the peak memory of this run's own processes, summed over every GPU they used. `peak_used_gib`: the whole first card, other users' jobs included | `ours_peak_gib` **≤ 43 GiB** fits Samsung's 48 GB card (expected: about 31) |
 
 Next to it:
 - `run_config.json`: every effective setting, the models in use and any
@@ -1070,7 +1073,7 @@ time.** One example: vLLM won't start and the logs don't lead to a fix.
 | `turn_take_rate` well below 1.0 | The agent didn't speak in some items | Check `agent.log` for tracebacks, and `agent.fallback_acks` and `thinker_errors` in `summary.json` |
 | `thinker_errors` > 0 | Model calls failed | `first_thinker_error` in `summary.json`, then `llm_server.log` |
 | Agent log: whisper `on cpu` | The recognizer didn't find CUDA | In `reproduce.sh` runs this is handled; in the live demo, set the `LD_LIBRARY_PATH` line (section 11.2) |
-| GPU peak above 44 GiB | Would not fit Samsung's 48 GB card | Check the GPU was idle (the peak counts every process on it). If our processes alone exceed it, tell Tanmay before anything else. |
+| `ours_peak_gib` above 43 | Would not fit Samsung's 48 GB card | Tell Tanmay before anything else. (`peak_used_gib` counts other users' jobs too; ignore it on a shared machine.) |
 | Port 18000 taken | Another server on the machine | `export DUET_LLM_BASE_URL=http://127.0.0.1:18011/v1` (any free port) |
 | A download stops half-way | Network | Re-run the same command; it resumes |
 | Need to stop everything | | `Ctrl-C` in tmux, then the `pkill` line in section 6.6 |
@@ -1127,8 +1130,10 @@ change defaults in code (rule 4).
 | `DUET_LLM_BACKEND` | `local` | `local` (vLLM + Qwen) or `gemini` |
 | `DUET_LLM_BASE_URL` | `http://127.0.0.1:18000/v1` | Model server address (change the port if 18000 is taken) |
 | `DUET_LLM_MODEL` | `qwen3-30b-a3b-instruct-2507` | Served model name |
-| `DUET_LLM_VARIANT` | by GPU: `fp8` on compute capability ≥ 8.9, else `w4a16` | Force the weights build |
-| `DUET_LLM_GPU_GIB` | 33 (fp8) / 22 (w4a16) | Model server memory budget (don't raise it: rule 6) |
+| `DUET_LLM_VARIANT` | `w4a16` | `fp8` only for comparison runs (Ada/Hopper GPUs) |
+| `DUET_LLM_GPU_GIB` | 22 (w4a16) / 33 (fp8) | Model server memory budget (don't raise it: rule 6) |
+| `DUET_LLM_GPUS` | unset (the same GPU as everything else) | Shared machines: the model server's GPUs; two GPUs split the model |
+| `DUET_AGENT_GPUS`, `DUET_SCORING_GPUS` | unset | Shared machines: the GPU for the agent's speech models, and for the benchmark's scoring recognizer |
 | `DUET_LLM_MAX_LEN` | 12288 | Context length (don't raise it) |
 | `DUET_LLM_START_TIMEOUT` | 1800 | Seconds to wait for the model server |
 | `DUET_TEMPERATURE` | 0.7 (local) | Sampling temperature |
@@ -1151,7 +1156,7 @@ change defaults in code (rule 4).
 | Benchmark audio | SHA-256 `37545bd8…` (checked by `reproduce.sh`) |
 | LiveKit server | v1.13.7 |
 | uv / Python | 0.12.19 / 3.11 |
-| Model weights (FP8) | `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` @ `5a5a776` |
+| Model weights (FP8, comparison runs only) | `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` @ `5a5a776` |
 | Model weights (4-bit) | `RedHatAI/Qwen3-30B-A3B-Instruct-2507-quantized.w4a16` @ `e9c59cd` |
 | Model server | vLLM 0.19.1, torch 2.10 (CUDA 12.8 build), transformers 5.5.4 |
 | Agent | livekit-agents 1.8.3; faster-whisper large-v3-turbo @ `0a363e9`; Kokoro-82M @ `f3ff357` |

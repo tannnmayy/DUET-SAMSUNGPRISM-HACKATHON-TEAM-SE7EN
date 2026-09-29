@@ -40,7 +40,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 from bench import llm_server  # noqa: E402
-from bench.common import DATA_DIR, FDB_DIR  # noqa: E402
+from bench.common import DATA_DIR, FDB_DIR, provenance  # noqa: E402
 
 PROVIDER = "duet"
 
@@ -89,9 +89,40 @@ def start_livekit(env: dict, logs: Path) -> subprocess.Popen | None:
     sys.exit("livekit-server did not start; see " + str(logs / "livekit_server.log"))
 
 
+def our_pids() -> set:
+    """This run's processes: everything started from here (model server, agent and its
+    job processes, LiveKit, the benchmark's runner), plus a model server this user
+    started separately (llm_server.py serve), with all their children. Linux only."""
+    if not os.path.isdir("/proc"):
+        return set()
+    children, roots, uid = {}, {os.getpid()}, os.getuid()
+    for d in os.listdir("/proc"):
+        if not d.isdigit():
+            continue
+        try:
+            stat = Path("/proc/%s/stat" % d).read_text()
+            children.setdefault(int(stat.rsplit(")", 1)[1].split()[1]), []).append(int(d))
+            if os.stat("/proc/" + d).st_uid == uid and \
+                    b"vllm.entrypoints" in Path("/proc/%s/cmdline" % d).read_bytes():
+                roots.add(int(d))
+        except (OSError, ValueError, IndexError):
+            continue
+    found, todo = set(roots), list(roots)
+    while todo:
+        for c in children.get(todo.pop(), []):
+            if c not in found:
+                found.add(c)
+                todo.append(c)
+    return found
+
+
 class GpuMonitor(threading.Thread):
-    """Peak memory on the GPU this run uses, sampled every 2 s: the evidence that
-    the whole stack (model server, agent, scoring recognizer) fits the budget."""
+    """GPU memory, sampled every 2 s: the evidence that the whole stack (model server,
+    agent, scoring recognizer) fits Samsung's 48 GB card.
+      - ours: the memory of this run's own processes, summed over every GPU they use.
+        On a shared machine this is the number that counts: it leaves out other
+        people's jobs, and it adds up the parts when they are placed on several GPUs.
+      - card: everything on the first GPU in use, other people's jobs included."""
 
     def __init__(self) -> None:
         super().__init__(daemon=True)
@@ -99,29 +130,64 @@ class GpuMonitor(threading.Thread):
         self.peak_mib = 0
         self.total_mib = 0
         self.name = ""
+        self.ours_peak_mib = 0
+        self.ours_at_peak = {}
         self._halt = threading.Event()
+
+    def _card(self) -> None:
+        line = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.used,memory.total",
+                               "--format=csv,noheader,nounits", "-i", self.index],
+                              capture_output=True, text=True, timeout=20).stdout.strip().splitlines()[0]
+        name, used, total = [x.strip() for x in line.split(",")]
+        self.name, self.total_mib = name, int(float(total))
+        self.peak_mib = max(self.peak_mib, int(float(used)))
+
+    def _ours(self) -> None:
+        mine = our_pids()
+        if not mine:
+            return
+        rows = subprocess.run(["nvidia-smi", "--query-compute-apps=pid,used_memory,gpu_bus_id",
+                               "--format=csv,noheader,nounits"],
+                              capture_output=True, text=True, timeout=20).stdout.strip().splitlines()
+        now = {}
+        for row in rows:
+            try:
+                pid, used, bus = [x.strip() for x in row.split(",")]
+                if int(pid) in mine:
+                    now["%s on %s" % (pid, bus)] = int(float(used))
+            except ValueError:
+                continue
+        if sum(now.values()) > self.ours_peak_mib:
+            self.ours_peak_mib, self.ours_at_peak = sum(now.values()), now
 
     def run(self) -> None:
         while not self._halt.is_set():
-            try:
-                line = subprocess.run(["nvidia-smi", "--query-gpu=name,memory.used,memory.total",
-                                       "--format=csv,noheader,nounits", "-i", self.index],
-                                      capture_output=True, text=True, timeout=20).stdout.strip().splitlines()[0]
-                name, used, total = [x.strip() for x in line.split(",")]
-                self.name, self.total_mib = name, int(float(total))
-                self.peak_mib = max(self.peak_mib, int(float(used)))
-            except Exception:
-                pass
+            for sample in (self._card, self._ours):
+                try:
+                    sample()
+                except Exception:
+                    pass
             self._halt.wait(2.0)
 
     def result(self) -> dict:
         self._halt.set()
         return {"gpu": self.name, "index": self.index, "total_mib": self.total_mib, "peak_used_mib": self.peak_mib,
-                "peak_used_gib": round(self.peak_mib / 1024, 1)}
+                "peak_used_gib": round(self.peak_mib / 1024, 1),
+                "ours_peak_mib": self.ours_peak_mib, "ours_peak_gib": round(self.ours_peak_mib / 1024, 1),
+                "ours_at_peak_mib": self.ours_at_peak}
+
+
+def placed(env: dict, var: str) -> dict:
+    """A copy of env in which one part of the stack sees only the GPUs named in var
+    (DUET_AGENT_GPUS, DUET_SCORING_GPUS). Unset: the same GPU as everything else."""
+    env = dict(env)
+    if var in os.environ:
+        env["CUDA_VISIBLE_DEVICES"] = os.environ[var]
+    return env
 
 
 def start_agent(env: dict, logs: Path) -> subprocess.Popen:
-    env = dict(env)
+    env = placed(env, "DUET_AGENT_GPUS")
     if os.name != "nt":
         # the pip-installed CUDA libraries that faster-whisper (CTranslate2) loads by
         # name; only this process gets them (the model server has its own)
@@ -161,7 +227,14 @@ def run_runner(env: dict, args, logs: Path) -> None:
         cmd.append("--force")
     print("Runner:", " ".join(cmd))
     with open(logs / "runner.log", "w", encoding="utf-8") as fh:
-        subprocess.run(cmd, cwd=str(FDB_DIR), env=env, stdout=fh, stderr=subprocess.STDOUT, check=False)
+        code = subprocess.run(cmd, cwd=str(FDB_DIR), env=placed(env, "DUET_SCORING_GPUS"), stdout=fh,
+                              stderr=subprocess.STDOUT, check=False).returncode
+    if code != 0:
+        # Scoring now would score whatever results an earlier run left behind
+        # (on 28 Sep a crashed runner turned into "total: 1").
+        tail = (logs / "runner.log").read_text(encoding="utf-8", errors="replace")[-2500:]
+        sys.exit("The benchmark's runner failed (exit code %d), so nothing is scored. Last lines of %s:\n%s"
+                 % (code, logs / "runner.log", tail))
 
 
 def run_evaluations(env: dict, args, out: Path) -> dict:
@@ -179,7 +252,8 @@ def run_evaluations(env: dict, args, out: Path) -> dict:
         full = [args.bench_python, wrapper] + cmd
         print("Eval:", name)
         with open(out / ("eval_%s.log" % name), "w", encoding="utf-8") as fh:
-            subprocess.run(full, cwd=str(FDB_DIR), env=env, stdout=fh, stderr=subprocess.STDOUT, check=False)
+            subprocess.run(full, cwd=str(FDB_DIR), env=placed(env, "DUET_SCORING_GPUS"), stdout=fh,
+                           stderr=subprocess.STDOUT, check=False)
     latency_report = FDB_DIR / ("%s_latency_report.json" % PROVIDER)
     if latency_report.exists():
         shutil.copy(latency_report, out / latency_report.name)
@@ -384,6 +458,10 @@ def main() -> int:
         "agent": effective_config(env),
         "overrides": {k: v for k, v in env.items() if k.startswith(("DUET_", "FDB_"))},
         "livekit": env.get("LIVEKIT_URL", "local dev server"),
+        # the code version, machine, GPUs and placement that produced this run
+        "provenance": provenance(),
+        "model_server": "started by this run" if backend == "local" and not args.dry_run
+                        and not llm_server.healthy() else "already running at " + CONFIG.llm_base_url,
     }, indent=1), encoding="utf-8")
 
     if not args.eval_only:
@@ -417,6 +495,7 @@ def main() -> int:
         if not args.no_eval:
             summary = run_evaluations(env, args, out)
             summary["gpu"] = monitor.result()
+            summary["git_commit"] = provenance()["git_commit"]
             (out / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
             print(json.dumps(summary, indent=1))
         print("Run folder:", out)
@@ -425,8 +504,11 @@ def main() -> int:
             stop(proc)
         llm_server.stop(llm)
         gpu = monitor.result()
-        print("GPU %s: peak %.1f GiB used of %.1f GiB" % (gpu["gpu"] or gpu["index"], gpu["peak_used_mib"] / 1024,
-                                                         gpu["total_mib"] / 1024))
+        print("GPU %s: peak %.1f GiB used of %.1f GiB (the whole card, other users' jobs included)"
+              % (gpu["gpu"] or gpu["index"], gpu["peak_used_mib"] / 1024, gpu["total_mib"] / 1024))
+        if gpu["ours_peak_mib"]:
+            print("This run's own processes: peak %.1f GiB over all GPUs used (fits a 48 GB card at 43 GiB or less)"
+                  % (gpu["ours_peak_mib"] / 1024))
     return 0
 
 

@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 import os
 import re
+import socket
 import struct
 import subprocess
+import time
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -18,6 +20,31 @@ load_dotenv(REPO / ".env.local")
 FDB_DIR = Path(os.environ.get("FDB_V3_DIR", REPO / "third_party" / "Full-Duplex-Bench" / "v3"))
 DATA_DIR = Path(os.environ.get("FDB_DATA_DIR", FDB_DIR / "fdb_v3_data_released"))
 _FOLDER_RE = re.compile(r"^(.+)_([0-9a-f]{24})$")
+
+
+PLACEMENT_VARS = ("CUDA_VISIBLE_DEVICES", "DUET_LLM_GPUS", "DUET_LLM_TP", "DUET_AGENT_GPUS", "DUET_SCORING_GPUS")
+
+
+def provenance() -> Dict:
+    """Which code, machine and GPUs produced a result, so every number can be traced
+    back: the git commit (and any uncommitted edits), the host, its GPUs and driver,
+    and where each part of the stack was placed."""
+    def run(cmd):
+        try:
+            # rstrip only: `git status --porcelain` lines start with a status column
+            return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True, timeout=20).stdout.rstrip()
+        except Exception:
+            return ""
+    return {
+        "git_commit": run(["git", "rev-parse", "HEAD"]),
+        "git_branch": run(["git", "rev-parse", "--abbrev-ref", "HEAD"]),
+        "git_uncommitted": [l[3:] for l in run(["git", "status", "--porcelain", "--untracked-files=no"]).splitlines()],
+        "host": socket.gethostname(),
+        "time_utc": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
+        "gpus": run(["nvidia-smi", "--query-gpu=index,name,memory.total,memory.used,driver_version",
+                     "--format=csv,noheader"]).splitlines(),
+        "placement": {k: os.environ[k] for k in PLACEMENT_VARS if k in os.environ},
+    }
 
 
 def discover(data_dir: Path = DATA_DIR) -> List[Tuple[str, str, Path, Dict]]:
