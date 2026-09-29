@@ -8,6 +8,10 @@ what you should see, how long it takes, and what to do if something goes wrong.
 **Deadline: 1 Oct.** Everything here fits in about a day of machine time, most
 of it unattended.
 
+> If you work with an AI assistant, or on a different DGX: use
+> [DGX_OPERATOR_MANUAL.md](DGX_OPERATOR_MANUAL.md). It covers the same steps for any
+> machine, and gives the assistant the rules to follow.
+
 ---
 
 ## What you are producing, and why it matters

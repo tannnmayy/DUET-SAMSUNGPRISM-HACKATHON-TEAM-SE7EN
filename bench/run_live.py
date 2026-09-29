@@ -347,6 +347,23 @@ def collect(args, out: Path) -> None:
             shutil.copy(p, out / Path(p).name)
 
 
+def drop_unfinished(args) -> int:
+    """When a run continues after a crash (no --force), a recording whose reply was
+    recorded but never scored would be reused by the runner without its tool calls,
+    and score as a silent failure. Its recording is removed so that it runs again."""
+    if args.force:
+        return 0
+    dropped = 0
+    for folder in Path(args.data_dir).iterdir():
+        wav = folder / ("output_%s.wav" % PROVIDER)
+        if wav.exists() and not (folder / ("result_%s.json" % PROVIDER)).exists():
+            wav.unlink()
+            dropped += 1
+    if dropped:
+        print("Continuing: %d recordings were recorded but never scored; they run again." % dropped)
+    return dropped
+
+
 def warn_earlier_results(args) -> None:
     """The benchmark's runner skips a recording that already has a result filed
     under this provider name, and its evaluations score every such result in the
@@ -465,6 +482,7 @@ def main() -> int:
     }, indent=1), encoding="utf-8")
 
     if not args.eval_only:
+        drop_unfinished(args)
         warn_earlier_results(args)
     monitor = GpuMonitor()
     monitor.start()

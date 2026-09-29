@@ -13,6 +13,9 @@ Read section 0 first; it is the whole plan on one page. The other sections
 explain each step in detail. Keep this file open while you work.
 
 > **Related files.**
+> - [DGX_OPERATOR_MANUAL.md](DGX_OPERATOR_MANUAL.md): the complete manual for
+>   whoever runs DUET on a DGX (free or shared GPUs), written to be given to their
+>   AI assistant too: rules, every step, what to save and what to send back.
 > - [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md): the guide for the shared SRM DGX:
 >   experiments, the full live run, the clean single-GPU run, and pushing every
 >   result and log to GitHub.
