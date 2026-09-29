@@ -166,9 +166,10 @@ class Coordinator:
         timeout_s: float,
         on_committed: Optional[Callable[[CallRecord], None]] = None,
         epoch: Optional[int] = None,
+        use_ledger: bool = True,
     ) -> CallRecord:
         key = canonical(tool, args)
-        previous = self.ledger.get(key)
+        previous = self.ledger.get(key) if use_ledger else None
         if previous is not None and previous.outcome in ("ok", "unknown"):
             cached = CallRecord(tool, args, self.epoch, self.clock(), self.clock(),
                                 "cached", previous.result, previous.error)
@@ -184,10 +185,10 @@ class Coordinator:
         # leave an action that happened unaccounted for, and a re-plan could then
         # perform it a second time.
         committed = asyncio.ensure_future(
-            self._run_committed(key, record, run, state_changing, timeout_s, on_committed))
+            self._run_committed(key, record, run, state_changing, timeout_s, on_committed, use_ledger))
         return await asyncio.shield(committed)
 
-    async def _run_committed(self, key, record, run, state_changing, timeout_s, on_committed) -> CallRecord:
+    async def _run_committed(self, key, record, run, state_changing, timeout_s, on_committed, use_ledger=True) -> CallRecord:
         attempts = 1 if state_changing else 2
         for attempt in range(attempts):
             try:
@@ -204,7 +205,7 @@ class Coordinator:
             if attempt + 1 < attempts:
                 await asyncio.sleep(0.3)
         record.finished = time.time()
-        if record.outcome in ("ok", "unknown"):
+        if use_ledger and record.outcome in ("ok", "unknown"):
             self.ledger[key] = record
         if on_committed is not None and record.outcome == "ok":
             on_committed(record)

@@ -13,7 +13,7 @@ import os
 from typing import AsyncIterator, Optional
 
 from .config import CONFIG
-from .prompts import TALKER_INSTRUCTIONS
+from .use_case import talker_instructions
 
 log = logging.getLogger("duet.talker")
 
@@ -47,7 +47,7 @@ async def acknowledgement(user_text: str, context: str = "", usage: Optional[dic
     from .gemini import resolved, sampling, thinking_config
     model = resolved("talker", CONFIG.talker_model)
     config = types.GenerateContentConfig(
-        system_instruction=TALKER_INSTRUCTIONS,
+        system_instruction=talker_instructions(),
         **sampling(model),
         max_output_tokens=48,
         thinking_config=thinking_config(model, "minimal"),

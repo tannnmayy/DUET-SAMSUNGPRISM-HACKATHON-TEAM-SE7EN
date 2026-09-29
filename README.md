@@ -266,20 +266,54 @@ DUET_LLM_BASE_URL=http://127.0.0.1:8766/v1 python bench/run_live.py --only trave
 
 ## Use-case extension
 
-*In progress: this section will mark the extension, its code and how to run it.*
-Research behind the choice: [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md).
+**DUET Smart Appliance Care** — Samsung appliance support on the same dual-mind
+agent. Opt-in (`DUET_USE_CASE=appliance`). The FDB-v3 path stays the default:
+`reproduce.sh` and offline eval still construct `FdbToolbox` themselves.
+
+A customer says “my Samsung washing machine isn't working.” DUET identifies the
+appliance on SmartThings, reads status and diagnostics, explains a *documented*
+error, guides safe troubleshooting, verifies the result, and if it is still
+unresolved books Samsung service **exactly once**, then hands a technician the
+full context. Interruptions (“wait, actually the dryer”, “actually Friday
+morning”, “I already cleaned that”) go through the same epochs, commit gate and
+idempotency ledger as the benchmark.
+
+```bash
+python -m duet_voice.appliance.demo    # no GPU; mock household + mock service
+export DUET_USE_CASE=appliance         # live voice, same tools
+python -m duet_voice.agent console
+```
+
+| Piece | Real or simulated |
+|---|---|
+| Talker, thinker, coordinator, epochs, commit gate, ledger | The existing agent |
+| SmartThings | **Mock household by default.** Public REST API when `DUET_SMARTTHINGS=real` and `SMARTTHINGS_TOKEN` are set |
+| Troubleshooting meanings | Grounded public Samsung support codes only |
+| Technician booking | **Simulated mock.** A real adapter is used only if `SAMSUNG_SERVICE_API_URL` is an **https** URL; otherwise it refuses |
+| Camera / vision | Stub, not registered in Round 1 |
+
+The LLM proposes tool calls. Deterministic code decides what is true and whether
+a write is allowed. Live SmartThings reads skip the ledger so a changed error
+code is not answered from cache. Bookings still go through the ledger, plus a
+session-level “one active request per device” guard. SmartThings `ACCEPTED` is
+queued, not proof the appliance finished; only `verify_appliance_state` can
+confirm a fix.
+
+Details: [docs/APPLIANCE.md](docs/APPLIANCE.md). Research that led here:
+[docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md).
 
 ## Repository map
 
 ```
-duet_voice/        the agent: LiveKit entrypoint, talker, thinker (local model or Gemini), coordinator, tools, speech models
-bench/             benchmark drivers: live runner, model server launcher, offline evaluators, judge adapter
-scripts/           machine check, fast offline evaluation, packing results (for remote GPU machines)
-DGX_RUNBOOK.md     step-by-step instructions for running everything on a remote GPU machine
-tests/             coordinator, speaking-flow and integrity tests
-docs/              architecture, use-case research
-reproduce.sh       one-command reproduction
-legacy/kit_v1/     the previous Theme 05 kit and DUET v1 (research record, not used)
+duet_voice/            the agent: LiveKit entrypoint, talker, thinker (local model or Gemini), coordinator, tools, speech models
+duet_voice/appliance/  Smart Appliance Care (opt-in via DUET_USE_CASE=appliance)
+bench/                 benchmark drivers: live runner, model server launcher, offline evaluators, judge adapter
+scripts/               machine check, fast offline evaluation, packing results (for remote GPU machines)
+DGX_RUNBOOK.md         step-by-step instructions for running everything on a remote GPU machine
+tests/                 coordinator, speaking-flow, integrity, and appliance-care tests
+docs/                  architecture, use-case research, appliance extension
+reproduce.sh           one-command reproduction
+legacy/kit_v1/         the previous Theme 05 kit and DUET v1 (research record, not used)
 ```
 
 ## References

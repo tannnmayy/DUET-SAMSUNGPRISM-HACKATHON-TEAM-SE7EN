@@ -47,10 +47,9 @@ from livekit.plugins import silero  # noqa: E402
 from . import speech_models, talker  # noqa: E402
 from .config import CONFIG  # noqa: E402
 from .coordinator import Coordinator, Superseded  # noqa: E402
-from .fdb_tools import FdbToolbox  # noqa: E402
 from .plugins import KokoroTTS, WhisperSTT  # noqa: E402
-from .prompts import THINKER_INSTRUCTIONS  # noqa: E402
 from .thinker import RESPOND_NOW_NOTE, encode_audio, make_thinker  # noqa: E402
+from .use_case import make_toolbox, thinker_instructions  # noqa: E402
 
 log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
@@ -141,12 +140,14 @@ class AudioTape:
 # --- the agent ---------------------------------------------------------------------------
 
 class DuetAgent(Agent):
-    def __init__(self, trace: Trace, coord: Coordinator, toolbox: FdbToolbox) -> None:
-        super().__init__(instructions=THINKER_INSTRUCTIONS)
+    def __init__(self, trace: Trace, coord: Coordinator, toolbox) -> None:
+        instructions = thinker_instructions()
+        super().__init__(instructions=instructions)
         self._trace = trace
         self._coord = coord
         self._toolbox = toolbox
-        self._thinker = make_thinker()
+        specs = getattr(toolbox, "specs", None) if toolbox is not None else None
+        self._thinker = make_thinker(tool_specs=specs, instructions=instructions)
         self._tape = AudioTape()
         self._utterance_started: Optional[float] = None
         # User messages already answered. It advances only when a reply that
@@ -220,9 +221,12 @@ class DuetAgent(Agent):
                 audio = await asyncio.to_thread(encode_audio, pcm)
         done_before = [r for r in self._coord.history if r.outcome in ("ok", "cached")]
         note = ""
+        if hasattr(self._toolbox, "session_note"):
+            note = self._toolbox.session_note()
         if done_before and self._thinker.history == []:
-            note = "Already done in this conversation (do not repeat): " + "; ".join(
+            already = "Already done in this conversation (do not repeat): " + "; ".join(
                 "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
+            note = (note + "\n" if note else "") + already
 
         ack_usage: Dict[str, int] = {}
         ack_task = asyncio.ensure_future(talker.acknowledgement(text, usage=ack_usage))
@@ -335,6 +339,9 @@ class DuetAgent(Agent):
                     words = re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip()
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
+                    if hasattr(self._toolbox, "state"):
+                        from .appliance.redaction import redact as _redact
+                        self._trace("appliance_state", **_redact(self._toolbox.state.snapshot()))
                     # the thinker finished: this request is answered once the reply lands
                     self._pending_consumed = answered_upto
                     if words and "<silent>" not in words:
@@ -408,7 +415,9 @@ async def entrypoint(ctx: JobContext) -> None:
     trace = Trace(room)
     coord = Coordinator(commit_hold_s=CONFIG.commit_hold_s, revising_hold_s=CONFIG.revising_hold_s,
                         dangling_hold_s=CONFIG.dangling_hold_s)
-    toolbox = FdbToolbox(room, coord)
+    toolbox = make_toolbox(room, coord)
+    if hasattr(toolbox, "_trace"):
+        toolbox._trace = trace
     agent = DuetAgent(trace, coord, toolbox)
 
     session = AgentSession(
@@ -463,7 +472,7 @@ async def entrypoint(ctx: JobContext) -> None:
 
     trace("session_start", room=room, dry_run=DRY_RUN, backend=CONFIG.llm_backend, thinker=agent._thinker.model,
           thinking=agent._thinker.thinking, talker=talker_model(), asr=CONFIG.asr_model, tts=CONFIG.tts_backend,
-          thinker_audio=THINKER_AUDIO and CONFIG.llm_backend != "local")
+          use_case=CONFIG.use_case, thinker_audio=THINKER_AUDIO and CONFIG.llm_backend != "local")
     await session.start(room=ctx.room, agent=agent)
 
 

@@ -59,7 +59,12 @@ def _tool(name: str, description: str, parameters: Dict[str, Any]) -> Dict[str, 
     return {"type": "function", "function": {"name": name, "description": description, "parameters": parameters}}
 
 
-TOOLS = [_tool(s["name"], s["description"], s["parameters"]) for s in TOOL_SPECS]
+def tools_from_specs(specs) -> List[Dict[str, Any]]:
+    return [_tool(s["name"], s["description"], s["parameters"]) for s in specs]
+
+
+# Benchmark tool list, used by the model-server preflight (`check()`).
+TOOLS = tools_from_specs(TOOL_SPECS)
 LISTEN_TOOL = _tool(KEEP_LISTENING, KEEP_LISTENING_DESCRIPTION, {
     "type": "object", "properties": {"reason": {"type": "string", "description": "What the user has not finished saying."}},
     "required": ["reason"]})
@@ -91,9 +96,13 @@ def salvage_calls(content: str) -> Tuple[List[Dict[str, str]], str]:
 class LocalThinker:
     """The thinker on the local model. Same interface and events as thinker.Thinker."""
 
-    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
+    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
+                 tool_specs=None, instructions: Optional[str] = None) -> None:
         self.model = model or CONFIG.thinker_model
         self.thinking = "none (non-thinking model)"
+        self.instructions = instructions or THINKER_INSTRUCTIONS
+        specs = tool_specs if tool_specs is not None else TOOL_SPECS
+        self._tools = tools_from_specs(specs)
         # completed exchanges only, as chat messages; an interrupted turn never lands here
         self.history: List[Dict[str, Any]] = []
 
@@ -107,12 +116,12 @@ class LocalThinker:
         # (audio is ignored: this model reads text only)
         start_epoch = toolbox.coord.epoch
         user = {"role": "user", "content": text + ("\n\n" + note if note else "")}
-        prefix = [{"role": "system", "content": THINKER_INSTRUCTIONS}] + list(self.history) + [user]
+        prefix = [{"role": "system", "content": self.instructions}] + list(self.history) + [user]
         messages = list(prefix)
         final_text = ""
         usage = {"input": 0, "input_audio": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
-            tools = TOOLS + [LISTEN_TOOL] if (allow_listen and step == 1) else TOOLS
+            tools = self._tools + [LISTEN_TOOL] if (allow_listen and step == 1) else self._tools
             calls: List[Dict[str, str]] = []
             content = ""
             for attempt in (1, 2):
@@ -190,9 +199,10 @@ class LocalThinker:
 
 async def acknowledge(user_text: str, usage: Optional[dict] = None) -> Optional[str]:
     """The talker on the local model: one short sentence, or None (<silent>)."""
+    from .use_case import talker_instructions
     resp = await client().chat.completions.create(
         model=CONFIG.talker_model, max_tokens=40,
-        messages=[{"role": "system", "content": TALKER_INSTRUCTIONS},
+        messages=[{"role": "system", "content": talker_instructions()},
                   {"role": "user", "content": "User: " + user_text}],
         **sampling())
     u = getattr(resp, "usage", None)

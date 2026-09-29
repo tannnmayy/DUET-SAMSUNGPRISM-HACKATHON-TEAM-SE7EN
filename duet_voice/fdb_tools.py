@@ -206,6 +206,10 @@ class FdbToolbox:
         self.last_tool_start = 0.0
         self.last_tool_end = 0.0
 
+    @property
+    def specs(self) -> List[Dict[str, Any]]:
+        return TOOL_SPECS
+
     def _log_benchmark_call(self, record: CallRecord) -> None:
         try:
             _append_jsonl(CONFIG.tool_log, {

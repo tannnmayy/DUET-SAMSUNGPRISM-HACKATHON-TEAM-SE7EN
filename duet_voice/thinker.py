@@ -87,13 +87,25 @@ KEEP_LISTENING_DESCRIPTION = (
     "request that can be carried out as it stands.")
 
 
-def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None):
+def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None,
+                 tool_specs=None, instructions: Optional[str] = None):
     """The thinker for the configured backend: the local model (default) or Gemini.
-    Both have the same interface and yield the same events."""
+    Both have the same interface and yield the same events.
+
+    `tool_specs` and `instructions` default to the FDB-v3 set so offline eval and
+    existing tests stay on the benchmark path. The live agent passes the use-case
+    bundle when `DUET_USE_CASE=appliance`.
+    """
+    if tool_specs is None:
+        tool_specs = TOOL_SPECS
+    if instructions is None:
+        instructions = THINKER_INSTRUCTIONS
     if CONFIG.llm_backend == "local":
         from .llm_local import LocalThinker
-        return LocalThinker(model=model, thinking=thinking)
-    return Thinker(model=model, thinking=thinking)
+        return LocalThinker(model=model, thinking=thinking,
+                            tool_specs=tool_specs, instructions=instructions)
+    return Thinker(model=model, thinking=thinking,
+                   tool_specs=tool_specs, instructions=instructions)
 
 
 # The second look, once a user the thinker was waiting for has gone quiet.
@@ -102,13 +114,16 @@ RESPOND_NOW_NOTE = ("The user has stopped talking. Respond now: act if the reque
 
 
 class Thinker:
-    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
+    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
+                 tool_specs=None, instructions: Optional[str] = None) -> None:
         from google.genai import types
         from .gemini import resolved
         self.model = model or resolved("thinker", CONFIG.thinker_model)
         self.thinking = thinking or CONFIG.thinker_thinking
+        self.instructions = instructions or THINKER_INSTRUCTIONS
+        specs = tool_specs if tool_specs is not None else TOOL_SPECS
         decls = [types.FunctionDeclaration(name=s["name"], description=s["description"],
-                                           parameters_json_schema=s["parameters"]) for s in TOOL_SPECS]
+                                           parameters_json_schema=s["parameters"]) for s in specs]
         listen = types.FunctionDeclaration(
             name=KEEP_LISTENING, description=KEEP_LISTENING_DESCRIPTION,
             parameters_json_schema={"type": "object", "properties": {
@@ -122,7 +137,7 @@ class Thinker:
 
         def config(with_listen: bool):
             return types.GenerateContentConfig(
-                system_instruction=THINKER_INSTRUCTIONS,
+                system_instruction=self.instructions,
                 tools=[types.Tool(function_declarations=decls + ([listen] if with_listen else []))],
                 **sampling(self.model),
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),

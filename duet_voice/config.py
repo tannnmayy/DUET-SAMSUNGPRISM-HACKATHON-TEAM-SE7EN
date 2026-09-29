@@ -100,12 +100,23 @@ class Config:
     latency_profile: str = field(default_factory=lambda: _env("FDB_LATENCY_PROFILE", "instant"))
     trace_dir: str = field(default_factory=lambda: _env("DUET_TRACE_DIR", ""))
 
+    # --- use-case extension ---------------------------------------------------------
+    # benchmark (default): FDB-v3 tools. appliance: DUET Smart Appliance Care.
+    use_case: str = field(default_factory=lambda: _env("DUET_USE_CASE", "benchmark").strip().lower())
+    # mock (default) uses the in-process household; real needs SMARTTHINGS_TOKEN
+    smartthings: str = field(default_factory=lambda: _env("DUET_SMARTTHINGS", "mock").strip().lower())
+    smartthings_token: str = field(default_factory=lambda: _env("SMARTTHINGS_TOKEN", "") or _env("SMARTTHINGS_ACCESS_TOKEN", ""))
+
     def __post_init__(self) -> None:
         local = self.llm_backend == "local"
         if not self.thinker_model:
             object.__setattr__(self, "thinker_model", self.llm_model if local else "gemini-3.7-flash")
         if not self.talker_model:
             object.__setattr__(self, "talker_model", self.llm_model if local else "gemini-3.5-flash-lite")
+        if self.use_case not in ("benchmark", "appliance", "appliances", "samsung", "care"):
+            object.__setattr__(self, "use_case", "benchmark")
+        if self.use_case in ("appliance", "appliances", "samsung", "care") and os.environ.get("DUET_MAX_TOOL_STEPS") in (None, ""):
+            object.__setattr__(self, "max_tool_steps", 12)
 
 
 CONFIG = Config()

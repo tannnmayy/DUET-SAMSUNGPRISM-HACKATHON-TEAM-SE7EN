@@ -1,0 +1,44 @@
+"""Redact credentials and personal/device identifiers before they are logged."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, Iterable
+
+_SENSITIVE_KEYS = {
+    "serial", "serial_number", "token", "access_token", "refresh_token",
+    "authorization", "password", "api_key", "apikey", "pat", "secret",
+    "email", "phone", "phone_number", "address", "postal_code", "zip",
+    "contact_name", "customer_name",
+}
+
+
+def mask_secret(value: str) -> str:
+    if not value:
+        return value
+    if len(value) <= 4:
+        return "****"
+    keep = 2 if len(value) < 12 else 4
+    return value[:keep] + "*" * max(4, len(value) - 2 * keep) + value[-keep:]
+
+
+def _key_sensitive(key: str) -> bool:
+    k = (key or "").lower()
+    if k in _SENSITIVE_KEYS:
+        return True
+    return any(part in k for part in ("token", "secret", "password", "authorization", "serial"))
+
+
+def redact(value: Any, key: str = "") -> Any:
+    """A JSON-safe copy with secrets and serials masked. Device ids stay visible."""
+    if isinstance(value, dict):
+        return {k: redact(v, k) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [redact(v, key) for v in value]
+    if _key_sensitive(key) and value is not None:
+        return mask_secret(str(value))
+    return value
+
+
+def public_serial(serial: str) -> str:
+    """What a technician is allowed to see; logs still go through redact()."""
+    return serial or ""
