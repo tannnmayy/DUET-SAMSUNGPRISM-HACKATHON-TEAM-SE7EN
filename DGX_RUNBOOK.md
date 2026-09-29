@@ -22,7 +22,9 @@ which shows whether everything fits in 48 GB.
 
 > **Shared machine, no GPU free?** If every GPU is partly used by other people's
 > jobs (as on the SRM DGX on 28 Sep), follow [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md)
-> instead: it spreads the pieces over the free memory of several GPUs.
+> instead: it spreads the pieces over the free memory of several GPUs. The full
+> manual, including experiments, what to store and send back, and rules for an AI
+> assistant, is [DGX_OPERATOR_MANUAL.md](DGX_OPERATOR_MANUAL.md).
 
 ---
 
