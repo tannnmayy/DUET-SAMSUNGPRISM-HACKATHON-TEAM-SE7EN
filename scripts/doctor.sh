@@ -28,10 +28,10 @@ if command -v nvidia-smi >/dev/null; then
     --query-gpu=index,name,memory.total,memory.used,memory.free,compute_cap --format=csv,noheader)
   sel="${CUDA_VISIBLE_DEVICES%%,*}"
   free=$(nvidia-smi -i "$sel" --query-gpu=memory.free --format=csv,noheader,nounits | tr -dc 0-9)
-  if [ "${free:-0}" -ge 44000 ]; then
-    line OK "GPU $sel will be used: ${free} MiB free (the whole stack needs about 43 GiB)"
+  if [ "${free:-0}" -ge 34000 ]; then
+    line OK "GPU $sel will be used: ${free} MiB free (the whole stack needs about 31 GiB)"
   else
-    line FAIL "GPU $sel has only ${free:-0} MiB free; the stack needs about 43 GiB. Pick a free GPU: export CUDA_VISIBLE_DEVICES=<index>"
+    line FAIL "GPU $sel has only ${free:-0} MiB free; the whole stack needs about 31 GiB on one GPU. Pick a free GPU (export CUDA_VISIBLE_DEVICES=<index>), or on a shared machine let bench/place_gpus.py spread it over several"
   fi
 else
   line FAIL "nvidia-smi not found: no NVIDIA driver, or not on PATH"

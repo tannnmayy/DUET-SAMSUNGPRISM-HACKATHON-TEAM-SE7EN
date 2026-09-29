@@ -11,9 +11,11 @@ VM costs roughly US$1 per hour; delete it afterwards.
 
 ## 1. Create the VM (Google Cloud)
 
-DUET needs one GPU with about 44 GiB free: the language model takes a fixed
-33 GiB, the speech models and the scoring recognizer the rest. An L4 (24 GB) is
-too small; use an A100 80 GB (`a2-ultragpu-1g`) or an H100 (`a3-highgpu-1g`).
+DUET needs one GPU with about 34 GiB free: the language model takes a fixed
+22 GiB, the speech models and the scoring recognizer the rest (about 31 GiB in
+all). An L4 (24 GB) is too small. The closest match to Samsung's machine is a
+48 GB card (L40S or RTX 6000 Ada, offered by RunPod, Lambda or Vast); on Google
+Cloud use an A100 40 GB (`a2-highgpu-1g`) or 80 GB (`a2-ultragpu-1g`).
 Use a Deep Learning VM image, which comes with the NVIDIA driver: list the current
 CUDA 12 image families, then pick an Ubuntu 22.04 one.
 

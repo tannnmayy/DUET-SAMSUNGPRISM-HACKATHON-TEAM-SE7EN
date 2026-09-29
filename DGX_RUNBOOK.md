@@ -12,11 +12,17 @@ send the results back. Nothing needs watching while it runs.
 
 **What runs on the machine:** one GPU holds everything, exactly as on Samsung's
 48 GB evaluation machine:
-- the language model, Qwen3-30B-A3B-Instruct-2507, served by vLLM: a fixed 33 GiB;
+- the language model, Qwen3-30B-A3B-Instruct-2507 in its 4-bit build, served by
+  vLLM: a fixed 22 GiB;
 - the agent's speech models: about 3.5 GiB;
 - the benchmark's scoring recognizer: about 4-5 GiB.
 
-The run records the GPU's peak memory, which shows whether everything fits in 48 GB.
+That is about 31 GiB in all. The run records the peak memory of its own processes,
+which shows whether everything fits in 48 GB.
+
+> **Shared machine, no GPU free?** If every GPU is partly used by other people's
+> jobs (as on the SRM DGX on 28 Sep), follow [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md)
+> instead: it spreads the pieces over the free memory of several GPUs.
 
 ---
 
@@ -24,9 +30,9 @@ The run records the GPU's peak memory, which shows whether everything fits in 48
 
 | Need | Why | Check |
 |---|---|---|
-| Linux x86_64 with an NVIDIA GPU that has **44 GiB free** (an 80 GB H100 is plenty) | The whole stack runs on one GPU | `nvidia-smi` |
+| Linux x86_64 with an NVIDIA GPU that has **34 GiB free** (an idle 40 GB A100 or anything bigger) | The whole stack runs on one GPU | `nvidia-smi` |
 | An NVIDIA driver for CUDA 12.x or 13.x | Every GPU package here is the CUDA 12.8 build | `nvidia-smi`, top right |
-| About **90 GB** of free disk where you clone the repository | Three Python environments (~25 GB), models (~36 GB), caches | `df -h .` |
+| About **80 GB** of free disk where you clone the repository | Three Python environments (~25 GB), models (~22 GB), caches | `df -h .` |
 | `git`, `curl`, `tar`, a C compiler (`gcc`) | Downloads; vLLM's Triton kernels compile small helpers | `which git curl gcc` |
 | Internet access to pypi.org, huggingface.co, github.com, astral.sh and drive.google.com | Packages, model weights, the benchmark and its audio | `bash scripts/doctor.sh` checks all of them |
 
@@ -92,7 +98,7 @@ The first time, this does everything, and the progress lines start with `==`:
 |---|---|
 | uv and Python 3.11; three environments | ~15 min |
 | The benchmark, its audio (736 MB), ffmpeg, the LiveKit server | ~3 min |
-| Speech models, the language model's weights (31 GB), the scoring recognizer | ~5-20 min (bandwidth) |
+| Speech models, the language model's weights (17 GB), the scoring recognizer | ~5-15 min (bandwidth) |
 | The model server starts (compiles its kernels once) | ~3-5 min |
 | One recording, then scoring | ~2 min |
 
@@ -104,7 +110,8 @@ Models: qwen3-30b-a3b-instruct-2507 (thinker), qwen3-30b-a3b-instruct-2507 (talk
 Tool calling: ok
 ...
 Run folder: /raid/.../duet/results/live/<time>
-GPU NVIDIA H100 80GB HBM3: peak 4x.x GiB used of 79.6 GiB
+GPU NVIDIA A100-SXM4-40GB: peak 3x.x GiB used of 40.0 GiB (the whole card, other users' jobs included)
+This run's own processes: peak 3x.x GiB over all GPUs used (fits a 48 GB card at 43 GiB or less)
 ```
 
 The summary printed just above should show `"turn_take_rate": 1.0` (the agent

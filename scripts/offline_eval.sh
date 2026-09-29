@@ -18,6 +18,9 @@ fi
 # what the agent's ears hear on each recording (made once, on the GPU, a few minutes)
 if [ ! -f results/offline/asr_large-v3-turbo.json ]; then
   echo "== transcribing the 100 recordings with the agent's own speech recognizer (once)"
-  "$PY_AGENT" bench/offline_asr.py
+  # the pip-installed CUDA libraries that faster-whisper loads by name (this process only)
+  libs="$(ls -d "$ROOT"/.venv/lib/python3*/site-packages/nvidia/*/lib 2>/dev/null | paste -sd: - || true)"
+  CUDA_VISIBLE_DEVICES="${DUET_AGENT_GPUS-${CUDA_VISIBLE_DEVICES:-}}" \
+    LD_LIBRARY_PATH="${libs}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$PY_AGENT" bench/offline_asr.py
 fi
 "$PY_AGENT" bench/offline_eval.py --start-server --judge "$@"

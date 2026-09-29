@@ -1,0 +1,123 @@
+WARNING: OPENAI_API_KEY is set but gpt-4o cannot be called (Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organizati); using the Gemini PROXY judge instead.
+judge: gemini-3.5-flash via OpenAI-compatible endpoint (PROXY judge, not official)
+📁 Found 100 result files for provider 'duet_dry_final'
+  🔍 ecommerce_01... FR=4.24s  TC=Nones  TK=4.24s  filler=✗
+  🔍 ecommerce_01... FR=-12.43s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_02... FR=3.03s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_04... FR=3.95s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_05... FR=8.06s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_06... FR=3.44s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_07... FR=3.93s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_08... FR=-9.64s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_08... FR=3.05s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_09... FR=3.24s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_10... FR=3.61s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_11... FR=3.27s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_12... FR=4.05s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_13... FR=4.25s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_13... FR=3.21s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_14... FR=4.1s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_14... FR=4.34s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_15... FR=4.06s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_15... FR=4.46s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_16... FR=-9.32s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_17... FR=3.09s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_18... FR=4.46s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_19... FR=3.89s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_20... FR=3.57s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_21... FR=4.31s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_21... FR=-8.8s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_23... FR=4.42s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_25... FR=4.09s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_25... FR=-0.69s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_01... FR=4.3s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_01... FR=3.16s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_02... FR=4.56s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_03... FR=4.32s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_03... FR=4.74s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_04... FR=-1.07s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_06... FR=4.01s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_07... FR=4.27s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_07... FR=3.76s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_08... FR=4.74s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_08... FR=-3.76s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_10... FR=4.2s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_11... FR=3.32s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_12... FR=3.77s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_12... FR=-5.5s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_14... FR=4.96s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_15... FR=4.18s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_16... FR=11.1s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_17... FR=4.4s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_18... FR=4.45s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_19... FR=4.25s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_20... FR=3.93s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_21... FR=4.42s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_22... FR=4.02s  TC=Nones  TK=Nones  filler=✗
+  🔍 finance_23... FR=4.24s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_01... FR=3.48s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_02... FR=4.97s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_03... FR=4.15s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_04... FR=-3.28s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_05... FR=-13.66s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_05... FR=5.19s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_06... FR=4.91s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_08... FR=4.67s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_09... FR=4.01s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_10... FR=4.07s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_11... FR=3.34s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_13... FR=4.87s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_14... FR=4.06s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_14... FR=4.01s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_15... FR=4.2s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_15... FR=4.77s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_17... FR=4.64s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_17... FR=4.2s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_18... FR=3.21s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_19... FR=3.29s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_20... FR=3.23s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_21... FR=3.28s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_22... FR=4.33s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_24... FR=4.14s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_24... FR=3.07s  TC=Nones  TK=Nones  filler=✗
+  🔍 housing_25... FR=3.98s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_01... FR=3.54s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_02... FR=4.26s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_03... FR=4.12s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_03... FR=4.08s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_05... FR=5.5s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_07... FR=3.99s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_07... FR=3.99s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_08... FR=-2.25s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_10... FR=1.24s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_11... FR=3.65s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_14... FR=3.23s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_16... FR=4.22s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_18... FR=3.19s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_19... FR=3.21s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_20... FR=3.45s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_21... FR=4.36s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_21... FR=3.36s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_23... FR=4.07s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_23... FR=3.15s  TC=Nones  TK=Nones  filler=✗
+  🔍 travel_24... FR=-12.53s  TC=Nones  TK=Nones  filler=✗
+
+============================================================
+✅ Analyzed: 100, Skipped (existing): 0, Failed: 0
+
+📊 LATENCY REPORT — DUET_DRY_FINAL
+========================================================
+  Turn-Take Success: 100/100 (100.0%)
+  (Latency metrics below exclude interruptions)
+
+  First Response (N=88):
+    Mean: 4.09s ± 1.07s
+    Min / Median / Max: 1.24s / 4.07s / 11.10s
+  Tool Call: No data
+  Task Completion (N=1):
+    Mean: 4.24s ± 0.00s
+    Min / Median / Max: 4.24s / 4.24s / 4.24s
+
+  Filler Usage: 0/1 (0%) use filler sentences
+
+  📄 Report saved: duet_dry_final_latency_report.json

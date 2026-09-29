@@ -1,0 +1,33 @@
+WARNING: OPENAI_API_KEY is set but gpt-4o cannot be called (Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organizati); using the Gemini PROXY judge instead.
+judge: none (exact match)
+📖 Loading benchmark data from benchmark_data_v2.json...
+📁 Scanning E:\fdb_data\fdb_v3_data_released for provider 'duet_dry_final'...
+🔍 Found 100 valid result files matching benchmark scenarios.
+
+📊 EVALUATION REPORT
+========================================================
+  Scenarios evaluated : 100
+  Turn-Take Success   : 100/100 (100.0%)
+
+  By Metric (turn-taken only, N=100):
+    Tool Selection Acc : 0.0%
+    Argument Acc       : 0.0%
+    Response Qual      : (LLM judge disabled, use --use-llm)
+
+  Latency (N=100, turn-taken only):
+    Avg latency        : 4.09s ± 1.07s  (excl. interruptions)
+    Min / Max          : 1.24s / 11.10s
+    Interruptions      : 12 / 100  (12.0%)
+
+  By Domain (all samples):
+    ecommerce_support: tool_selection_acc=0.0%, argument_acc=0.0%
+    finance_billing: tool_selection_acc=0.0%, argument_acc=0.0%
+    housing_location: tool_selection_acc=0.0%, argument_acc=0.0%
+    travel_identity: tool_selection_acc=0.0%, argument_acc=0.0%
+
+  By Difficulty (all samples):
+    easy: tool_selection_acc=0.0%, argument_acc=0.0%
+    medium: tool_selection_acc=0.0%, argument_acc=0.0%
+    hard: tool_selection_acc=0.0%, argument_acc=0.0%
+
+  📄 Full report saved: E:\duet_fdb\results\live\20260927_045953\duet_dry_final_evaluation_report.json

@@ -91,7 +91,7 @@ realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Thinker (reasoning, tool calls) | **Qwen3-30B-A3B-Instruct-2507** (Apache-2.0 open weights; `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` @ `5a5a776`, or `RedHatAI/Qwen3-30B-A3B-Instruct-2507-quantized.w4a16` @ `e9c59cd` on pre-Ada GPUs); temperature 0.7, top-p 0.8, top-k 20 (the model card's values), seed 7 | **Local GPU**, served by vLLM 0.19.1 |
+| Thinker (reasoning, tool calls) | **Qwen3-30B-A3B-Instruct-2507** (Apache-2.0 open weights): Red Hat's 4-bit build `RedHatAI/Qwen3-30B-A3B-Instruct-2507-quantized.w4a16` @ `e9c59cd` on every GPU, with Qwen's FP8 build `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` @ `5a5a776` selectable for comparison runs; temperature 0.7, top-p 0.8, top-k 20 (the model card's values), seed 7 | **Local GPU**, served by vLLM 0.19.1 |
 | Talker (acknowledgements) | The same model, same server | Local GPU |
 | Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
 | Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
@@ -106,13 +106,15 @@ provides:
   Gemini 2.5 models began refusing new keys.
 - **It fits the 48 GB budget.** Qwen3-30B-A3B is a mixture-of-experts model: 30.5B
   parameters, of which about 3.3B are active per token, so it answers fast.
-  - Its official FP8 build (31.2 GB) runs in a fixed 33 GiB budget.
-  - That leaves room for the speech models (~3.5 GiB) and the benchmark's own
-    scoring recognizer (~4-5 GiB).
-  - Every run records its peak GPU memory in `summary.json`.
-- **It runs on either GPU generation.** On GPUs older than Ada, whose kernels
-  cannot run that FP8 build, the server loads Red Hat's 4-bit build (16.7 GB) in a
-  22 GiB budget. The choice is automatic.
+  - Red Hat's 4-bit build (16.7 GB) runs in a fixed 22 GiB budget.
+  - With the speech models (~3.5 GiB) and the benchmark's own scoring recognizer
+    (~4-5 GiB), the whole stack needs about 31 GiB of the ~44.7 GiB a 48 GB card
+    offers.
+  - Every run records the peak GPU memory of its own processes in `summary.json`.
+- **The same build on every GPU generation.** Its kernels run on Ampere, Ada and
+  Hopper alike, so Samsung's re-run uses exactly the configuration we measured
+  (first on an A100). Qwen's FP8 build needs Ada or later and 33 GiB; it remains
+  selectable (`DUET_LLM_VARIANT=fp8`) for comparison runs.
 
 The Gemini API remains available as an alternative (`DUET_LLM_BACKEND=gemini`,
 with `gemini-3.7-flash` and `gemini-3.5-flash-lite`). Every setting can be
@@ -148,8 +150,10 @@ bash reproduce.sh --only travel_19_695bd157114f0d2317f88617   # a quick check fi
   one with the most free memory is used (or set `CUDA_VISIBLE_DEVICES`).
 - **Runtime:** about 2 hours. The benchmark streams every recording in real
   time, and each is about 47 s long. The first run also installs (about 15
-  minutes) and downloads about 36 GB of models.
-- **Step by step on a remote GPU machine:** [DGX_RUNBOOK.md](DGX_RUNBOOK.md).
+  minutes) and downloads about 22 GB of models.
+- **Step by step on a remote GPU machine:** [DGX_RUNBOOK.md](DGX_RUNBOOK.md). On a
+  shared machine where no single GPU is free, and for experiments:
+  [DGX_EXPERIMENTS.md](DGX_EXPERIMENTS.md).
 
 What the script does, in order:
 1. Creates three Python environments with uv (Python 3.11) and installs each
@@ -221,6 +225,10 @@ python bench/offline_asr.py                 # what the agent's ears hear on all 
 python bench/offline_eval.py --start-server --judge   # the thinker alone on those transcripts, officially scored
 bash scripts/offline_eval.sh                # the same, on a machine set up by reproduce.sh
 python bench/llm_server.py plan             # which weights and memory budget this GPU gets
+python bench/place_gpus.py --show           # on a shared machine: which GPUs to use for what
+bash scripts/experiments.sh baseline        # offline experiments: run-to-run noise, greedy, hearing
+python bench/compare_runs.py                # one table of every evaluation, with code version and machine
+python bench/failures.py results/offline/eval_<...>.json   # the failures, grouped by kind of mistake
 python bench/cost_report.py results/live/<run>   # tokens (and dollars, for the Gemini API), from the traces
 python -m pytest tests -q
 python tests/fake_openai.py &               # a scripted stand-in for the model server (no GPU):

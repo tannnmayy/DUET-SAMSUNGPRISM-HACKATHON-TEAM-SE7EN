@@ -360,3 +360,55 @@ memory.
 - **Reports from users of Gemini on Android Auto (2026).** It "won't stop
   talking", keeps speaking after the driver has used the touchscreen, and
   misreports failures. Sources are in `docs/USE_CASE_RESEARCH.md`.
+
+## 11. First runs with the real model: a shared DGX A100 (28 Sep 2026)
+
+**The machine.** SRM's DGX A100: 8 × A100-SXM4-40GB, DGX OS 7.5, shared by several
+users. When the run started every GPU was free; within minutes every one carried
+another user's job, leaving 15-20 GB free on each.
+
+**What worked, on a machine that is not ours, from a fresh clone:**
+- `scripts/doctor.sh`, then `reproduce.sh`: all three environments installed from
+  the lock files, ffmpeg fetched, every model downloaded. On the A100 the plan
+  chose the 4-bit build by itself.
+- The model server (vLLM 0.19.1) started and passed the tool-calling preflight.
+- One live recording (`travel_19`) ran end to end: LiveKit, the agent, a
+  `search_flights` call with the right destination, a spoken answer, and the
+  benchmark's own three evaluation scripts. It was the first live item ever
+  answered by a real model. Turn-take 1.0, but the item failed: it heard June 1
+  for June 3 (below).
+- Offline, on the exact scripts of all 100 recordings (`--text script`): **Pass@1
+  0.63**, tool F1 0.932, argument accuracy 0.83, response quality 0.85, 0 errors,
+  376 s. The model was split over two half-free GPUs; the judge was the same local
+  model. These results were copied off the DGX by hand and must still be published
+  under `results/reported/` (see `DGX_EXPERIMENTS.md`).
+
+**How to read 0.63.** It is the thinker's ceiling, not a benchmark score. The words
+are perfect (no hearing errors), there is no timing, and the model grades its own
+answers, which is likely lenient. It is not comparable with GPT-Realtime's 0.600,
+which is end to end with the official judge.
+
+**What went wrong, and the fixes:**
+
+| Problem | Cause | Fix |
+|---|---|---|
+| The model server refused to start | GPU 0 had 14.9 GiB free; vLLM asked for 21.7 GiB | vLLM's check was right. The launcher now refuses early with the way out, and `bench/place_gpus.py` picks GPUs, splitting the model over two when no single one has room |
+| A "full" run ended in a minute with `total: 1` | The benchmark's runner loads its scoring recognizer onto the first visible GPU, which was full; the runner crashed, and the evaluations scored the one old result left behind | A crashed runner now stops the run before anything is scored. The recognizer can be placed on its own GPU (`DUET_SCORING_GPUS`) |
+| The agent heard "June 1" for "June 3" | With speech on the CPU (to spare the GPUs), the agent switches to the small `small.en` model | For comparable runs the agent's speech stays on a GPU (`DUET_AGENT_GPUS`); CPU runs are labelled |
+| `.venv-bench/bin/python` not found | Relative paths given to `run_live.py` were looked up inside the benchmark's folder | Resolved to absolute paths first |
+| The offline transcripts could come from `small.en` on a machine without a free GPU, under the name `large-v3-turbo` | The transcriber went through the agent's CPU fallback | It always uses the model it is named after |
+| The GPU peak (31.9 and 39.5 GiB) meant nothing | It counted every process on the card, other users' jobs included | `summary.json` now also records `ours_peak_gib`: the memory of this run's own processes, summed over every GPU they use |
+
+**Why the 4-bit build is now the default everywhere.** Until 28 Sep the plan
+chose Qwen's FP8 build on Ada and Hopper GPUs, and the 4-bit build on older ones.
+Only the 4-bit build has run. Samsung's 48 GB card could be either generation (an
+L40S is Ada, an A6000 is Ampere), so the FP8 path would have met the re-run
+untested. The 4-bit build runs on all three generations, it needs 22 GiB instead
+of 33 (the whole stack about 31 GiB, leaving ~13 GiB spare on a 48 GB card), and
+it halves the download. What it may cost in accuracy against FP8 is an experiment
+in `scripts/experiments.sh fp8`, on any Ada or Hopper GPU.
+
+**Every result is now traceable.** Live runs (`run_config.json`) and offline
+evaluations (`summary`) record the git commit, uncommitted edits, host, GPUs,
+driver, GPU placement, sampling settings, and the checkpoint the model server
+actually loaded. `bench/compare_runs.py` turns all of them into one table.
