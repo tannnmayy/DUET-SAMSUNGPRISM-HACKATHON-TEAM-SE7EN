@@ -65,6 +65,7 @@ LISTEN_TOOL = _tool(KEEP_LISTENING, KEEP_LISTENING_DESCRIPTION, {
     "required": ["reason"]})
 
 _THINK = re.compile(r"<think>.*?</think>", re.S)
+_OK_TAIL = re.compile(r"(?:(?<=[.!?])|\n)\s*OK\.?\s*$")  # a second look's "OK" after the answer
 _RAW_CALL = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S)
 
 
@@ -91,9 +92,19 @@ def salvage_calls(content: str) -> Tuple[List[Dict[str, str]], str]:
 class LocalThinker:
     """The thinker on the local model. Same interface and events as thinker.Thinker."""
 
-    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
+    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
+                 specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None,
+                 review: Optional[str] = None) -> None:
         self.model = model or CONFIG.thinker_model
         self.thinking = "none (non-thinking model)"
+        # the benchmark's twelve tools and instructions unless a use case brings its own
+        self.tools = TOOLS if specs is None else [_tool(s["name"], s["description"], s["parameters"])
+                                                  for s in specs]
+        self.instructions = instructions or THINKER_INSTRUCTIONS
+        # A second look before an answer is spoken (the phone app; off for the benchmark):
+        # the model checks its draft against the tool results and calls what is missing.
+        # Safe because the ledger never runs an action twice.
+        self.review = review
         # completed exchanges only, as chat messages; an interrupted turn never lands here
         self.history: List[Dict[str, Any]] = []
 
@@ -107,12 +118,13 @@ class LocalThinker:
         # (audio is ignored: this model reads text only)
         start_epoch = toolbox.coord.epoch
         user = {"role": "user", "content": text + ("\n\n" + note if note else "")}
-        prefix = [{"role": "system", "content": THINKER_INSTRUCTIONS}] + list(self.history) + [user]
+        prefix = [{"role": "system", "content": self.instructions}] + list(self.history) + [user]
         messages = list(prefix)
         final_text = ""
+        draft, review_at = "", None
         usage = {"input": 0, "input_audio": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
-            tools = TOOLS + [LISTEN_TOOL] if (allow_listen and step == 1) else TOOLS
+            tools = self.tools + [LISTEN_TOOL] if (allow_listen and step == 1) else self.tools
             calls: List[Dict[str, str]] = []
             content = ""
             for attempt in (1, 2):
@@ -159,7 +171,19 @@ class LocalThinker:
             if step == 1:
                 yield ThinkEvent("decided", tools=bool(real))
             if not real:
-                final_text = content
+                if (self.review and review_at is None and step < CONFIG.max_tool_steps
+                        and content and "<silent>" not in content):
+                    draft, review_at = content, len(messages)
+                    messages.append({"role": "user", "content": self.review})
+                    yield ThinkEvent("review", text=draft)
+                    continue
+                if review_at is not None and len(messages) == review_at + 2:
+                    # The second look found nothing missing: the draft stands (whatever else the
+                    # model wrote), and the history is kept as if it had not been asked.
+                    final_text = draft
+                    del messages[review_at:]
+                else:
+                    final_text = _OK_TAIL.sub("", content).strip() if review_at is not None else content
                 break
             for c in calls:  # every call gets a response, in order
                 if c["name"] == KEEP_LISTENING:
@@ -188,11 +212,12 @@ class LocalThinker:
         yield ThinkEvent("say", text=final_text, usage=usage)
 
 
-async def acknowledge(user_text: str, usage: Optional[dict] = None) -> Optional[str]:
+async def acknowledge(user_text: str, usage: Optional[dict] = None,
+                      instructions: Optional[str] = None) -> Optional[str]:
     """The talker on the local model: one short sentence, or None (<silent>)."""
     resp = await client().chat.completions.create(
         model=CONFIG.talker_model, max_tokens=40,
-        messages=[{"role": "system", "content": TALKER_INSTRUCTIONS},
+        messages=[{"role": "system", "content": instructions or TALKER_INSTRUCTIONS},
                   {"role": "user", "content": "User: " + user_text}],
         **sampling())
     u = getattr(resp, "usage", None)

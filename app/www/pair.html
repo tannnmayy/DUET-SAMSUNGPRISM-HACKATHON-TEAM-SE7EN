@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Pair a Galaxy</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .pair { max-width: 760px; margin: 0 auto; padding: 32px 16px; }
+    .pair h1 { font-size: 32px; margin: 12px 0 8px; }
+    .pair .steps { color: var(--muted); margin: 0 0 18px; padding-left: 20px; }
+    .pair .row-btns { margin: 18px 0; }
+    .pair .chip.on { background: var(--accent); color: var(--accent-ink); }
+    .qr-box { background: #fff; border-radius: var(--radius); padding: 18px; display: grid; place-items: center; min-height: 340px; }
+    .qr-box svg, .qr-box img { width: min(100%, 440px); height: auto; }
+    .qr-meta { color: var(--muted); font-size: 14px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<main class="pair">
+  <div class="brand"><span class="brand-dot"></span>DUET</div>
+  <h1>Pair a Galaxy</h1>
+  <ol class="steps">
+    <li>On the phone, open DUET and tap <b>Scan the laptop's code</b>.</li>
+    <li>Point the camera at the code below. The conversation starts at once.</li>
+    <li>The phone then needs only internet, not this laptop's network. Each code works for one conversation and expires in two hours.</li>
+  </ol>
+  <label class="field"><span>Name DUET uses</span><input id="name" placeholder="e.g. Asha"></label>
+  <label class="field"><span>Contacts DUET may call or text <small>(names only; the numbers stay on the phone)</small></span>
+    <input id="contacts" placeholder="Priya (daughter); Rahul (son)"></label>
+  <div class="row-btns" id="modes">
+    <button class="chip" data-mode="assistant">Assistant</button>
+    <button class="chip" data-mode="care">Care</button>
+    <button class="chip" data-mode="drive">Drive</button>
+  </div>
+  <div class="qr-box" id="qr"><p style="color:#555">Choose a mode to make a code.</p></div>
+  <p class="qr-meta" id="meta"></p>
+</main>
+<script src="vendor/qrcode-generator.js"></script>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const KEY = "duet.pair";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { saved = {}; }
+  $("name").value = saved.name || "";
+  $("contacts").value = saved.contacts || "Priya (daughter); Rahul (son)";
+  async function make(mode) {
+    document.querySelectorAll("#modes .chip").forEach((b) => b.classList.toggle("on", b.dataset.mode === mode));
+    try { localStorage.setItem(KEY, JSON.stringify({ name: $("name").value, contacts: $("contacts").value })); } catch (e) { /* private mode */ }
+    const q = new URLSearchParams({ mode, name: $("name").value, contacts: $("contacts").value, device: "a Galaxy phone (paired by QR)" });
+    const r = await fetch("/api/token?" + q.toString());
+    if (!r.ok) { $("qr").innerHTML = "<p>Could not make a code: " + r.status + "</p>"; return; }
+    const t = await r.json();
+    const qr = qrcode(0, "L");
+    qr.addData(["DUET1", mode, t.url, t.token].join("|"));
+    qr.make();
+    $("qr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    $("meta").textContent = "Room " + t.room + " · " + mode + " · made " + new Date().toLocaleTimeString();
+  }
+  document.querySelectorAll("#modes .chip").forEach((b) => b.addEventListener("click", () => make(b.dataset.mode)));
+})();
+</script>
+</body>
+</html>

@@ -166,7 +166,11 @@ def _load_registry():
 
 def coerce(tool: str, args: Dict[str, Any]) -> Dict[str, Any]:
     """Drop nulls and coerce types to the schema (a model may send '2,400')."""
-    props = SPEC_BY_NAME[tool]["parameters"]["properties"]
+    return coerce_props(SPEC_BY_NAME[tool]["parameters"]["properties"], args)
+
+
+def coerce_props(props: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
+    """coerce() for any schema's properties (the phone app's tools use it too)."""
     out: Dict[str, Any] = {}
     for key, value in (args or {}).items():
         if value is None or (isinstance(value, str) and not value.strip()):

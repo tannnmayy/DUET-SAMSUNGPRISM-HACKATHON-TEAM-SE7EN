@@ -141,12 +141,15 @@ class AudioTape:
 # --- the agent ---------------------------------------------------------------------------
 
 class DuetAgent(Agent):
-    def __init__(self, trace: Trace, coord: Coordinator, toolbox: FdbToolbox) -> None:
-        super().__init__(instructions=THINKER_INSTRUCTIONS)
+    def __init__(self, trace: Trace, coord: Coordinator, toolbox: FdbToolbox, thinker=None,
+                 instructions: Optional[str] = None, talker_instructions: Optional[str] = None) -> None:
+        super().__init__(instructions=instructions or THINKER_INSTRUCTIONS)
         self._trace = trace
         self._coord = coord
         self._toolbox = toolbox
-        self._thinker = make_thinker()
+        # the benchmark's thinker by default; the phone app passes one with its own tools
+        self._thinker = thinker or make_thinker()
+        self._talker_instructions = talker_instructions
         self._tape = AudioTape()
         self._utterance_started: Optional[float] = None
         # User messages already answered. It advances only when a reply that
@@ -180,6 +183,19 @@ class DuetAgent(Agent):
     async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
         self._coord.turn_committed()
         self._trace("user_turn", text=(new_message.text_content or "").strip())
+
+    def done_note(self, done_before: List[Any]) -> str:
+        """Actions already carried out that the thinker has not seen yet (the plan that
+        ran them was overtaken by new words before its exchange completed)."""
+        if done_before and self._thinker.history == []:
+            return "Already done in this conversation (do not repeat): " + "; ".join(
+                "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
+        return ""
+
+    def turn_note(self) -> str:
+        """Extra context for the thinker on this turn; none for the benchmark. The phone
+        app adds the time and what the user heard of an answer they interrupted."""
+        return ""
 
     def _user_messages(self, chat_ctx: llm.ChatContext) -> List[str]:
         return [item.text_content.strip() for item in chat_ctx.items
@@ -218,14 +234,16 @@ class DuetAgent(Agent):
             pcm = self._tape.since(self._utterance_started)
             if pcm is not None and len(pcm) > 1600:
                 audio = await asyncio.to_thread(encode_audio, pcm)
-        done_before = [r for r in self._coord.history if r.outcome in ("ok", "cached")]
-        note = ""
-        if done_before and self._thinker.history == []:
-            note = "Already done in this conversation (do not repeat): " + "; ".join(
-                "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
+        note = self.done_note([r for r in self._coord.history if r.outcome in ("ok", "cached")])
+        extra = self.turn_note()
+        if extra:
+            note = (note + "\n" if note else "") + extra
 
         ack_usage: Dict[str, int] = {}
-        ack_task = asyncio.ensure_future(talker.acknowledgement(text, usage=ack_usage))
+        ack_kwargs: Dict[str, Any] = {"usage": ack_usage}
+        if self._talker_instructions:
+            ack_kwargs["instructions"] = self._talker_instructions
+        ack_task = asyncio.ensure_future(talker.acknowledgement(text, **ack_kwargs))
         events: asyncio.Queue = asyncio.Queue()
         epoch = self._coord.epoch
 
@@ -322,6 +340,8 @@ class DuetAgent(Agent):
                 elif kind == "decided":
                     decided_tools = ev.tools
                     self._trace("thinker_decided", tools=ev.tools, after_s=round(time.time() - started, 2))
+                elif kind == "review":
+                    self._trace("thinker_review", text=ev.text)
                 elif kind == "tool_start":
                     self._trace("tool_start", name=ev.name, args=ev.args)
                 elif kind == "tool_done":

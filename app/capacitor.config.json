@@ -1,0 +1,7 @@
+{
+  "appId": "com.se7en.duet",
+  "appName": "DUET",
+  "webDir": "www",
+  "android": { "allowMixedContent": true },
+  "server": { "androidScheme": "https", "cleartext": true }
+}

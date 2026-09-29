@@ -188,3 +188,32 @@ def test_a_gpu_too_small_is_refused_before_anything_starts(monkeypatch, clean_en
     monkeypatch.setattr(llm_server, "healthy", lambda *a, **k: False)
     with pytest.raises(SystemExit, match="too small"):
         llm_server.start("python", tmp_path)
+
+
+def run_reviewed(script):
+    """The phone app's thinker: a second look before its answer is spoken."""
+    th = LocalThinker(model="qwen-test", review="Second look: anything missing? Else reply OK")
+    th._create = lambda messages, tools: asyncio.sleep(0, result=script.pop(0))
+    box = Box()
+
+    async def go():
+        return [ev async for ev in th.run("set an alarm for 4:30", box)]
+    return asyncio.run(go()), box, th
+
+
+def test_a_second_look_that_finds_nothing_keeps_the_draft_and_a_clean_history():
+    evs, box, th = run_reviewed([reply("Set for 4:30."), reply("OK")])
+    assert [e.kind for e in evs] == ["decided", "review", "say"] and evs[-1].text == "Set for 4:30."
+    assert [m["role"] for m in th.history] == ["user", "assistant"]
+
+
+def test_a_second_look_calls_the_action_the_draft_only_claimed():
+    evs, box, th = run_reviewed([reply("Set for 4:30."), reply(calls=[("set_alarm", {"time": "04:30"})]),
+                                 reply("Set for 4:30 in the morning.\n\nOK")])
+    assert box.calls == [("set_alarm", {"time": "04:30"})]
+    assert evs[-1].kind == "say" and evs[-1].text == "Set for 4:30 in the morning."
+
+
+def test_the_benchmark_thinker_takes_no_second_look():
+    evs, box, sent, th = run([reply("Hello!")])
+    assert [e.kind for e in evs] == ["decided", "say"] and th.review is None

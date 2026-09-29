@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>DUET for Galaxy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ home: choose a mode ============ -->
+<main id="home" class="screen">
+  <header class="home-head">
+    <div class="brand"><span class="brand-dot"></span>DUET</div>
+    <h1>Talk to your Galaxy like a person.</h1>
+    <p class="lede">Interrupt it, correct yourself mid-sentence, change your mind. DUET listens while it
+      talks, and never acts on words you took back.</p>
+  </header>
+
+  <section class="modes" aria-label="Choose a mode">
+    <button class="mode-card" data-mode="assistant">
+      <span class="mode-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg>
+      </span>
+      <span class="mode-text"><b>Assistant</b><small>Alarms, battery help, apps, settings, Maps, home</small></span>
+    </button>
+    <button class="mode-card" data-mode="care">
+      <span class="mode-icon care" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      </span>
+      <span class="mode-text"><b>Care</b><small>A companion for someone living alone: medicines, family, check-ins</small></span>
+    </button>
+    <button class="mode-card" data-mode="drive">
+      <span class="mode-icon drive" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M5 16l1.6-5.2A2 2 0 0 1 8.5 9.4h7a2 2 0 0 1 1.9 1.4L19 16"/><rect x="3.5" y="15" width="17" height="4.5" rx="1.5"/><circle cx="7.5" cy="17.2" r=".6"/><circle cx="16.5" cy="17.2" r=".6"/></svg>
+      </span>
+      <span class="mode-text"><b>Drive</b><small>Co-driver: route changes, messages, your home from the car</small></span>
+    </button>
+  </section>
+
+  <button class="scan-btn" id="scan">
+    <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
+    <span><b>Scan the laptop's code</b><small>Pair in one step: open localhost:8787/pair.html on the laptop</small></span>
+  </button>
+
+  <details class="settings" id="settings">
+    <summary>Settings</summary>
+    <label class="field" id="server-field">
+      <span>Server address <small>(the laptop running DUET, shown when it starts)</small></span>
+      <input id="set-server" inputmode="url" placeholder="192.168.1.20:8787" autocomplete="off">
+    </label>
+    <label class="field">
+      <span>Your name</span>
+      <input id="set-name" placeholder="e.g. Asha" autocomplete="off">
+    </label>
+    <label class="field">
+      <span>Contacts DUET may call or message <small>(one per line: name, number)</small></span>
+      <textarea id="set-contacts" rows="3" placeholder="Priya (daughter), +91 98xxxxxx01"></textarea>
+    </label>
+    <label class="switch-row">
+      <input type="checkbox" id="set-direct">
+      <span>Call and text directly <small>(otherwise DUET opens the dialer or Messages and you tap send)</small></span>
+    </label>
+    <div class="perm-list" id="perm-list" hidden>
+      <p class="perm-head">Phone access</p>
+      <button class="perm" data-perm="usage_access"><span>Screen time per app</span><em>Allow</em></button>
+      <button class="perm" data-perm="modify_system_settings"><span>Change brightness and timeout</span><em>Allow</em></button>
+      <button class="perm" data-perm="call_phone"><span>Place calls directly</span><em>Allow</em></button>
+      <button class="perm" data-perm="send_sms"><span>Send texts directly</span><em>Allow</em></button>
+    </div>
+    <button class="text-btn" id="reset-demo">Reset the demo home, medicines and trip</button>
+  </details>
+
+  <p class="foot">Samsung PRISM GenAI Hackathon · Team SE7EN · the brain runs on your own machine, not a cloud AI</p>
+</main>
+
+<!-- ============ session ============ -->
+<main id="session" class="screen" hidden>
+  <header class="bar">
+    <button class="icon-btn" id="end" aria-label="End conversation">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="bar-title"><b id="mode-title">Assistant</b><small id="conn">Connecting…</small></div>
+    <button class="icon-btn" id="mute" aria-label="Mute microphone" aria-pressed="false">
+      <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+    </button>
+  </header>
+
+  <div class="stage">
+    <section class="talk">
+      <div class="orb-wrap">
+        <div class="orb" id="orb" data-state="connecting"><span></span></div>
+        <p class="orb-label" id="orb-label">Connecting…</p>
+        <p class="moment" id="moment" hidden></p>
+      </div>
+      <ol class="chat" id="chat" aria-live="polite"></ol>
+    </section>
+
+    <aside class="side">
+      <section class="card timeline-card">
+        <header class="card-head"><b>DUET's two minds</b><small>what it heard, planned, held back and did</small></header>
+        <ol class="timeline" id="timeline"></ol>
+      </section>
+      <section class="card" id="panel"></section>
+    </aside>
+  </div>
+</main>
+
+<div class="scanner" id="scanner" hidden>
+  <video id="cam" playsinline muted></video>
+  <div class="scan-frame"></div>
+  <p>Point the camera at the code on the laptop</p>
+  <button class="chip" id="scan-cancel">Cancel</button>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="vendor/livekit-client.umd.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="phone.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
