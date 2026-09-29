@@ -17,51 +17,60 @@ flowchart LR
     end
     subgraph DUET["DUET: the brain"]
         C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
-        T["Talker (fast mind)<br/>Qwen3-30B-A3B, short prompt<br/>one truthful acknowledgement"]
-        K["Thinker (slow mind)<br/>Qwen3-30B-A3B, own tool loop<br/>the open request as text"]
+        T["Fast voice<br/>'One moment.', progress lines<br/>never a claim"]
+        K["Thinker (slow mind)<br/>Gemma 4 26B-A4B, own tool loop<br/>the open request as text"]
+        P["Key pool<br/>token budget · retries · deadline"]
     end
     S -->|final segments| C
     E -->|turn closed| C
     S -->|open request| K
-    S --> T
     K -->|tool call| C
     C -->|gate open| B[(12 tools<br/>benchmark mock backend)]
     B -->|result| K
-    T -->|"only when there is work to cover"| TTS
+    K -->|"there is work to cover"| T
+    T --> TTS
     K -->|answer with the key facts| TTS
+    K <--> P
+    P <--> G["Gemma 4 26B-A4B-it<br/>Google's API"]
 ```
 
 ## The two minds
 
-**Talker.** A fast model (no tools, no thinking) turns the user's words into
-one short sentence that shows they were understood ("Sure, checking those
-flights now"). It names the task but never a value, because the user may still
-be correcting it. It never states a result, because it has none.
+**Thinker.** Gemma 4 26B-A4B-it (Google's open-weights model, Apache 2.0) with the
+twelve tools, run by DUET's own loop rather than the framework's: every call goes
+through the coordinator. It keeps the model's native conversation state (tool calls,
+results, thoughts and their signatures, not just text). Gemma 4 thinks before it
+answers; the API takes no setting for it.
 
-**Thinker.** A language model with the twelve tools, run by DUET's own loop
-rather than the framework's: every call goes through the coordinator. It keeps
-its own conversation state (tool calls and results, not just text).
+**Fast voice.** The moment the thinker decides there is work to do, the user hears
+"One moment.", and "Still working on it." every 6 s while it runs. It never names a
+value (the user may still be correcting it) and never states a result. With a local
+model the fast voice is itself a model (a short acknowledgement naming the task, as in
+the phone app); with a hosted model a call takes seconds, too slow for a line that
+must come at once, so it is a fixed line.
 
-**One model behind both minds.** Qwen3-30B-A3B-Instruct-2507 (open weights,
-Apache-2.0) runs on the same GPU, served by vLLM (`bench/llm_server.py`) through
-an OpenAI-compatible API on 127.0.0.1. vLLM's `hermes` parser turns Qwen3's tool
-calls into standard ones, and a call the parser misses is recovered from the
-text. The Gemini API is a drop-in alternative (`DUET_LLM_BACKEND=gemini`,
-`duet_voice/thinker.py`), with the same loop and the same events. Only there does
-the thinker keep Gemini's thought signatures, and can it hear the turn's audio
-as well as the transcript.
+**The model, through Google's API** (`duet_voice/gemma_api.py`). Google serves Gemma
+free of charge on free-tier projects, with 16,000 input tokens per minute per model
+per project. One thinker call is about 2,300 input tokens. Each benchmark recording
+gives the agent about 30 seconds after the request before the room closes, so a call
+must never wait out a rate limit or die on a transient error:
 
-Both start together when a turn ends, or earlier: LiveKit runs generation
-*preemptively* during a pause, so the plan is often ready by the time the turn
-closes. DUET raises LiveKit's limits (10 s into a turn, 3 attempts) to 120 s and
-20 attempts, because FDB-v3's requests are long and full of pauses. Planning
-early is safe because acting early is not allowed.
+| Mechanism | What it does |
+|---|---|
+| **Key pool** | `GOOGLE_API_KEYS=key1,key2,...`; keys from different projects add up their limits. Each call goes to the key with the most room for that model. |
+| **Token budget** | 15,000 input tokens per key, model and minute (`DUET_GEMMA_TPM`). A call is booked before it is sent and waits for room rather than being refused; the booking is corrected to the real count afterwards. |
+| **Refusals** | A 429 rests that key for the delay Google asks for, and the call moves to another key at once. |
+| **Transient errors** | 500, 503, 504 and timeouts (frequent on the free tier) are retried within 0.3-0.7 s, inside one deadline per call (20 s): past it the recording's window is gone. A bad key, a model the key cannot use, or a malformed request fails at once. |
+| **Fallback model** | If Google stops serving `gemma-4-26b-a4b-it` to a key, `gemma-4-31b-it` is used (slower, its own quota). |
 
-**Before any run.** The runner checks that the model server answers, serves our
-model, and returns a real tool call for a test request. With Gemini, each role
-instead has a list of current models: if the API refuses the declared one (as it
-began doing for some Gemini 2.5 models in September 2026), the next is used and
-the choice is logged.
+**No wasted calls.** LiveKit can plan *preemptively* during a user's pause. With a
+hosted model that is switched off: every early plan is a call counted against the
+per-minute budget, and most are thrown away when the user goes on.
+
+**Before any run.** The runner checks, in seconds, that every key can use Gemma 4
+and that a test request with a correction ("K 7, no wait, K 4 Q 2") returns the right
+tool call. A key on a paid project (where Google does not serve Gemma), a wrong key or
+no network stops the run there, with the fix, instead of producing 100 failures.
 
 ## When the agent speaks, and when it keeps listening
 
@@ -73,14 +82,13 @@ thinker's first look at a turn decides whether the user has finished:
 | The thinker decides | What the user hears |
 |---|---|
 | **The user is not finished** (cut off mid-sentence, or announced a detail not yet given): it calls `keep_listening` | Nothing. Nothing is done or remembered. Once the user has been quiet for 2.5 s, the thinker looks again with `keep_listening` removed. It acts, or asks for exactly what is missing. If the user resumes first, the next turn re-reads everything. |
-| **Tools are needed** | The talker's acknowledgement at once, then the thinker's answer after the tool results. If the talker has nothing within 0.6 s (a slow or failed API call), "One moment." instead: no dead air, and no claim. "Still working on it." every 3.5 s while a slow tool runs. |
+| **Tools are needed** | "One moment." at once, then the thinker's answer after the tool results: no dead air, and no claim. "Still working on it." every 6 s while it works. |
 | **No tool is needed** (a greeting, a question, a clarification) | Only the thinker's answer. |
 | **Noise, not speech** (`<silent>`) | Nothing. |
-| **Not decided yet after 0.9 s** | The acknowledgement, but only once the user has been quiet for 1.6 s, never in a pause they may resume. |
 | **The thinker fails** (after retries) | "Sorry, something went wrong on my side. Could you say that once more?" The user is never left in silence. |
 
-Model calls retry rate limits and server errors (up to three times, with
-backoff), and the thinker asks once more after an empty or malformed reply.
+Model calls survive rate limits and server errors (the key pool above), and the
+thinker asks once more after an empty or malformed reply.
 A request counts as answered only once a reply is actually spoken. A reply
 drafted during a pause and then discarded leaves the request open.
 
@@ -126,27 +134,12 @@ voice agent:
 
 ## Resource use
 
-Everything runs on one GPU, sized for Samsung's 48 GB card (about 44.7 GiB usable):
+The GPU runs speech only; the language model runs at Google.
 
 | Process | GPU memory |
 |---|---|
-| Model server (vLLM, Qwen3-30B-A3B in Red Hat's 4-bit build: 15.6 GiB weights, working memory, ~50k tokens of KV cache) | 22 GiB, fixed |
-| Agent (Whisper turbo in float16, Kokoro, CUDA context) | ~3.5 GiB |
+| Agent (Whisper large-v3-turbo in float16, Kokoro, CUDA context) | ~3.5 GiB |
 | The benchmark's scoring recognizer (Parakeet, in the runner) | ~4-5 GiB |
-| **Total** | **about 31 GiB**, leaving ~13 GiB spare on a 48 GB card |
+| **Total** | **about 8 GiB**, far inside Samsung's 48 GB card |
 
-vLLM gets a fixed budget in GiB rather than a fraction of the GPU. So it takes the
-same memory on an 80 GB H100 as on a 48 GB card, and a run on a bigger GPU
-measures the real footprint. `summary.json` records the peak memory of the run's
-own processes, summed over every GPU they use, so it stays meaningful on a shared
-machine where other jobs sit on the same cards.
-
-The 4-bit build is the default on every GPU because its kernels run on Ampere,
-Ada and Hopper alike: Samsung's re-run uses exactly the configuration we measured,
-whatever its card. Qwen's FP8 build (29.1 GiB weights in a 33 GiB budget; Ada or
-later) remains selectable with `DUET_LLM_VARIANT=fp8` for comparison runs.
-
-On a shared machine with no single free GPU, the pieces can be placed on
-different GPUs and the model split over two (`bench/place_gpus.py`,
-`DUET_LLM_GPUS`, `DUET_AGENT_GPUS`, `DUET_SCORING_GPUS`). That is for our own
-experiments; the submission runs on one GPU.
+`summary.json` records the peak GPU memory of the run's own processes.

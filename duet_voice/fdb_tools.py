@@ -31,6 +31,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import sys
 import threading
 import time
@@ -58,7 +59,7 @@ TOOL_SPECS: List[Dict[str, Any]] = [
      "description": "Search available flights to a destination on a date.",
      "parameters": _obj({
          "destination": {**S, "description": "Destination city or airport, as the user named it, e.g. 'Oslo'."},
-         "date": {**S, "description": "Travel date as the user said it, e.g. 'October 4'. Do not add a year the user did not say."},
+         "date": {**S, "description": "Travel date as month and day, e.g. 'October 4' (not '4th'). Do not add a year the user did not say."},
      }, ["destination", "date"])},
     {"name": "book_flight", "kind": "write",
      "description": "Book a flight ticket for a passenger. Use after search_flights has found the flight.",
@@ -111,7 +112,9 @@ TOOL_SPECS: List[Dict[str, Any]] = [
      "description": "Change one saved apartment-search filter. Call once per filter the user changes.",
      "parameters": _obj({
          "filter_name": {**S, "description": "Filter key in snake_case, e.g. 'max_price', 'min_bedrooms', 'pets_allowed', 'neighborhood'."},
-         "value": {**S, "description": "New value, e.g. '2400', 'true', 'Riverside'."},
+         "value": {"type": ["number", "boolean", "string"],
+                   "description": "New value: a number for prices and counts (e.g. 2400), true or false for "
+                                  "yes/no filters, otherwise text (e.g. 'Riverside')."},
      }, ["filter_name", "value"])},
     # E-commerce
     {"name": "track_order", "kind": "read",
@@ -129,7 +132,8 @@ TOOL_SPECS: List[Dict[str, Any]] = [
     {"name": "add_to_cart", "kind": "write",
      "description": "Add a product to the shopping cart.",
      "parameters": _obj({
-         "product_id": {**S, "description": "Product id, from the user or from a search result."},
+         "product_id": {**S, "description": "Product id from a search result, or as the user spelled it: letters "
+                                            "and digits joined with no spaces or dashes, e.g. 'XK42'."},
          "quantity": {**I, "description": "How many; 1 when the user does not say."},
      }, ["product_id", "quantity"])},
 ]
@@ -164,6 +168,10 @@ def _load_registry():
     return _registry
 
 
+# Identifiers the user spells out; the schemas ask for them joined, with no spaces or dashes.
+ID_KEYS = {"order_id", "product_id", "doc_number"}
+
+
 def coerce(tool: str, args: Dict[str, Any]) -> Dict[str, Any]:
     """Drop nulls and coerce types to the schema (a model may send '2,400')."""
     return coerce_props(SPEC_BY_NAME[tool]["parameters"]["properties"], args)
@@ -185,10 +193,21 @@ def coerce_props(props: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
                 value = value.strip().lower() in ("true", "yes", "1")
             elif want == "string" and not isinstance(value, str):
                 value = json.dumps(value) if isinstance(value, (dict, list)) else str(value).lower() if isinstance(value, bool) else str(value)
+            elif isinstance(want, list) and isinstance(value, str):
+                # a value that may be a number, a yes/no or text: "2,400" is a number, "true" a yes
+                plain = value.replace(",", "").replace("$", "").strip()
+                if "boolean" in want and plain.lower() in ("true", "false"):
+                    value = plain.lower() == "true"
+                elif "number" in want and re.fullmatch(r"(0|[1-9]\d*)(\.\d+)?", plain):
+                    value = float(plain)
         except ValueError:
             pass
         if isinstance(value, float) and value.is_integer() and want != "number":
             value = int(value)
+        if key == "date" and isinstance(value, str):
+            value = re.sub(r"\b(\d{1,2})(?:st|nd|rd|th)\b", r"\1", value)  # "August 20th" -> "August 20"
+        elif key in ID_KEYS and isinstance(value, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 -]*", value.strip()):
+            value = re.sub(r"[ -]", "", value.strip())  # a spelled-out id: "K-2" -> "K2", "E77 2211" -> "E772211"
         out[key] = value
     return out
 

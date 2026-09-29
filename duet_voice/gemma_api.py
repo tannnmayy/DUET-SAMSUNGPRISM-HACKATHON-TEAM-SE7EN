@@ -29,12 +29,15 @@ from __future__ import annotations
 import asyncio
 import collections
 import json
+import logging
 import os
 import random
 import re
 import threading
 import time
 from typing import Any, Dict, List, Optional, Tuple
+
+log = logging.getLogger("duet.gemma")
 
 # The models DUET uses, best first. The 31B is the fallback if Google stops serving
 # the 26B-A4B to a key; it is slower (dense) but has its own per-model quota.
@@ -64,7 +67,13 @@ def _tpm() -> float:
 
 
 def _deadline_s() -> float:
-    return float(os.environ.get("DUET_GEMMA_DEADLINE_S", "20"))
+    return float(os.environ.get("DUET_GEMMA_DEADLINE_S", "22"))
+
+
+def _attempt_s() -> float:
+    """The longest one attempt may take (a normal thinker call takes 3-8 s): a request
+    that hangs is abandoned and sent again, on another key, inside the deadline."""
+    return float(os.environ.get("DUET_GEMMA_ATTEMPT_S", "11"))
 
 
 # --- the token budget ---------------------------------------------------------------------
@@ -235,31 +244,47 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
         i, booking, wait = p.take(model, need)
         if i is None:
             if time.monotonic() + wait > end:
-                raise last or RuntimeError("rate limited: no key has room for %s within the deadline" % model)
+                raise RuntimeError("no key has room for %s within the deadline: this minute's input-token "
+                                   "budget is spent%s" % (model, " (last error: %s)" % str(last)[:160] if last else ""))
             await asyncio.sleep(wait)
             continue
         left = end - time.monotonic()
+        if left <= 0.5:
+            raise last or RuntimeError("no answer from %s within the deadline" % model)
+        # A hung attempt is cut short while another one still fits; the last one gets all the time left.
+        limit = _attempt_s() if left - _attempt_s() >= 5.0 else left
+        sent = time.monotonic()
         try:
             resp = await asyncio.wait_for(
                 client_for(i).aio.models.generate_content(model=model, contents=contents, config=config),
-                timeout=max(1.0, left))
+                timeout=max(1.0, limit))
         except asyncio.CancelledError:
+            # the plan was overtaken (the user spoke again); the request still counts against the key
+            log.info("gemma: %s on key %d cancelled after %.1f s", model, i + 1, time.monotonic() - sent)
             raise
         except Exception as exc:
-            last = exc
             code = error_code(exc)
             if code == 429:
+                last = exc
                 p.settle(model, booking, 0)
                 p.rest(i, model, retry_delay(exc))
+                log.info("gemma: key %d refused %s (rate limit); resting it %.0f s", i + 1, model, retry_delay(exc))
                 continue
-            if isinstance(exc, asyncio.TimeoutError) or _transient(exc):
-                if time.monotonic() + 0.6 >= end:
-                    raise
+            if isinstance(exc, asyncio.TimeoutError):
+                last = RuntimeError("no answer from %s within %.0f s (key %d)" % (model, limit, i + 1))
+                log.info("gemma: %s on key %d gave no answer within %.0f s; asking again", model, i + 1, limit)
+                continue
+            last = exc
+            if _transient(exc):
+                log.info("gemma: %s on key %d failed (%s); asking again", model, i + 1, str(exc)[:80])
                 await asyncio.sleep(0.3 + random.random() * 0.4)
                 continue
             raise
         u = getattr(resp, "usage_metadata", None)
-        p.settle(model, booking, float(getattr(u, "prompt_token_count", 0) or 0) or None)
+        tokens = float(getattr(u, "prompt_token_count", 0) or 0) or None
+        p.settle(model, booking, tokens)
+        log.info("gemma: %s answered on key %d in %.1f s (%d input tokens)", model, i + 1,
+                 time.monotonic() - sent, tokens or 0)
         return resp
 
 

@@ -210,6 +210,24 @@ def start_agent(env: dict, logs: Path) -> subprocess.Popen:
     return proc
 
 
+def warm_up(env: dict, out: Path) -> None:
+    """One throwaway conversation first (bench/warmup.py): the agent's first room pays
+    one-time costs that would otherwise fall on the first recording."""
+    try:
+        proc = subprocess.run([sys.executable, str(REPO / "bench" / "warmup.py")], cwd=str(REPO), env=env,
+                              capture_output=True, text=True, timeout=150)
+        lines = (proc.stdout.strip() or proc.stderr.strip()).splitlines()
+        print("Agent:", lines[-1] if lines else "warm-up exited with code %d" % proc.returncode)
+    except Exception as exc:  # never block the run on it
+        print("Agent: warm-up skipped (%s)" % exc)
+    time.sleep(2)  # the warm-up room's session closes
+    for path in (out / "traces").glob("warmup-*.jsonl"):
+        try:
+            path.unlink()
+        except OSError:
+            pass
+
+
 def run_runner(env: dict, args, logs: Path) -> None:
     if args.scoring_asr == "parakeet" and not args.only:
         # the unmodified official script
@@ -294,7 +312,7 @@ def _summarize(out: Path) -> dict:
 def trace_stats(out: Path) -> dict:
     """What the agent did, from our traces: model errors (a key or quota problem
     must not pass for a low score), keep-listening decisions, talker lines, and
-    the Gemini tokens and cost (bench/cost_report.py)."""
+    the Gemma tokens and cost (bench/cost_report.py)."""
     from bench import cost_report
     stats = {"conversations": 0, "thinker_errors": 0, "keep_listening": 0, "superseded": 0,
              "talker_lines": 0, "fallback_acks": 0, "thinker_answers": 0, "tool_calls": 0}
@@ -498,6 +516,7 @@ def main() -> int:
                          "user, then start again." % (log_path, exc))
             server = start_livekit(env, out)
             agent = start_agent(env, out)
+            warm_up(env, out)
             run_runner(env, args, out)
             collect(args, out)
         if not args.no_eval:

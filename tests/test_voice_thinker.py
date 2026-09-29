@@ -1,4 +1,4 @@
-"""The thinker's own tool loop, with Gemini replaced by scripted responses (no key needed)."""
+"""The thinker's own tool loop, with Gemma replaced by scripted responses (no key needed)."""
 
 import asyncio
 import json
@@ -31,7 +31,7 @@ class FakeToolbox:
 
 
 def run(script, **kw):
-    th = Thinker(model="gemini-2.5-flash", thinking="low")
+    th = Thinker(model="gemma-4-26b-a4b-it")
     sent = []
 
     async def fake_generate(contents, config):
@@ -80,7 +80,7 @@ def test_a_completed_exchange_is_kept_as_text_only():
 
 
 def test_a_keep_listening_next_to_real_work_is_answered_not_deleted():
-    """Gemini 3 signs function-call parts; the model's turn must go back unchanged,
+    """The API signs function-call parts; the model's turn must go back unchanged,
     and every call in it (keep_listening included) gets a response."""
     signed = types.Part(function_call=types.FunctionCall(name="keep_listening", args={"reason": "x"}),
                         thought_signature=b"sig")

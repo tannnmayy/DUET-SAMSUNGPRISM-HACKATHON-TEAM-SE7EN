@@ -84,7 +84,13 @@ class NoJudge:
 
 
 def mode() -> str:
-    return os.environ.get("DUET_JUDGE", "auto").strip().lower() or "auto"
+    m = os.environ.get("DUET_JUDGE", "auto").strip().lower() or "auto"
+    if m not in ("auto", "openai", "gemma", "none"):
+        # an unknown value (such as an old "gemini") must not quietly mean "no judge"
+        print("WARNING: DUET_JUDGE=%s is not one of openai, gemma, none; choosing automatically." % m,
+              flush=True)
+        m = "auto"
+    return m
 
 
 _openai_ok: Optional[bool] = None

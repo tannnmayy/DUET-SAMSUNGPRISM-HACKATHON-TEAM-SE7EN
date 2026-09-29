@@ -205,57 +205,22 @@ And three hardening steps:
   revisions of our runs (verified to load offline from the cache). The spaCy
   model that Kokoro's phonemizer fetches on first use is pinned in the lock.
 
-Still open: a real run on a clean Linux GPU machine (see
-[CLEAN_MACHINE_TEST.md](CLEAN_MACHINE_TEST.md)).
+A real run on a clean Linux machine: a fresh clone in WSL2 Ubuntu (see the last
+section).
 
 ## 6. Failures a hosted model adds, and how they are absorbed
 
-- **Rate limits and brief outages.** A 429 or 5xx from the Gemini API used to
-  end the turn with an apology, which fails the item. Calls are now retried with
-  backoff (1, 2, 4 s; verified against a local server that answers 503 twice),
-  and a hung request is cut off after 20 s.
-- **Empty or malformed replies.** Gemini 2.5 occasionally returns an empty
-  candidate, or stops on `MALFORMED_FUNCTION_CALL`. The user would hear nothing.
+- **Rate limits and brief outages.** A 429 or 5xx from Google's API used to end
+  the turn with an apology, which fails the item. `duet_voice/gemma_api.py` now
+  books every call against a per-minute token budget, spreads calls over several
+  keys, rests a refused key for the delay Google asks for, and retries transient
+  errors within a 20 s deadline (`tests/test_gemma_api.py`).
+- **Empty or malformed replies.** The API occasionally returns an empty
+  candidate, or stops on a malformed function call. The user would hear nothing.
   The thinker now asks once more before giving up. `tests/test_voice_thinker.py`
   covers this, and the rest of the thinker's tool loop.
 
-## 7. Which Gemini models a re-run can actually reach (27 Sep 2026)
-
-With a newly created key:
-
-- `gemini-2.5-flash-lite` and `gemini-2.5-pro` are refused: *"no longer available
-  to new users. Please update your code to use models/gemini-3.5-flash-lite"*
-  (for Pro: `gemini-3.1-pro-preview`). `gemini-2.5-flash` still answers, but it
-  is the same generation.
-- Samsung's re-run uses a key of its own, possibly a new one. A declared model it
-  cannot call would make the re-run fail, and that part of the grade scores zero.
-  DUET therefore declares current-generation models, `gemini-3.7-flash`
-  (thinker) and `gemini-3.5-flash-lite` (talker), which is Google's named
-  replacement. The switch needed two changes for Gemini 3:
-  - **Thought signatures.** Gemini 3 attaches them to function-call parts and
-    rejects a follow-up request that lost one. The thinker used to delete a
-    `keep_listening` call that came next to real work. It now keeps the model's
-    turn exactly as returned and answers every call.
-  - **Temperature.** Google advises keeping Gemini 3 at its default of 1.0,
-    because lower values can cause looping. The seed stays fixed.
-- **The free tier is not enough to evaluate on.** It allows 5 requests per minute
-  per model and serves them slowly: 1-16 s for a one-sentence talker reply and
-  28 s for a thinker step. Paid-tier latency is not measured yet. The benchmark
-  needs a billing-enabled key.
-- **First real-model check.** On "…the ID is X-K-4-2-Q-7, no wait, X-K-4-2-Q-8",
-  `gemini-3.5-flash` made exactly one call, `track_order("XK42Q8")`, with the
-  corrected, joined id. The talker named the corrected id too.
-- **First sample (20 items, our ASR transcripts, exact-match scoring).** The free
-  tier's daily cap (20 requests per model) stopped both runs part-way:
-  - `gemini-3.7-flash` passed 7 of the 7 items it completed;
-  - `gemini-3.5-flash` passed 5 of 6. On the two-step chain both attempted, 3.5
-    got the second call's arguments wrong and 3.7 got them right.
-
-  The thinker default is `gemini-3.7-flash`: newer (August 2026), half the price
-  today, and at least as good on this sample. The full 100-item comparison runs
-  once billing is on.
-
-## 8. A critical review of every file on the benchmark path (27 Sep 2026)
+## 7. A critical review of every file on the benchmark path (27 Sep 2026)
 
 We read every file the benchmark exercises and assumed each could be wrong. We
 simulated each scenario against the benchmark's own scorer, and measured
@@ -300,54 +265,7 @@ whatever could be measured.
 | The integrity test skipped itself when run alone | The "no hardcoding" proof silently not run | It loads the settings itself |
 | Markdown or snake_case in an answer | Symbols read aloud | Stripped before speech; underscores spoken as spaces |
 
-## 9. Moving the language model onto the GPU (27 Sep 2026)
-
-**Why.** Every hosted route stalled:
-- The Gemini free tier allows 20 requests per model per day, against about 350
-  for one run.
-- The billing-enabled key turned out to be a prepaid account with no balance
-  (HTTP 402).
-- The OpenAI account had no credits.
-
-A local open-weights model removes the dependency entirely. Samsung's re-run then
-needs no key, no quota, and no hosted model that could be withdrawn, and every
-run costs nothing.
-
-**The model.** Qwen3-30B-A3B-Instruct-2507, Apache-2.0: a mixture-of-experts model
-with 30.5B parameters, about 3.3B of them active per token, so it decodes fast.
-It is a non-thinking instruct model with native tool calling.
-
-**Making it fit a single 48 GB GPU** (about 45 GiB usable), next to the speech
-models (~3.5 GiB) and the benchmark's scoring recognizer (~4-5 GiB):
-
-| Choice | Evidence |
-|---|---|
-| Qwen's official FP8 build | 31.2 GB, against 61.1 GB in full precision. Architecture: 48 layers, 4 KV heads of 128, so 96 KiB of KV cache per token |
-| A fixed 33 GiB budget for vLLM | 29.1 GiB of weights, plus working memory, plus ~22k tokens of cache. It is a GiB budget, not a fraction, so an 80 GB GPU measures the same footprint |
-| Red Hat's 4-bit build on GPUs older than Ada | The FP8 build uses block-wise FP8 kernels (Ada or later). The 4-bit build is 16.7 GB in a 22 GiB budget, chosen automatically from the GPU's compute capability |
-| **vLLM 0.19.1** | The newest vLLM on torch 2.10. Every later release pins torch 2.11+, whose PyPI wheels are CUDA 13 builds (driver 580+), which a CUDA 12.x machine cannot run, and the guide allows 12.x |
-| transformers 5.5.4 in the server's environment | The release current when vLLM 0.19.1 shipped. vLLM's own pin allows later releases, but they are untested with it |
-| Port 18000; LiveKit on free ports; caches inside the repository | Shared GPU machines: port 8000 is the usual vLLM port, 7880 may be another user's LiveKit, home directories are small |
-| uv's own Python 3.11 for all three environments | vLLM's Triton kernels compile helpers against Python's C headers, often missing from system Pythons (python3-dev) |
-
-**Verified without a large GPU.**
-- 12 new tests cover the thinker's loop over the OpenAI-compatible API: tool calls
-  and results, `keep_listening`, a tool call the parser left in the text,
-  arguments that are not JSON, an empty reply, and an overtaken plan. They also
-  cover the local talker and the launcher's GPU plan (FP8 on a 48 GB L40S, the
-  same 33 GiB on an 80 GB H100, 4-bit on an A6000, refusal on a 6 GB GPU).
-- A stand-in server speaking vLLM's exact protocol (`tests/fake_openai.py`) drove
-  the full live pipeline on this laptop:
-  - the preflight passed, tool calling included;
-  - two conversations were answered;
-  - `keep_listening` was used twice;
-  - three tool calls reached the benchmark's log;
-  - the official evaluation scripts scored the run, using the local proxy judge.
-
-Still to measure on the DGX: the real model's accuracy, latency and peak GPU
-memory.
-
-## 10. Gaps in today's systems that DUET is built against
+## 8. Gaps in today's systems that DUET is built against
 
 - **FDB-v3 paper.**
   - The best published system, GPT-Realtime, passes fewer than 59% of
@@ -361,54 +279,33 @@ memory.
   talking", keeps speaking after the driver has used the touchscreen, and
   misreports failures. Sources are in `docs/USE_CASE_RESEARCH.md`.
 
-## 11. First runs with the real model: a shared DGX A100 (28 Sep 2026)
+## 9. Gemma 4 through Google's API (30 Sep 2026)
 
-**The machine.** SRM's DGX A100: 8 × A100-SXM4-40GB, DGX OS 7.5, shared by several
-users. When the run started every GPU was free; within minutes every one carried
-another user's job, leaving 15-20 GB free on each.
+The team settled on Gemma 4, Samsung's stated preference, through Google's API.
+What we measured before building around it:
 
-**What worked, on a machine that is not ours, from a fresh clone:**
-- `scripts/doctor.sh`, then `reproduce.sh`: all three environments installed from
-  the lock files, ffmpeg fetched, every model downloaded. On the A100 the plan
-  chose the 4-bit build by itself.
-- The model server (vLLM 0.19.1) started and passed the tool-calling preflight.
-- One live recording (`travel_19`) ran end to end: LiveKit, the agent, a
-  `search_flights` call with the right destination, a spoken answer, and the
-  benchmark's own three evaluation scripts. It was the first live item ever
-  answered by a real model. Turn-take 1.0, but the item failed: it heard June 1
-  for June 3 (below).
-- Offline, on the exact scripts of all 100 recordings (`--text script`): **Pass@1
-  0.63**, tool F1 0.932, argument accuracy 0.83, response quality 0.85, 0 errors,
-  376 s. The model was split over two half-free GPUs; the judge was the same local
-  model. These results were copied off the DGX by hand and must still be published
-  under `results/reported/` (see `DGX_EXPERIMENTS.md`).
-
-**How to read 0.63.** It is the thinker's ceiling, not a benchmark score. The words
-are perfect (no hearing errors), there is no timing, and the model grades its own
-answers, which is likely lenient. It is not comparable with GPT-Realtime's 0.600,
-which is end to end with the official judge.
-
-**What went wrong, and the fixes:**
-
-| Problem | Cause | Fix |
-|---|---|---|
-| The model server refused to start | GPU 0 had 14.9 GiB free; vLLM asked for 21.7 GiB | vLLM's check was right. The launcher now refuses early with the way out, and `bench/place_gpus.py` picks GPUs, splitting the model over two when no single one has room |
-| A "full" run ended in a minute with `total: 1` | The benchmark's runner loads its scoring recognizer onto the first visible GPU, which was full; the runner crashed, and the evaluations scored the one old result left behind | A crashed runner now stops the run before anything is scored. The recognizer can be placed on its own GPU (`DUET_SCORING_GPUS`) |
-| The agent heard "June 1" for "June 3" | With speech on the CPU (to spare the GPUs), the agent switches to the small `small.en` model | For comparable runs the agent's speech stays on a GPU (`DUET_AGENT_GPUS`); CPU runs are labelled |
-| `.venv-bench/bin/python` not found | Relative paths given to `run_live.py` were looked up inside the benchmark's folder | Resolved to absolute paths first |
-| The offline transcripts could come from `small.en` on a machine without a free GPU, under the name `large-v3-turbo` | The transcriber went through the agent's CPU fallback | It always uses the model it is named after |
-| The GPU peak (31.9 and 39.5 GiB) meant nothing | It counted every process on the card, other users' jobs included | `summary.json` now also records `ours_peak_gib`: the memory of this run's own processes, summed over every GPU they use |
-
-**Why the 4-bit build is now the default everywhere.** Until 28 Sep the plan
-chose Qwen's FP8 build on Ada and Hopper GPUs, and the 4-bit build on older ones.
-Only the 4-bit build has run. Samsung's 48 GB card could be either generation (an
-L40S is Ada, an A6000 is Ampere), so the FP8 path would have met the re-run
-untested. The 4-bit build runs on all three generations, it needs 22 GiB instead
-of 33 (the whole stack about 31 GiB, leaving ~13 GiB spare on a 48 GB card), and
-it halves the download. What it may cost in accuracy against FP8 is an experiment
-in `scripts/experiments.sh fp8`, on any Ada or Hopper GPU.
-
-**Every result is now traceable.** Live runs (`run_config.json`) and offline
-evaluations (`summary`) record the git commit, uncommitted edits, host, GPUs,
-driver, GPU placement, sampling settings, and the checkpoint the model server
-actually loaded. `bench/compare_runs.py` turns all of them into one table.
+- **Where it is served.** Google serves `gemma-4-26b-a4b-it` and `gemma-4-31b-it`
+  free of charge on free-tier projects. On our billing-enabled project every call
+  failed ("prepayment credits are depleted"); the pricing page lists Gemma as not
+  available on the paid tier. So the key must come from a project without billing,
+  and the preflight says so when it does not.
+- **Tool calling is right, including corrections.** "Track my order, it's K 7, uh,
+  no wait, K 4 Q 2, and set an alarm for 6:30" gave exactly two calls,
+  `track_order("K4Q2")` and `set_alarm("06:30")`, on both models.
+- **It always thinks.** Every answer starts with 90-280 thought tokens. The API
+  refuses both a thinking budget and a thinking level for Gemma ("not supported
+  for this model"), so there is no setting to send.
+- **Speed.** 3-8 s per call for the 26B-A4B, 15-28 s for the 31B. The 26B is the
+  thinker; the 31B is the fallback and our proxy judge.
+- **The free tier fails often.** On the night of 30 Sep, 6 of 12 calls returned
+  "500 Internal error". Retries absorb it; a 20 s deadline per call keeps the
+  retries inside a recording's answer window.
+- **The limit that matters: 16,000 input tokens per minute per model per
+  project** (a 429 names the quota `GenerateContentInputTokensPerModelPerMinute-FreeTier`).
+  One DUET thinker call is 2,310 input tokens (the instructions and 13 tool
+  definitions), so a single key allows about six calls a minute. A first paced
+  evaluation at four requests per minute still hit the limit, because calls later
+  in a tool chain carry more history. Hence the key pool with a token budget.
+- **Consequences for the agent.** The talker is off with a hosted model (a call
+  takes seconds; the fast voice is a fixed line instead), and preemptive planning is
+  off (each early plan is a call against the budget).

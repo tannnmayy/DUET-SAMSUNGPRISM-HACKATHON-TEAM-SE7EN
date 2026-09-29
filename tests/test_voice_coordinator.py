@@ -221,3 +221,37 @@ def test_a_call_from_a_plan_the_user_has_overtaken_never_runs_under_the_new_turn
                         state_changing=True, timeout_s=1.0, epoch=c.epoch)
     run(go())
     assert performed == [1]
+
+
+def test_a_closed_turn_waits_for_its_last_words_before_any_model_call():
+    """The turn closed while the last words were still being transcribed: no model
+    call may be spent on it. Their transcript voids the plan; with no transcript
+    (a noise burst) the wait ends on its own."""
+    c, clock = make()
+    c.turn_committed()
+    epoch = c.epoch
+
+    async def late_words():
+        task = asyncio.ensure_future(c.settle(epoch, max_wait_s=1.5))
+        await asyncio.sleep(0.1)
+        assert not task.done()              # the transcript is still due
+        c.heard("and make it two tickets")  # it arrives after the turn closed
+        with pytest.raises(Superseded):
+            await task
+    run(late_words())
+
+    c, clock = make()
+    c.turn_committed()
+
+    async def noise_only():
+        task = asyncio.ensure_future(c.settle(c.epoch, max_wait_s=1.5))
+        await asyncio.sleep(0.1)
+        assert not task.done()
+        clock.t += 1.6                      # no words ever come
+        await asyncio.wait_for(task, 1.0)
+    run(noise_only())
+
+    c, clock = make()
+    c.heard("track order XK42")             # the words were in before the turn closed
+    c.turn_committed()
+    run(asyncio.wait_for(c.settle(c.epoch, max_wait_s=1.5), 0.2))

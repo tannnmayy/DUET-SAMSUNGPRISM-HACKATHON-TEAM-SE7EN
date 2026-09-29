@@ -82,6 +82,7 @@ class Coordinator:
     committed_epoch: int = -1           # the epoch whose user turn the listener has closed
     user_speaking: bool = False
     last_speech_end: float = 0.0
+    transcript_due: bool = False        # speech ended and its transcript has not arrived yet
     open_utterance: str = ""            # what the user said since the agent last acted
     ledger: Dict[str, CallRecord] = field(default_factory=dict)
     history: List[CallRecord] = field(default_factory=list)
@@ -94,6 +95,7 @@ class Coordinator:
     def user_stopped_speaking(self) -> None:
         self.user_speaking = False
         self.last_speech_end = self.clock()
+        self.transcript_due = True
 
     def heard(self, text: str) -> None:
         """A final transcript segment from the ears.
@@ -109,7 +111,19 @@ class Coordinator:
             return
         if self.committed_epoch == self.epoch and not self.user_speaking:
             self.epoch += 1
+        self.transcript_due = False
         self.open_utterance = (self.open_utterance + " " + text).strip()
+
+    async def settle(self, epoch: int, max_wait_s: float) -> None:
+        """Before a model call is spent on a closed turn: if the user's last words are
+        still being transcribed, wait for them (at most max_wait_s after the speech
+        ended; a noise burst has no words). Raises Superseded if they change the turn."""
+        while self.transcript_due and self.clock() - self.last_speech_end < max_wait_s:
+            if self.epoch != epoch:
+                raise Superseded()
+            await asyncio.sleep(0.03)
+        if self.epoch != epoch:
+            raise Superseded()
 
     def agent_acted(self) -> None:
         self.open_utterance = ""

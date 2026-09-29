@@ -23,8 +23,8 @@ DUET agent (duet_voice/galaxy/agent.py) ─────┘
    talker (fast acknowledgement) + thinker (tools) through the DUET coordinator:
    commit gate · epochs · exactly-once ledger · failure policy · second look before speaking
    ▼
-language model: any OpenAI-compatible server
-   (laptop: Qwen3-4B-Instruct-2507 on llama.cpp; GPU server: Qwen3-30B-A3B on vLLM)
+language model: Gemma 4 26B-A4B through Google's API (as in the benchmark),
+   or a small model on the laptop (Qwen3-4B-Instruct-2507 on llama.cpp)
 ```
 
 Every action DUET takes on the phone passes the same coordinator as in the benchmark:
@@ -58,8 +58,10 @@ LLAMA_MODEL=/e/duet_local/models/Qwen3-4B-Instruct-2507-Q4_K_M.gguf \
 bash scripts/galaxy_demo.sh
 ```
 
-On a machine with a 24 GB+ GPU and the benchmark installed, leave out the two `LLAMA_`
-variables; the benchmark's vLLM server is used instead.
+Leave out the two `LLAMA_` variables to use Gemma 4 through Google's API instead, with
+`GOOGLE_API_KEY` in `.env.local` as for the benchmark. It is slower to answer (a few seconds
+a turn) and skips the checks that need a fast local model: the second look and the consent
+check.
 
 The script prints the laptop's address for the phone, for example `192.168.1.20:8787`. The
 first time, Windows asks whether Python may accept connections on private networks. Allow

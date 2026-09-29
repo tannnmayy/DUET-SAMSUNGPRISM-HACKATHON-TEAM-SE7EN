@@ -4,9 +4,11 @@
 #   bash scripts/galaxy_demo.sh
 #
 # It starts, and stops again on Ctrl-C:
-#   1. the language model, unless one already answers at DUET_LLM_BASE_URL:
-#      - with LLAMA_SERVER and LLAMA_MODEL set: llama.cpp (a laptop GPU, e.g. 6 GB), or
-#      - otherwise the benchmark's vLLM server (bench/llm_server.py, a 24 GB+ GPU);
+#   1. the language model:
+#      - with LLAMA_SERVER and LLAMA_MODEL set: llama.cpp on this machine (a laptop GPU,
+#        e.g. 6 GB), unless a server already answers at DUET_LLM_BASE_URL;
+#      - otherwise Gemma 4 through Google's API, as in the benchmark (GOOGLE_API_KEY or
+#        GOOGLE_API_KEYS in .env.local);
 #   2. the DUET for Galaxy agent (duet_voice/galaxy/agent.py), connected to LiveKit Cloud;
 #   3. the token server and web app on port 8787 (duet_voice/galaxy/server.py).
 #
@@ -36,6 +38,7 @@ wait_ready() {
 
 # --- 1. the language model --------------------------------------------------------------------
 if [ -n "${LLAMA_SERVER:-}" ]; then
+  export DUET_LLM_BACKEND=local
   port="${LLAMA_PORT:-18001}"
   export DUET_LLM_BASE_URL="${DUET_LLM_BASE_URL:-http://127.0.0.1:$port/v1}"
   export DUET_LLM_MODEL="${DUET_LLM_MODEL:-qwen3-4b-instruct-2507}"
@@ -51,16 +54,11 @@ if [ -n "${LLAMA_SERVER:-}" ]; then
   # a small GPU: speech recognition in 8-bit next to the model, speech synthesis on the CPU
   export DUET_ASR_DEVICE="${DUET_ASR_DEVICE:-cuda}" DUET_ASR_COMPUTE="${DUET_ASR_COMPUTE:-int8_float16}"
   export DUET_TTS_DEVICE="${DUET_TTS_DEVICE:-cpu}"
+  echo "== language model ready at $DUET_LLM_BASE_URL"
 else
-  export DUET_LLM_BASE_URL="${DUET_LLM_BASE_URL:-http://127.0.0.1:18000/v1}"
-  if ! ready; then
-    echo "== vLLM (the benchmark's model server)"
-    "$PY" bench/llm_server.py serve > results/galaxy/llm_server.out 2>&1 &
-    pids+=($!)
-    wait_ready results/galaxy/llm_server.out
-  fi
+  echo "== language model: Gemma 4 through Google's API"
+  "$PY" -m duet_voice.gemma_api >/dev/null || { echo "No usable Google API key: set GOOGLE_API_KEY in .env.local"; exit 1; }
 fi
-echo "== language model ready at $DUET_LLM_BASE_URL"
 
 # --- 2. the agent ------------------------------------------------------------------------------
 export DUET_TRACE_DIR="${DUET_TRACE_DIR:-$(pwd)/results/galaxy/traces}" PYTHONUNBUFFERED=1

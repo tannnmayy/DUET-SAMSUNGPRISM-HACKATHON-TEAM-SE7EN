@@ -56,7 +56,8 @@ log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
 
 # how long the talker waits for the thinker's first decision before speaking anyway
-ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
+# (a hosted Gemma call takes seconds, so without a talker model there is nothing to wait for)
+ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9" if CONFIG.talker_enabled else "0.3"))
 # speak a progress line when tools keep the user waiting this long
 # (a hosted Gemma call takes seconds, so the line comes less often than with a local model)
 PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5" if CONFIG.llm_backend == "local" else "6"))
@@ -66,6 +67,8 @@ THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
 LISTEN_WAIT_S = float(os.environ.get("DUET_LISTEN_WAIT", "2.5"))
 # a slow thinker is covered by the talker only after this much quiet
 ACK_MIN_QUIET_S = float(os.environ.get("DUET_ACK_MIN_QUIET", "1.6"))
+# how long after the user's speech ends the thinker waits for its transcript, at most
+SETTLE_MAX_S = float(os.environ.get("DUET_SETTLE_MAX", "1.5"))
 # When there is work to cover and the talker has nothing in time (slow or failed
 # API call), this is said instead: no dead air, and no claim about any result.
 FALLBACK_ACK = os.environ.get("DUET_FALLBACK_ACK", "One moment.")
@@ -257,6 +260,10 @@ class DuetAgent(Agent):
             wait for them to go quiet (or for new speech, which cancels this reply),
             then ask again with keep_listening removed."""
             try:
+                # The turn may have closed while the user's last words were still being
+                # transcribed; their transcript would void this plan. Wait for it rather
+                # than spend a model call (and API quota) on a stale turn.
+                await self._coord.settle(epoch, SETTLE_MAX_S)
                 listened = False
                 async for ev in self._thinker.run(text, self._toolbox, audio=audio, note=note):
                     if ev.kind == "listen":
@@ -282,6 +289,7 @@ class DuetAgent(Agent):
 
         worker = asyncio.ensure_future(think())
         spoke = False
+        graced = False  # the talker was asked to cover a slow thinker (traced once)
         listening = False
         decided_tools: Optional[bool] = None
         last_speech = started
@@ -318,10 +326,16 @@ class DuetAgent(Agent):
                         spoke = True  # said it, or had nothing in time: never twice
                     elif not spoke and decided_tools is None and not listening:
                         # The thinker is slow to decide. Only cover the gap once the
-                        # user has clearly finished, never in a pause they may resume.
+                        # user has clearly finished, never in a pause they may resume
+                        # (the benchmark ends a turn at the first silence over 2 s).
                         if self._quiet_for() >= ACK_MIN_QUIET_S:
                             ack = await speak_ack(0.3)
-                            self._trace("talker", text=ack, reason="grace")
+                            # with no talker model, the fixed line covers the wait
+                            fallback = not ack and not CONFIG.talker_enabled
+                            ack = FALLBACK_ACK if fallback else ack
+                            if ack or not graced:
+                                self._trace("talker", text=ack, reason="grace", fallback=fallback)
+                            graced = True
                             if ack:
                                 yield ack + " "
                                 yield FlushSentinel()
@@ -401,6 +415,10 @@ def prewarm(proc: JobProcess) -> None:
                      len(gemma_api.api_keys()))
         for note in gemma_api._notes:
             log.warning(note)
+    if not DRY_RUN:
+        # the first thinker built in a process compiles the tool schemas (~0.7 s); do it
+        # now rather than while the first conversation's audio is already streaming
+        make_thinker()
     speech_models.whisper()
     if CONFIG.tts_backend == "kokoro":
         speech_models.kokoro()

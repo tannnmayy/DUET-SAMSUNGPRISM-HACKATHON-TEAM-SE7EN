@@ -7,11 +7,11 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 
 | Requirement | Where | Status |
 |---|---|---|
-| Stay responsive: spoken feedback fast, no dead air | Talker acknowledgement while the thinker works; progress line on slow tools; spoken fallback if the thinker fails. `duet_voice/agent.py`, `duet_voice/talker.py` | 🟡 live with a scripted stand-in: acknowledgement 0.24 s after the turn closes. One live recording with the real model answered on the DGX A100 (28 Sep); latency over all 100 is measured in the full run (`DGX_EXPERIMENTS.md`) |
-| No false "done!" claims | The talker never states results; the thinker speaks only after tool results. `duet_voice/prompts.py` | 🟡 pending model runs |
-| Work asynchronously | ASR, TTS and tools run off the audio loop (`asyncio.to_thread`); tools run while the acknowledgement plays | ✅ |
-| Recover cleanly: discard stale intent | Epochs (new speech, or words arriving after a turn closed), every call bound to its plan's epoch; commit gate waits for a closed turn plus a quiet hold; `keep_listening`. `duet_voice/coordinator.py` | ✅ unit-tested and seen live (stand-in run) · 🟡 benchmark proof pending |
-| Update tool arguments after a change of mind | The open request is re-read whole, and the thinker uses the final value. `DuetAgent._open_request`, `prompts.py` | 🟡 first real-model check correct ("X-K-4-2-Q-7, no wait, …Q-8" gave one call with XK42Q8); self-correction Pass@1 over all 100 comes from the offline experiments and the full run |
+| Stay responsive: spoken feedback fast, no dead air | "One moment." as soon as the thinker decides there is work, progress lines while it works, a spoken fallback if it fails. `duet_voice/agent.py` | ✅ built · 🟡 latency over all 100 comes from the full run |
+| No false "done!" claims | The fast voice never states a result; the thinker speaks only after tool results. `duet_voice/prompts.py` | ✅ |
+| Work asynchronously | ASR, TTS, model calls and tools run off the audio loop | ✅ |
+| Recover cleanly: discard stale intent | Epochs (new speech, or words arriving after a turn closed), every call bound to its plan's epoch; commit gate waits for a closed turn plus a quiet hold; `keep_listening`. `duet_voice/coordinator.py` | ✅ unit-tested and seen live |
+| Update tool arguments after a change of mind | The open request is re-read whole, and the thinker uses the final value. `DuetAgent._open_request`, `prompts.py` | ✅ Gemma 4's preflight test is a correction ("K 7, no wait, K 4 Q 2" gives `K4Q2`) · 🟡 self-correction Pass@1 over all 100 comes from the full run |
 | Never perform the same state-changing action twice | Idempotency ledger; committed calls survive a barge-in. `coordinator.py`, `tests/test_voice_coordinator.py` | ✅ |
 
 ## What to do
@@ -19,38 +19,38 @@ meets it. Status: ✅ done · 🟡 in progress · ⬜ not started.
 | Step | Where | Status |
 |---|---|---|
 | Build a LiveKit voice agent (custom allowed, following the template patterns) | `duet_voice/agent.py`: same tool names, arguments and `/tmp/agent_tool_calls.log` format as the templates | ✅ |
-| Clone FDB-v3, LiveKit, download data, run it | `reproduce.sh`, `bench/run_live.py`. Local LiveKit server verified end to end on all 100 items with the final code (100% answered; `results/reported/listening_dry_run`); LiveKit Cloud (`LIVEKIT_*`) verified on 3 items | ✅ |
-| Iterate on self-corrections and multi-step chains | `bench/offline_eval.py`, `docs/FINDINGS.md` | 🟡 listening done; local Qwen on all 100 exact scripts: Pass@1 0.63 with a proxy judge (DGX A100, 28 Sep). Iteration loop with noise band, failure grouping and comparison table: `scripts/experiments.sh`, `bench/failures.py`, `bench/compare_runs.py` |
-| One extension use case, end to end, in the video | `docs/USE_CASE_RESEARCH.md` | ⬜ deferred by decision |
+| Clone FDB-v3, LiveKit, download data, run it | `reproduce.sh`, `bench/run_live.py`. Local LiveKit server verified end to end on all 100 items (`results/reported/listening_dry_run`); LiveKit Cloud (`LIVEKIT_*`) verified | ✅ |
+| Iterate on self-corrections and multi-step chains | `bench/offline_eval.py` (the thinker alone on all 100, officially scored), `bench/failures.py`, `bench/compare_runs.py`, `docs/FINDINGS.md` | 🟡 Gemma 4 offline evaluation running |
+| One extension use case, end to end, in the video | DUET for Galaxy (`app/`, `duet_voice/galaxy/`, `app/README.md`); recorded film `results/galaxy/video/` | ✅ |
 
 ## What to submit
 
 | Deliverable | Where | Status |
 |---|---|---|
-| README: architecture (one diagram), exact setup and run steps, extension marked | `README.md` | 🟡 results and extension sections pending |
-| One-command reproduction (install, configure, evaluate) | `reproduce.sh`: no API key; three environments from lock files (uv, Python 3.11); the model server (vLLM) started and checked; pinned benchmark, data, LiveKit and model revisions. Step by step for a remote machine: `DGX_RUNBOOK.md` | 🟡 first run on a clean GPU machine (the DGX) pending |
-| Declaration of model provider / custom agent | `README.md`, section "Models and providers": custom LiveKit agent; Qwen3-30B-A3B-Instruct-2507 (open weights, Apache-2.0) served locally by vLLM on the same GPU; the Gemini API as an alternative | ✅ |
-| Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/` (`run_config.json` with the effective models, sampling and seed; `summary.json` with scores, agent statistics and the GPU's peak memory; official reports, per-item JSON, traces, logs). The reported run is copied to a committed folder | 🟡 pipeline ready; best run on the DGX pending |
-| API keys documented, not included | `README.md`, section "API keys": none required (the language model is local); optional keys listed | ✅ |
-| Demo video, 3-5 min | team | ⬜ |
+| README: architecture (one diagram), exact setup and run steps, extension marked | `README.md` | ✅ · results table filled from the full run |
+| One-command reproduction (install, configure, evaluate) | `reproduce.sh`: a Google API key for Gemma 4; two environments from lock files (uv, Python 3.11); pinned benchmark, data, LiveKit and speech-model revisions; a preflight of every key and of tool calling before anything runs | ✅ · 🟡 fresh Linux clone test running |
+| Declaration of model provider / custom agent | `README.md`, "Models and providers": custom LiveKit agent; Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's API | ✅ |
+| Results and run logs (scores, seeds, configuration) from our best run | `results/live/<run>/`, published to `results/reported/<run>/`: `run_config.json`, `summary.json`, official reports, per-item JSON, traces, logs | 🟡 full run next |
+| API keys documented, not included | `README.md`, "API keys": `GOOGLE_API_KEY` (a free-tier project) or `GOOGLE_API_KEYS`; optional OpenAI and LiveKit keys. `.env.local` is git-ignored | ✅ |
+| Demo video, 3-5 min | team (the extension's film is recorded) | 🟡 |
 | Slides, at most 8 | team | ⬜ |
 
 ## Scoring and policy
 
 | Point | How we handle it | Status |
 |---|---|---|
-| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | Everything on the one GPU: model server 22 GiB (fixed budget), speech ~3.5 GiB, scoring recognizer ~4-5 GiB, about 31 GiB in all. Red Hat's 4-bit build on every GPU generation, the configuration we measured. All environments use torch's CUDA 12.8 build (vLLM 0.19.1 is the newest on it), which runs on CUDA 12.x and 13.x drivers. No hosted API | 🟡 install, model server, tool calling and one live recording verified on a shared DGX A100 (28 Sep); a full single-GPU run is next |
-| LLM judge enabled, single pinned judge | The official scripts run unmodified with `--use-llm`; Samsung's gpt-4o is used whenever a working OpenAI key is present. Our own numbers otherwise use the local model as a proxy judge, labelled as such; `--rescore` re-judges saved results | ✅ |
+| Samsung re-runs our script on one 48 GB GPU or declared hosted APIs; only the re-run counts | The declared hosted API is Google's (Gemma 4); the GPU runs speech only (about 8 GiB). The preflight stops a run whose keys cannot use Gemma, with the fix (a key from a free-tier project), instead of scoring 100 failures. `GOOGLE_API_KEYS` adds up the limits of several projects | ✅ · 🟡 full run next |
+| LLM judge enabled, single pinned judge | The official scripts run unmodified with `--use-llm`; Samsung's gpt-4o is used whenever a working OpenAI key is present. Our own numbers otherwise use Gemma 4 31B as a proxy judge, labelled as such; `--rescore` re-judges saved results | ✅ |
 | Ties break on strict pass rate | Pass@1 is the metric we optimise first | ✅ |
 
 ## Dos and don'ts
 
 | Rule | How we comply | Status |
 |---|---|---|
-| Cite public checkpoints and hosted APIs | `README.md`, sections "Models and providers" and "References" | ✅ |
-| Pin seeds and versions | Every package, transitive included (`requirements*.lock`, including vLLM's); Hugging Face revisions of Whisper, Kokoro and both Qwen builds; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; seed 7 on every model call and on the server; greedy ASR; effective settings recorded per run | ✅ |
-| Test the reproduction on a machine that is not ours | A DGX A100 (SRM, shared, 8 × 40 GB), 28 Sep: fresh clone, `scripts/doctor.sh`, `reproduce.sh` installed all three environments and fetched every model; the model server served and passed the tool-calling check; one live recording ran end to end through the official scripts. Its GPUs were all half-used by other jobs, which `bench/place_gpus.py` now handles. Steps: `DGX_RUNBOOK.md`, `DGX_EXPERIMENTS.md` | 🟡 partly done; the full run is next |
-| Keep the extension honest | The extension will be marked and scoped | ⬜ |
-| Don't hardcode or memorise test items | `tests/test_voice_integrity.py` fails on any benchmark value in the agent's strings | ✅ |
-| Don't call your own servers | The model server runs on the evaluation machine itself (127.0.0.1); the only remote service is LiveKit, and only with a Cloud project | ✅ |
-| Don't cache across scenarios | Per-room coordinator, toolbox and thinker state; only model weights are shared | ✅ |
+| Cite public checkpoints and hosted APIs | `README.md`, "Models and providers" and "References" | ✅ |
+| Pin seeds and versions | Every package, transitive included (`requirements*.lock`); Hugging Face revisions of Whisper and Kokoro; the Gemma model name, its sampling and seed 7 on every call; benchmark commit, data SHA-256 and LiveKit checksum in `reproduce.sh`; greedy ASR; effective settings recorded per run | ✅ |
+| Test the reproduction on a machine that is not ours | A fresh Linux clone (WSL2 Ubuntu 26.04, RTX 3060) runs `reproduce.sh` from scratch. Earlier, a shared DGX A100 at SRM ran the install and a live recording end to end (28 Sep) | 🟡 running |
+| Keep the extension honest | Marked in the README; the film states that phone actions are simulated in the web build | ✅ |
+| Don't hardcode or memorise test items | `tests/test_voice_integrity.py` fails on any benchmark value in the agent's strings; no training or tuning on the benchmark | ✅ |
+| Don't call your own servers | The only remote services are Google's API (the model) and, with a Cloud project, LiveKit | ✅ |
+| Don't cache across scenarios | Per-room coordinator, toolbox and thinker state | ✅ |

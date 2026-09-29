@@ -32,6 +32,9 @@ def fake_clients(monkeypatch, script):
             outcome = script[i].pop(0)
             if isinstance(outcome, Exception):
                 raise outcome
+            if isinstance(outcome, tuple):                 # ("hang", seconds): no answer for that long
+                await asyncio.sleep(outcome[1])
+                outcome = 2300
             return NS(usage_metadata=NS(prompt_token_count=outcome), key=i)
         return NS(aio=NS(models=NS(generate_content=generate_content)))
     monkeypatch.setattr(gemma_api, "client_for", client_for)
@@ -79,6 +82,24 @@ def test_transient_server_errors_are_retried(monkeypatch):
     with_keys(monkeypatch, 1)
     fake_clients(monkeypatch, {0: [ApiError(500, "INTERNAL"), ApiError(503), 2300]})
     assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
+
+
+def test_a_hung_attempt_is_cut_short_and_asked_again_on_another_key(monkeypatch):
+    with_keys(monkeypatch, 2)
+    monkeypatch.setenv("DUET_GEMMA_ATTEMPT_S", "0.5")
+    calls = fake_clients(monkeypatch, {0: [("hang", 30.0)], 1: [2300]})
+    start = time.monotonic()
+    resp = run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=8))
+    assert resp.key == 1 and calls == [0, 1]
+    assert time.monotonic() - start < 2.0
+
+
+def test_the_last_attempt_gets_all_the_time_left(monkeypatch):
+    with_keys(monkeypatch, 1)
+    monkeypatch.setenv("DUET_GEMMA_ATTEMPT_S", "5")
+    fake_clients(monkeypatch, {0: [("hang", 1.5)]})
+    # 3 s left is too little for a second 5 s attempt, so this one is not cut at 1 s
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=3)).key == 0
 
 
 def test_a_permanent_error_is_raised_at_once(monkeypatch):
