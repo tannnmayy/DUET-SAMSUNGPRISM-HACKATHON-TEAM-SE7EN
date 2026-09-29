@@ -64,6 +64,9 @@ def main() -> int:
     ap.add_argument("--min-silence-ms", type=int, default=350)
     args = ap.parse_args()
     os.environ["DUET_ASR_MODEL"] = args.model
+    # without a GPU the agent swaps to a small model for speed; here the transcripts
+    # must come from the model the output file is named after
+    os.environ["DUET_ASR_CPU_MODEL"] = args.model
 
     from faster_whisper.vad import VadOptions, get_speech_timestamps
     from duet_voice import speech_models
