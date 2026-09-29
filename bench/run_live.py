@@ -353,6 +353,15 @@ def main() -> int:
     ap.add_argument("--llm-python", default=llm_server.default_python(),
                     help="interpreter of the model server's environment (.venv-llm), to start vLLM")
     args = ap.parse_args()
+    # the runner and the evaluations run inside the benchmark's folder, so a relative
+    # path given here must not be looked up from there (a bare command name stays as is)
+    for name in ("bench_python", "llm_python"):
+        path = getattr(args, name)
+        if path and os.path.dirname(path):
+            setattr(args, name, os.path.abspath(path))
+    args.data_dir = os.path.abspath(args.data_dir)
+    if args.run_dir:
+        args.run_dir = os.path.abspath(args.run_dir)
     PROVIDER = args.provider
     from duet_voice.config import CONFIG
     backend = CONFIG.llm_backend
