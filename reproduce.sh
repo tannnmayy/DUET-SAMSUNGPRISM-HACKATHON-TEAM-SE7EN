@@ -150,4 +150,13 @@ say "the benchmark's scoring recognizer (Parakeet)"
 
 # --- 6. run and evaluate ------------------------------------------------------------------------------
 say "running FDB-v3 against the DUET agent"
-"$PY_AGENT" bench/run_live.py --bench-python "$PY_BENCH" --llm-python "$PY_LLM" "$@"
+status=0
+"$PY_AGENT" bench/run_live.py --bench-python "$PY_BENCH" --llm-python "$PY_LLM" "$@" || status=$?
+
+# Our own test machines only (DUET_AUTO_PUSH=1): store the results on GitHub right away,
+# successful or not. Off by default, so a re-run elsewhere never touches git.
+if [ "${DUET_AUTO_PUSH:-0}" = 1 ]; then
+  tag="auto_live_$(date +%m%d_%H%M)"; [ "$status" -ne 0 ] && tag="${tag}_failed"
+  bash scripts/push_results.sh "$tag" || echo "Auto-push failed; later run: bash scripts/push_results.sh <name>"
+fi
+exit "$status"

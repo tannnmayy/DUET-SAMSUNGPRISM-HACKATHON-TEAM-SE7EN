@@ -50,7 +50,10 @@ job:
 - give the next command from this manual;
 - compare the output with the manual's expected output;
 - diagnose problems with Part 10 (troubleshooting);
-- make sure every result is saved and pushed (Part 8).
+- make sure every result is saved and pushed (Part 8). Runs push themselves when
+`DUET_AUTO_PUSH=1` is set (Part 4.3, step 5). After each run, confirm the output
+ends with `Pushed to GitHub: branch ...`; if not, have the operator run
+`bash scripts/push_results.sh <name>`.
 
 The code is finished and tested. Nothing needs designing, tuning or editing here.
 When a problem is not covered by this manual, the right move is to collect the
@@ -304,6 +307,16 @@ cat ~/.ssh/id_ed25519.pub
 
 3. On GitHub: Settings → SSH and GPG keys → New SSH key. Paste that line and save.
 4. Test it: `ssh -T git@github.com` should say `Hi <you>! You've successfully authenticated`.
+5. **Turn on automatic pushing** (once):
+
+   ```bash
+   echo 'export DUET_AUTO_PUSH=1' >> ~/.bashrc && export DUET_AUTO_PUSH=1
+   ```
+
+   From then on, every `reproduce.sh` run and every `scripts/experiments.sh` set
+   pushes its results to GitHub by itself when it ends, successful or not (the name
+   ends in `_failed` if it failed). It is off by default, so Samsung's re-run never
+   touches git.
 
 ### 4.4 Clone
 
@@ -660,7 +673,16 @@ afterwards (`rm -rf duet_final_check`), after the push succeeded.
 
 ### 8.1 The rule
 
-**After every run, and at the end of every session:**
+**Automatic.** With `DUET_AUTO_PUSH=1` (Part 4.3, step 5), live runs and
+experiments push themselves when they end, as `auto_live_<time>` or
+`auto_offline_<set>_<time>`. Check that it happened: the end of the output shows
+`Pushed to GitHub: branch ...`. If it says `Auto-push failed` (network or access),
+push by hand later.
+
+Check it's on at the start of each session: `echo $DUET_AUTO_PUSH` prints `1`.
+
+**By hand, after anything else, and at the end of every session** (for example to
+include the journal):
 
 ```bash
 bash scripts/push_results.sh <session-name>

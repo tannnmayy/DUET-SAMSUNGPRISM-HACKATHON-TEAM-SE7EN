@@ -28,7 +28,13 @@ LOG=results/offline/experiments.log
 mkdir -p results/offline
 started=""
 cleanup() {
+  local status=$?
   if [ -n "$started" ]; then kill -INT "$started" 2>/dev/null || true; wait "$started" 2>/dev/null || true; fi
+  # our own test machines only (DUET_AUTO_PUSH=1): results go to GitHub at once, even after a failure
+  if [ "${DUET_AUTO_PUSH:-0}" = 1 ] && [ -n "$SET" ]; then
+    local tag="auto_offline_${SET}_$(date +%m%d_%H%M)"; [ "$status" -ne 0 ] && tag="${tag}_failed"
+    bash scripts/push_results.sh "$tag" || echo "Auto-push failed; later run: bash scripts/push_results.sh <name>"
+  fi
 }
 trap cleanup EXIT
 
