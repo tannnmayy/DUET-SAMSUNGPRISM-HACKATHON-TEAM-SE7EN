@@ -43,8 +43,9 @@ function sections(md, keep) {           // keep the intro and the ## sections na
 
 // --- Samsung's requirements, each with where it is met ---------------------------------------------
 const B = (p) => `${REPO}/blob/main/${p}`, T = (p) => `${REPO}/tree/main/${p}`;
-const MET = "met", FORM = "form", SUB = "sub", PART = "part";
-const LABEL = { met: "Met", form: "Submission form", sub: "At submission", part: "Partly" };
+const MET = "met", FORM = "form", SUB = "sub", PART = "part", LINK = "form";
+const VIDEO = "https://drive.google.com/drive/folders/1VA8tbpwyIQrz-USTfc_LUibM5IOoRX3O";
+const LABEL = { met: "Met", form: "Linked", sub: "At submission", part: "Partly" };
 const matrix = [
   ["Theme 05 guide: what to submit", [
     ["Code repository with a README covering the architecture (a diagram), exact setup and run steps, and the extension clearly marked",
@@ -54,7 +55,7 @@ const matrix = [
     ["Benchmark results and run logs (scores, seeds, configuration) from our best run",
       `<a href="${T("results/reported/gemma4_final_run")}">results/reported/gemma4_final_run</a>: summary.json, run_config.json (seed 7, sampling, every threshold, the git commit), the official reports, 100 per-recording results, a trace of every conversation, the agent, runner and evaluation logs. Chapter 5.`, MET],
     ["Demo video, 3 to 5 minutes: an interruption on the benchmark, then the extension",
-      `The link is in the submission form. Plan: <a href="${B("docs/VIDEO_SCRIPT.md")}">docs/VIDEO_SCRIPT.md</a>; the extension's recorded runs: <a href="${T("results/galaxy/video")}">results/galaxy/video</a>.`, FORM],
+      `<a href="${VIDEO}">The demo video</a> (Google Drive), linked from the README and the submission form. Plan: <a href="${B("docs/VIDEO_SCRIPT.md")}">docs/VIDEO_SCRIPT.md</a>; the extension's recorded runs: <a href="${T("results/galaxy/video")}">results/galaxy/video</a>.`, FORM],
     ["Slide deck, at most 8 slides: problem, architecture, results, what next",
       `<a href="${B("SRM_SE7EN.pptx")}">SRM_SE7EN.pptx</a> and <a href="${B("SRM_SE7EN.pdf")}">SRM_SE7EN.pdf</a>: 8 slides.`, MET],
     ["API keys documented, not included",
@@ -93,10 +94,10 @@ const matrix = [
     ["Working prototype code in a public or shared GitHub repository", `<a href="${REPO}">${REPO.replace("https://", "")}</a> (public).`, MET],
     ["README with reproducible setup instructions, Docker files and other requirements", `README; <a href="${B("Dockerfile")}">Dockerfile</a> (runs the same reproduce.sh); requirements*.lock.`, MET],
     ["Release tag PRISM_GENAI_HACKATHON_Y2026 on the final commit; everything referenced is in that commit", `Created on the final commit when the team submits.`, SUB],
-    ["Demo video, at most 5 minutes (YouTube or Drive link)", `In the submission form.`, FORM],
+    ["Demo video, at most 5 minutes (YouTube or Drive link)", `<a href="${VIDEO}">Google Drive folder</a>, linked from the README.`, LINK],
     ["Presentation (PPT or PDF) named CollegeName_TeamName", `SRM_SE7EN.pptx and SRM_SE7EN.pdf.`, MET],
     ["Theme ID, project title, team, problem, solution and architecture, tech stack, innovation, results and limitations in the presentation", `Slides 1 to 8 of SRM_SE7EN.`, MET],
-    ["AI usage disclosure form", `Filled in and signed by the team, submitted with the form.`, FORM],
+    ["AI usage disclosure form", `<a href="${B("AI%20disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf")}">AI disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf</a>, also submitted with the form.`, MET],
   ]],
   ["Theme 05 FAQ: the organizers' clarifications", [
     ["One GPU with 48 GB (A6000 class); frugal compute is encouraged", `2.9 GB of GPU memory at peak in the reported run; the language model runs at Google.`, MET],
@@ -114,7 +115,7 @@ const chapters = [];
 function chapter(id, title, html, lead) { chapters.push({ id, title, html, lead }); }
 
 chapter("requirements", "Samsung's requirements, and where each is met", `
-<p>Every requirement in Samsung's four documents for this round: the Theme 05 participant guide, the hackathon launch deck, the FAQ, and the AI usage disclosure form. "Submission form" and "At submission" mark items delivered with the Google Form rather than in this repository.</p>
+<p>Every requirement in Samsung's four documents for this round: the Theme 05 participant guide, the hackathon launch deck, the FAQ, and the AI usage disclosure form. "Linked" marks an item delivered through a link rather than a file in this repository; "At submission", one done when the team submits.</p>
 ${matrixHtml()}`, "The checklist a reviewer can verify against the repository.");
 
 chapter("overview", "DUET in one chapter", mdToHtml("README.md", dropTitle(sections(read("README.md"),
@@ -192,7 +193,8 @@ bash reproduce.sh --force               # all 100 recordings, then the official 
     <tr><td>This documentation</td><td>SRM_SE7EN_Documentation.pdf</td></tr>
     <tr><td>The reported run</td><td>results/reported/gemma4_final_run: reports, 100 traces, logs</td></tr>
     <tr><td>Extension demo recordings</td><td>results/galaxy/video/</td></tr>
-    <tr><td>Demo video, AI usage disclosure</td><td>With the submission form</td></tr>
+    <tr><td>Demo video</td><td><a href="${VIDEO}">Google Drive folder</a></td></tr>
+    <tr><td>AI usage disclosure</td><td>AI disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf</td></tr>
   </tbody></table>
 </section>`;
 
