@@ -1,0 +1,21 @@
+{
+  "name": "duet-galaxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DUET for Galaxy: a full-duplex voice assistant for Samsung Galaxy phones (Samsung PRISM, Team SE7EN)",
+  "scripts": {
+    "vendor": "node -e \"const f=require('fs');f.copyFileSync('node_modules/livekit-client/dist/livekit-client.umd.js','www/vendor/livekit-client.umd.js');f.copyFileSync('node_modules/jsqr/dist/jsQR.js','www/vendor/jsQR.js');f.copyFileSync('node_modules/qrcode-generator/qrcode.js','www/vendor/qrcode-generator.js')\"",
+    "sync": "npm run vendor && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "jsqr": "^1.4.0",
+    "livekit-client": "^2.22.3",
+    "qrcode-generator": "^1.4.4"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.63.0"
+  }
+}

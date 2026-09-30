@@ -20,20 +20,18 @@ log = logging.getLogger("duet.talker")
 SILENT = "<silent>"
 
 
-def _gemini():
-    from .gemini import client  # one client per process, API key or Vertex AI
-    return client()
-
-
-async def acknowledgement(user_text: str, context: str = "", usage: Optional[dict] = None) -> Optional[str]:
+async def acknowledgement(user_text: str, context: str = "", usage: Optional[dict] = None,
+                          instructions: Optional[str] = None) -> Optional[str]:
     """One sentence, or None when the talker has nothing useful to say in time.
-    `usage`, if given, receives the call's token counts (for the cost analysis)."""
+    `usage`, if given, receives the call's token counts (for the cost analysis).
+    `instructions` replace the benchmark's talker instructions (the phone app's modes)."""
     if not CONFIG.talker_enabled or not user_text.strip():
         return None
     if CONFIG.llm_backend == "local":
         from . import llm_local
         try:
-            text = await asyncio.wait_for(llm_local.acknowledge(user_text, usage), timeout=CONFIG.talker_timeout_s)
+            text = await asyncio.wait_for(llm_local.acknowledge(user_text, usage, instructions),
+                                          timeout=CONFIG.talker_timeout_s)
         except asyncio.TimeoutError:
             log.info("talker timed out after %.1f s", CONFIG.talker_timeout_s)
             return None
@@ -44,19 +42,13 @@ async def acknowledgement(user_text: str, context: str = "", usage: Optional[dic
     from google.genai import types
 
     prompt = (("Earlier in this call: " + context + "\n") if context else "") + "User: " + user_text
-    from .gemini import resolved, sampling, thinking_config
-    model = resolved("talker", CONFIG.talker_model)
-    config = types.GenerateContentConfig(
-        system_instruction=TALKER_INSTRUCTIONS,
-        **sampling(model),
-        max_output_tokens=48,
-        thinking_config=thinking_config(model, "minimal"),
-    )
+    from . import gemma_api
+    model = gemma_api.resolved("talker", CONFIG.talker_model)
+    config = types.GenerateContentConfig(system_instruction=instructions or TALKER_INSTRUCTIONS,
+                                         **gemma_api.sampling(model))
     try:
-        resp = await asyncio.wait_for(
-            _gemini().aio.models.generate_content(model=model, contents=prompt, config=config),
-            timeout=CONFIG.talker_timeout_s,
-        )
+        resp = await asyncio.wait_for(gemma_api.generate(model, prompt, config, deadline_s=CONFIG.talker_timeout_s),
+                                      timeout=CONFIG.talker_timeout_s)
     except asyncio.TimeoutError:
         log.info("talker timed out after %.1f s", CONFIG.talker_timeout_s)
         return None

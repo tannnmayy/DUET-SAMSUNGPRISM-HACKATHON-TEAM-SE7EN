@@ -1,0 +1,227 @@
+{
+ "scenario": "care",
+ "mode": "care",
+ "room": "duet-care-95f1fd",
+ "events": [
+  {
+   "t": 3.59,
+   "kind": "session_start",
+   "mode": "Care",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.59,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.8,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 7.89,
+   "kind": "agent_said",
+   "text": "Hello Tanmay, it's DUET. How are you feeling today?",
+   "interrupted": false
+  },
+  {
+   "t": 7.89,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 11.15,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 16.18,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 16.76,
+   "kind": "heard",
+   "text": "Did I take my blood pressure tablet today? I don't remember. I'll just take it now."
+  },
+  {
+   "t": 16.81,
+   "kind": "think_start",
+   "text": "Did I take my blood pressure tablet today? I don't remember. I'll just take it now."
+  },
+  {
+   "t": 16.81,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 17.89,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 17.96,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 20.98,
+   "kind": "tool_planned",
+   "tool": "get_medication_schedule",
+   "args": {},
+   "hold_s": 1.1
+  },
+  {
+   "t": 20.98,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 4.18
+  },
+  {
+   "t": 21.08,
+   "kind": "tool_done",
+   "tool": "get_medication_schedule",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "medicines": [
+     {
+      "medicine": "Metformin 500 mg",
+      "for": "blood sugar",
+      "right_now": "already taken today at 9:02 AM: do NOT take another dose now; the next one is today at 8:00 PM",
+      "doses_today": [
+       "9:00 AM: taken at 9:02 AM",
+       "8:00 PM: later today"
+      ],
+      "next_dose": "today 8:00 PM"
+     },
+     {
+      "medicine": "Amlodipine 5 mg",
+      "for": "blood pressure",
+      "right_now": "already taken today at 9:02 AM: do NOT take another dose now; the next one is tomorrow at 9:00 AM",
+      "doses_today": [
+       "9:00 AM: taken at 9:02 AM"
+      ],
+      "next_dose": "tomorrow 9:00 AM"
+     },
+     {
+      "medicine": "Atorvastatin 10 mg",
+      "for": "cholesterol",
+      "right_now": "not due yet",
+      "doses_today": [
+       "10:00 PM: later today"
+      ],
+      "next_dose": "today 10:00 PM"
+     }
+    ]
+   },
+   "after_s": 0.15
+  },
+  {
+   "t": 25.47,
+   "kind": "thinker_say",
+   "text": "You've already taken your Amlodipine at nine minutes past nine this morning. Your next dose isn't until nine in the morning tomorrow.",
+   "after_s": 8.67
+  },
+  {
+   "t": 34.15,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. You've already taken your Amlodipine at nine minutes past nine this morning. Your next dose isn't until nine in the morning tomorrow.",
+   "interrupted": false
+  },
+  {
+   "t": 34.15,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 36.78,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 39.71,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 40.32,
+   "kind": "heard",
+   "text": "Okay, I'm feeling a bit tired today, but fine."
+  },
+  {
+   "t": 40.32,
+   "kind": "think_start",
+   "text": "Okay, I'm feeling a bit tired today, but fine."
+  },
+  {
+   "t": 40.32,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 41.41,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 41.51,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 56.67,
+   "kind": "tool_planned",
+   "tool": "log_checkin",
+   "args": {
+    "note": "feeling a bit tired",
+    "mood": "okay"
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 56.67,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 16.36
+  },
+  {
+   "t": 56.78,
+   "kind": "tool_done",
+   "tool": "log_checkin",
+   "args": {
+    "note": "feeling a bit tired",
+    "mood": "okay"
+   },
+   "result": {
+    "status": "ok",
+    "tool": "log_checkin",
+    "args": {
+     "note": "feeling a bit tired",
+     "mood": "okay"
+    }
+   },
+   "after_s": 0.11
+  },
+  {
+   "t": 58.64,
+   "kind": "thinker_say",
+   "text": "I've noted that you're feeling a bit tired today. I hope you can get some good rest later.",
+   "after_s": 18.33
+  },
+  {
+   "t": 64.37,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. I've noted that you're feeling a bit tired today. I hope you can get some good rest later.",
+   "interrupted": false
+  },
+  {
+   "t": 64.37,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

@@ -56,15 +56,19 @@ log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
 
 # how long the talker waits for the thinker's first decision before speaking anyway
-ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9"))
+# (a hosted Gemma call takes seconds, so without a talker model there is nothing to wait for)
+ACK_GRACE_S = float(os.environ.get("DUET_ACK_GRACE", "0.9" if CONFIG.talker_enabled else "0.3"))
 # speak a progress line when tools keep the user waiting this long
-PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5"))
+# (a hosted Gemma call takes seconds, so the line comes less often than with a local model)
+PROGRESS_AFTER_S = float(os.environ.get("DUET_PROGRESS_AFTER", "3.5" if CONFIG.llm_backend == "local" else "6"))
 THINKER_AUDIO = os.environ.get("DUET_THINKER_AUDIO", "0") == "1"
 # how long the user must stay quiet, after the thinker decided they had not finished,
 # before it answers anyway (the benchmark counts a gap over 2 s as the end of a turn)
 LISTEN_WAIT_S = float(os.environ.get("DUET_LISTEN_WAIT", "2.5"))
 # a slow thinker is covered by the talker only after this much quiet
 ACK_MIN_QUIET_S = float(os.environ.get("DUET_ACK_MIN_QUIET", "1.6"))
+# how long after the user's speech ends the thinker waits for its transcript, at most
+SETTLE_MAX_S = float(os.environ.get("DUET_SETTLE_MAX", "1.5"))
 # When there is work to cover and the talker has nothing in time (slow or failed
 # API call), this is said instead: no dead air, and no claim about any result.
 FALLBACK_ACK = os.environ.get("DUET_FALLBACK_ACK", "One moment.")
@@ -141,12 +145,15 @@ class AudioTape:
 # --- the agent ---------------------------------------------------------------------------
 
 class DuetAgent(Agent):
-    def __init__(self, trace: Trace, coord: Coordinator, toolbox: FdbToolbox) -> None:
-        super().__init__(instructions=THINKER_INSTRUCTIONS)
+    def __init__(self, trace: Trace, coord: Coordinator, toolbox: FdbToolbox, thinker=None,
+                 instructions: Optional[str] = None, talker_instructions: Optional[str] = None) -> None:
+        super().__init__(instructions=instructions or THINKER_INSTRUCTIONS)
         self._trace = trace
         self._coord = coord
         self._toolbox = toolbox
-        self._thinker = make_thinker()
+        # the benchmark's thinker by default; the phone app passes one with its own tools
+        self._thinker = thinker or make_thinker()
+        self._talker_instructions = talker_instructions
         self._tape = AudioTape()
         self._utterance_started: Optional[float] = None
         # User messages already answered. It advances only when a reply that
@@ -180,6 +187,23 @@ class DuetAgent(Agent):
     async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
         self._coord.turn_committed()
         self._trace("user_turn", text=(new_message.text_content or "").strip())
+
+    def done_note(self, done_before: List[Any]) -> str:
+        """Actions already carried out that the thinker has not seen yet (the plan that
+        ran them was overtaken by new words before its exchange completed)."""
+        if done_before and self._thinker.history == []:
+            return "Already done in this conversation (do not repeat): " + "; ".join(
+                "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
+        return ""
+
+    def polish(self, words: str) -> str:
+        """The answer as it will be spoken; unchanged for the benchmark."""
+        return words
+
+    def turn_note(self) -> str:
+        """Extra context for the thinker on this turn; none for the benchmark. The phone
+        app adds the time and what the user heard of an answer they interrupted."""
+        return ""
 
     def _user_messages(self, chat_ctx: llm.ChatContext) -> List[str]:
         return [item.text_content.strip() for item in chat_ctx.items
@@ -218,14 +242,16 @@ class DuetAgent(Agent):
             pcm = self._tape.since(self._utterance_started)
             if pcm is not None and len(pcm) > 1600:
                 audio = await asyncio.to_thread(encode_audio, pcm)
-        done_before = [r for r in self._coord.history if r.outcome in ("ok", "cached")]
-        note = ""
-        if done_before and self._thinker.history == []:
-            note = "Already done in this conversation (do not repeat): " + "; ".join(
-                "%s(%s)" % (r.tool, json.dumps(r.args)) for r in done_before)
+        note = self.done_note([r for r in self._coord.history if r.outcome in ("ok", "cached")])
+        extra = self.turn_note()
+        if extra:
+            note = (note + "\n" if note else "") + extra
 
         ack_usage: Dict[str, int] = {}
-        ack_task = asyncio.ensure_future(talker.acknowledgement(text, usage=ack_usage))
+        ack_kwargs: Dict[str, Any] = {"usage": ack_usage}
+        if self._talker_instructions:
+            ack_kwargs["instructions"] = self._talker_instructions
+        ack_task = asyncio.ensure_future(talker.acknowledgement(text, **ack_kwargs))
         events: asyncio.Queue = asyncio.Queue()
         epoch = self._coord.epoch
 
@@ -234,6 +260,10 @@ class DuetAgent(Agent):
             wait for them to go quiet (or for new speech, which cancels this reply),
             then ask again with keep_listening removed."""
             try:
+                # The turn may have closed while the user's last words were still being
+                # transcribed; their transcript would void this plan. Wait for it rather
+                # than spend a model call (and API quota) on a stale turn.
+                await self._coord.settle(epoch, SETTLE_MAX_S)
                 listened = False
                 async for ev in self._thinker.run(text, self._toolbox, audio=audio, note=note):
                     if ev.kind == "listen":
@@ -241,8 +271,8 @@ class DuetAgent(Agent):
                     await events.put(ev)
                 if listened:
                     while self._quiet_for() < LISTEN_WAIT_S:
-                        if self._coord.epoch != epoch:
-                            return  # they resumed: the next turn re-reads everything
+                        if self._coord.overtaken(epoch):
+                            return  # they said more: the next turn re-reads everything
                         await asyncio.sleep(0.05)
                     await events.put("resumed_thinking")
                     final_note = (note + "\n" if note else "") + RESPOND_NOW_NOTE
@@ -259,6 +289,7 @@ class DuetAgent(Agent):
 
         worker = asyncio.ensure_future(think())
         spoke = False
+        graced = False  # the talker was asked to cover a slow thinker (traced once)
         listening = False
         decided_tools: Optional[bool] = None
         last_speech = started
@@ -295,10 +326,16 @@ class DuetAgent(Agent):
                         spoke = True  # said it, or had nothing in time: never twice
                     elif not spoke and decided_tools is None and not listening:
                         # The thinker is slow to decide. Only cover the gap once the
-                        # user has clearly finished, never in a pause they may resume.
+                        # user has clearly finished, never in a pause they may resume
+                        # (the benchmark ends a turn at the first silence over 2 s).
                         if self._quiet_for() >= ACK_MIN_QUIET_S:
                             ack = await speak_ack(0.3)
-                            self._trace("talker", text=ack, reason="grace")
+                            # with no talker model, the fixed line covers the wait
+                            fallback = not ack and not CONFIG.talker_enabled
+                            ack = FALLBACK_ACK if fallback else ack
+                            if ack or not graced:
+                                self._trace("talker", text=ack, reason="grace", fallback=fallback)
+                            graced = True
                             if ack:
                                 yield ack + " "
                                 yield FlushSentinel()
@@ -322,6 +359,8 @@ class DuetAgent(Agent):
                 elif kind == "decided":
                     decided_tools = ev.tools
                     self._trace("thinker_decided", tools=ev.tools, after_s=round(time.time() - started, 2))
+                elif kind == "review":
+                    self._trace("thinker_review", text=ev.text)
                 elif kind == "tool_start":
                     self._trace("tool_start", name=ev.name, args=ev.args)
                 elif kind == "tool_done":
@@ -332,7 +371,7 @@ class DuetAgent(Agent):
                     spoke = True
                 elif kind == "say":
                     # spoken, not displayed: markdown symbols would be read aloud
-                    words = re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip()
+                    words = self.polish(re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip())
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
                     # the thinker finished: this request is answered once the reply lands
@@ -349,10 +388,12 @@ class DuetAgent(Agent):
 
 
 def talker_model() -> str:
-    """The model actually answering as the talker (after any Gemini fallback)."""
+    """The model answering as the talker, or "fixed" when the talker is off."""
+    if not CONFIG.talker_enabled:
+        return "fixed acknowledgement (no model)"
     if CONFIG.llm_backend == "local":
         return CONFIG.talker_model
-    from .gemini import resolved
+    from .gemma_api import resolved
     return resolved("talker", CONFIG.talker_model)
 
 
@@ -363,14 +404,21 @@ def prewarm(proc: JobProcess) -> None:
     if not DRY_RUN and CONFIG.llm_backend == "local":
         log.info("language model: %s on the local server %s", CONFIG.llm_model, CONFIG.llm_base_url)
     elif not DRY_RUN:
-        # the models this key can actually use (a declared model may have been
-        # withdrawn from new keys); one tiny request each, once per process
-        from . import gemini
-        for role, preferred in (("thinker", CONFIG.thinker_model), ("talker", CONFIG.talker_model)):
-            chosen = gemini.resolve(role, preferred)
-            log.info("%s model: %s", role, chosen)
-        for note in gemini._notes:
+        # the Gemma model these keys can actually use (Google may stop serving one to a
+        # key); one tiny request, once per process
+        from . import gemma_api
+        roles = [("thinker", CONFIG.thinker_model)]
+        if CONFIG.talker_enabled:
+            roles.append(("talker", CONFIG.talker_model))
+        for role, preferred in roles:
+            log.info("%s model: %s (%d API key(s))", role, gemma_api.resolve(role, preferred),
+                     len(gemma_api.api_keys()))
+        for note in gemma_api._notes:
             log.warning(note)
+    if not DRY_RUN:
+        # the first thinker built in a process compiles the tool schemas (~0.7 s); do it
+        # now rather than while the first conversation's audio is already streaming
+        make_thinker()
     speech_models.whisper()
     if CONFIG.tts_backend == "kokoro":
         speech_models.kokoro()
@@ -419,7 +467,7 @@ async def entrypoint(ctx: JobContext) -> None:
         turn_handling={
             "turn_detection": build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
-            "preemptive_generation": {"enabled": True,
+            "preemptive_generation": {"enabled": CONFIG.preemptive,
                                       "max_speech_duration": CONFIG.preempt_max_speech_s,
                                       "max_retries": CONFIG.preempt_max_retries},
         },

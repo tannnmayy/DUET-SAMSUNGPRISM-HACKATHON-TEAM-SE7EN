@@ -1,9 +1,10 @@
-# Where does DUET matter? Use-case research for the extension (26 Sep 2026)
+# Where does DUET matter? The research behind DUET for Galaxy
 
-The extension is worth 20% and must run end to end in the video. The question
-is not "what is a good demo" but **where a real-time, full-duplex agent that acts
-is the reason a Samsung product gets better**, as opposed to one more voice
-front end on an ordinary assistant.
+Before building the extension we asked one question: not "what is a good demo", but
+**where is a real-time, full-duplex agent that acts the reason a Samsung product gets
+better**, as opposed to one more voice front end on an ordinary assistant. This document
+records the research, the candidates we compared, and why we built what we built
+(section 6).
 
 ## 1. The test a use case has to pass
 
@@ -66,24 +67,17 @@ We score every candidate against these five.
 - Driving Bixby's UI through an accessibility service is fragile and against
   Play policy.
 
-We should not build on any of these.
+None of these is a sound foundation for a product.
 
 **What is feasible, and close to the idea.** Split the system the same way the
 idea does, using supported mechanisms:
 
-```
-              DUET (the full-duplex brain)
-   talker · thinker · coordinator · web search · memory
-      |                 |                        |
- SmartThings API   phone actions via        web / knowledge
- (the same home    LiveKit RPC to the       (Gemini grounded
-  device graph      DUET app on the          search as a tool)
-  Bixby controls)   Galaxy: alarms, timers,
-                    calendar, navigation,
-                    messages as Android
-                    intents, with the user's
-                    confirmation where Android
-                    requires it
+```mermaid
+flowchart TB
+    DUET["DUET, the full-duplex brain<br/>fast voice · thinker · coordinator"]
+    DUET --> HOME["The home<br/>SmartThings device graph<br/>(the one Bixby controls)"]
+    DUET --> PHONE["The phone<br/>actions over LiveKit RPC to the DUET app:<br/>alarms, timers, navigation, calls, messages,<br/>with Android's own confirmation where required"]
+    DUET --> CAR["The car<br/>trip, destination, climate"]
 ```
 
 - **On the phone.** DUET is the Galaxy's default digital assistant (side
@@ -96,15 +90,13 @@ idea does, using supported mechanisms:
   control the same graph.
 - **Inside Samsung (the product story).** DUET is not a competing assistant but
   a **layer**. Its coordinator (commit gate, ledger, failure policy) and
-  talker/thinker split can wrap Bixby 4.0's callable agents unchanged. We show
-  this with an adapter seam in the code (`DeviceAgent` interface:
-  SmartThings, phone, "Bixby agent" placeholder) and say plainly that the Bixby
-  binding needs Samsung-internal access.
+  fast-voice/thinker split can wrap Bixby 4.0's callable agents unchanged; the
+  binding to Bixby needs Samsung-internal access.
 
-**Prototype vs product.** The prototype runs today with public APIs
-(SmartThings, Android intents over RPC, web search). The product version
-replaces the phone-RPC layer with Bixby's callable agents or AppFunctions, which
-Samsung controls. Nothing in the demo would pretend to be Bixby.
+**Prototype vs product.** The prototype runs today with public mechanisms
+(Android interfaces over LiveKit RPC). A product version would replace the
+phone-RPC layer with Bixby's callable agents or AppFunctions, which Samsung
+controls. Nothing in the demo pretends to be Bixby.
 
 ## 4. Candidate directions
 
@@ -134,11 +126,9 @@ The score is how many of the five conditions from section 1 hold (✔ strong,
     open the garage", across the rest of the conversation.
   - It recovers from dead zones (tool timeouts) without lying.
 - **Tools.**
-  - Real and keyless: routing (OSRM/OSM), places (OSM/Nominatim), weather
-    (Open-Meteo), SmartThings (real API with virtual devices), web search
-    (Gemini grounded).
-  - Mock: messages and calendar.
-  - Optional: EV chargers (OpenChargeMap).
+  - Routing and places (open map services), weather, SmartThings (real API with
+    virtual devices).
+  - Simulated: messages and calendar.
 - **Samsung relevance.** Very high: HARMAN Ignite, Hyundai/Kia × SmartThings,
   Galaxy as the in-car device.
 - **Business value.** Driver-distraction reduction is a regulatory and
@@ -167,12 +157,11 @@ The score is how many of the five conditions from section 1 hold (✔ strong,
   convenience unless the user is busy.
 - **Why DUET.** Exactly-once actions and commit timing matter because the
   actions are real (messages, alarms, devices).
-- **Tools.** Android intents via LiveKit RPC (needs a small native plugin in our
-  existing Capacitor app), SmartThings, and web search.
-- **Samsung relevance.** Very high, and it is closest to your "alongside Bixby"
-  idea.
-- **Demo.** Good on the S26 you have: side button, and the phone actually sets
-  the timer.
+- **Tools.** Android intents via LiveKit RPC (a small native plugin in a
+  Capacitor app) and SmartThings.
+- **Samsung relevance.** Very high, and the closest to "DUET alongside Bixby".
+- **Demo.** Good on a Galaxy S26: side button, and the phone actually sets the
+  timer.
 - **Complexity.** High in our window: native Android intents through RPC,
   permission and confirmation flows, and device testing.
 - **Weaknesses.**
@@ -252,7 +241,7 @@ The score is how many of the five conditions from section 1 hold (✔ strong,
 
 ## 5. Summary
 
-| Direction | Five-condition fit | Samsung relevance | Feasible by 29 Sep | Demo impact | Main risk |
+| Direction | Five-condition fit | Samsung relevance | Feasible in the hackathon | Demo impact | Main risk |
 |---|---|---|---|---|---|
 | **A. Co-Driver with Car-to-Home** | 5/5 | Very high (HARMAN, Hyundai/Kia × SmartThings) | Yes, simulated drive | Very high | Scope; crowded market |
 | **B. Galaxy DUET next to Bixby** | 3/5 | Very high | Partly (Android native work) | High on a real S26 | Time; Android confirmation flows |
@@ -274,9 +263,19 @@ It shows every DUET property under real pressure, sits on a live Samsung
 initiative (Car-to-Home), and keeps the Bixby story honest: DUET is the
 full-duplex layer Bixby's agents could run under.
 
-To decide together:
-1. Simulated drive on a laptop dashboard, or also the S26 as the in-car phone?
-2. Real SmartThings (needs your Samsung account for a personal access token
-   and virtual devices) or a faithful simulator?
-3. How much of B (phone intents over RPC) do we attempt, given the benchmark is
-   60% and comes first?
+## 6. What we built
+
+**DUET for Galaxy**: one DUET brain, with the Galaxy phone as its ears, mouth and hands,
+in three modes that each put a different pressure on the design.
+
+| Mode | From the analysis | What it proves |
+|---|---|---|
+| **Assistant** | Direction B, the full-duplex layer next to Bixby | Corrections mid-sentence on real phone actions (alarms, brightness, apps, Maps, calls, messages); troubleshooting from the phone's real readings that the user can interrupt |
+| **Care** | Condition 1 at its strongest: an older person for whom voice is the natural channel | Consequential, exactly-once actions: a double-dose guard on medicines, family calls and alerts, reminders, a daily check-in |
+| **Drive** | Direction A, the co-driver with Car-to-Home | Eyes-busy use: a destination changed mid-sentence, arrival-time messages, the car's climate and the home from the car |
+
+Real Android interfaces carry the phone actions (alarms, battery and screen readings,
+installed apps, brightness and timeout, settings, Maps navigation, calls, messages). The
+home, the medicine schedule and the car are simulated inside the app, and the demo says
+so. The same coordinator gates every action, and the app's live timeline shows each
+step as it happens. Build, run and demo instructions: [app/README.md](../app/README.md).

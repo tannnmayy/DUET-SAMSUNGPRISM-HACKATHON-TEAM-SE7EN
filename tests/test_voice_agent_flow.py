@@ -3,10 +3,13 @@
 - work to do: the talker's acknowledgement is spoken first, then the answer;
 - no tools (a greeting, a question): one answer, no acknowledgement;
 - a noise-only turn: nothing is spoken;
-- the thinker fails: the user still hears something.
+- the thinker fails: the user still hears something;
+- a slow thinker is covered once the user has clearly finished (by the talker's
+  line, or by a fixed one when there is no talker model).
 """
 
 import asyncio
+import dataclasses
 import os
 
 os.environ.setdefault("DUET_ACK_GRACE", "0.3")
@@ -97,6 +100,20 @@ def test_slow_thinker_gets_the_acknowledgement_after_the_grace_period():
                    delay=0.6)
     said = speak(a, "book the flight")
     assert said[0] == "Sure, checking that now." and said[-1] == "Done: it's booked."
+
+
+def test_without_a_talker_model_the_fixed_line_covers_a_slow_thinker(monkeypatch):
+    monkeypatch.setattr(agent_mod, "CONFIG", dataclasses.replace(agent_mod.CONFIG, talker_enabled=False))
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Which date?")],
+                   ack=None, delay=0.8)
+    assert speak(a, "move my booking") == ["One moment.", "Which date?"]
+
+
+def test_a_talker_model_that_chose_silence_is_not_overridden(monkeypatch):
+    monkeypatch.setattr(agent_mod, "CONFIG", dataclasses.replace(agent_mod.CONFIG, talker_enabled=True))
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Which date?")],
+                   ack=None, delay=0.8)
+    assert speak(a, "move my booking") == ["Which date?"]
 
 
 def test_unfinished_turn_is_listened_to_then_answered_once_quiet():

@@ -1,0 +1,269 @@
+{
+ "scenario": "battery",
+ "mode": "assistant",
+ "room": "duet-assistant-e76646",
+ "events": [
+  {
+   "t": 3.9,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.91,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 4.2,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 7.25,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 7.25,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 10.55,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 14.4,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 15.05,
+   "kind": "heard",
+   "text": "My battery drains super quick these days. What's going on?"
+  },
+  {
+   "t": 15.1,
+   "kind": "think_start",
+   "text": "My battery drains super quick these days. What's going on?"
+  },
+  {
+   "t": 15.1,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 16.04,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 16.21,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 18.99,
+   "kind": "tool_planned",
+   "tool": "get_battery_report",
+   "args": {},
+   "hold_s": 1.1
+  },
+  {
+   "t": 18.99,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 3.94
+  },
+  {
+   "t": 19.17,
+   "kind": "tool_done",
+   "tool": "get_battery_report",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "level": 23,
+    "charging": false,
+    "temperature_c": 41.5,
+    "health": "good",
+    "current_ma": -980,
+    "cycle_count": 412,
+    "brightness_percent": 92,
+    "adaptive_brightness": false,
+    "refresh_rate_hz": 120,
+    "screen_timeout_s": 600,
+    "power_saving": false,
+    "wifi_on": true,
+    "bluetooth_on": true,
+    "location_on": true,
+    "top_apps_today": [
+     "BGMI 155 min (game)",
+     "Instagram 82 min (social)",
+     "YouTube 58 min (video)"
+    ]
+   },
+   "after_s": 0.1
+  },
+  {
+   "t": 22.15,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 22.56,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 28.1,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 28.69,
+   "kind": "thinker_say",
+   "text": "Your battery is draining quickly because your screen brightness is very high and you've been spending quite a bit of time gaming. Your phone is also running a bit warm, which can speed up the drain. Would you like me to turn on adaptive brightness for you?",
+   "after_s": 13.64
+  },
+  {
+   "t": 28.8,
+   "kind": "heard",
+   "text": "Oh wait, I think I know. I keep my brightness really high and I play a lot of games. Is that it?"
+  },
+  {
+   "t": 28.8,
+   "kind": "agent_said",
+   "text": "One moment. Still",
+   "interrupted": true
+  },
+  {
+   "t": 28.8,
+   "kind": "think_start",
+   "text": "Oh wait, I think I know. I keep my brightness really high and I play a lot of games. Is that it?"
+  },
+  {
+   "t": 28.8,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 29.75,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 29.89,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 44.25,
+   "kind": "thinker_decided",
+   "tools": false,
+   "after_s": 15.47
+  },
+  {
+   "t": 44.25,
+   "kind": "thinker_say",
+   "text": "Yes, that's exactly right. The high brightness and gaming are the main reasons, and your phone is also running a bit warm. Would you like me to turn on adaptive brightness for you?",
+   "after_s": 15.47
+  },
+  {
+   "t": 55.78,
+   "kind": "agent_said",
+   "text": "One moment. Yes, that's exactly right. The high brightness and gaming are the main reasons, and your phone is also running a bit warm. Would you like me to turn on adaptive brightness for you?",
+   "interrupted": false
+  },
+  {
+   "t": 55.78,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 58.36,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 61.32,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 61.89,
+   "kind": "heard",
+   "text": "Okay, bring the brightness down to 40%."
+  },
+  {
+   "t": 61.9,
+   "kind": "think_start",
+   "text": "Okay, bring the brightness down to 40%."
+  },
+  {
+   "t": 61.9,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 62.98,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 63.14,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 77.48,
+   "kind": "tool_planned",
+   "tool": "set_brightness",
+   "args": {
+    "percent": 40
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 77.48,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 15.64
+  },
+  {
+   "t": 77.58,
+   "kind": "tool_done",
+   "tool": "set_brightness",
+   "args": {
+    "percent": 40
+   },
+   "result": {
+    "status": "ok",
+    "brightness_percent": 40
+   },
+   "after_s": 0.11
+  },
+  {
+   "t": 80.08,
+   "kind": "thinker_say",
+   "text": "OK. I've set your brightness to 40 percent.",
+   "after_s": 18.24
+  },
+  {
+   "t": 83.54,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. OK. I've set your brightness to 40 percent.",
+   "interrupted": false
+  },
+  {
+   "t": 83.54,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

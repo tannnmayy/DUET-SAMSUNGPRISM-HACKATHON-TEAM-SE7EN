@@ -130,7 +130,7 @@ def whisper():
             t = time.time()
             try:
                 _whisper = WhisperModel(model, device=device, revision=MODEL_REVISIONS.get(model),
-                                        compute_type="float16" if device == "cuda" else "int8")
+                                        compute_type=os.environ.get("DUET_ASR_COMPUTE") or ("float16" if device == "cuda" else "int8"))
                 # one short warm-up so the first real turn is not slow (and so a GPU
                 # whose libraries cannot load fails here, not in the first turn)
                 list(_whisper.transcribe(np.zeros(16000, dtype=np.float32), language="en", beam_size=1)[0])
@@ -157,7 +157,8 @@ def kokoro():
             t = time.time()
             repo = "hexgrad/Kokoro-82M"
             fetch = lambda name: hf_hub_download(repo_id=repo, filename=name, revision=KOKORO_REVISION)
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+            # DUET_TTS_DEVICE=cpu keeps the GPU free (the phone demo on a 6 GB laptop GPU)
+            device = os.environ.get("DUET_TTS_DEVICE") or ("cuda" if torch.cuda.is_available() else "cpu")
             voice = CONFIG.tts_voice
             for attempt_device in ([device, "cpu"] if device == "cuda" else [device]):
                 try:

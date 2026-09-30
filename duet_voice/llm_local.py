@@ -1,11 +1,11 @@
-"""The local model: Qwen3-30B-A3B-Instruct-2507, served by vLLM on the same GPU.
+"""A local model on an OpenAI-compatible server: the phone app's laptop mode.
 
-DUET reaches it through the OpenAI-compatible chat API that vLLM exposes; vLLM's
-`hermes` tool parser turns Qwen3's tool-call format into standard tool calls.
-The thinker's loop is the same as with Gemini (thinker.py): every tool call
-passes the coordinator, the first look at a turn may decide to keep listening,
-and a plan the user's words have overtaken never acts. Only the wire format
-differs, so the agent does not know which backend it is talking to.
+The benchmark submission uses Gemma 4 through Google's API (gemma_api.py). The
+DUET for Galaxy app can also run fully offline on a laptop GPU, with a small model
+served by llama.cpp (or any OpenAI-compatible server) at DUET_LLM_BASE_URL. The
+thinker's loop is the same as thinker.py's: every tool call passes the
+coordinator, the first look at a turn may decide to keep listening, and a plan the
+user's words have overtaken never acts. Only the wire format differs.
 
     python -m duet_voice.llm_local     # preflight: is the server up, does tool calling work?
 """
@@ -65,7 +65,37 @@ LISTEN_TOOL = _tool(KEEP_LISTENING, KEEP_LISTENING_DESCRIPTION, {
     "required": ["reason"]})
 
 _THINK = re.compile(r"<think>.*?</think>", re.S)
+_OK_TAIL = re.compile(r"(?:(?<=[.!?])|\n)\s*OK\.?\s*$")  # a second look's "OK" after the answer
 _RAW_CALL = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S)
+
+
+def _any_ran(messages: List[Dict[str, Any]]) -> bool:
+    """Did any tool call among these messages actually run (not held back)?"""
+    for m in messages:
+        if m.get("role") == "tool":
+            try:
+                status = json.loads(m.get("content") or "{}").get("status")
+            except (ValueError, AttributeError):
+                status = None
+            if status != "not_executed":
+                return True
+    return False
+
+
+def _carried_out(messages: List[Dict[str, Any]]) -> str:
+    """The actions that really ran in these messages, for the second look: it compares its
+    draft against facts, not against its own reading of the conversation."""
+    results = {m.get("tool_call_id"): m.get("content") or "" for m in messages if m.get("role") == "tool"}
+    done = []
+    for m in messages:
+        for c in m.get("tool_calls") or []:
+            try:
+                status = json.loads(results.get(c["id"], "{}")).get("status", "ok")
+            except (ValueError, AttributeError):
+                status = "ok"
+            if status not in ("not_executed", "error", "needs_permission", "unknown_outcome"):
+                done.append("%s(%s)" % (c["function"]["name"], c["function"]["arguments"]))
+    return "; ".join(done) if done else "none"
 
 
 def clean(text: str) -> str:
@@ -91,9 +121,19 @@ def salvage_calls(content: str) -> Tuple[List[Dict[str, str]], str]:
 class LocalThinker:
     """The thinker on the local model. Same interface and events as thinker.Thinker."""
 
-    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
+    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
+                 specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None,
+                 review: Optional[str] = None) -> None:
         self.model = model or CONFIG.thinker_model
         self.thinking = "none (non-thinking model)"
+        # the benchmark's twelve tools and instructions unless a use case brings its own
+        self.tools = TOOLS if specs is None else [_tool(s["name"], s["description"], s["parameters"])
+                                                  for s in specs]
+        self.instructions = instructions or THINKER_INSTRUCTIONS
+        # A second look before an answer is spoken (the phone app; off for the benchmark):
+        # the model checks its draft against the tool results and calls what is missing.
+        # Safe because the ledger never runs an action twice.
+        self.review = review
         # completed exchanges only, as chat messages; an interrupted turn never lands here
         self.history: List[Dict[str, Any]] = []
 
@@ -107,12 +147,13 @@ class LocalThinker:
         # (audio is ignored: this model reads text only)
         start_epoch = toolbox.coord.epoch
         user = {"role": "user", "content": text + ("\n\n" + note if note else "")}
-        prefix = [{"role": "system", "content": THINKER_INSTRUCTIONS}] + list(self.history) + [user]
+        prefix = [{"role": "system", "content": self.instructions}] + list(self.history) + [user]
         messages = list(prefix)
         final_text = ""
+        draft, review_at = "", None
         usage = {"input": 0, "input_audio": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
-            tools = TOOLS + [LISTEN_TOOL] if (allow_listen and step == 1) else TOOLS
+            tools = self.tools + [LISTEN_TOOL] if (allow_listen and step == 1) else self.tools
             calls: List[Dict[str, str]] = []
             content = ""
             for attempt in (1, 2):
@@ -135,7 +176,7 @@ class LocalThinker:
                 content = clean(getattr(msg, "content", None) or "")
                 if not calls and "<tool_call>" in content:
                     calls, content = salvage_calls(content)
-                # an empty reply is asked once more, like a malformed one on Gemini
+                # an empty reply is asked once more, as in thinker.py
                 if calls or content or attempt == 2:
                     break
                 log.warning("thinker step %d: empty reply, asking again", step)
@@ -159,7 +200,22 @@ class LocalThinker:
             if step == 1:
                 yield ThinkEvent("decided", tools=bool(real))
             if not real:
-                final_text = content
+                if (self.review and review_at is None and step < CONFIG.max_tool_steps
+                        and content and "<silent>" not in content):
+                    draft, review_at = content, len(messages)
+                    messages.append({"role": "user", "content": self.review.replace(
+                        "{done}", _carried_out(messages[len(prefix):]))})
+                    yield ThinkEvent("review", text=draft)
+                    continue
+                if review_at is not None and len(messages) == review_at + 2:
+                    # The second look found nothing missing: the draft stands (whatever else the
+                    # model wrote), and the history is kept as if it had not been asked.
+                    final_text = draft
+                    del messages[review_at:]
+                elif review_at is not None and not _any_ran(messages[review_at:]):
+                    final_text = draft            # what it added was held back: nothing changed
+                else:
+                    final_text = _OK_TAIL.sub("", content).strip() if review_at is not None else content
                 break
             for c in calls:  # every call gets a response, in order
                 if c["name"] == KEEP_LISTENING:
@@ -176,7 +232,7 @@ class LocalThinker:
                     continue
                 yield ThinkEvent("tool_start", name=c["name"], args=args)
                 out = await toolbox.call(c["name"], args, epoch=start_epoch)
-                if toolbox.coord.epoch != start_epoch:
+                if toolbox.coord.overtaken(start_epoch):
                     raise Superseded()  # the user's words changed: this plan is void
                 parsed = json.loads(out)
                 yield ThinkEvent("tool_done", name=c["name"], args=args,
@@ -188,11 +244,12 @@ class LocalThinker:
         yield ThinkEvent("say", text=final_text, usage=usage)
 
 
-async def acknowledge(user_text: str, usage: Optional[dict] = None) -> Optional[str]:
+async def acknowledge(user_text: str, usage: Optional[dict] = None,
+                      instructions: Optional[str] = None) -> Optional[str]:
     """The talker on the local model: one short sentence, or None (<silent>)."""
     resp = await client().chat.completions.create(
         model=CONFIG.talker_model, max_tokens=40,
-        messages=[{"role": "system", "content": TALKER_INSTRUCTIONS},
+        messages=[{"role": "system", "content": instructions or TALKER_INSTRUCTIONS},
                   {"role": "user", "content": "User: " + user_text}],
         **sampling())
     u = getattr(resp, "usage", None)
@@ -231,7 +288,7 @@ def check() -> Dict[str, Any]:
             got or (resp.choices[0].message.content or "")[:160])
         if out["tool_calling"] != "ok":
             out["notes"].append("tool calling did not return track_order; check that the server runs with "
-                                "--enable-auto-tool-choice --tool-call-parser hermes")
+                                "tool calling on (llama.cpp: --jinja)")
     except Exception as exc:
         out["error"] = "tool-calling test failed (%s)" % str(exc)[:200]
     return out

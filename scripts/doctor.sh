@@ -28,10 +28,10 @@ if command -v nvidia-smi >/dev/null; then
     --query-gpu=index,name,memory.total,memory.used,memory.free,compute_cap --format=csv,noheader)
   sel="${CUDA_VISIBLE_DEVICES%%,*}"
   free=$(nvidia-smi -i "$sel" --query-gpu=memory.free --format=csv,noheader,nounits | tr -dc 0-9)
-  if [ "${free:-0}" -ge 34000 ]; then
-    line OK "GPU $sel will be used: ${free} MiB free (the whole stack needs about 31 GiB)"
+  if [ "${free:-0}" -ge 8000 ]; then
+    line OK "GPU $sel will be used: ${free} MiB free (speech models and scoring recognizer need about 6 GiB)"
   else
-    line FAIL "GPU $sel has only ${free:-0} MiB free; the whole stack needs about 31 GiB on one GPU. Pick a free GPU (export CUDA_VISIBLE_DEVICES=<index>), or on a shared machine let bench/place_gpus.py spread it over several"
+    line FAIL "GPU $sel has only ${free:-0} MiB free; the speech models and the scoring recognizer need about 6 GiB. Pick a freer GPU (export CUDA_VISIBLE_DEVICES=<index>)"
   fi
 else
   line FAIL "nvidia-smi not found: no NVIDIA driver, or not on PATH"
@@ -39,24 +39,19 @@ fi
 
 # disk
 avail=$(df -BG --output=avail "$ROOT" 2>/dev/null | tail -1 | tr -dc 0-9)
-if [ "${avail:-0}" -ge 90 ]; then line OK "disk: ${avail} GB free where the repository is"
-elif [ "${avail:-0}" -ge 70 ]; then line WARN "disk: ${avail} GB free; about 90 GB is recommended (tight but may fit)"
-else line FAIL "disk: ${avail:-?} GB free; about 90 GB is needed (environments ~25 GB, models ~36 GB, caches)"; fi
+if [ "${avail:-0}" -ge 30 ]; then line OK "disk: ${avail} GB free where the repository is"
+elif [ "${avail:-0}" -ge 22 ]; then line WARN "disk: ${avail} GB free; about 30 GB is recommended (tight but may fit)"
+else line FAIL "disk: ${avail:-?} GB free; about 30 GB is needed (environments ~15 GB, speech models ~5 GB, caches)"; fi
 
 # tools
 for t in git curl tar sha256sum; do
   if command -v "$t" >/dev/null; then line OK "$t"; else line FAIL "$t is missing (ask the admin to install it)"; fi
 done
 if command -v ffmpeg >/dev/null; then line OK "ffmpeg"; else line INFO "ffmpeg not installed: reproduce.sh fetches a static build"; fi
-if command -v gcc >/dev/null || command -v cc >/dev/null; then
-  line OK "C compiler (vLLM's kernel compiler, Triton, builds small helpers with it)"
-else
-  line FAIL "no C compiler (gcc): vLLM's Triton kernels need one. Ask the admin for build-essential, or set CC"
-fi
 
 # internet
 for u in https://pypi.org/simple/ https://files.pythonhosted.org https://huggingface.co https://github.com \
-         https://astral.sh https://drive.usercontent.google.com; do
+         https://astral.sh https://drive.usercontent.google.com https://generativelanguage.googleapis.com; do
   if curl -sSI --max-time 15 -o /dev/null "$u" 2>/dev/null; then line OK "reach $u"
   else line FAIL "cannot reach $u (proxy or firewall?)"; fi
 done
@@ -68,8 +63,22 @@ else
   line OK "/tmp/agent_tool_calls.log is writable (or absent)"
 fi
 
+# the language model: Gemma 4 through Google's API
+if [ -n "${GOOGLE_API_KEYS:-}${GOOGLE_API_KEY:-}" ] \
+   || grep -qE '^[[:space:]]*(export[[:space:]]+)?GOOGLE_API_KEYS?[[:space:]]*=[[:space:]]*[^[:space:]]' .env.local 2>/dev/null; then
+  if [ -x "$PY_AGENT" ]; then
+    res=$("$PY_AGENT" -m duet_voice.gemma_api 2>/dev/null | tail -1)
+    if echo "$res" | grep -q '"tool_calling": "ok"'; then line OK "Gemma 4 through Google's API: $res"
+    else line FAIL "the Google API key(s) cannot use Gemma 4: $res"; fi
+  else
+    line INFO "a Google API key is set (checked once the environments are installed)"
+  fi
+else
+  line FAIL "no GOOGLE_API_KEY (or GOOGLE_API_KEYS): create one at https://aistudio.google.com in a project without billing (Gemma is free there)"
+fi
+
 # what is already installed
-for e in .venv .venv-bench .venv-llm; do
+for e in .venv .venv-bench; do
   if [ -f "$e/.duet-installed" ]; then line OK "environment $e installed"; else line INFO "environment $e not installed yet (reproduce.sh does it)"; fi
 done
 

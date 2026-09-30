@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <title>DUET for Galaxy: demo stage</title>
+  <style>
+    :root {
+      --bg: #06070a; --ink: #f3f4f7; --muted: #9aa0ad; --line: #22252d; --panel: #111318;
+      --accent: #5b8ff5; --care: #ee7aa3; --drive: #3fbf9a; --ok: #62c98b; --warn: #e8a54b; --bad: #f07b70; --hold: #a48ff5;
+      --font: "Segoe UI", system-ui, "SamsungOne", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: var(--font); }
+    body::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(900px 600px at 18% 30%, rgba(91,143,245,.16), transparent 70%),
+                  radial-gradient(700px 500px at 85% 90%, rgba(238,122,163,.10), transparent 70%),
+                  radial-gradient(600px 500px at 80% 5%, rgba(63,191,154,.08), transparent 70%); }
+    .phone { position: absolute; left: 120px; top: 50px; width: 452px; height: 980px; border-radius: 60px; padding: 20px;
+      background: linear-gradient(145deg, #2a2d35, #15161b 40%, #0c0d10); box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 2px #3a3d46; }
+    .phone iframe { width: 412px; height: 940px; border: 0; border-radius: 42px; background: #000; display: block; }
+    .phone .cam { position: absolute; top: 30px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: #050507; box-shadow: 0 0 0 2px #1d1f25; z-index: 2; }
+    .phone .side { position: absolute; right: -4px; top: 210px; width: 5px; height: 90px; border-radius: 3px; background: #2f323a; }
+    .right { position: absolute; left: 690px; top: 56px; width: 1110px; height: 970px; display: grid; grid-template-rows: auto auto 1fr auto auto; gap: 22px; }
+    .brand { display: flex; align-items: center; gap: 14px; font-size: 20px; letter-spacing: .18em; font-weight: 800; }
+    .brand i { width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(from 200deg, var(--accent), var(--care), var(--drive), var(--accent)); }
+    .brand span { margin-left: auto; letter-spacing: .02em; font-weight: 600; font-size: 17px; color: var(--muted); }
+    .scene small { color: var(--accent); font-size: 20px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .scene h1 { font-size: 54px; line-height: 1.08; margin: 8px 0 12px; font-weight: 700; letter-spacing: -.01em; }
+    .scene p { font-size: 24px; line-height: 1.4; color: var(--muted); margin: 0; max-width: 1040px; }
+    .minds { background: var(--panel); border: 1px solid var(--line); border-radius: 28px; padding: 22px 26px; display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+    .minds header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+    .minds header b { font-size: 24px; }
+    .minds header em { font-style: normal; color: var(--muted); font-size: 18px; }
+    .minds header .state { margin-left: auto; font-size: 17px; font-weight: 700; padding: 5px 14px; border-radius: 999px; background: #1c2130; color: var(--accent); }
+    .minds header .state.speaking { background: #13301f; color: var(--ok); }
+    .minds header .state.thinking { background: #262040; color: var(--hold); }
+    .steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; overflow: hidden; }
+    .steps li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: center; font-size: 22px; padding: 12px 16px; border-radius: 18px; background: #181b22; animation: in .35s ease; }
+    .steps li i { font-style: normal; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 19px; background: #232734; }
+    .steps li small { display: block; color: var(--muted); font-size: 17px; margin-top: 2px; }
+    .steps .t-heard i { color: var(--accent); background: #1b2a47; }
+    .steps .t-plan { box-shadow: inset 0 0 0 2px #3b3263; } .steps .t-plan i { color: var(--hold); background: #262040; }
+    .steps .t-done { background: #12281a; } .steps .t-done i { background: var(--ok); color: #06140b; }
+    .steps .t-drop { background: #33240d; } .steps .t-drop i { background: var(--warn); color: #231400; }
+    .steps .t-cached { background: #221c3a; } .steps .t-cached i { background: var(--hold); color: #140f28; }
+    .steps .t-fail { background: #35191a; } .steps .t-fail i { background: var(--bad); color: #2a0c0a; }
+    .steps .t-listen i { background: var(--accent); color: #fff; }
+    .steps .t-cut { background: #33240d; } .steps .t-cut i { background: var(--warn); color: #231400; }
+    @keyframes in { from { opacity: 0; transform: translateY(10px); } }
+    .captions { display: grid; gap: 10px; }
+    .cap { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: start; font-size: 25px; line-height: 1.35; min-height: 36px; }
+    .cap b { font-size: 16px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 0; text-align: center; border-radius: 10px; }
+    .cap.you b { background: var(--accent); color: #fff; }
+    .cap.duet b { background: #2a2d36; color: var(--ink); }
+    .cap.duet span.ack { color: var(--muted); font-style: italic; }
+    .cap span.cut::after { content: "  (you cut in)"; color: var(--warn); font-size: 19px; font-style: italic; }
+    .foot { font-size: 15.5px; color: #767c89; line-height: 1.45; border-top: 1px solid var(--line); padding-top: 12px; }
+    .intro { position: absolute; inset: 0; background: rgba(6,7,10,.96); display: grid; place-content: center; text-align: center; gap: 18px; transition: opacity .8s ease; z-index: 10; }
+    .intro .num { font-size: 26px; font-weight: 800; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; }
+    .intro h2 { font-size: 76px; margin: 0; max-width: 1500px; line-height: 1.05; }
+    .intro p { font-size: 30px; color: var(--muted); margin: 0 auto; max-width: 1250px; line-height: 1.4; }
+    .intro.gone { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="phone"><div class="cam"></div><div class="side"></div><iframe id="app" allow="autoplay; microphone"></iframe></div>
+  <section class="right">
+    <div class="brand"><i></i>DUET FOR GALAXY <span>Samsung PRISM GenAI Hackathon · Team SE7EN</span></div>
+    <div class="scene"><small id="snum">Scene</small><h1 id="stitle">…</h1><p id="swatch"></p></div>
+    <div class="minds">
+      <header><b>DUET's two minds, live</b><em>heard · planned · held back · done</em><span class="state" id="state">connecting</span></header>
+      <ol class="steps" id="steps"></ol>
+    </div>
+    <div class="captions">
+      <div class="cap you"><b>You</b><span id="cap-you"></span></div>
+      <div class="cap duet"><b>DUET</b><span id="cap-duet"></span></div>
+    </div>
+    <div class="foot">A live run: DUET's agent with Gemma 4 26B-A4B through Google's API, Whisper large-v3-turbo and
+      Kokoro for speech on a laptop RTX 3060, LiveKit Cloud between them. The user is a scripted voice. This is the app's web
+      build, so its phone actions are simulated; on a Galaxy the same app carries them out through Android.</div>
+  </section>
+  <div class="intro" id="intro"><div class="num" id="inum"></div><h2 id="ititle"></h2><p id="iwatch"></p></div>
+<script>
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const scene = new URLSearchParams(location.search).get("scene") || "correction";
+  const steps = new Map();
+  fetch("demo/scenes.json").then((r) => r.json()).then((all) => {
+    const s = all.scenes[scene];
+    if (!s) return;
+    const n = "Scene " + s.number + " of " + all.order.length + " · " + ({ assistant: "Assistant", care: "Care", drive: "Drive" }[s.mode]);
+    $("snum").textContent = n; $("inum").textContent = n;
+    $("stitle").textContent = s.title; $("ititle").textContent = s.title;
+    $("swatch").textContent = s.watch; $("iwatch").textContent = s.watch;
+    setTimeout(() => $("intro").classList.add("gone"), 4200);
+    $("app").src = "index.html?demo=" + encodeURIComponent(scene) + "&embed=1";
+  });
+  // The stage keeps the decisive steps in view (heard, planned, never ran, done, asked
+  // first, cut in); the captions below already carry what each mind said.
+  function renderStep(m) {
+    let li = steps.get(m.id);
+    if (!li && (m.cls === "t-say" || /^Plan dropped/.test(m.html))) return;
+    if (!li) {
+      li = document.createElement("li");
+      steps.set(m.id, li);
+      $("steps").appendChild(li);
+      while ($("steps").children.length > 6) $("steps").removeChild($("steps").firstChild);
+    }
+    li.className = m.cls;
+    li.innerHTML = "<i>" + m.icon + "</i><div>" + m.html + (m.sub ? "<small>" + m.sub + "</small>" : "") + "</div>";
+  }
+  const STATE = { listening: "listening", thinking: "thinking", speaking: "speaking", initializing: "getting ready" };
+  function duetCaption(text, cls) {
+    const box = $("cap-duet");
+    box.innerHTML = "";
+    const s = document.createElement("span");
+    if (cls) s.className = cls;
+    s.textContent = text;
+    box.appendChild(s);
+  }
+  window.addEventListener("message", (e) => {
+    const m = e.data || {};
+    if (m.type === "step") renderStep(m);
+    if (m.type === "caption") $("cap-you").textContent = m.who === "phone" ? "[phone event] " + m.text : m.text;
+    if (m.type === "duet") {
+      const ev = m.ev;
+      if (ev.kind === "agent_state") { $("state").textContent = STATE[ev.state] || ev.state; $("state").className = "state " + ev.state; }
+      if (ev.kind === "talker" && ev.text) duetCaption(ev.text, "ack");
+      if (ev.kind === "thinker_say" && ev.text && !/<silent>/.test(ev.text)) duetCaption(ev.text);
+      if (ev.kind === "agent_said" && !ev.interrupted && ev.text && !$("cap-duet").textContent) duetCaption(ev.text);
+      if (ev.kind === "agent_said" && ev.interrupted) { const s = $("cap-duet").querySelector("span"); if (s) s.classList.add("cut"); }
+    }
+    if (m.type === "done") window.__demoResult = m.result;
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+{
+ "scenario": "alarm_late",
+ "mode": "assistant",
+ "room": "duet-assistant-0ea29d",
+ "events": [
+  {
+   "t": 3.98,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.98,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 4.38,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 7.3,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 7.31,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 10.63,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 12.71,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.37,
+   "kind": "heard",
+   "text": "Set an alarm for 3.30."
+  },
+  {
+   "t": 13.37,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30."
+  },
+  {
+   "t": 13.37,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 14.3,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 14.47,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 14.98,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 15.44,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 16.6,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 16.7,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 17.09,
+   "kind": "heard",
+   "text": "No, no, cancel that."
+  },
+  {
+   "t": 17.09,
+   "kind": "agent_said",
+   "text": "One moment.",
+   "interrupted": true
+  },
+  {
+   "t": 19.1,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 19.55,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30. No, no, cancel that."
+  },
+  {
+   "t": 19.55,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 19.61,
+   "kind": "heard",
+   "text": "Could you set it for 430 instead?"
+  },
+  {
+   "t": 19.64,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 19.64,
+   "kind": "superseded"
+  },
+  {
+   "t": 20.44,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30. No, no, cancel that. Could you set it for 430 instead?"
+  },
+  {
+   "t": 20.45,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 20.72,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 20.88,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 27.12,
+   "kind": "tool_planned",
+   "tool": "set_alarm",
+   "args": {
+    "time": "04:30"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 27.12,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 6.69
+  },
+  {
+   "t": 27.29,
+   "kind": "tool_done",
+   "tool": "set_alarm",
+   "args": {
+    "time": "04:30"
+   },
+   "result": {
+    "status": "ok",
+    "alarm": "04:30",
+    "where": "Clock (simulated)"
+   },
+   "after_s": 0.13
+  },
+  {
+   "t": 28.92,
+   "kind": "thinker_say",
+   "text": "OK. I've set your alarm for four thirty in the morning.",
+   "after_s": 8.5
+  },
+  {
+   "t": 32.86,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. OK. I've set your alarm for four thirty in the morning.",
+   "interrupted": false
+  },
+  {
+   "t": 32.86,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 35.35,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 37.15,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 37.75,
+   "kind": "heard",
+   "text": "What alarms do I have now?"
+  },
+  {
+   "t": 37.76,
+   "kind": "think_start",
+   "text": "What alarms do I have now?"
+  },
+  {
+   "t": 37.76,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 38.77,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 38.95,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 41.88,
+   "kind": "tool_planned",
+   "tool": "list_alarms",
+   "args": {},
+   "hold_s": 1.1
+  },
+  {
+   "t": 41.88,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 4.15
+  },
+  {
+   "t": 42.06,
+   "kind": "tool_done",
+   "tool": "list_alarms",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "set_by_duet": [
+     "04:30"
+    ],
+    "phone_next_alarm": null
+   },
+   "after_s": 0.15
+  },
+  {
+   "t": 46.48,
+   "kind": "thinker_say",
+   "text": "You have one alarm set for four thirty in the morning.",
+   "after_s": 8.74
+  },
+  {
+   "t": 50.55,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. You have one alarm set for four thirty in the morning.",
+   "interrupted": false
+  },
+  {
+   "t": 50.55,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

@@ -1,0 +1,228 @@
+{
+ "scenario": "alarm",
+ "mode": "assistant",
+ "room": "duet-assistant-1284ac",
+ "events": [
+  {
+   "t": 4.5,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 4.5,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 4.85,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 7.85,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 7.85,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 11.25,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 13.36,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.87,
+   "kind": "heard",
+   "text": "Set an alarm for 3.30."
+  },
+  {
+   "t": 13.94,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30."
+  },
+  {
+   "t": 13.94,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 14.43,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 14.86,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 15.98,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 16.11,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 16.56,
+   "kind": "heard",
+   "text": "No, no, cancel that."
+  },
+  {
+   "t": 18.54,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 18.99,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30. No, no, cancel that."
+  },
+  {
+   "t": 19.0,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 19.04,
+   "kind": "heard",
+   "text": "Could you set it for 430 instead?"
+  },
+  {
+   "t": 19.04,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 19.81,
+   "kind": "think_start",
+   "text": "Set an alarm for 3.30. No, no, cancel that. Could you set it for 430 instead?"
+  },
+  {
+   "t": 19.81,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 20.15,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 20.31,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 26.65,
+   "kind": "tool_planned",
+   "tool": "set_alarm",
+   "args": {
+    "time": "04:30"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 26.65,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 6.81
+  },
+  {
+   "t": 26.78,
+   "kind": "tool_done",
+   "tool": "set_alarm",
+   "args": {
+    "time": "04:30"
+   },
+   "result": {
+    "status": "ok",
+    "alarm": "04:30",
+    "where": "Clock (simulated)"
+   },
+   "after_s": 0.15
+  },
+  {
+   "t": 35.43,
+   "kind": "thinker_say",
+   "text": "OK. I've set your alarm for four thirty in the morning.",
+   "after_s": 12.53
+  },
+  {
+   "t": 36.38,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. OK. I've set your alarm for four thirty in the morning.",
+   "interrupted": false
+  },
+  {
+   "t": 36.38,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 38.93,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 40.66,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 41.22,
+   "kind": "heard",
+   "text": "What alarms do I have now?"
+  },
+  {
+   "t": 41.22,
+   "kind": "think_start",
+   "text": "What alarms do I have now?"
+  },
+  {
+   "t": 41.23,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 42.23,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 42.37,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 64.45,
+   "kind": "thinker_error",
+   "text": "no key has room for gemma-4-26b-a4b-it within the deadline: this minute's input-token budget is spent (last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}})"
+  },
+  {
+   "t": 69.47,
+   "kind": "agent_said",
+   "text": "One moment. Sorry, something went wrong on my side. Could you say that once more?",
+   "interrupted": false
+  },
+  {
+   "t": 69.47,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

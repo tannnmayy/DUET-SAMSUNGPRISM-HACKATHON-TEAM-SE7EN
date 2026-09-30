@@ -1,0 +1,131 @@
+{
+ "scenario": "apps",
+ "mode": "assistant",
+ "room": "duet-assistant-a729b3",
+ "events": [
+  {
+   "t": 3.7,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.7,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.96,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 6.95,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 6.95,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 10.19,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 12.85,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.41,
+   "kind": "heard",
+   "text": "How many shopping apps do I have on my phone?"
+  },
+  {
+   "t": 13.46,
+   "kind": "think_start",
+   "text": "How many shopping apps do I have on my phone?"
+  },
+  {
+   "t": 13.46,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 14.5,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 14.61,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 16.82,
+   "kind": "tool_planned",
+   "tool": "list_installed_apps",
+   "args": {},
+   "hold_s": 1.1
+  },
+  {
+   "t": 16.82,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 3.41
+  },
+  {
+   "t": 16.94,
+   "kind": "tool_done",
+   "tool": "list_installed_apps",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "count": 18,
+    "apps": [
+     "Amazon Shopping",
+     "Flipkart",
+     "Myntra",
+     "Meesho",
+     "Swiggy",
+     "Zomato",
+     "BGMI [game]",
+     "Instagram [social]",
+     "WhatsApp [social]",
+     "YouTube [video]",
+     "Google Maps [maps]",
+     "Chrome",
+     "Samsung Health",
+     "Galaxy Store",
+     "SmartThings",
+     "Paytm",
+     "Uber",
+     "Netflix [video]"
+    ]
+   },
+   "after_s": 0.11
+  },
+  {
+   "t": 23.7,
+   "kind": "thinker_say",
+   "text": "You have four shopping apps.",
+   "after_s": 10.3
+  },
+  {
+   "t": 26.07,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. You have four shopping apps.",
+   "interrupted": false
+  },
+  {
+   "t": 26.07,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

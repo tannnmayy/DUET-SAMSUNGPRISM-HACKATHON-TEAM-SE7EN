@@ -1,17 +1,14 @@
-"""The slow mind: Gemini with the tools, run as DUET's own tool loop.
+"""The slow mind: Gemma 4 with the tools, run as DUET's own tool loop.
 
 LiveKit supplies the ears and the mouth. The thinking is ours, for three
 reasons that matter on real disfluent speech:
 
 1. **Every call passes the coordinator** (commit gate, ledger, failure policy),
    not a framework loop that fires tools as soon as the model emits them.
-2. **The thinker can hear the turn.** Besides the transcript, the model gets
-   the turn's audio (`DUET_THINKER_AUDIO=1`), so a mis-heard word ("nearest"
-   for "in euros") or a spelled id can be recovered from the sound itself.
-   The paper attributes the cascade's lower pass rate to ASR errors
-   propagating downstream; this is the fix.
-3. **It keeps its own native conversation state** (function calls, results and
-   Gemini's thought signatures), which a text-only chat history would lose.
+2. **A first look can decide the user has not finished** (keep_listening):
+   nothing is done and nothing said until they go quiet, and then it looks again.
+3. **It keeps the model's native conversation state** (function calls, results,
+   thoughts and their signatures), which a text-only chat history would lose.
 
 `run()` is an async generator of events, so the agent can decide what to say
 while the thinker is still working.
@@ -35,7 +32,7 @@ from .prompts import THINKER_INSTRUCTIONS
 
 log = logging.getLogger("duet.thinker")
 
-from .gemini import client  # one client per process, API key or Vertex AI
+from . import gemma_api
 
 
 def encode_audio(pcm16k) -> Tuple[bytes, str]:
@@ -87,13 +84,20 @@ KEEP_LISTENING_DESCRIPTION = (
     "request that can be carried out as it stands.")
 
 
-def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None):
-    """The thinker for the configured backend: the local model (default) or Gemini.
-    Both have the same interface and yield the same events."""
+def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None,
+                 specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None,
+                 review: Optional[str] = None):
+    """The thinker for the configured backend: Gemma through Google's API (default), or a
+    local OpenAI-compatible server (the phone app's laptop mode).
+    Both have the same interface and yield the same events. `specs` and
+    `instructions` default to the benchmark's twelve tools and instructions; the
+    phone app (duet_voice/galaxy) passes its own, and a second-look `review`
+    question (local model only)."""
     if CONFIG.llm_backend == "local":
         from .llm_local import LocalThinker
-        return LocalThinker(model=model, thinking=thinking)
-    return Thinker(model=model, thinking=thinking)
+        return LocalThinker(model=model, thinking=thinking, specs=specs, instructions=instructions,
+                            review=review)
+    return Thinker(model=model, thinking=thinking, specs=specs, instructions=instructions)
 
 
 # The second look, once a user the thinker was waiting for has gone quiet.
@@ -102,19 +106,20 @@ RESPOND_NOW_NOTE = ("The user has stopped talking. Respond now: act if the reque
 
 
 class Thinker:
-    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None) -> None:
+    def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
+                 specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None) -> None:
         from google.genai import types
-        from .gemini import resolved
-        self.model = model or resolved("thinker", CONFIG.thinker_model)
+        self.model = model or gemma_api.resolved("thinker", CONFIG.thinker_model)
         self.thinking = thinking or CONFIG.thinker_thinking
         decls = [types.FunctionDeclaration(name=s["name"], description=s["description"],
-                                           parameters_json_schema=s["parameters"]) for s in TOOL_SPECS]
+                                           parameters_json_schema=s["parameters"])
+                 for s in (TOOL_SPECS if specs is None else specs)]
         listen = types.FunctionDeclaration(
             name=KEEP_LISTENING, description=KEEP_LISTENING_DESCRIPTION,
             parameters_json_schema={"type": "object", "properties": {
                 "reason": {"type": "string", "description": "What the user has not finished saying."}},
                 "required": ["reason"]})
-        from .gemini import sampling, thinking_config
+        sampling, thinking_config = gemma_api.sampling, gemma_api.thinking_config
         extra: Dict[str, Any] = {}
         tc = thinking_config(self.model, self.thinking)
         if tc is not None:
@@ -122,7 +127,7 @@ class Thinker:
 
         def config(with_listen: bool):
             return types.GenerateContentConfig(
-                system_instruction=THINKER_INSTRUCTIONS,
+                system_instruction=instructions or THINKER_INSTRUCTIONS,
                 tools=[types.Tool(function_declarations=decls + ([listen] if with_listen else []))],
                 **sampling(self.model),
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
@@ -148,7 +153,7 @@ class Thinker:
         return types.Content(role="user", parts=parts)
 
     async def _generate(self, contents: List[Any], config):
-        return await client().aio.models.generate_content(model=self.model, contents=contents, config=config)
+        return await gemma_api.generate(self.model, contents, config)
 
     async def run(self, text: str, toolbox, audio: Optional[Tuple[bytes, str]] = None,
                   note: str = "", allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
@@ -175,7 +180,7 @@ class Thinker:
                 usage["calls"] += 1
                 content = resp.candidates[0].content if resp.candidates else None
                 parts = list(content.parts or []) if content is not None else []
-                # Gemini 2.5 now and then returns an empty candidate, or stops on a
+                # The API now and then returns an empty candidate, or stops on a
                 # malformed function call; asking once more usually gets a clean one.
                 if any(p.function_call or (getattr(p, "text", None) and not getattr(p, "thought", False))
                        for p in parts) or attempt == 2:
@@ -192,9 +197,9 @@ class Thinker:
                 # remembered; the caller waits and asks again once they go quiet.
                 yield ThinkEvent("listen", text=str((listens[0].args or {}).get("reason", "")), usage=usage)
                 return
-            # The model's turn is kept exactly as returned: Gemini 3 attaches thought
-            # signatures to function-call parts and rejects a follow-up request that
-            # lost one. A keep_listening next to real work is answered, not deleted.
+            # The model's turn is kept exactly as returned: Gemma 4 attaches thought
+            # signatures to function-call parts, and a follow-up request that lost one
+            # can be refused. A keep_listening next to real work is answered, not deleted.
             if content is not None:
                 contents.append(content)
             if step == 1:
@@ -211,8 +216,8 @@ class Thinker:
                 args = dict(fc.args or {})
                 yield ThinkEvent("tool_start", name=fc.name, args=args)
                 out = await toolbox.call(fc.name, args, epoch=start_epoch)
-                if toolbox.coord.epoch != start_epoch:
-                    # the user spoke again, or late words arrived: this plan is void,
+                if toolbox.coord.overtaken(start_epoch):
+                    # the user said more, or late words arrived: this plan is void,
                     # and asking the model to continue it would only waste a call
                     raise Superseded()
                 parsed = json.loads(out)

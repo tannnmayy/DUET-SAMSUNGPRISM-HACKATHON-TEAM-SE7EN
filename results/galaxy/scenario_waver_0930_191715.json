@@ -1,0 +1,174 @@
+{
+ "scenario": "waver",
+ "mode": "assistant",
+ "room": "duet-assistant-f21817",
+ "events": [
+  {
+   "t": 3.39,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.39,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.56,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 6.59,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 6.59,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 9.87,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 13.67,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 14.27,
+   "kind": "heard",
+   "text": "Wake me up at 6, 30 tomorrow or maybe 7 home."
+  },
+  {
+   "t": 14.32,
+   "kind": "think_start",
+   "text": "Wake me up at 6, 30 tomorrow or maybe 7 home."
+  },
+  {
+   "t": 14.32,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 15.28,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 15.44,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 25.28,
+   "kind": "thinker_decided",
+   "tools": false,
+   "after_s": 11.01
+  },
+  {
+   "t": 25.28,
+   "kind": "thinker_say",
+   "text": "6:30 or 7:00 in the morning?",
+   "after_s": 11.01
+  },
+  {
+   "t": 29.04,
+   "kind": "agent_said",
+   "text": "One moment. 6:30 or 7:00 in the morning?",
+   "interrupted": false
+  },
+  {
+   "t": 29.04,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 31.68,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 32.4,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 33.01,
+   "kind": "heard",
+   "text": "7."
+  },
+  {
+   "t": 34.54,
+   "kind": "think_start",
+   "text": "7."
+  },
+  {
+   "t": 34.55,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 34.84,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 35.05,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 39.59,
+   "kind": "tool_planned",
+   "tool": "set_alarm",
+   "args": {
+    "time": "07:00"
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 39.59,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 5.05
+  },
+  {
+   "t": 39.69,
+   "kind": "tool_done",
+   "tool": "set_alarm",
+   "args": {
+    "time": "07:00"
+   },
+   "result": {
+    "status": "ok",
+    "alarm": "07:00",
+    "where": "Clock (simulated)"
+   },
+   "after_s": 0.1
+  },
+  {
+   "t": 41.15,
+   "kind": "thinker_error",
+   "text": "no key has room for gemma-4-26b-a4b-it within the deadline: this minute's input-token budget is spent (last error: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}})"
+  },
+  {
+   "t": 47.82,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Sorry, something went wrong on my side. Could you say that once more?",
+   "interrupted": false
+  },
+  {
+   "t": 47.82,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

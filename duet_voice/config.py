@@ -30,32 +30,35 @@ def _env_bool(name: str, default: bool) -> bool:
 @dataclass(frozen=True)
 class Config:
     # --- the language model behind both minds --------------------------------------
-    # "local" (default): Qwen3-30B-A3B-Instruct-2507, open weights (Apache-2.0), served
-    #   by vLLM on the same GPU as everything else (bench/llm_server.py). No API key,
-    #   nothing billed, and it fits Samsung's single 48 GB GPU.
-    # "gemini": the Gemini API (GOOGLE_API_KEY), kept as an alternative.
-    llm_backend: str = field(default_factory=lambda: _env("DUET_LLM_BACKEND", "local"))
+    # "gemma" (default): Gemma 4 26B-A4B-it, open weights (Apache 2.0), through Google's
+    #   API (GOOGLE_API_KEY, or GOOGLE_API_KEYS=key1,key2 to add up per-project limits);
+    #   see duet_voice/gemma_api.py. Nothing runs on the GPU but speech.
+    # "local": any OpenAI-compatible server (DUET_LLM_BASE_URL), used by the phone app's
+    #   laptop mode (duet_voice/galaxy, llama.cpp); not part of the benchmark submission.
+    llm_backend: str = field(default_factory=lambda: _env("DUET_LLM_BACKEND", "gemma"))
     # the local server's OpenAI-compatible endpoint, and the name it serves the model as
-    llm_base_url: str = field(default_factory=lambda: _env("DUET_LLM_BASE_URL", "http://127.0.0.1:18000/v1"))
-    llm_model: str = field(default_factory=lambda: _env("DUET_LLM_MODEL", "qwen3-30b-a3b-instruct-2507"))
+    llm_base_url: str = field(default_factory=lambda: _env("DUET_LLM_BASE_URL", "http://127.0.0.1:18001/v1"))
+    llm_model: str = field(default_factory=lambda: _env("DUET_LLM_MODEL", "qwen3-4b-instruct-2507"))
 
     # --- thinker (slow mind): plans and runs tool chains ---------------------
-    # empty: the backend's default (the local model, or gemini-3.7-flash; Gemini 2.5
-    # Flash-Lite and 2.5 Pro are "no longer available to new users" since Sep 2026)
+    # empty: the backend's default (gemma-4-26b-a4b-it, or the local server's model)
     thinker_model: str = field(default_factory=lambda: _env("DUET_THINKER_MODEL", ""))
-    # Gemini only: minimal | low | medium | high (a token budget on Gemini 2.5).
-    # Qwen3-30B-A3B-Instruct-2507 is a non-thinking model.
-    thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", "low"))
+    # Gemma 4 always thinks before it answers; Google's API accepts no setting for it.
+    thinker_thinking: str = field(default_factory=lambda: _env("DUET_THINKER_THINKING", ""))
     max_tool_steps: int = field(default_factory=lambda: _env_int("DUET_MAX_TOOL_STEPS", 8))
     # fixed sampling seed for every model call (the guide: "pin seeds and versions")
     seed: int = field(default_factory=lambda: _env_int("DUET_SEED", 7))
-    # empty: the model authors' recommendation (Qwen3-2507: 0.7 with top-p 0.8 and
-    # top-k 20; Gemini 2.x: 0; Gemini 3: 1.0, where Google advises against lowering it)
+    # empty: the model authors' recommendation (Gemma 4: 1.0 with top-p 0.95 and top-k 64)
     temperature: str = field(default_factory=lambda: _env("DUET_TEMPERATURE", ""))
 
     # --- talker (fast mind): acknowledgements, progress, never tools -----------
-    talker_enabled: bool = field(default_factory=lambda: _env_bool("DUET_TALKER", True))
-    # empty: the backend's default (the same local model, or gemini-3.5-flash-lite)
+    # On by default with a local model. With Gemma through the API it is off: a model
+    # call there takes seconds, far too slow for a line that must come at once, and it
+    # would spend the per-minute token budget the thinker needs. The agent then says a
+    # fixed "One moment." when there is work to cover (DUET_FALLBACK_ACK).
+    talker_enabled: bool = field(default_factory=lambda: _env_bool(
+        "DUET_TALKER", _env("DUET_LLM_BACKEND", "gemma") == "local"))
+    # empty: the backend's default (the thinker's model)
     talker_model: str = field(default_factory=lambda: _env("DUET_TALKER_MODEL", ""))
     talker_timeout_s: float = field(default_factory=lambda: _env_float("DUET_TALKER_TIMEOUT", 1.2))
 
@@ -84,6 +87,10 @@ class Config:
     # FDB-v3's long, pause-filled requests (15-40 s, 5-8 pauses) the thinker would
     # otherwise start only after the last pause. Safe: a preemptive plan cannot act
     # before the turn closes, and it is void if the words change.
+    # Off with Gemma through the API: every early plan is a model call counted against
+    # the per-minute token limit, and most are thrown away when the user goes on.
+    preemptive: bool = field(default_factory=lambda: _env_bool(
+        "DUET_PREEMPT", _env("DUET_LLM_BACKEND", "gemma") == "local"))
     preempt_max_speech_s: float = field(default_factory=lambda: _env_float("DUET_PREEMPT_MAX_SPEECH", 120.0))
     preempt_max_retries: int = field(default_factory=lambda: _env_int("DUET_PREEMPT_RETRIES", 20))
 
@@ -103,9 +110,9 @@ class Config:
     def __post_init__(self) -> None:
         local = self.llm_backend == "local"
         if not self.thinker_model:
-            object.__setattr__(self, "thinker_model", self.llm_model if local else "gemini-3.7-flash")
+            object.__setattr__(self, "thinker_model", self.llm_model if local else "gemma-4-26b-a4b-it")
         if not self.talker_model:
-            object.__setattr__(self, "talker_model", self.llm_model if local else "gemini-3.5-flash-lite")
+            object.__setattr__(self, "talker_model", self.thinker_model)
 
 
 CONFIG = Config()

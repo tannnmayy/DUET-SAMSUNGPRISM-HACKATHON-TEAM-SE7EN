@@ -1,0 +1,117 @@
+{
+  "order": [
+    "correction",
+    "battery",
+    "care",
+    "drive"
+  ],
+  "scenes": {
+    "correction": {
+      "mode": "assistant",
+      "name": "Tanmay",
+      "voice": "am_michael",
+      "number": "1",
+      "title": "Changing your mind mid-sentence",
+      "watch": "DUET starts planning the 3:30 alarm while you pause. When you correct yourself, that plan is dropped before it can act: 3:30 never runs, and only 4:30 is set, once.",
+      "lines": [
+        {
+          "say": "Set an alarm for 3:30.",
+          "wait": "reply",
+          "after": 1.5
+        },
+        {
+          "say": "No no, cancel that. Set it for 4:30 instead."
+        },
+        {
+          "say": "What alarms do I have now?",
+          "wait": "reply"
+        }
+      ]
+    },
+    "battery": {
+      "mode": "assistant",
+      "name": "Tanmay",
+      "voice": "am_michael",
+      "number": "2",
+      "title": "Troubleshooting you can interrupt",
+      "watch": "DUET reads the phone's battery, screen and app usage. You cut in with your own theory; it stops, checks it against the numbers, and changes a setting only when you ask.",
+      "lines": [
+        {
+          "say": "My battery has been draining really fast lately. What's going on?",
+          "wait": "reply"
+        },
+        {
+          "say": "Oh wait, I think I know. My brightness is always really high, and I play a lot of games. Is that it?",
+          "wait": "barge",
+          "into": 4.0
+        },
+        {
+          "say": "Yes please, bring the brightness down to forty percent.",
+          "wait": "reply"
+        }
+      ]
+    },
+    "apps": {
+      "mode": "assistant",
+      "name": "Tanmay",
+      "voice": "am_michael",
+      "number": "extra",
+      "title": "Knowing your phone",
+      "watch": "DUET reads the installed apps and decides which ones are for shopping (Android has no shopping category).",
+      "lines": [
+        {
+          "say": "How many shopping apps do I have on my phone?",
+          "wait": "reply"
+        }
+      ]
+    },
+    "care": {
+      "mode": "care",
+      "name": "Ramesh",
+      "voice": "bm_george",
+      "number": "3",
+      "title": "Care: never a double dose",
+      "watch": "An older man living alone. DUET checks the medicine record before answering, refuses a second dose kindly, records how he feels, and calls his daughter when he asks.",
+      "lines": [
+        {
+          "say": "Did I take my blood pressure tablet today? I can't remember, so I'll just take one now.",
+          "wait": "reply"
+        },
+        {
+          "say": "Oh, thank you. I'm feeling a little tired today, but I'm fine.",
+          "wait": "reply"
+        },
+        {
+          "say": "Could you call my daughter, please?",
+          "wait": "reply"
+        }
+      ]
+    },
+    "drive": {
+      "mode": "drive",
+      "name": "Tanmay",
+      "voice": "am_fenrir",
+      "number": "4",
+      "title": "Drive: route changes and the home from the car",
+      "watch": "Only the final destination is set. The text uses the real arrival time. Ten minutes out, DUET speaks first and offers to cool the house.",
+      "lines": [
+        {
+          "say": "Take me to the office. No wait, take me home, I'm done for the day.",
+          "wait": "reply"
+        },
+        {
+          "say": "And text Priya that I'll be home by the arrival time.",
+          "wait": "reply"
+        },
+        {
+          "event": "near",
+          "wait": "reply"
+        },
+        {
+          "say": "Yes please, set it to twenty-four degrees.",
+          "wait": "reply"
+        }
+      ]
+    }
+  }
+}

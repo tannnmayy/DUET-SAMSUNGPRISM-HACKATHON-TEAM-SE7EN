@@ -1,27 +1,34 @@
 #!/usr/bin/env bash
 # DUET on Full-Duplex-Bench v3 in one command: install, fetch the benchmark and its
-# data, start the local model server, run the agent through the benchmark's own
+# data, check the Google API keys, run the agent through the benchmark's own
 # pipeline, evaluate, and print the scores.
 #
-#   bash reproduce.sh                                 # all 100 items (~2 h: the audio streams in real time)
-#   bash reproduce.sh --only travel_19,housing_04     # a quick subset
-#   bash reproduce.sh --dry-run                       # no language model: listening and plumbing only
+#   GOOGLE_API_KEY=... bash reproduce.sh                   # all 100 items (~2 h: the audio streams in real time)
+#   bash reproduce.sh --only travel_19,housing_04          # a quick subset
+#   bash reproduce.sh --dry-run                            # no language model: listening and plumbing only
 #
-# No API key is needed. The language model, Qwen3-30B-A3B-Instruct-2507 (open weights,
-# Apache-2.0), runs on the same GPU through vLLM. Optional settings:
+# The language model is Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's
+# API. Needs one of:
+#   GOOGLE_API_KEY=key                  a key from a Google AI Studio project on the free tier:
+#                                       Google serves Gemma free of charge there and lists no
+#                                       paid-tier offer for it
+#   GOOGLE_API_KEYS=key1,key2,...       recommended: two or three keys from different free-tier
+#                                       projects; their per-minute limits add up (16,000 input
+#                                       tokens per minute each, and one conversation with a long
+#                                       tool chain can use most of one key's minute)
+# Optional:
 #   OPENAI_API_KEY                                  the official gpt-4o judge (otherwise a labelled
-#                                                   proxy judge: the same local model)
+#                                                   proxy judge: Gemma 4)
 #   LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET  LiveKit Cloud instead of a local LiveKit server
 #   FDB_DATA_DIR                                    the benchmark audio, if you already have it extracted
 #   CUDA_VISIBLE_DEVICES                            which GPU (default: the one with the most free memory)
-#   DUET_LLM_BACKEND=gemini and GOOGLE_API_KEY       the Gemini API instead of the local model
 #
-# Needs: Linux x86_64; one NVIDIA GPU with 48 GB (the model server takes 33 GiB, the
-# speech models and the benchmark's scoring recognizer most of the rest); an NVIDIA
-# driver for CUDA 12.x or 13.x; git, curl and internet access; about 90 GB of disk.
-# No sudo: Python 3.11 (through a pinned uv), ffmpeg and the LiveKit server are
-# fetched into third_party/, and every Python package is installed at the exact
-# version of our runs (requirements*.lock). Results land in results/live/<time>/.
+# Needs: Linux x86_64; an NVIDIA GPU with about 8 GB free (the agent's speech models and the
+# benchmark's scoring recognizer; the language model runs at Google); an NVIDIA driver for
+# CUDA 12.x or 13.x; git, curl, internet access; about 30 GB of disk. No sudo: Python 3.11
+# (through a pinned uv), ffmpeg and the LiveKit server are fetched into third_party/, and
+# every Python package is installed at the exact version of our runs (requirements*.lock).
+# Results land in results/live/<time>/.
 set -euo pipefail
 cd "$(dirname "$0")"
 ROOT="$(pwd)"
@@ -34,7 +41,6 @@ DATA_SHA256="37545bd896f81718136598cf5be25d42ea9aa22efcd91f58370938d05d7d672f"
 LK_VERSION="1.13.7"
 UV_VERSION="0.12.19"
 PYVER="${DUET_PYTHON_VERSION:-3.11}"
-BACKEND="${DUET_LLM_BACKEND:-local}"
 DRY_RUN=0
 for a in "$@"; do [ "$a" = "--dry-run" ] && DRY_RUN=1; done
 
@@ -43,8 +49,13 @@ need() { command -v "$1" >/dev/null || { echo "missing: $1 ($2)"; exit 1; }; }
 
 # --- 0. what this machine has ---------------------------------------------------------------
 need git "install git"; need curl "install curl"; need tar "install tar"; need sha256sum "install coreutils"
-if [ "$BACKEND" = "gemini" ]; then
-  : "${GOOGLE_API_KEY:?DUET_LLM_BACKEND=gemini needs GOOGLE_API_KEY}"
+if [ "$DRY_RUN" = 0 ] && [ -z "${GOOGLE_API_KEYS:-}" ] && [ -z "${GOOGLE_API_KEY:-}" ] \
+   && ! grep -qE '^[[:space:]]*(export[[:space:]]+)?GOOGLE_API_KEYS?[[:space:]]*=[[:space:]]*[^[:space:]]' .env.local 2>/dev/null; then
+  echo "The language model is Gemma 4 through Google's API: set GOOGLE_API_KEY (or GOOGLE_API_KEYS=key1,key2),"
+  echo "in the environment or in .env.local here."
+  echo "Create a key at https://aistudio.google.com (Get API key, in a project WITHOUT billing: Google"
+  echo "serves Gemma free of charge on the free tier only). Or run with --dry-run to check the plumbing."
+  exit 1
 fi
 if [ -n "${LIVEKIT_URL:-}" ] && { [ -z "${LIVEKIT_API_KEY:-}" ] || [ -z "${LIVEKIT_API_SECRET:-}" ]; }; then
   echo "LIVEKIT_URL is set, so LIVEKIT_API_KEY and LIVEKIT_API_SECRET are needed too"; exit 1
@@ -52,13 +63,11 @@ fi
 if command -v nvidia-smi >/dev/null; then
   echo "GPU ${CUDA_VISIBLE_DEVICES:-0}: $(nvidia-smi -i "${CUDA_VISIBLE_DEVICES:-0}" \
         --query-gpu=name,driver_version,memory.total,memory.free --format=csv,noheader)"
-elif [ "$BACKEND" = "local" ] && [ "$DRY_RUN" = 0 ]; then
-  echo "No NVIDIA GPU visible (nvidia-smi not found): the local model needs one."; exit 1
+else
+  echo "WARNING: no NVIDIA GPU visible (nvidia-smi not found): speech recognition falls back to the CPU."
 fi
 
-# --- 1. uv (pinned) and three Python environments ----------------------------------------------
-# uv supplies its own Python 3.11, which carries the C headers that vLLM's kernel
-# compiler (Triton) needs: no system Python, python3-venv or python3-dev required.
+# --- 1. uv (pinned) and two Python environments ----------------------------------------------
 if ! command -v uv >/dev/null; then
   say "uv $UV_VERSION"
   mkdir -p third_party/uv
@@ -76,9 +85,6 @@ make_env() {  # $1: folder, $2: lock file. A marker file records a finished inst
 }
 make_env .venv requirements.lock                  # the agent
 make_env .venv-bench requirements-bench.lock      # the benchmark's runner and scoring recognizer (NeMo)
-if [ "$BACKEND" = "local" ]; then
-  make_env .venv-llm requirements-llm.lock        # the model server (vLLM)
-fi
 
 # --- 2. ffmpeg (the benchmark's runner needs it) --------------------------------------------------
 if ! command -v ffmpeg >/dev/null; then
@@ -137,26 +143,13 @@ if [ -z "${LIVEKIT_URL:-}" ] && [ -z "${LIVEKIT_SERVER_BIN:-}" ] && ! command -v
   export LIVEKIT_SERVER_BIN="$ROOT/third_party/livekit/livekit-server"
 fi
 
-# --- 5. every model, downloaded before the timed run -------------------------------------------------
+# --- 5. every model the GPU runs, downloaded before the timed run ----------------------------------
 say "speech models"
 "$PY_AGENT" -m duet_voice.prefetch
-if [ "$BACKEND" = "local" ] && [ "$DRY_RUN" = 0 ]; then
-  say "language model weights"
-  "$PY_LLM" bench/llm_server.py prefetch
-fi
 say "the benchmark's scoring recognizer (Parakeet)"
 "$PY_BENCH" -c "import nemo.collections.asr as a; a.models.ASRModel.from_pretrained('nvidia/parakeet-tdt-0.6b-v2')" \
   >/dev/null 2>&1 || echo "WARNING: could not pre-load Parakeet; the runner will try again"
 
-# --- 6. run and evaluate ------------------------------------------------------------------------------
+# --- 6. run and evaluate (the Gemma keys are checked first, in seconds) -----------------------------
 say "running FDB-v3 against the DUET agent"
-status=0
-"$PY_AGENT" bench/run_live.py --bench-python "$PY_BENCH" --llm-python "$PY_LLM" "$@" || status=$?
-
-# Our own test machines only (DUET_AUTO_PUSH=1): store the results on GitHub right away,
-# successful or not. Off by default, so a re-run elsewhere never touches git.
-if [ "${DUET_AUTO_PUSH:-0}" = 1 ]; then
-  tag="auto_live_$(date +%m%d_%H%M)"; [ "$status" -ne 0 ] && tag="${tag}_failed"
-  bash scripts/push_results.sh "$tag" || echo "Auto-push failed; later run: bash scripts/push_results.sh <name>"
-fi
-exit "$status"
+exec "$PY_AGENT" bench/run_live.py --bench-python "$PY_BENCH" "$@"

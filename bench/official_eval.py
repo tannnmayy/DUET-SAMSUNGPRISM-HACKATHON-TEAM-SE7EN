@@ -4,8 +4,8 @@
     python bench/official_eval.py evaluate_pass_rate.py --provider duet ... --use-llm
 
 With a usable OPENAI_API_KEY this is exactly the official command (gpt-4o judge).
-Otherwise the scripts' OpenAI client is redirected to a proxy judge: the local
-model server, or Gemini's OpenAI-compatible endpoint (see bench/judge.py), and
+Otherwise the scripts' OpenAI client is redirected to a proxy judge,
+Gemma 4 through Google's API (see bench/judge.py), and
 every report says so.
 """
 

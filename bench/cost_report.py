@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What a run cost in API calls, from the agent's own traces (the local model: $0).
+"""What a run used in model calls and tokens, from the agent's own traces.
 
     python bench/cost_report.py results/live/<run>
 
@@ -8,9 +8,10 @@ records its token counts in the trace. Calls cut short by a barge-in are not
 counted, so this is a slight underestimate. Speech recognition, TTS, VAD and
 end-of-turn detection run on the local GPU and cost nothing per call.
 
-Prices: Gemini API paid tier, standard, USD per million tokens, as published
-at https://ai.google.dev/gemini-api/docs/pricing (checked 27 Sep 2026).
-Thinking tokens are billed as output.
+Gemma 4 through Google's API is free of charge (free-tier projects; see
+https://ai.google.dev/gemini-api/docs/pricing), so the bill is $0 and what matters
+is the token count against the per-minute limit. Prices below stay at 0; a model
+without a listed price is reported as free (an open model on our own hardware).
 """
 
 from __future__ import annotations
@@ -21,15 +22,9 @@ from pathlib import Path
 from typing import Dict
 
 PRICES = {
-    # audio input is priced separately where the page lists it; otherwise as text
-    "gemini-3.5-flash": {"input": 1.50, "input_audio": 1.50, "output": 9.00},
-    "gemini-3.5-flash-lite": {"input": 0.30, "input_audio": 0.30, "output": 2.50},
-    "gemini-3.7-flash": {"input": 0.75, "input_audio": 0.75, "output": 3.75},   # to 31 Dec 2026
-    "gemini-3.6-flash": {"input": 0.75, "input_audio": 0.75, "output": 3.75},   # to 31 Dec 2026
-    "gemini-3.1-flash-lite": {"input": 0.25, "input_audio": 0.50, "output": 1.50},
-    "gemini-2.5-flash": {"input": 0.30, "input_audio": 1.00, "output": 2.50},
-    "gemini-2.5-flash-lite": {"input": 0.10, "input_audio": 0.30, "output": 0.40},
-    "gemini-2.5-pro": {"input": 1.25, "input_audio": 1.25, "output": 10.00},
+    # USD per million tokens (0: free of charge on Google's API)
+    "gemma-4-26b-a4b-it": {"input": 0.0, "input_audio": 0.0, "output": 0.0},
+    "gemma-4-31b-it": {"input": 0.0, "input_audio": 0.0, "output": 0.0},
 }
 KEYS = ("input", "input_audio", "output", "thinking", "calls")
 
@@ -57,8 +52,8 @@ def dollars(model: str, t: Dict[str, int]) -> float:
     name = model.split(" ")[0]
     p = PRICES.get(name)
     if p is None:
-        # an open-weights model on our own GPU: no API bill (only GPU time)
-        return 0.0 if not name.startswith("gemini") else float("nan")
+        # an open-weights model on our own hardware: no API bill
+        return 0.0
     text_in = max(0, t["input"] - t["input_audio"])
     return (text_in * p["input"] + t["input_audio"] * p["input_audio"]
             + (t["output"] + t["thinking"]) * p["output"]) / 1e6
@@ -75,7 +70,7 @@ def report(run_dir: Path) -> dict:
     return {"conversations": conversations, "by_model": rows, "total_usd": round(total, 4),
             "usd_per_conversation": round(total / conversations, 5) if conversations else None,
             "usd_per_1000_conversations": round(1000 * total / conversations, 2) if conversations else None,
-            "prices": "Gemini API paid tier, standard (ai.google.dev/gemini-api/docs/pricing, 27 Sep 2026)"}
+            "prices": "Gemma 4 on Google's API: free of charge (ai.google.dev/gemini-api/docs/pricing)"}
 
 
 def main() -> int:

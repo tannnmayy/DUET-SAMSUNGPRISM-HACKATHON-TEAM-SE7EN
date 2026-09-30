@@ -1,5 +1,5 @@
-"""The local-model backend (vLLM's OpenAI-compatible API), with the server replaced
-by scripted replies, and the model-server launcher's GPU plan (no GPU needed)."""
+"""The local-model backend (the phone app's laptop mode: an OpenAI-compatible server),
+with the server replaced by scripted replies."""
 
 import asyncio
 import json
@@ -13,8 +13,6 @@ from duet_voice import llm_local
 from duet_voice.coordinator import Coordinator, Superseded
 from duet_voice.llm_local import LocalThinker, salvage_calls
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "bench"))
-import llm_server  # noqa: E402
 
 
 def reply(content=None, calls=()):
@@ -104,7 +102,10 @@ def test_an_empty_reply_is_asked_again_once():
 
 def test_a_plan_overtaken_during_a_tool_call_stops_at_once():
     box = Box()
-    box.on_call = box.coord.user_started_speaking   # the user speaks while the call runs
+    def says_more():                                # the user speaks while the call runs
+        box.coord.user_started_speaking()
+        box.coord.heard("wait, not that one")
+    box.on_call = says_more
     with pytest.raises(Superseded):
         run([reply(calls=[("track_order", {"order_id": "A1"})]), reply("never asked")], box=box)
 
@@ -131,60 +132,48 @@ def test_sampling_follows_the_model_card_with_a_fixed_seed(monkeypatch):
 
 # --- the model-server launcher ------------------------------------------------------------------
 
-def gpu(total_mib, cc, used_mib=500):
-    return lambda: {"index": "0", "name": "test GPU", "total_mib": total_mib, "used_mib": used_mib,
-                    "compute_capability": cc}
+def run_reviewed(script):
+    """The phone app's thinker: a second look before its answer is spoken."""
+    th = LocalThinker(model="qwen-test", review="Second look: anything missing? Else reply OK")
+    th._create = lambda messages, tools: asyncio.sleep(0, result=script.pop(0))
+    box = Box()
+
+    async def go():
+        return [ev async for ev in th.run("set an alarm for 4:30", box)]
+    return asyncio.run(go()), box, th
 
 
-@pytest.fixture
-def clean_env(monkeypatch):
-    for name in ("DUET_LLM_VARIANT", "DUET_LLM_GPU_GIB", "DUET_LLM_GPUS", "DUET_LLM_TP"):
-        monkeypatch.delenv(name, raising=False)
+def test_a_second_look_that_finds_nothing_keeps_the_draft_and_a_clean_history():
+    evs, box, th = run_reviewed([reply("Set for 4:30."), reply("OK")])
+    assert [e.kind for e in evs] == ["decided", "review", "say"] and evs[-1].text == "Set for 4:30."
+    assert [m["role"] for m in th.history] == ["user", "assistant"]
 
 
-def test_the_4_bit_build_everywhere_with_the_same_budget_on_any_size(monkeypatch, clean_env):
-    plans = []
-    for total, cc in ((46068, 8.9), (49140, 8.6), (40960, 8.0), (81559, 9.0)):  # L40S, A6000, A100 40GB, H100
-        monkeypatch.setattr(llm_server, "gpu", gpu(total, cc))
-        plans.append(llm_server.plan())
-    assert {p["variant"] for p in plans} == {"w4a16"}
-    assert {p["budget_gib"] for p in plans} == {22.0}                 # the same memory on every card
-    assert all(p["repo"].startswith("RedHatAI/") and p["tensor_parallel"] == 1 for p in plans)
-    assert 0.48 < plans[0]["gpu_memory_utilization"] < 0.50          # 22 GiB of a 48 GB L40S
-    cmd = llm_server.command("python", plans[0])
-    assert "--tool-call-parser" in cmd and cmd[cmd.index("--tool-call-parser") + 1] == "hermes"
-    assert "--tensor-parallel-size" not in cmd
+def test_a_second_look_calls_the_action_the_draft_only_claimed():
+    evs, box, th = run_reviewed([reply("Set for 4:30."), reply(calls=[("set_alarm", {"time": "04:30"})]),
+                                 reply("Set for 4:30 in the morning.\n\nOK")])
+    assert box.calls == [("set_alarm", {"time": "04:30"})]
+    assert evs[-1].kind == "say" and evs[-1].text == "Set for 4:30 in the morning."
 
 
-def test_the_fp8_build_on_request(monkeypatch, clean_env):
-    monkeypatch.setenv("DUET_LLM_VARIANT", "fp8")
-    monkeypatch.setattr(llm_server, "gpu", gpu(81559, 9.0))          # an 80 GB H100
-    p = llm_server.plan()
-    assert p["variant"] == "fp8" and p["budget_gib"] == 33.0 and not p["notes"]
-    monkeypatch.setattr(llm_server, "gpu", gpu(40960, 8.0))          # an A100: warned, not silent
-    assert any("8.9" in n for n in llm_server.plan()["notes"])
+def test_the_benchmark_thinker_takes_no_second_look():
+    evs, box, sent, th = run([reply("Hello!")])
+    assert [e.kind for e in evs] == ["decided", "say"] and th.review is None
 
 
-def test_the_model_split_over_two_half_free_gpus(monkeypatch, clean_env):
-    monkeypatch.setenv("DUET_LLM_GPUS", "4,7")
-    monkeypatch.setattr(llm_server, "gpu", gpu(40960, 8.0, used_mib=24000))   # a shared A100, ~16.5 GiB free
-    p = llm_server.plan()
-    assert p["tensor_parallel"] == 2 and p["per_gpu_gib"] == 12.5 and p["gpus"] == "4,7"
-    cmd = llm_server.command("python", p)
-    assert cmd[cmd.index("--tensor-parallel-size") + 1] == "2"
-    env = llm_server.server_env(p, {"CUDA_VISIBLE_DEVICES": "0"})
-    assert env["CUDA_VISIBLE_DEVICES"] == "4,7" and env["VLLM_WORKER_MULTIPROC_METHOD"] == "spawn"
+def test_a_second_look_whose_action_was_held_back_keeps_the_draft():
+    th = LocalThinker(model="qwen-test", review="Second look")
+    script = [reply("It's the screen. Want me to dim it?"), reply(calls=[("set_brightness", {"percent": 50})]),
+              reply("I'll dim it to 50%, okay?")]
+    th._create = lambda messages, tools: asyncio.sleep(0, result=script.pop(0))
 
+    class Held(Box):
+        async def call(self, tool, args, epoch=None):
+            self.calls.append((tool, args))
+            return json.dumps({"status": "not_executed", "reason": "the user has not asked for this"})
+    box = Held()
 
-def test_a_gpu_busy_with_other_jobs_is_refused_with_a_way_out(monkeypatch, clean_env, tmp_path):
-    monkeypatch.setattr(llm_server, "gpu", gpu(40960, 8.0, used_mib=25700))  # 14.9 GiB free, as on 28 Sep
-    monkeypatch.setattr(llm_server, "healthy", lambda *a, **k: False)
-    with pytest.raises(SystemExit, match="place_gpus"):
-        llm_server.start("python", tmp_path)
-
-
-def test_a_gpu_too_small_is_refused_before_anything_starts(monkeypatch, clean_env, tmp_path):
-    monkeypatch.setattr(llm_server, "gpu", gpu(6144, 8.6))           # this laptop's 6 GB GPU
-    monkeypatch.setattr(llm_server, "healthy", lambda *a, **k: False)
-    with pytest.raises(SystemExit, match="too small"):
-        llm_server.start("python", tmp_path)
+    async def go():
+        return [ev async for ev in th.run("why does my battery drain", box)]
+    evs = asyncio.run(go())
+    assert evs[-1].text == "It's the screen. Want me to dim it?" and box.calls == [("set_brightness", {"percent": 50})]

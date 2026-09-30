@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>DUET card</title>
+  <style>
+    :root { --ink: #f3f4f7; --muted: #9aa0ad; --accent: #5b8ff5; --care: #ee7aa3; --drive: #3fbf9a; --ok: #62c98b; --warn: #e8a54b; --hold: #a48ff5; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #06070a; color: var(--ink); font-family: "Segoe UI", system-ui, sans-serif; }
+    body::before { content: ""; position: absolute; inset: 0;
+      background: radial-gradient(900px 600px at 20% 25%, rgba(91,143,245,.18), transparent 70%),
+                  radial-gradient(800px 600px at 85% 85%, rgba(238,122,163,.12), transparent 70%),
+                  radial-gradient(600px 500px at 80% 10%, rgba(63,191,154,.10), transparent 70%); }
+    .wrap { position: absolute; inset: 0; padding: 120px 160px; display: grid; align-content: center; gap: 30px; }
+    .brand { display: flex; align-items: center; gap: 16px; font-size: 24px; letter-spacing: .2em; font-weight: 800; color: var(--muted); }
+    .brand i { width: 20px; height: 20px; border-radius: 50%; background: conic-gradient(from 200deg, var(--accent), var(--care), var(--drive), var(--accent)); }
+    h1 { font-size: 104px; line-height: 1.02; margin: 0; letter-spacing: -.02em; max-width: 1500px; }
+    h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), var(--care)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    p.lede { font-size: 36px; line-height: 1.4; color: var(--muted); margin: 0; max-width: 1450px; }
+    .rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 40px; margin-top: 14px; max-width: 1600px; }
+    .rule { display: grid; grid-template-columns: 52px 1fr; gap: 18px; align-items: center; font-size: 29px; line-height: 1.3; }
+    .rule i { font-style: normal; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 24px; }
+    .foot { position: absolute; left: 160px; right: 160px; bottom: 70px; display: flex; justify-content: space-between; font-size: 22px; color: #767c89; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <section class="wrap" id="intro">
+    <div class="brand"><i></i>DUET FOR GALAXY</div>
+    <h1>A voice assistant that <em>listens while it talks.</em></h1>
+    <p class="lede">Interrupt it, correct yourself mid-sentence, change your mind. DUET has two minds: a fast one that answers at once, and a slow one that acts on your phone. Every action passes one coordinator:</p>
+    <div class="rules">
+      <div class="rule"><i style="background:#262040;color:var(--hold)">⏸</i>Nothing runs while you are still speaking</div>
+      <div class="rule"><i style="background:var(--warn);color:#231400">✕</i>A plan your later words overtook never runs</div>
+      <div class="rule"><i style="background:var(--hold);color:#140f28">=</i>No action ever runs twice</div>
+      <div class="rule"><i style="background:#1b2a47;color:var(--accent)">?</i>Nothing you didn't ask for: it offers instead</div>
+    </div>
+  </section>
+
+  <section class="wrap" id="outro" hidden>
+    <div class="brand"><i></i>DUET FOR GALAXY</div>
+    <h1>One agent, <em>three ways to help.</em></h1>
+    <div class="rules" style="grid-template-columns: 1fr; max-width: 1500px">
+      <div class="rule"><i style="background:#1b2a47;color:var(--accent)">1</i><span><b>Assistant:</b> alarms, battery and screen diagnosis, apps, settings, Maps and SmartThings, by voice</span></div>
+      <div class="rule"><i style="background:rgba(238,122,163,.18);color:var(--care)">2</i><span><b>Care:</b> a companion for people living alone that never allows a double dose and keeps family close</span></div>
+      <div class="rule"><i style="background:rgba(63,191,154,.18);color:var(--drive)">3</i><span><b>Drive:</b> route changes mid-sentence, messages with the real arrival time, the home from the car</span></div>
+    </div>
+    <p class="lede">The same coordinator and the same Gemma 4 model run our Full-Duplex-Bench v3 submission. The app, the agent and the model's weights are all open.</p>
+  </section>
+
+  <div class="foot"><span>Samsung PRISM GenAI Hackathon · Theme 05 · Team SE7EN</span><span id="note">Live recordings, no edits within a scene</span></div>
+<script>
+  if (new URLSearchParams(location.search).get("kind") === "outro") {
+    document.getElementById("intro").hidden = true;
+    document.getElementById("outro").hidden = false;
+    document.getElementById("note").textContent = "Code, logs and the APK are in our repository";
+  }
+</script>
+</body>
+</html>

@@ -15,6 +15,6 @@ Source: `results/live/20260927_045953` (live run through the official FDB-v3 run
 | first_response_latency_mean_s | 4.09 |
 | task_completion_latency_mean_s | 4.24 |
 
-Settings: thinker `gemini-3.7-flash` (thinking low, sampling {'temperature': 1.0, 'seed': 7}), talker `gemini-3.5-flash-lite`, seed 7, endpointing 0.8-2.5 s, commit hold 1.1 s.
+Settings: no language model (dry run: every closed turn is answered "Okay."); endpointing 0.8-2.5 s, commit hold 1.1 s.
 
 Full settings: `run_config.json`. Headline numbers: `summary.json`.
