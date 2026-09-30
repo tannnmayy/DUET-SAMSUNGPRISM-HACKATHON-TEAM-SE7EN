@@ -130,63 +130,102 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
 {
   const s = pptx.addSlide();
   frame(s, 2, "The problem, in our words", "The failure isn't hearing the correction. It's acting before it arrives.",
-    "A real Full-Duplex-Bench recording (travel_19), with the times from DUET's own trace of the reported run.");
-  box(s, 0.55, 1.78, 8.5, 3.72, { fill: C.panel, line: C.line });
-  const x0 = 2.45, x1 = 8.85, t0 = 2, t1 = 27;
-  const X = (sec) => x0 + (sec - t0) / (t1 - t0) * (x1 - x0);
-  // axis
-  s.addShape(S.line, { x: x0, y: 5.08, w: x1 - x0, h: 0, line: { color: C.line, width: 1 } });
-  [5, 10, 15, 20, 25].forEach((sec) => {
-    s.addShape(S.line, { x: X(sec), y: 1.95, w: 0, h: 3.13, line: { color: C.grid, width: 0.75, dashType: "dash" } });
-    t(s, sec + " s", X(sec) - 0.3, 5.12, 0.6, 0.2, { fontSize: 8.5, color: C.faint, align: "center" });
+    "One real Full-Duplex-Bench recording (travel_19), moment by moment. Times are from DUET's own trace of the reported run.");
+  const mono = "Consolas";
+  // storyboard: four moments of the recording, then the outcome
+  box(s, 0.55, 1.75, 8.5, 3.78, { fill: C.panel, line: C.line });
+  const lx = 0.72, cx0 = 2.2, cw = 1.36, gx = 0.08, ow = 1.02;
+  const colX = (i) => cx0 + i * (cw + gx);
+  const outX = colX(4);
+  const moments = ["3.0 s", "6.4 s", "10.7 s", "13.4 s"];
+  moments.forEach((m, i) => {
+    t(s, m, colX(i), 1.88, cw, 0.24, { fontSize: 9.5, bold: true, color: C.accent, align: "center", charSpacing: 1 });
   });
-  // lanes
-  const lanes = [["The user", 2.05], ["Acting on every\nclosed turn", 3.0], ["DUET", 4.02]];
-  lanes.forEach(([name, y]) => t(s, name, 0.72, y, 1.6, 0.6, { fontSize: 11, bold: true, color: name === "DUET" ? C.ok : C.muted }));
-  // user speech (user_state speaking intervals and what was heard)
-  const said = [[3.0, 5.8, "…flights to Rome."], [6.4, 9.7, "No, wait… Milan instead."], [10.7, 12.7, "…June 1st."],
-    [13.4, 17.8, "Well, wait… actually June 3rd."], [18.3, 19.4, "Sorry."]];
-  said.forEach(([a, b, txt], i) => {
-    s.addShape(S.roundRect, { x: X(a), y: 2.08, w: X(b) - X(a), h: 0.26, rectRadius: 0.05, fill: { color: C.accentDim }, line: { color: C.accent, width: 0.75 } });
-    t(s, txt, X(a) - 0.05, i % 2 ? 2.62 : 2.38, 2.6, 0.24, { fontSize: 9.5, color: C.pillText });
-  });
-  // counterfactual: acting at each closed turn (the turn detector closed turns at 10.6, 13.3 and 19.9 s)
-  const cf = [[13.3, "search_flights(Milan, June 1)  ✗ stale", C.bad, 2.93], [19.9, "search_flights(Milan, June 3)", C.muted, 3.25]];
-  cf.forEach(([sec, txt, col, ty]) => {
-    s.addShape(S.ellipse, { x: X(sec) - 0.07, y: ty + 0.06, w: 0.14, h: 0.14, fill: { color: col }, line: { color: col, width: 0 } });
-    t(s, txt, X(sec) + 0.12, ty, 2.9, 0.26, { fontSize: 9.5, color: col });
-  });
-  t(s, "Two calls: the extra, stale one fails the item under strict Pass@1.", X(2.6), 3.55, 4.6, 0.24, { fontSize: 9.5, color: C.bad, italic: true });
-  // DUET: plans dropped at 10.7 and 13.4 s (new words), one committed call at 24.7 s
-  [[10.57, 10.73], [13.28, 13.43]].forEach(([p, d]) => {
-    s.addShape(S.ellipse, { x: X(p) - 0.07, y: 4.14, w: 0.14, h: 0.14, fill: { color: C.faint }, line: { color: C.faint, width: 0 } });
-  });
-  t(s, "plans dropped: new words", X(10.4), 4.36, 2.3, 0.22, { fontSize: 9, color: C.faint });
-  s.addShape(S.rect, { x: X(19.9), y: 4.15, w: X(24.67) - X(19.9), h: 0.12, fill: { color: C.holdDim }, line: { color: C.hold, width: 0.75 } });
-  t(s, "Gemma plans on the final words (4.8 s)", X(18.4), 4.36, 2.9, 0.22, { fontSize: 9, color: C.hold });
-  s.addShape(S.ellipse, { x: X(21.06) - 0.06, y: 3.84, w: 0.12, h: 0.12, fill: { color: C.accent }, line: { color: C.accent, width: 0 } });
-  t(s, "“One moment.”", X(21.06) - 0.55, 3.62, 1.2, 0.22, { fontSize: 9, color: C.accent, align: "center" });
-  s.addShape(S.ellipse, { x: X(24.67) - 0.09, y: 4.12, w: 0.18, h: 0.18, fill: { color: C.ok }, line: { color: C.ok, width: 0 } });
-  t(s, "search_flights(Milan, June 3)  ✓ once", X(24.67) - 2.6, 4.62, 2.95, 0.24, { fontSize: 10, bold: true, color: C.ok, align: "right" });
-  t(s, "The spoken answer followed at 38 s: “a flight to Milan on June 3rd for 450 dollars.”", 0.72, 4.82, 5.4, 0.22, { fontSize: 8.5, color: C.faint });
+  t(s, "OUTCOME", outX, 1.88, ow, 0.24, { fontSize: 9, bold: true, color: C.muted, align: "center", charSpacing: 2 });
+  s.addShape(S.line, { x: cx0, y: 2.16, w: outX - cx0 - 0.08, h: 0, line: { color: C.accent, width: 1, endArrowType: "triangle" } });
 
-  // self-correction baselines
-  box(s, 9.3, 1.78, 3.48, 3.72, { fill: C.panel, line: C.line });
-  t(s, "SELF-CORRECTION ITEMS · PASS@1", 9.5, 1.92, 3.2, 0.24, { fontSize: 9.5, bold: true, color: C.muted, charSpacing: 1.5 });
-  const sc = [["DUET", 0.88, C.accent], ["GPT-Realtime", 0.588, C.base], ["Gemini Live 3.1", 0.353, C.base], ["Whisper→GPT-4o", 0.176, C.base]];
-  sc.forEach(([n, v, col], i) => {
-    t(s, n, 9.5, 2.3 + i * 0.66, 3.1, 0.24, { fontSize: 10.5, color: i === 0 ? C.ink : C.muted, bold: i === 0 });
-    s.addShape(S.rect, { x: 9.5, y: 2.56 + i * 0.66, w: 2.45, h: 0.2, fill: { color: C.panel2 }, line: { color: C.panel2, width: 0 } });
-    s.addShape(S.rect, { x: 9.5, y: 2.56 + i * 0.66, w: 2.45 * v, h: 0.2, fill: { color: col }, line: { color: col, width: 0 } });
-    t(s, v.toFixed(2), 12.02, 2.5 + i * 0.66, 0.65, 0.3, { fontSize: 11, bold: true, color: i === 0 ? C.accent : C.ink });
-  });
-  t(s, "DUET: 15 of 17 items in our run. Baselines: the FDB-v3 paper. The paper names the cause: “models commit intermediate parameters before the correction arrives.”", 9.5, 4.95, 3.15, 0.5, { fontSize: 8.5, color: C.faint });
+  const rowLabel = (y, h, head, sub, col) => {
+    t(s, head, lx, y + 0.08, 1.45, 0.3, { fontSize: 11.5, bold: true, color: col || C.ink });
+    t(s, sub, lx, y + 0.38, 1.42, h - 0.42, { fontSize: 8.5, color: C.muted });
+  };
+  const cell = (i, y, h, fill, line, dash) => s.addShape(S.roundRect, {
+    x: colX(i), y, w: cw, h, rectRadius: 0.06, fill: { color: fill }, line: { color: line, width: 1, dashType: dash || "solid" } });
 
-  // what theme 05 asks
-  const asks = [["STAY RESPONSIVE", "“One moment.” as soon as the user is clearly done and the thinker is still working. Every one of the 100 conversations answered.", C.accent],
+  // row 1: what the user said, and the intent so far
+  const y1 = 2.28, h1 = 1.02;
+  rowLabel(y1, h1, "The user", "a real recording: the request is corrected twice");
+  const said = ["“…flights to Rome.”", "“No, wait… let's do Milan instead.”", "“…June 1st.”", "“Well, wait, but actually June 3rd…”"];
+  const intent = [
+    [{ text: "Rome", options: {} }],
+    [{ text: "Rome", options: { strike: "sngStrike", color: C.bad } }, { text: "  Milan", options: {} }],
+    [{ text: "Milan · June 1", options: {} }],
+    [{ text: "June 1", options: { strike: "sngStrike", color: C.bad } }, { text: "  June 3", options: {} }],
+  ];
+  said.forEach((q, i) => {
+    cell(i, y1, h1, "FFFFFF", C.line);
+    t(s, q, colX(i) + 0.1, y1 + 0.08, cw - 0.2, 0.5, { fontSize: 9.5, italic: true, color: C.ink });
+    t(s, "INTENT", colX(i) + 0.1, y1 + 0.6, cw - 0.2, 0.16, { fontSize: 7, bold: true, color: C.faint, charSpacing: 1.5 });
+    t(s, intent[i], colX(i) + 0.1, y1 + 0.75, cw - 0.2, 0.22, { fontSize: 9.5, bold: true, color: C.accent });
+  });
+  s.addShape(S.roundRect, { x: outX, y: y1, w: ow, h: h1, rectRadius: 0.06, fill: { color: C.accentDim }, line: { color: C.accent, width: 1 } });
+  t(s, "Final intent", outX + 0.08, y1 + 0.12, ow - 0.16, 0.22, { fontSize: 8.5, color: C.muted, align: "center" });
+  t(s, "Milan\nJune 3", outX + 0.08, y1 + 0.36, ow - 0.16, 0.5, { fontSize: 11.5, bold: true, color: C.accent, align: "center" });
+
+  // row 2: an agent that acts whenever a turn ends
+  const y2 = 3.4, h2 = 0.92;
+  rowLabel(y2, h2, "Acts at every pause", "what acting at each turn end would call");
+  cell(0, y2, h2, C.panel2, C.panel2); t(s, "listening", colX(0), y2, cw, h2, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
+  cell(1, y2, h2, C.panel2, C.panel2); t(s, "no date yet", colX(1), y2, cw, h2, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
+  cell(2, y2, h2, C.badDim, C.bad);
+  t(s, "search_flights(\nMilan, June 1)", colX(2) + 0.08, y2 + 0.1, cw - 0.16, 0.45, { fontSize: 9, fontFace: mono, color: C.bad, align: "center" });
+  t(s, "✗ stale call", colX(2), y2 + 0.58, cw, 0.25, { fontSize: 9, bold: true, color: C.bad, align: "center" });
+  cell(3, y2, h2, "FFFFFF", C.line);
+  t(s, "search_flights(\nMilan, June 3)", colX(3) + 0.08, y2 + 0.1, cw - 0.16, 0.45, { fontSize: 9, fontFace: mono, color: C.ink, align: "center" });
+  t(s, "right, but too late", colX(3), y2 + 0.58, cw, 0.25, { fontSize: 9, color: C.muted, align: "center" });
+  s.addShape(S.roundRect, { x: outX, y: y2, w: ow, h: h2, rectRadius: 0.06, fill: { color: C.bad }, line: { color: C.bad, width: 0 } });
+  t(s, "2 calls\nFAILS", outX, y2, ow, h2, { fontSize: 12, bold: true, color: "FFFFFF", align: "center", valign: "middle" });
+
+  // row 3: DUET, from its trace
+  const y3 = 4.42, h3 = 0.98;
+  rowLabel(y3, h3, "DUET", "from its own trace of the reported run", C.accent);
+  cell(0, y3, h3, C.panel2, C.panel2); t(s, "listening", colX(0), y3, cw, h3, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
+  [[1, "10.7 s"], [2, "13.4 s"]].forEach(([i, when]) => {
+    cell(i, y3, h3, "FFFFFF", C.faint, "dash");
+    t(s, "plans on it…", colX(i), y3 + 0.1, cw, 0.25, { fontSize: 9, color: C.muted, align: "center" });
+    t(s, "dropped", colX(i), y3 + 0.34, cw, 0.28, { fontSize: 11, bold: true, color: C.muted, align: "center" });
+    t(s, "new words at " + when, colX(i), y3 + 0.62, cw, 0.25, { fontSize: 8.5, color: C.faint, align: "center" });
+  });
+  cell(3, y3, h3, C.okDim, C.ok);
+  t(s, "“One moment.”  21.1 s", colX(3), y3 + 0.07, cw, 0.22, { fontSize: 8.5, color: C.accent, align: "center", italic: true });
+  t(s, "search_flights(\nMilan, June 3)", colX(3) + 0.08, y3 + 0.3, cw - 0.16, 0.42, { fontSize: 9, fontFace: mono, color: C.ok, align: "center" });
+  t(s, "✓ runs once, 24.7 s", colX(3), y3 + 0.72, cw, 0.22, { fontSize: 8.5, bold: true, color: C.ok, align: "center" });
+  s.addShape(S.roundRect, { x: outX, y: y3, w: ow, h: h3, rectRadius: 0.06, fill: { color: C.ok }, line: { color: C.ok, width: 0 } });
+  t(s, "1 call\nPASSES", outX, y3, ow, h3, { fontSize: 12, bold: true, color: "FFFFFF", align: "center", valign: "middle" });
+
+  // self-corrections across systems
+  box(s, 9.28, 1.75, 3.5, 3.78, { fill: C.panel, line: C.line });
+  t(s, "SELF-CORRECTION ITEMS", 9.48, 1.9, 3.1, 0.22, { fontSize: 9, bold: true, color: C.muted, charSpacing: 2 });
+  t(s, "Pass@1, strict", 9.48, 2.1, 3.1, 0.22, { fontSize: 9, color: C.faint });
+  t(s, "0.88", 9.48, 2.32, 1.5, 0.7, { fontSize: 36, bold: true, color: C.accent });
+  t(s, "DUET\n15 of 17 items", 10.95, 2.44, 1.7, 0.5, { fontSize: 10, color: C.muted });
+  const sc = [["GPT-Realtime", 0.588], ["Gemini Live 3.1", 0.353], ["Whisper → GPT-4o", 0.176]];
+  const bx = 9.48, bw = 2.55;
+  s.addShape(S.rect, { x: bx, y: 3.12, w: bw * 0.88, h: 0.2, fill: { color: C.accent }, line: { color: C.accent, width: 0 } });
+  t(s, "DUET", bx, 3.34, 2, 0.2, { fontSize: 8.5, color: C.ink, bold: true });
+  sc.forEach(([n, v], i) => {
+    const y = 3.62 + i * 0.5;
+    s.addShape(S.rect, { x: bx, y, w: bw * v, h: 0.2, fill: { color: C.base }, line: { color: C.base, width: 0 } });
+    t(s, v.toFixed(2), bx + bw * v + 0.06, y - 0.03, 0.6, 0.26, { fontSize: 9.5, bold: true, color: C.ink });
+    t(s, n, bx, y + 0.22, 2.4, 0.2, { fontSize: 8.5, color: C.muted });
+  });
+  t(s, "0.88", bx + bw * 0.88 + 0.06, 3.09, 0.6, 0.26, { fontSize: 9.5, bold: true, color: C.accent });
+  t(s, "Baselines: FDB-v3 paper, which names the cause: “models commit intermediate parameters before the correction arrives.”", 9.48, 5.08, 3.15, 0.42, { fontSize: 7.5, color: C.faint });
+
+  // what theme 05 asks, and DUET's answer
+  const asks = [["STAY RESPONSIVE", "“One moment.” as soon as the user is clearly done and the thinker is still working. All 100 conversations answered.", C.accent],
     ["WORK ASYNCHRONOUSLY", "Speech recognition, synthesis, model calls and tools all run off the audio loop. The user can talk over the agent at any time.", C.hold],
     ["RECOVER CLEANLY", "A plan built on words the user has changed never runs; an action never runs twice. 0% interruptions in the reported run.", C.ok]];
-  asks.forEach(([h, b, col], i) => card(s, 0.55 + i * 4.13, 5.68, 3.95, 1.2, h, b, col, { bs: 10 }));
+  asks.forEach(([h, b, col], i) => card(s, 0.55 + i * 4.13, 5.7, 3.95, 1.2, h, b, col, { bs: 10 }));
 }
 
 // ============================================================================ 3. architecture
