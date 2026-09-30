@@ -12,7 +12,7 @@
       "voice": "am_michael",
       "number": "1",
       "title": "Changing your mind mid-sentence",
-      "watch": "The 3:30 alarm is planned while you pause, then held back when you correct yourself. It never runs; only 4:30 is set.",
+      "watch": "DUET starts planning the 3:30 alarm while you pause. When you correct yourself, that plan is dropped before it can act: 3:30 never runs, and only 4:30 is set, once.",
       "lines": [
         {
           "say": "Set an alarm for 3:30.",

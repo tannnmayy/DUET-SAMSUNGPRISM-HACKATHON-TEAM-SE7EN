@@ -1,0 +1,133 @@
+{
+ "scenario": "home",
+ "mode": "assistant",
+ "room": "duet-assistant-dc4dfe",
+ "events": [
+  {
+   "t": 3.28,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.29,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.49,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 6.51,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 6.51,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 9.9,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 13.41,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.64,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 13.98,
+   "kind": "heard",
+   "text": "Turn on the AC and switch off the living room light."
+  },
+  {
+   "t": 15.42,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 15.7,
+   "kind": "heard",
+   "text": "Actually leave the light on."
+  },
+  {
+   "t": 15.93,
+   "kind": "think_start",
+   "text": "Turn on the AC and switch off the living room light. Actually leave the light on."
+  },
+  {
+   "t": 15.93,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 17.06,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 17.17,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 25.11,
+   "kind": "tool_planned",
+   "tool": "control_home_device",
+   "args": {
+    "action": "turn_on",
+    "device": "AC"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 25.11,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 9.28
+  },
+  {
+   "t": 25.22,
+   "kind": "tool_done",
+   "tool": "control_home_device",
+   "args": {
+    "action": "turn_on",
+    "device": "AC"
+   },
+   "result": {
+    "status": "ok",
+    "device": "air conditioner",
+    "now": "on"
+   },
+   "after_s": 0.11
+  },
+  {
+   "t": 31.65,
+   "kind": "thinker_say",
+   "text": "OK. I've turned on the AC.",
+   "after_s": 15.82
+  },
+  {
+   "t": 35.95,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Still working on it. OK. I've turned on the AC.",
+   "interrupted": false
+  },
+  {
+   "t": 35.95,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

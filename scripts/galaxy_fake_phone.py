@@ -32,7 +32,8 @@ load_dotenv(os.path.join(ROOT, ".env.local"))
 from livekit import rtc  # noqa: E402
 
 # (mode, [(line, seconds of silence after it)]). A line starting with "@" waits for
-# DUET to be listening again first; "!" speaks while DUET is still talking (barge-in).
+# DUET to have replied and be listening again first; "!" speaks while DUET is still
+# talking (barge-in).
 SCENARIOS = {
     "alarm": ("assistant", [          # corrected at once: the 3:30 alarm must never be set
         ("@Set an alarm for 3:30.", 0.4),
@@ -193,6 +194,7 @@ async def main() -> int:
             agent_state["v"] = ev["state"]
         if ev["kind"] == "agent_said":
             agent_state["greeted"] = True
+            agent_state["said_at"] = time.time()
         if ev["kind"] in ("user_state", "agent_state", "think_start", "listen_done"):
             return
         log("DUET", json.dumps(ev)[:220])
@@ -224,10 +226,12 @@ async def main() -> int:
     while not agent_state.get("greeted") and time.time() < deadline:
         await silence(0.2)
     await silence(0.8)
+    line_end = 0.0
     for text, clean, audio, pause in speech:
         if text.startswith("@"):
-            deadline = time.time() + 60
-            while agent_state["v"] != "listening" and time.time() < deadline:
+            # DUET replied to the previous line (not just "still listening" in the pause)
+            deadline = time.time() + 75
+            while (agent_state["v"] != "listening" or agent_state.get("said_at", 0) < line_end)                     and time.time() < deadline:
                 await silence(0.2)
             await silence(0.6)
         elif text.startswith("!"):
@@ -237,9 +241,10 @@ async def main() -> int:
             await silence(1.5)  # let DUET get a sentence out, then cut in
         log("USER  ", clean)
         await push(audio)
+        line_end = time.time()
         await silence(pause)
-    deadline = time.time() + 30
-    while agent_state["v"] != "listening" and time.time() < deadline:
+    deadline = time.time() + 75
+    while (agent_state["v"] != "listening" or agent_state.get("said_at", 0) < line_end) and time.time() < deadline:
         await silence(0.2)
     await silence(1.0)
     out = os.path.join(ROOT, "results", "galaxy", "scenario_%s_%s.json" % (args.scenario, time.strftime("%m%d_%H%M%S")))

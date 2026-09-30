@@ -1,0 +1,204 @@
+{
+ "scenario": "drive",
+ "mode": "drive",
+ "room": "duet-drive-53e559",
+ "events": [
+  {
+   "t": 3.48,
+   "kind": "session_start",
+   "mode": "Drive",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.49,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.71,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 5.99,
+   "kind": "agent_said",
+   "text": "DUET here. Where are we heading?",
+   "interrupted": false
+  },
+  {
+   "t": 5.99,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 9.21,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 12.94,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.67,
+   "kind": "heard",
+   "text": "Take me to the office. No wait, the airport. I have a flight."
+  },
+  {
+   "t": 13.68,
+   "kind": "think_start",
+   "text": "Take me to the office. No wait, the airport. I have a flight."
+  },
+  {
+   "t": 13.68,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 14.64,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 14.72,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 18.37,
+   "kind": "tool_planned",
+   "tool": "set_destination",
+   "args": {
+    "place": "the airport"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 18.37,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 4.75
+  },
+  {
+   "t": 18.5,
+   "kind": "tool_done",
+   "tool": "set_destination",
+   "args": {
+    "place": "the airport"
+   },
+   "result": {
+    "status": "ok",
+    "destination": "the airport",
+    "minutes": 58,
+    "arrival": "8:12 PM",
+    "km": 31
+   },
+   "after_s": 0.13
+  },
+  {
+   "t": 21.66,
+   "kind": "thinker_say",
+   "text": "OK. I've set your destination to the airport. You'll arrive at about 8:12 in the evening.",
+   "after_s": 8.04
+  },
+  {
+   "t": 28.99,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. OK. I've set your destination to the airport. You'll arrive at about 8:12 in the evening.",
+   "interrupted": false
+  },
+  {
+   "t": 28.99,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 31.63,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 34.63,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 35.23,
+   "kind": "heard",
+   "text": "And tell Priya I'll be there by the arrival time."
+  },
+  {
+   "t": 35.23,
+   "kind": "think_start",
+   "text": "And tell Priya I'll be there by the arrival time."
+  },
+  {
+   "t": 35.23,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 36.19,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 36.36,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 44.2,
+   "kind": "tool_planned",
+   "tool": "send_message",
+   "args": {
+    "to": "Priya",
+    "text": "I'll be there by 8:12 in the evening."
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 44.2,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 8.96
+  },
+  {
+   "t": 44.34,
+   "kind": "tool_done",
+   "tool": "send_message",
+   "args": {
+    "to": "Priya",
+    "text": "I'll be there by 8:12 in the evening."
+   },
+   "result": {
+    "status": "ok",
+    "tool": "send_message",
+    "args": {
+     "to": "Priya",
+     "text": "I'll be there by 8:12 in the evening."
+    }
+   },
+   "after_s": 0.15
+  },
+  {
+   "t": 49.42,
+   "kind": "thinker_error",
+   "text": "no key has room for gemma-4-26b-a4b-it within the deadline: this minute's input-token budget is spent (last error: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}})"
+  },
+  {
+   "t": 54.47,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Sorry, something went wrong on my side. Could you say that once more?",
+   "interrupted": false
+  },
+  {
+   "t": 54.47,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

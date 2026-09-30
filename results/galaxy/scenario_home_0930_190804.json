@@ -1,0 +1,156 @@
+{
+ "scenario": "home",
+ "mode": "assistant",
+ "room": "duet-assistant-0bae40",
+ "events": [
+  {
+   "t": 3.97,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.97,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 4.32,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 7.34,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 7.34,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 10.48,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 14.03,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 14.38,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 14.62,
+   "kind": "heard",
+   "text": "Turn on the AC and switch off the living room light."
+  },
+  {
+   "t": 16.08,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 16.45,
+   "kind": "heard",
+   "text": "Actually leave the light on."
+  },
+  {
+   "t": 16.55,
+   "kind": "think_start",
+   "text": "Turn on the AC and switch off the living room light. Actually leave the light on."
+  },
+  {
+   "t": 16.55,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 17.73,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 17.9,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 28.29,
+   "kind": "tool_planned",
+   "tool": "get_home_status",
+   "args": {},
+   "hold_s": 1.8
+  },
+  {
+   "t": 28.29,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 11.77
+  },
+  {
+   "t": 28.39,
+   "kind": "tool_done",
+   "tool": "get_home_status",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "devices": [
+     "living room light: on",
+     "air conditioner: off",
+     "tv: off",
+     "front door lock: locked"
+    ]
+   },
+   "after_s": 0.12
+  },
+  {
+   "t": 33.24,
+   "kind": "tool_planned",
+   "tool": "control_home_device",
+   "args": {
+    "action": "turn_on",
+    "device": "air conditioner"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 33.35,
+   "kind": "tool_done",
+   "tool": "control_home_device",
+   "args": {
+    "action": "turn_on",
+    "device": "air conditioner"
+   },
+   "result": {
+    "status": "ok",
+    "device": "air conditioner",
+    "now": "on"
+   },
+   "after_s": 0.1
+  },
+  {
+   "t": 34.92,
+   "kind": "thinker_say",
+   "text": "OK. I've turned on the air conditioner.",
+   "after_s": 18.41
+  },
+  {
+   "t": 39.58,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Still working on it. OK. I've turned on the air conditioner.",
+   "interrupted": false
+  },
+  {
+   "t": 39.58,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

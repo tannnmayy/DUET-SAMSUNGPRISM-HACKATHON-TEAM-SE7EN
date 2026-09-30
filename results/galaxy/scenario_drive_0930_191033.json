@@ -1,0 +1,231 @@
+{
+ "scenario": "drive",
+ "mode": "drive",
+ "room": "duet-drive-efe27a",
+ "events": [
+  {
+   "t": 3.18,
+   "kind": "session_start",
+   "mode": "Drive",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.18,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.4,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 5.68,
+   "kind": "agent_said",
+   "text": "DUET here. Where are we heading?",
+   "interrupted": false
+  },
+  {
+   "t": 5.68,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 8.89,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 12.63,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 13.3,
+   "kind": "heard",
+   "text": "Take me to the office. No wait, the airport, I have a flight."
+  },
+  {
+   "t": 13.33,
+   "kind": "think_start",
+   "text": "Take me to the office. No wait, the airport, I have a flight."
+  },
+  {
+   "t": 13.33,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 14.25,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 14.39,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 16.0,
+   "kind": "tool_planned",
+   "tool": "set_destination",
+   "args": {
+    "place": "the airport"
+   },
+   "hold_s": 1.8
+  },
+  {
+   "t": 16.0,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 2.69
+  },
+  {
+   "t": 16.24,
+   "kind": "tool_done",
+   "tool": "set_destination",
+   "args": {
+    "place": "the airport"
+   },
+   "result": {
+    "status": "ok",
+    "destination": "the airport",
+    "minutes": 58,
+    "arrival": "8:12 PM",
+    "km": 31
+   },
+   "after_s": 0.17
+  },
+  {
+   "t": 18.05,
+   "kind": "thinker_say",
+   "text": "OK. I've set your destination to the airport. You'll arrive at about 8:12 PM.",
+   "after_s": 4.72
+  },
+  {
+   "t": 24.48,
+   "kind": "agent_said",
+   "text": "One moment. OK. I've set your destination to the airport. You'll arrive at about 8:12 PM.",
+   "interrupted": false
+  },
+  {
+   "t": 24.48,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 27.01,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 30.05,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 30.7,
+   "kind": "heard",
+   "text": "And tell Priya I'll be there by the arrival time."
+  },
+  {
+   "t": 30.77,
+   "kind": "think_start",
+   "text": "And tell Priya I'll be there by the arrival time."
+  },
+  {
+   "t": 30.77,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 31.64,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 31.78,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 34.05,
+   "kind": "tool_planned",
+   "tool": "get_trip_status",
+   "args": {},
+   "hold_s": 1.1
+  },
+  {
+   "t": 34.06,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 3.3
+  },
+  {
+   "t": 34.15,
+   "kind": "tool_done",
+   "tool": "get_trip_status",
+   "args": {},
+   "result": {
+    "status": "ok",
+    "trip": {
+     "destination": "the airport",
+     "minutes_left": 57,
+     "arrival": "8:12 PM"
+    },
+    "car": {
+     "range_km": 212,
+     "ac_on": false
+    }
+   },
+   "after_s": 0.16
+  },
+  {
+   "t": 37.41,
+   "kind": "tool_planned",
+   "tool": "send_message",
+   "args": {
+    "text": "I'll be there by 8:12 PM.",
+    "to": "Priya"
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 37.54,
+   "kind": "tool_done",
+   "tool": "send_message",
+   "args": {
+    "text": "I'll be there by 8:12 PM.",
+    "to": "Priya"
+   },
+   "result": {
+    "status": "ok",
+    "tool": "send_message",
+    "args": {
+     "text": "I'll be there by 8:12 PM.",
+     "to": "Priya"
+    }
+   },
+   "after_s": 0.1
+  },
+  {
+   "t": 41.93,
+   "kind": "thinker_say",
+   "text": "Sent to Priya.",
+   "after_s": 11.24
+  },
+  {
+   "t": 43.92,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Sent to Priya.",
+   "interrupted": false
+  },
+  {
+   "t": 43.92,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}

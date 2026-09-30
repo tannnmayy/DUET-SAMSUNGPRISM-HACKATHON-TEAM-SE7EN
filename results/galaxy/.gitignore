@@ -1,2 +1,15 @@
 *
 !.gitignore
+!video/
+video/*
+!video/DUET_for_Galaxy_demo.mp4
+!video/intro.mp4
+!video/results_card.png
+!video/card_intro.mp4
+!video/card_outro.mp4
+!video/correction.mp4
+!video/battery.mp4
+!video/care.mp4
+!video/drive.mp4
+!video/*_cut.mp4
+!scenario_*_0930_19*.json

@@ -1,0 +1,175 @@
+{
+ "scenario": "waver",
+ "mode": "assistant",
+ "room": "duet-assistant-089f99",
+ "events": [
+  {
+   "t": 3.2,
+   "kind": "session_start",
+   "mode": "Assistant",
+   "model": "gemma-4-26b-a4b-it"
+  },
+  {
+   "t": 3.2,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 3.38,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 6.4,
+   "kind": "agent_said",
+   "text": "Hi, I'm DUET. What can I do on your phone?",
+   "interrupted": false
+  },
+  {
+   "t": 6.4,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 9.67,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 13.4,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 14.11,
+   "kind": "heard",
+   "text": "Wake me up at 6, 30 tomorrow or maybe 7 home."
+  },
+  {
+   "t": 14.11,
+   "kind": "think_start",
+   "text": "Wake me up at 6, 30 tomorrow or maybe 7 home."
+  },
+  {
+   "t": 14.11,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 15.04,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 15.15,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 25.32,
+   "kind": "thinker_decided",
+   "tools": false,
+   "after_s": 11.25
+  },
+  {
+   "t": 25.32,
+   "kind": "thinker_say",
+   "text": "6:30 or 7:00?",
+   "after_s": 11.25
+  },
+  {
+   "t": 28.53,
+   "kind": "agent_said",
+   "text": "One moment. 6:30 or 7:00?",
+   "interrupted": false
+  },
+  {
+   "t": 28.53,
+   "kind": "agent_state",
+   "state": "listening"
+  },
+  {
+   "t": 31.16,
+   "kind": "user_state",
+   "state": "speaking"
+  },
+  {
+   "t": 32.05,
+   "kind": "user_state",
+   "state": "listening"
+  },
+  {
+   "t": 32.61,
+   "kind": "heard",
+   "text": "7."
+  },
+  {
+   "t": 32.65,
+   "kind": "think_start",
+   "text": "7."
+  },
+  {
+   "t": 32.65,
+   "kind": "agent_state",
+   "state": "thinking"
+  },
+  {
+   "t": 33.68,
+   "kind": "talker",
+   "text": "One moment.",
+   "reason": "grace"
+  },
+  {
+   "t": 33.74,
+   "kind": "agent_state",
+   "state": "speaking"
+  },
+  {
+   "t": 39.77,
+   "kind": "tool_planned",
+   "tool": "set_alarm",
+   "args": {
+    "time": "07:00"
+   },
+   "hold_s": 1.1
+  },
+  {
+   "t": 39.78,
+   "kind": "thinker_decided",
+   "tools": true,
+   "after_s": 7.16
+  },
+  {
+   "t": 39.92,
+   "kind": "tool_done",
+   "tool": "set_alarm",
+   "args": {
+    "time": "07:00"
+   },
+   "result": {
+    "status": "ok",
+    "alarm": "07:00",
+    "where": "Clock (simulated)"
+   },
+   "after_s": 0.15
+  },
+  {
+   "t": 50.1,
+   "kind": "thinker_say",
+   "text": "OK. I've set your alarm for 7:00 tomorrow morning.",
+   "after_s": 17.48
+  },
+  {
+   "t": 55.22,
+   "kind": "agent_said",
+   "text": "One moment. Still working on it. Still working on it. OK. I've set your alarm for 7:00 tomorrow morning.",
+   "interrupted": false
+  },
+  {
+   "t": 55.22,
+   "kind": "agent_state",
+   "state": "listening"
+  }
+ ]
+}
