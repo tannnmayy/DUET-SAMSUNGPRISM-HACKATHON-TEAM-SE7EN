@@ -101,7 +101,9 @@ class Config:
     trace_dir: str = field(default_factory=lambda: _env("DUET_TRACE_DIR", ""))
 
     # --- use-case extension ---------------------------------------------------------
-    # benchmark (default): FDB-v3 tools. appliance: DUET Smart Appliance Care.
+    # benchmark (default): FDB-v3 tools.
+    # appliance: DUET Smart Appliance Care.
+    # family: DUET SmartThings Family Care (Watch + Knox + texts).
     use_case: str = field(default_factory=lambda: _env("DUET_USE_CASE", "benchmark").strip().lower())
     # mock (default) uses the in-process household; real needs SMARTTHINGS_TOKEN
     smartthings: str = field(default_factory=lambda: _env("DUET_SMARTTHINGS", "mock").strip().lower())
@@ -113,9 +115,15 @@ class Config:
             object.__setattr__(self, "thinker_model", self.llm_model if local else "gemini-3.7-flash")
         if not self.talker_model:
             object.__setattr__(self, "talker_model", self.llm_model if local else "gemini-3.5-flash-lite")
-        if self.use_case not in ("benchmark", "appliance", "appliances", "samsung", "care"):
+        if self.use_case not in (
+            "benchmark", "appliance", "appliances", "samsung", "care",
+            "family", "family_care", "familycare",
+        ):
             object.__setattr__(self, "use_case", "benchmark")
-        if self.use_case in ("appliance", "appliances", "samsung", "care") and os.environ.get("DUET_MAX_TOOL_STEPS") in (None, ""):
+        if self.use_case in (
+            "appliance", "appliances", "samsung", "care",
+            "family", "family_care", "familycare",
+        ) and os.environ.get("DUET_MAX_TOOL_STEPS") in (None, ""):
             object.__setattr__(self, "max_tool_steps", 12)
 
 

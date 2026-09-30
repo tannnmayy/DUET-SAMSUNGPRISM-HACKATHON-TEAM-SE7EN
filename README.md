@@ -302,16 +302,31 @@ confirm a fix.
 Details: [docs/APPLIANCE.md](docs/APPLIANCE.md). Research that led here:
 [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md).
 
+**DUET SmartThings Family Care** (secondary, `DUET_USE_CASE=family`) — a
+caregiver checks on Mum, corrects to Dad, reads a Galaxy Watch **only after
+Knox consent**, refuses an ambulance that was not clearly requested, and texts
+Priya **exactly once**. Speech is the existing faster-whisper stack. Household,
+Watch, Knox and SMS are mocked unless an authorized https backend is configured.
+
+```bash
+python -m duet_voice.family.demo     # no GPU
+export DUET_USE_CASE=family
+python -m duet_voice.agent console
+```
+
+Details: [docs/FAMILY_CARE.md](docs/FAMILY_CARE.md).
+
 ## Repository map
 
 ```
 duet_voice/            the agent: LiveKit entrypoint, talker, thinker (local model or Gemini), coordinator, tools, speech models
 duet_voice/appliance/  Smart Appliance Care (opt-in via DUET_USE_CASE=appliance)
+duet_voice/family/     SmartThings Family Care (opt-in via DUET_USE_CASE=family)
 bench/                 benchmark drivers: live runner, model server launcher, offline evaluators, judge adapter
 scripts/               machine check, fast offline evaluation, packing results (for remote GPU machines)
 DGX_RUNBOOK.md         step-by-step instructions for running everything on a remote GPU machine
-tests/                 coordinator, speaking-flow, integrity, and appliance-care tests
-docs/                  architecture, use-case research, appliance extension
+tests/                 coordinator, speaking-flow, integrity, appliance-care, and family-care tests
+docs/                  architecture, use-case research, appliance and family extensions
 reproduce.sh           one-command reproduction
 legacy/kit_v1/         the previous Theme 05 kit and DUET v1 (research record, not used)
 ```

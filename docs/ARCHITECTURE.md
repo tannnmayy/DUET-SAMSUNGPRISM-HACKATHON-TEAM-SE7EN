@@ -107,6 +107,16 @@ drafted during a pause and then discarded leaves the request open.
 - **End of turn**: LiveKit's `turn-detector-v1-mini`, an audio model that runs
   locally, with a 0.8 s minimum and 2.5 s maximum endpointing delay.
 
+## Use-case switch
+
+`DUET_USE_CASE=benchmark` (default) loads the twelve FDB-v3 tools.
+`DUET_USE_CASE=appliance` loads DUET Smart Appliance Care
+(`duet_voice/appliance/`, [APPLIANCE.md](APPLIANCE.md)).
+`DUET_USE_CASE=family` loads DUET SmartThings Family Care
+(`duet_voice/family/`, [FAMILY_CARE.md](FAMILY_CARE.md)).
+Offline eval and `reproduce.sh` construct `FdbToolbox` themselves, so a leftover
+use-case setting cannot change the benchmark.
+
 ## Tools
 
 The twelve FDB-v3 tools keep the benchmark's names, argument names and log

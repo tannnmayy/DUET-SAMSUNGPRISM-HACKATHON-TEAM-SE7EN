@@ -94,7 +94,7 @@ def make_thinker(model: Optional[str] = None, thinking: Optional[str] = None,
 
     `tool_specs` and `instructions` default to the FDB-v3 set so offline eval and
     existing tests stay on the benchmark path. The live agent passes the use-case
-    bundle when `DUET_USE_CASE=appliance`.
+    bundle when `DUET_USE_CASE=appliance` or `DUET_USE_CASE=family`.
     """
     if tool_specs is None:
         tool_specs = TOOL_SPECS
