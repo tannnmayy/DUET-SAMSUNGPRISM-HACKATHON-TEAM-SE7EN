@@ -33,6 +33,29 @@ def test_follow_up_stays_on_the_pinned_live_case(monkeypatch):
     assert use_case.resolve_live_use_case("the dryer has an HE error", "family") == "appliance"
 
 
+def test_pin_scored_env_overwrites_appliance_and_keeps_other_keys():
+    env = {"DUET_USE_CASE": "appliance", "PATH": "/bin", "FDB_V3_DIR": "/tmp/fdb"}
+    prev = use_case.pin_scored_env(env)
+    assert prev == "appliance"
+    assert env["DUET_USE_CASE"] == "benchmark"
+    assert env["PATH"] == "/bin" and env["FDB_V3_DIR"] == "/tmp/fdb"
+    assert use_case.pin_scored_env({"DUET_USE_CASE": "family"}) == "family"
+    assert use_case.pin_scored_env({}) == ""
+
+
+def test_benchmark_env_pins_fdb_and_ignores_washer_or_mum(monkeypatch):
+    monkeypatch.setenv("DUET_USE_CASE", "benchmark")
+    config.reload()
+    try:
+        assert use_case.auto_route_enabled() is False
+        assert use_case.resolve_live_use_case("Check on Mum.", "benchmark") == "benchmark"
+        assert use_case.resolve_live_use_case("the washer isn't working", "benchmark") == "benchmark"
+    finally:
+        monkeypatch.delenv("DUET_USE_CASE", raising=False)
+        config.reload()
+    assert use_case.auto_route_enabled() is True
+
+
 def test_explicit_env_pins_and_ignores_the_utterance(monkeypatch):
     monkeypatch.setenv("DUET_USE_CASE", "appliance")
     config.reload()
@@ -44,6 +67,25 @@ def test_explicit_env_pins_and_ignores_the_utterance(monkeypatch):
         config.reload()
     assert use_case.auto_route_enabled() is True
     assert config.CONFIG.use_case == "benchmark"
+
+
+def test_chat_stays_on_fdb_when_benchmark_is_pinned(monkeypatch):
+    monkeypatch.setenv("DUET_USE_CASE", "benchmark")
+    config.reload()
+    try:
+        from duet_voice.chat import ChatSession
+        session = ChatSession()
+        assert isinstance(session.toolbox, FdbToolbox)
+        session.bind("My Samsung washing machine is showing a UE error")
+        session.bind("Check on Mum. What's her heart rate?")
+        assert session.live_case == "benchmark"
+        assert isinstance(session.toolbox, FdbToolbox)
+        names = [s["name"] for s in session.toolbox.specs]
+        assert "search_flights" in names
+        assert "list_appliances" not in names and "list_household" not in names
+    finally:
+        monkeypatch.delenv("DUET_USE_CASE", raising=False)
+        config.reload()
 
 
 def test_chat_session_switches_tools_on_the_first_family_line(monkeypatch):

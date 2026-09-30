@@ -81,4 +81,5 @@ export DUET_USE_CASE=family          # pin live voice
 python -m duet_voice.agent console
 ```
 
-Leave `DUET_USE_CASE` unset for any FDB / `reproduce.sh` run.
+`reproduce.sh` sets `DUET_USE_CASE=benchmark`. Do not export `family` in that
+same shell if you then want live Family Care; pin `family` only for chat/console.

@@ -269,8 +269,9 @@ DUET_LLM_BASE_URL=http://127.0.0.1:8766/v1 python bench/run_live.py --only trave
 Live chat and the voice console **route on what you say** when `DUET_USE_CASE`
 is unset: a washer/UE line loads Appliance Care, Mum/Watch/Priya loads Family
 Care, anything else stays on the FDB tools. Pin with `DUET_USE_CASE=appliance`
-or `family` if you want one toolset only. `reproduce.sh` and offline eval still
-construct `FdbToolbox` themselves.
+or `family` if you want one toolset only. `reproduce.sh` and `bench/run_live.py`
+set `DUET_USE_CASE=benchmark`, so a leftover appliance/family export cannot
+change the scored 12 tools.
 
 **DUET Smart Appliance Care** — Samsung appliance support on the same dual-mind
 agent. Opt-in (`DUET_USE_CASE=appliance`) or auto-routed from washer/dryer talk.

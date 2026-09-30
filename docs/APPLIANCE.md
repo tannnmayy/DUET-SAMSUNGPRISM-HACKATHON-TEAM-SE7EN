@@ -132,6 +132,7 @@ python -m duet_voice.agent console
 
 Unset, a washer/UE line prints `switching to appliance` and `list_appliances`.
 `DUET_USE_CASE=benchmark` pins FDB and will treat that line as a trip.
+`reproduce.sh` forces `benchmark`; do not export `appliance` in that scored shell.
 
 Optional:
 

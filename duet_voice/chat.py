@@ -135,7 +135,7 @@ async def _session(args: argparse.Namespace) -> int:
 
     session = ChatSession()
     tools = [s["name"] for s in session.toolbox.specs]
-    print(banner(CONFIG.use_case, tools, CONFIG.llm_backend), flush=True)
+    print(banner(session.live_case, tools, CONFIG.llm_backend), flush=True)
 
     if args.once is not None:
         text = args.once.strip()

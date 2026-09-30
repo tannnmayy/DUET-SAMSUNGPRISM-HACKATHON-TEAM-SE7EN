@@ -16,6 +16,9 @@
 #   CUDA_VISIBLE_DEVICES                            which GPU (default: the one with the most free memory)
 #   DUET_LLM_BACKEND=gemini and GOOGLE_API_KEY       the Gemini API instead of the local model
 #
+# This script always sets DUET_USE_CASE=benchmark. Appliance and Family Care are
+# live-only; a leftover export in this shell cannot change the scored 12 tools.
+#
 # Needs: Linux x86_64; one NVIDIA GPU with 48 GB (the model server takes 33 GiB, the
 # speech models and the benchmark's scoring recognizer most of the rest); an NVIDIA
 # driver for CUDA 12.x or 13.x; git, curl and internet access; about 90 GB of disk.
@@ -26,6 +29,10 @@ set -euo pipefail
 cd "$(dirname "$0")"
 ROOT="$(pwd)"
 source scripts/env.sh
+if [ -n "${DUET_USE_CASE:-}" ] && [ "${DUET_USE_CASE}" != "benchmark" ]; then
+  echo "note: DUET_USE_CASE=${DUET_USE_CASE} is ignored for reproduce.sh (using benchmark)"
+fi
+export DUET_USE_CASE=benchmark
 
 FDB_REPO="https://github.com/DanielLin94144/Full-Duplex-Bench.git"
 FDB_COMMIT="3e799c45a045256f47d5f1c9cda90157e2d2ec9e"

@@ -3,8 +3,8 @@
 Default `CONFIG.use_case` is still FDB-v3. `DUET_USE_CASE=appliance` or
 `family` pins that toolset. If the env var is unset, the live agent and
 typed chat route on the user's words (washer → appliance, Mum/Watch → family).
-Offline eval and reproduce.sh construct `FdbToolbox` themselves, so routing
-cannot change a scored run.
+`reproduce.sh`, `bench/run_live.py` and offline eval set `DUET_USE_CASE=benchmark`,
+so a leftover appliance/family export cannot change a scored run.
 """
 
 from __future__ import annotations
@@ -47,6 +47,18 @@ _APPLIANCE_KIND_RE = re.compile(
 
 def auto_route_enabled() -> bool:
     return os.environ.get("DUET_USE_CASE") in (None, "", "auto")
+
+
+def pin_scored_env(env: dict) -> str:
+    """Force the 12 FDB-v3 tools on a scored agent or eval process.
+
+    Live chat/console still auto-route when DUET_USE_CASE is unset. The scored
+    runner copies the parent environment, so a leftover appliance/family export
+    would otherwise swap toolsets. Returns the previous value (possibly empty).
+    """
+    previous = env.get("DUET_USE_CASE") or ""
+    env["DUET_USE_CASE"] = "benchmark"
+    return previous
 
 
 def detect_domain(text: str) -> Optional[str]:

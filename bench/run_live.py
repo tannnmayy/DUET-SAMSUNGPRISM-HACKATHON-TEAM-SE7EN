@@ -17,6 +17,9 @@ Steps:
   5. Copy every report, the per-item result JSONs, the agent log and our traces
      into results/live/<stamp>/, and print the headline numbers.
 
+The agent process is always started with DUET_USE_CASE=benchmark, so a leftover
+appliance/family export in the parent shell cannot swap the 12 FDB tools.
+
 The benchmark scripts are run unmodified. The one exception is the scoring ASR
 on machines where NVIDIA NeMo cannot be installed (Windows): `--scoring-asr
 whisper` swaps in faster-whisper for Parakeet, and the run is labelled so.
@@ -188,6 +191,10 @@ def placed(env: dict, var: str) -> dict:
 
 def start_agent(env: dict, logs: Path) -> subprocess.Popen:
     env = placed(env, "DUET_AGENT_GPUS")
+    from duet_voice.use_case import pin_scored_env
+    prev_use = pin_scored_env(env)
+    if prev_use not in ("", "benchmark"):
+        print("Scored FDB run: ignoring DUET_USE_CASE=%s (using benchmark)" % prev_use, flush=True)
     if os.name != "nt":
         # the pip-installed CUDA libraries that faster-whisper (CTranslate2) loads by
         # name; only this process gets them (the model server has its own)
@@ -462,6 +469,8 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, PYTHONIOENCODING="utf-8", FDB_V3_DIR=str(FDB_DIR),
                DUET_TRACE_DIR=str(out / "traces"), PYTHONPATH=str(REPO))
+    from duet_voice.use_case import pin_scored_env
+    pin_scored_env(env)
     if args.dry_run:
         env["DUET_DRY_RUN"] = "1"
     ffmpeg_dir = os.environ.get("FFMPEG_DIR")

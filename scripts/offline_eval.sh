@@ -11,6 +11,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/env.sh
+if [ -n "${DUET_USE_CASE:-}" ] && [ "${DUET_USE_CASE}" != "benchmark" ]; then
+  echo "note: DUET_USE_CASE=${DUET_USE_CASE} is ignored for offline eval (using benchmark)"
+fi
+export DUET_USE_CASE=benchmark
 if [ ! -f .venv/.duet-installed ] || [ ! -f .venv-llm/.duet-installed ] || [ ! -d "$FDB_DATA_DIR" ]; then
   echo "Not installed yet. Run once: bash reproduce.sh --only travel_19_695bd157114f0d2317f88617"
   exit 1
