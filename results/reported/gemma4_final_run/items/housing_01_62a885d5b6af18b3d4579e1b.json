@@ -1,0 +1,396 @@
+{
+  "pid": "62a885d5b6af18b3d4579e1b",
+  "example_id": "housing_01",
+  "category": "housing_location",
+  "title": "Simple Apartment Search",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:04:42.484172",
+  "inference_time_s": 43.89,
+  "room_name": "eval-fdb25e62",
+  "stream_start_time": 1790762685.28303,
+  "input_transcript": "You know, I'm trying to find a two -bedroom apartment in Seattle, and I'd like to keep the rent under $2 ,500 a month if possible. Could you see what's available?",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.0,
+        0.4
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        0.4,
+        0.6
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        1.02,
+        2.16
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        2.16,
+        2.96
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.96,
+        3.6
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        3.6,
+        3.9
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        3.9,
+        4.02
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        4.02,
+        4.18
+      ]
+    },
+    {
+      "text": "-bedroom",
+      "timestamp": [
+        4.18,
+        4.5
+      ]
+    },
+    {
+      "text": "apartment",
+      "timestamp": [
+        4.5,
+        4.82
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        4.82,
+        5.04
+      ]
+    },
+    {
+      "text": "Seattle,",
+      "timestamp": [
+        5.04,
+        5.36
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.36,
+        5.56
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        5.56,
+        5.7
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        5.7,
+        5.82
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.82,
+        5.92
+      ]
+    },
+    {
+      "text": "keep",
+      "timestamp": [
+        5.92,
+        6.16
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        6.16,
+        6.4
+      ]
+    },
+    {
+      "text": "rent",
+      "timestamp": [
+        6.4,
+        6.58
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        6.58,
+        6.8
+      ]
+    },
+    {
+      "text": "$2",
+      "timestamp": [
+        6.8,
+        7.02
+      ]
+    },
+    {
+      "text": ",500",
+      "timestamp": [
+        7.02,
+        7.38
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        7.38,
+        7.66
+      ]
+    },
+    {
+      "text": "month",
+      "timestamp": [
+        7.66,
+        7.86
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        7.86,
+        8.0
+      ]
+    },
+    {
+      "text": "possible.",
+      "timestamp": [
+        8.0,
+        8.46
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.7,
+        8.9
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.9,
+        8.98
+      ]
+    },
+    {
+      "text": "see",
+      "timestamp": [
+        8.98,
+        9.1
+      ]
+    },
+    {
+      "text": "what's",
+      "timestamp": [
+        9.1,
+        9.3
+      ]
+    },
+    {
+      "text": "available?",
+      "timestamp": [
+        9.3,
+        9.56
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.56,
+  "latency": {
+    "input_duration_s": 40.32,
+    "output_duration_s": 40.32,
+    "first_speech_s": 14.2
+  },
+  "user_done_unix": 1790762694.84303,
+  "transcript": "One moment. Still working on it. Okay, I found a two -bedroom apartment in Seattle for $2 ,400 a month.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        13.87,
+        14.41
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        14.41,
+        14.77
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        19.95,
+        20.61
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        20.61,
+        20.91
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        20.91,
+        21.13
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        21.13,
+        21.31
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        21.75,
+        22.47
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        22.83,
+        23.05
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        23.05,
+        23.29
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        23.29,
+        23.41
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        23.41,
+        23.61
+      ]
+    },
+    {
+      "text": "-bedroom",
+      "timestamp": [
+        23.61,
+        24.03
+      ]
+    },
+    {
+      "text": "apartment",
+      "timestamp": [
+        24.03,
+        24.41
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        24.41,
+        24.69
+      ]
+    },
+    {
+      "text": "Seattle",
+      "timestamp": [
+        24.69,
+        25.11
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        25.11,
+        25.65
+      ]
+    },
+    {
+      "text": "$2",
+      "timestamp": [
+        25.65,
+        25.93
+      ]
+    },
+    {
+      "text": ",400",
+      "timestamp": [
+        25.93,
+        26.61
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        26.61,
+        27.11
+      ]
+    },
+    {
+      "text": "month.",
+      "timestamp": [
+        27.11,
+        27.33
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.31,
+  "audio_agent_speech_start": 13.87,
+  "actual_tool_calls": [
+    {
+      "function": "search_apartments",
+      "args": {
+        "max_price": 2500,
+        "city": "Seattle",
+        "bedrooms": 2
+      },
+      "timestamp_start": 17.32,
+      "timestamp_end": 17.66
+    }
+  ],
+  "status": "completed"
+}

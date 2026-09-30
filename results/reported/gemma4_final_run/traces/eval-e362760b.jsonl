@@ -1,0 +1,35 @@
+{"t": 1790762610.6941807, "kind": "session_start", "room": "eval-e362760b", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762610.7790654, "kind": "agent_state", "state": "listening"}
+{"t": 1790762614.0407746, "kind": "user_state", "state": "speaking"}
+{"t": 1790762615.1793318, "kind": "user_state", "state": "listening"}
+{"t": 1790762615.333242, "kind": "user_state", "state": "speaking"}
+{"t": 1790762615.7002504, "kind": "metrics", "type": "stt_metrics", "duration": 0.5195663000013155, "audio_duration": 1.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762615.7148023, "kind": "heard", "text": "Um..."}
+{"t": 1790762620.5827367, "kind": "user_state", "state": "listening"}
+{"t": 1790762620.8926575, "kind": "user_state", "state": "speaking"}
+{"t": 1790762621.148746, "kind": "metrics", "type": "stt_metrics", "duration": 0.5643908999991254, "audio_duration": 5.844, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762621.1497421, "kind": "heard", "text": "So can you check the balance on my, actually nevermind, nevermind, forget that part."}
+{"t": 1790762630.3013945, "kind": "user_state", "state": "listening"}
+{"t": 1790762630.7284358, "kind": "user_turn", "text": "Um... So can you check the balance on my, actually nevermind, nevermind, forget that part."}
+{"t": 1790762630.7284358, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7780413627624512, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004543999984889524, "speech_id": "speech_674d01e6ceda"}
+{"t": 1790762630.7299254, "kind": "think_start", "text": "Um... So can you check the balance on my, actually nevermind, nevermind, forget that part.", "audio": false}
+{"t": 1790762630.7299254, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762630.9892206, "kind": "metrics", "type": "stt_metrics", "duration": 0.6946850000003906, "audio_duration": 10.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762631.0019073, "kind": "heard", "text": "I really need to set the mortgage autopay to pull from checking. No, no, actually, on second thought, savings is better. Make it pull from savings instead."}
+{"t": 1790762631.0029073, "kind": "agent_state", "state": "listening"}
+{"t": 1790762631.0069563, "kind": "superseded"}
+{"t": 1790762631.7811387, "kind": "user_turn", "text": "I really need to set the mortgage autopay to pull from checking. No, no, actually, on second thought, savings is better. Make it pull from savings instead."}
+{"t": 1790762631.7811387, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046349999865924474, "speech_id": "speech_61153fe28fb8"}
+{"t": 1790762631.7821383, "kind": "think_start", "text": "Um... So can you check the balance on my, actually nevermind, nevermind, forget that part. I really need to set the mortgage autopay to pull from checking. No, no, actually, on second thought, savings is better. Make it pull from savings instead.", "audio": false}
+{"t": 1790762631.8079183, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762632.0760021, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762632.2246413, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762632.2379441, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1465091999998549, "duration": 0.1610724999991362, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_61153fe28fb8"}
+{"t": 1790762644.0018544, "kind": "thinker_decided", "tools": true, "after_s": 12.22}
+{"t": 1790762644.0018544, "kind": "tool_start", "name": "modify_autopay", "args": {"source_account": "savings", "bill_type": "mortgage"}}
+{"t": 1790762644.0062106, "kind": "tool_done", "name": "modify_autopay", "args": {"source_account": "savings", "bill_type": "mortgage"}, "outcome": "success"}
+{"t": 1790762644.4300804, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.31230479999976524, "duration": 0.325121300000319, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_61153fe28fb8"}
+{"t": 1790762647.2724721, "kind": "thinker_say", "text": "OK. I've updated your mortgage autopay to pull from your savings account.", "after_s": 15.49, "usage": {"input": 5147, "input_audio": 0, "output": 45, "thinking": 185, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762647.7101467, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3668331000008038, "duration": 0.435217800000828, "audio_duration": 4.885000000000002, "cancelled": false, "characters_count": 73, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_61153fe28fb8"}
+{"t": 1790762652.5288923, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your mortgage autopay to pull from your savings account."}
+{"t": 1790762652.5288923, "kind": "agent_state", "state": "listening"}

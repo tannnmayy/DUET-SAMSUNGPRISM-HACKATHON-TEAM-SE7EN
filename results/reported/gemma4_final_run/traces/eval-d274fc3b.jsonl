@@ -1,0 +1,54 @@
+{"t": 1790762955.0386095, "kind": "session_start", "room": "eval-d274fc3b", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762955.127061, "kind": "agent_state", "state": "listening"}
+{"t": 1790762957.72829, "kind": "user_state", "state": "speaking"}
+{"t": 1790762958.772496, "kind": "user_state", "state": "listening"}
+{"t": 1790762959.3939297, "kind": "metrics", "type": "stt_metrics", "duration": 0.6206841999992321, "audio_duration": 1.62, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762959.3955848, "kind": "heard", "text": "You know."}
+{"t": 1790762959.3974776, "kind": "user_turn", "text": "You know."}
+{"t": 1790762959.3979836, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9760682582855225, "transcription_delay": 0.9750888347625732, "on_user_turn_completed_delay": 0.0003741000000445638, "speech_id": "speech_784892c92f29"}
+{"t": 1790762959.3999362, "kind": "think_start", "text": "You know.", "audio": false}
+{"t": 1790762959.4231865, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762959.5693054, "kind": "user_state", "state": "speaking"}
+{"t": 1790762959.9720101, "kind": "agent_state", "state": "listening"}
+{"t": 1790762963.7690537, "kind": "user_state", "state": "listening"}
+{"t": 1790762964.1202788, "kind": "user_state", "state": "speaking"}
+{"t": 1790762964.4222445, "kind": "metrics", "type": "stt_metrics", "duration": 0.6510371999993367, "audio_duration": 4.82, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762964.42327, "kind": "heard", "text": "You know, you know, well, I need."}
+{"t": 1790762970.2224848, "kind": "user_state", "state": "listening"}
+{"t": 1790762970.6667771, "kind": "user_turn", "text": "You know, you know, well, I need."}
+{"t": 1790762970.6677775, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7962923049926758, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003854000005958369, "speech_id": "speech_cfbb6eae1141"}
+{"t": 1790762970.669002, "kind": "think_start", "text": "You know. You know, you know, well, I need.", "audio": false}
+{"t": 1790762970.669002, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762970.8349862, "kind": "metrics", "type": "stt_metrics", "duration": 0.6113664999993489, "audio_duration": 6.708, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762970.8365884, "kind": "heard", "text": "A pet friendly apartment in Miami and my budget is about, let me check."}
+{"t": 1790762970.8370926, "kind": "agent_state", "state": "listening"}
+{"t": 1790762970.8404887, "kind": "superseded"}
+{"t": 1790762970.8765328, "kind": "user_state", "state": "speaking"}
+{"t": 1790762972.7339437, "kind": "user_state", "state": "listening"}
+{"t": 1790762973.1716843, "kind": "user_state", "state": "speaking"}
+{"t": 1790762973.273989, "kind": "metrics", "type": "stt_metrics", "duration": 0.5376191999985167, "audio_duration": 2.452, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762973.2749896, "kind": "heard", "text": "$1,500 a month."}
+{"t": 1790762975.8785667, "kind": "user_state", "state": "listening"}
+{"t": 1790762976.3217292, "kind": "user_turn", "text": "A pet friendly apartment in Miami and my budget is about, let me check. $1,500 a month."}
+{"t": 1790762976.3227375, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.794654369354248, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005025000009482028, "speech_id": "speech_ac84d176ac24"}
+{"t": 1790762976.3237371, "kind": "think_start", "text": "You know. You know, you know, well, I need. A pet friendly apartment in Miami and my budget is about, let me check. $1,500 a month.", "audio": false}
+{"t": 1790762976.324737, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762976.412159, "kind": "metrics", "type": "stt_metrics", "duration": 0.5316867000001366, "audio_duration": 3.284, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762976.4132128, "kind": "heard", "text": "Is there anything in that range?"}
+{"t": 1790762976.4138052, "kind": "agent_state", "state": "listening"}
+{"t": 1790762976.4182239, "kind": "superseded"}
+{"t": 1790762977.2102184, "kind": "user_turn", "text": "Is there anything in that range?"}
+{"t": 1790762977.2102184, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047900000026857015, "speech_id": "speech_40e7a5f35fb3"}
+{"t": 1790762977.2112234, "kind": "think_start", "text": "You know. You know, you know, well, I need. A pet friendly apartment in Miami and my budget is about, let me check. $1,500 a month. Is there anything in that range?", "audio": false}
+{"t": 1790762977.2348664, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762977.4932992, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762977.6449285, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762977.662717, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.149838200000886, "duration": 0.16737610000018321, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_40e7a5f35fb3"}
+{"t": 1790762980.2807505, "kind": "thinker_decided", "tools": true, "after_s": 3.07}
+{"t": 1790762980.2807505, "kind": "tool_start", "name": "search_apartments", "args": {"max_price": 1500, "city": "Miami", "pets_allowed": true}}
+{"t": 1790762980.7841277, "kind": "tool_done", "name": "search_apartments", "args": {"max_price": 1500, "city": "Miami", "pets_allowed": true}, "outcome": "success"}
+{"t": 1790762983.752529, "kind": "thinker_say", "text": "I found one pet-friendly apartment in Miami for $1,400 a month.", "after_s": 6.54, "usage": {"input": 4886, "input_audio": 0, "output": 51, "thinking": 110, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762983.9487634, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3598956999994698, "duration": 0.3753175000001647, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_40e7a5f35fb3"}
+{"t": 1790762984.1442182, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.18977300000005926, "duration": 0.1916938999984268, "audio_duration": 5.835000000000003, "cancelled": false, "characters_count": 63, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_40e7a5f35fb3"}
+{"t": 1790762991.5944648, "kind": "agent_said", "text": "One moment. Still working on it. I found one pet-friendly apartment in Miami for $1,400 a month."}
+{"t": 1790762991.5955055, "kind": "agent_state", "state": "listening"}

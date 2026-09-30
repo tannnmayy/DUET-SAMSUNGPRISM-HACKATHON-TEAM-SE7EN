@@ -1,0 +1,30 @@
+{"t": 1790764008.8901927, "kind": "session_start", "room": "eval-45244642", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764008.9389892, "kind": "agent_state", "state": "listening"}
+{"t": 1790764011.1897678, "kind": "user_state", "state": "speaking"}
+{"t": 1790764018.3948312, "kind": "user_state", "state": "listening"}
+{"t": 1790764018.6434062, "kind": "user_state", "state": "speaking"}
+{"t": 1790764019.019796, "kind": "metrics", "type": "stt_metrics", "duration": 0.6239674000025843, "audio_duration": 7.796, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764019.0214503, "kind": "heard", "text": "Well, uh, calculate the transit time to the office. Wait, no, um, I wouldn't be going to the office. I'd be going to the gym."}
+{"t": 1790764024.0963693, "kind": "user_state", "state": "listening"}
+{"t": 1790764024.5322516, "kind": "user_turn", "text": "Well, uh, calculate the transit time to the office. Wait, no, um, I wouldn't be going to the office. I'd be going to the gym."}
+{"t": 1790764024.5333226, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7878823280334473, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003533000017341692, "speech_id": "speech_34023d57af21"}
+{"t": 1790764024.534428, "kind": "think_start", "text": "Well, uh, calculate the transit time to the office. Wait, no, um, I wouldn't be going to the office. I'd be going to the gym.", "audio": false}
+{"t": 1790764024.534428, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764024.8078306, "kind": "metrics", "type": "stt_metrics", "duration": 0.7102808999989065, "audio_duration": 6.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764024.8094873, "kind": "heard", "text": "And actually, now that I think about it, I drive there, not take transit. Just make a drive into the gym from my house."}
+{"t": 1790764024.8099942, "kind": "agent_state", "state": "listening"}
+{"t": 1790764025.606289, "kind": "user_turn", "text": "And actually, now that I think about it, I drive there, not take transit. Just make a drive into the gym from my house."}
+{"t": 1790764025.606289, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0006519999988086056, "speech_id": "speech_1048067d6208"}
+{"t": 1790764025.608399, "kind": "think_start", "text": "Well, uh, calculate the transit time to the office. Wait, no, um, I wouldn't be going to the office. I'd be going to the gym. And actually, now that I think about it, I drive there, not take transit. Just make a drive into the gym from my house.", "audio": false}
+{"t": 1790764025.631912, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764025.902912, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764026.0479348, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764026.062293, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1425961000022653, "duration": 0.15758260000075097, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1048067d6208"}
+{"t": 1790764037.664195, "kind": "thinker_decided", "tools": true, "after_s": 12.06}
+{"t": 1790764037.664195, "kind": "tool_start", "name": "calculate_commute", "args": {"mode": "driving", "origin_address": "my house", "destination_address": "the gym"}}
+{"t": 1790764038.0426474, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.28319810000175494, "duration": 0.29599290000260225, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1048067d6208"}
+{"t": 1790764038.3828263, "kind": "tool_done", "name": "calculate_commute", "args": {"mode": "driving", "origin_address": "my house", "destination_address": "the gym"}, "outcome": "success"}
+{"t": 1790764040.837492, "kind": "thinker_say", "text": "It'll take you about 25 minutes to drive to the gym from your house.", "after_s": 15.23, "usage": {"input": 5425, "input_audio": 0, "output": 54, "thinking": 346, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764041.3293037, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.41722260000096867, "duration": 0.48296080000000075, "audio_duration": 4.735000000000002, "cancelled": false, "characters_count": 68, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1048067d6208"}
+{"t": 1790764045.9906957, "kind": "agent_said", "text": "One moment. Still working on it. It'll take you about 25 minutes to drive to the gym from your house."}
+{"t": 1790764045.9906957, "kind": "agent_state", "state": "listening"}

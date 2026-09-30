@@ -1,0 +1,50 @@
+{"t": 1790763233.6446695, "kind": "session_start", "room": "eval-11a74b4f", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763233.7014794, "kind": "agent_state", "state": "listening"}
+{"t": 1790763236.0897868, "kind": "user_state", "state": "speaking"}
+{"t": 1790763237.0430365, "kind": "user_state", "state": "listening"}
+{"t": 1790763237.3395185, "kind": "user_state", "state": "speaking"}
+{"t": 1790763237.532655, "kind": "metrics", "type": "stt_metrics", "duration": 0.4882730999997875, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763237.534318, "kind": "heard", "text": "Well,"}
+{"t": 1790763240.6464057, "kind": "user_state", "state": "listening"}
+{"t": 1790763240.8984358, "kind": "user_state", "state": "speaking"}
+{"t": 1790763241.1641643, "kind": "metrics", "type": "stt_metrics", "duration": 0.5149165999991965, "audio_duration": 3.892, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763241.165058, "kind": "heard", "text": "Well, I'm interested in two bedroom in Boston."}
+{"t": 1790763241.4435492, "kind": "user_state", "state": "listening"}
+{"t": 1790763241.7426326, "kind": "metrics", "type": "stt_metrics", "duration": 0.2982957999993232, "audio_duration": 1.172, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763241.7436383, "kind": "heard", "text": "Wait."}
+{"t": 1790763241.8482509, "kind": "user_state", "state": "speaking"}
+{"t": 1790763243.5478587, "kind": "user_state", "state": "listening"}
+{"t": 1790763243.8893607, "kind": "metrics", "type": "stt_metrics", "duration": 0.34044899999935296, "audio_duration": 2.292, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763243.8903599, "kind": "heard", "text": "Actually, um..."}
+{"t": 1790763243.894658, "kind": "user_state", "state": "speaking"}
+{"t": 1790763245.0003967, "kind": "user_state", "state": "listening"}
+{"t": 1790763245.138694, "kind": "user_state", "state": "speaking"}
+{"t": 1790763245.3093383, "kind": "metrics", "type": "stt_metrics", "duration": 0.3083749000015814, "audio_duration": 1.684, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763245.310337, "kind": "heard", "text": "I changed my mind."}
+{"t": 1790763247.2134063, "kind": "user_state", "state": "listening"}
+{"t": 1790763247.495783, "kind": "user_state", "state": "speaking"}
+{"t": 1790763247.693276, "kind": "metrics", "type": "stt_metrics", "duration": 0.47766070000034233, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763247.69424, "kind": "heard", "text": "Let's look at Chicago instead."}
+{"t": 1790763250.739603, "kind": "user_state", "state": "listening"}
+{"t": 1790763251.1876545, "kind": "user_turn", "text": "Well, Well, I'm interested in two bedroom in Boston. Wait. Actually, um... I changed my mind. Let's look at Chicago instead."}
+{"t": 1790763251.1886542, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8000514507293701, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047929999891493935, "speech_id": "speech_96645501b88d"}
+{"t": 1790763251.1896539, "kind": "think_start", "text": "Well, Well, I'm interested in two bedroom in Boston. Wait. Actually, um... I changed my mind. Let's look at Chicago instead.", "audio": false}
+{"t": 1790763251.1911566, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763251.3235016, "kind": "metrics", "type": "stt_metrics", "duration": 0.5830057999992277, "audio_duration": 3.86, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763251.3249748, "kind": "heard", "text": "And keep the max price around $2,000 a month."}
+{"t": 1790763251.325641, "kind": "agent_state", "state": "listening"}
+{"t": 1790763252.128907, "kind": "user_turn", "text": "And keep the max price around $2,000 a month."}
+{"t": 1790763252.1299145, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005342999993445119, "speech_id": "speech_d20c56bdd5d3"}
+{"t": 1790763252.1309154, "kind": "think_start", "text": "Well, Well, I'm interested in two bedroom in Boston. Wait. Actually, um... I changed my mind. Let's look at Chicago instead. And keep the max price around $2,000 a month.", "audio": false}
+{"t": 1790763252.1548831, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763252.4319518, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763252.5800693, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763252.5953948, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14606060000005527, "duration": 0.16225710000071558, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d20c56bdd5d3"}
+{"t": 1790763256.0034544, "kind": "thinker_decided", "tools": true, "after_s": 3.87}
+{"t": 1790763256.0034544, "kind": "tool_start", "name": "search_apartments", "args": {"max_price": 2000, "city": "Chicago", "bedrooms": 2}}
+{"t": 1790763256.484257, "kind": "tool_done", "name": "search_apartments", "args": {"max_price": 2000, "city": "Chicago", "bedrooms": 2}, "outcome": "success"}
+{"t": 1790763258.8608, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3131676000011794, "duration": 0.3285282000015286, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d20c56bdd5d3"}
+{"t": 1790763262.069206, "kind": "thinker_say", "text": "OK. I found a two-bedroom apartment in Chicago for $1,900 a month.", "after_s": 9.94, "usage": {"input": 4922, "input_audio": 0, "output": 51, "thinking": 77, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763262.602645, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.43200379999871075, "duration": 0.5315666999995301, "audio_duration": 6.060000000000003, "cancelled": false, "characters_count": 66, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d20c56bdd5d3"}
+{"t": 1790763268.5738122, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a two-bedroom apartment in Chicago for $1,900 a month."}
+{"t": 1790763268.5738122, "kind": "agent_state", "state": "listening"}

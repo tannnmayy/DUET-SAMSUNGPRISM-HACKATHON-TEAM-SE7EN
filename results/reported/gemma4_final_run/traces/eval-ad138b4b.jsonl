@@ -1,0 +1,31 @@
+{"t": 1790761775.7112594, "kind": "session_start", "room": "eval-ad138b4b", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761775.8102653, "kind": "agent_state", "state": "listening"}
+{"t": 1790761778.0686374, "kind": "user_state", "state": "speaking"}
+{"t": 1790761779.4760623, "kind": "user_state", "state": "listening"}
+{"t": 1790761779.7242746, "kind": "user_state", "state": "speaking"}
+{"t": 1790761780.1234562, "kind": "metrics", "type": "stt_metrics", "duration": 0.6469706000007136, "audio_duration": 2.036, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761780.1249063, "kind": "heard", "text": "Um, so..."}
+{"t": 1790761787.7855852, "kind": "user_state", "state": "listening"}
+{"t": 1790761788.2169034, "kind": "user_turn", "text": "Um, so..."}
+{"t": 1790761788.2169034, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7823150157928467, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00045729999874311034, "speech_id": "speech_8ddeafd8b9c7"}
+{"t": 1790761788.218276, "kind": "think_start", "text": "Um, so...", "audio": false}
+{"t": 1790761788.220279, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761788.4116416, "kind": "metrics", "type": "stt_metrics", "duration": 0.6251440999985789, "audio_duration": 8.66, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761788.4132104, "kind": "heard", "text": "I want to set my credit card payment to pull from like my savings account instead of where it is from now. Can you switch that over for me?"}
+{"t": 1790761788.413715, "kind": "agent_state", "state": "listening"}
+{"t": 1790761788.416178, "kind": "superseded"}
+{"t": 1790761789.2027106, "kind": "user_turn", "text": "I want to set my credit card payment to pull from like my savings account instead of where it is from now. Can you switch that over for me?"}
+{"t": 1790761789.2027106, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004281999990780605, "speech_id": "speech_12be851b9df0"}
+{"t": 1790761789.2037096, "kind": "think_start", "text": "Um, so... I want to set my credit card payment to pull from like my savings account instead of where it is from now. Can you switch that over for me?", "audio": false}
+{"t": 1790761789.2275305, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761789.4985435, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761789.63045, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761789.6454465, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13035630000013043, "duration": 0.14586450000024342, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_12be851b9df0"}
+{"t": 1790761794.9404714, "kind": "thinker_decided", "tools": true, "after_s": 5.74}
+{"t": 1790761794.9415278, "kind": "tool_start", "name": "modify_autopay", "args": {"source_account": "savings", "bill_type": "credit_card"}}
+{"t": 1790761794.9635966, "kind": "tool_done", "name": "modify_autopay", "args": {"source_account": "savings", "bill_type": "credit_card"}, "outcome": "success"}
+{"t": 1790761795.8624194, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3368080000000191, "duration": 0.34943009999915375, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_12be851b9df0"}
+{"t": 1790761796.6582532, "kind": "thinker_say", "text": "OK. I've updated your credit card autopay to pull from your savings account.", "after_s": 7.45, "usage": {"input": 5011, "input_audio": 0, "output": 47, "thinking": 138, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761796.826725, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16589720000047237, "duration": 0.16742280000107712, "audio_duration": 5.160000000000002, "cancelled": false, "characters_count": 76, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_12be851b9df0"}
+{"t": 1790761802.8135302, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your credit card autopay to pull from your savings account."}
+{"t": 1790761802.8135302, "kind": "agent_state", "state": "listening"}

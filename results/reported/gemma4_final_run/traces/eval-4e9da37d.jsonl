@@ -1,0 +1,38 @@
+{"t": 1790765457.112902, "kind": "session_start", "room": "eval-4e9da37d", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765457.1568348, "kind": "agent_state", "state": "listening"}
+{"t": 1790765459.1526778, "kind": "user_state", "state": "speaking"}
+{"t": 1790765463.292626, "kind": "user_state", "state": "listening"}
+{"t": 1790765463.5102487, "kind": "user_state", "state": "speaking"}
+{"t": 1790765463.9372318, "kind": "metrics", "type": "stt_metrics", "duration": 0.6441011000024446, "audio_duration": 4.756, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765463.951538, "kind": "heard", "text": "Here's the thing, I need to fly to Toronto on July 20th."}
+{"t": 1790765466.0567222, "kind": "user_state", "state": "listening"}
+{"t": 1790765466.244115, "kind": "user_state", "state": "speaking"}
+{"t": 1790765466.5240653, "kind": "metrics", "type": "stt_metrics", "duration": 0.5305794999985665, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765466.5254052, "kind": "heard", "text": "If there happens to be a flight under $300,"}
+{"t": 1790765475.497509, "kind": "user_state", "state": "listening"}
+{"t": 1790765475.945115, "kind": "user_turn", "text": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300,"}
+{"t": 1790765475.9461143, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7996060848236084, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003949000019929372, "speech_id": "speech_96680715d7f4"}
+{"t": 1790765475.9476027, "kind": "think_start", "text": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300,", "audio": false}
+{"t": 1790765475.9476027, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765476.1853404, "kind": "metrics", "type": "stt_metrics", "duration": 0.6860443999976269, "audio_duration": 9.812, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765476.1863406, "kind": "heard", "text": "Go ahead and book it for Riley Kim. But if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead."}
+{"t": 1790765476.1868515, "kind": "agent_state", "state": "listening"}
+{"t": 1790765476.8311243, "kind": "user_turn", "text": "Go ahead and book it for Riley Kim. But if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead."}
+{"t": 1790765476.8311243, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047650000124122016, "speech_id": "speech_195c49d01275"}
+{"t": 1790765476.8321245, "kind": "think_start", "text": "Here's the thing, I need to fly to Toronto on July 20th. If there happens to be a flight under $300, Go ahead and book it for Riley Kim. But if everything's too expensive, then just forget the flight and update my driver's license to DL88 instead.", "audio": false}
+{"t": 1790765476.8559008, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765477.118229, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765477.257159, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765477.2760324, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13616090000141412, "duration": 0.1553751999999804, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_195c49d01275"}
+{"t": 1790765483.196046, "kind": "thinker_decided", "tools": true, "after_s": 6.36}
+{"t": 1790765483.197046, "kind": "tool_start", "name": "search_flights", "args": {"date": "July 20", "destination": "Toronto"}}
+{"t": 1790765483.6461868, "kind": "tool_done", "name": "search_flights", "args": {"date": "July 20", "destination": "Toronto"}, "outcome": "success"}
+{"t": 1790765483.6483405, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3336194000003161, "duration": 0.3535641000016767, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_195c49d01275"}
+{"t": 1790765488.6632266, "kind": "tool_start", "name": "update_identity_doc", "args": {"doc_type": "driver_license", "doc_number": "DL88"}}
+{"t": 1790765488.6683226, "kind": "tool_done", "name": "update_identity_doc", "args": {"doc_type": "driver_license", "doc_number": "DL88"}, "outcome": "success"}
+{"t": 1790765489.6478205, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24159700000018347, "duration": 0.25797720000264235, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_195c49d01275"}
+{"t": 1790765495.852143, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.36887949999800185, "duration": 0.38587529999858816, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_195c49d01275"}
+{"t": 1790765495.9371748, "kind": "thinker_say", "text": "The flight to Toronto was $450, which was over your $300 limit, so I've updated your driver's license to DL88 instead.", "after_s": 19.11, "usage": {"input": 7832, "input_audio": 0, "output": 93, "thinking": 259, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765496.1930299, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24854000000050291, "duration": 0.2531976999998733, "audio_duration": 10.359999999999998, "cancelled": false, "characters_count": 118, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_195c49d01275"}
+{"t": 1790765506.5698683, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. Still working on it. The flight to Toronto was $450, which was over your $300 limit, so I've updated your driver's license"}
+{"t": 1790765506.5698683, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,43 @@
+{"t": 1790762813.4349701, "kind": "session_start", "room": "eval-a20a1e43", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762813.5178728, "kind": "agent_state", "state": "listening"}
+{"t": 1790762818.2295406, "kind": "user_state", "state": "speaking"}
+{"t": 1790762820.2290716, "kind": "user_state", "state": "listening"}
+{"t": 1790762820.335565, "kind": "user_state", "state": "speaking"}
+{"t": 1790762820.837007, "kind": "metrics", "type": "stt_metrics", "duration": 0.6063057999999728, "audio_duration": 2.58, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762820.8509305, "kind": "heard", "text": "So while, like,"}
+{"t": 1790762821.2789767, "kind": "user_state", "state": "listening"}
+{"t": 1790762821.5903413, "kind": "metrics", "type": "stt_metrics", "duration": 0.30949409999993804, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762821.5913403, "kind": "heard", "text": "Like, um."}
+{"t": 1790762821.9915195, "kind": "user_state", "state": "speaking"}
+{"t": 1790762825.1874094, "kind": "user_state", "state": "listening"}
+{"t": 1790762825.4849973, "kind": "user_state", "state": "speaking"}
+{"t": 1790762825.8288214, "kind": "metrics", "type": "stt_metrics", "duration": 0.640688900000896, "audio_duration": 3.796, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762825.8302112, "kind": "heard", "text": "I want to update my search filter."}
+{"t": 1790762829.3925884, "kind": "user_state", "state": "listening"}
+{"t": 1790762829.9868553, "kind": "user_state", "state": "speaking"}
+{"t": 1790762830.04911, "kind": "metrics", "type": "stt_metrics", "duration": 0.6551760999991529, "audio_duration": 4.532, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762830.0508807, "kind": "heard", "text": "So the max price is like $1,800 a month."}
+{"t": 1790762833.151926, "kind": "user_state", "state": "listening"}
+{"t": 1790762833.5867603, "kind": "user_turn", "text": "So while, like, Like, um. I want to update my search filter. So the max price is like $1,800 a month."}
+{"t": 1790762833.587759, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7868342399597168, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00040500000068277586, "speech_id": "speech_339c574a88bf"}
+{"t": 1790762833.588759, "kind": "think_start", "text": "So while, like, Like, um. I want to update my search filter. So the max price is like $1,800 a month.", "audio": false}
+{"t": 1790762833.589949, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762833.6487048, "kind": "metrics", "type": "stt_metrics", "duration": 0.4957910000011907, "audio_duration": 3.7, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762833.650384, "kind": "heard", "text": "Everything I've been seeing is way over budget."}
+{"t": 1790762833.6508904, "kind": "agent_state", "state": "listening"}
+{"t": 1790762833.6508904, "kind": "superseded"}
+{"t": 1790762834.4587982, "kind": "user_turn", "text": "Everything I've been seeing is way over budget."}
+{"t": 1790762834.4597998, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00046040000052016694, "speech_id": "speech_a8a8b4f59091"}
+{"t": 1790762834.4609249, "kind": "think_start", "text": "So while, like, Like, um. I want to update my search filter. So the max price is like $1,800 a month. Everything I've been seeing is way over budget.", "audio": false}
+{"t": 1790762834.4858332, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762834.8041036, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762834.9479866, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762834.9622755, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14220629999908851, "duration": 0.15691269999842916, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a8a8b4f59091"}
+{"t": 1790762839.41832, "kind": "thinker_decided", "tools": true, "after_s": 4.96}
+{"t": 1790762839.419441, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 1800}}
+{"t": 1790762839.62484, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 1800}, "outcome": "success"}
+{"t": 1790762841.7416518, "kind": "thinker_say", "text": "OK. I've updated your max price filter to $1,800.", "after_s": 7.28, "usage": {"input": 5024, "input_audio": 0, "output": 47, "thinking": 137, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762841.803062, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2494793000005302, "duration": 0.2652199999993172, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a8a8b4f59091"}
+{"t": 1790762841.9816697, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17377660000056494, "duration": 0.17539360000046145, "audio_duration": 5.1350000000000025, "cancelled": false, "characters_count": 49, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a8a8b4f59091"}
+{"t": 1790762848.7296576, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your max price filter to $1,800."}
+{"t": 1790762848.7306628, "kind": "agent_state", "state": "listening"}

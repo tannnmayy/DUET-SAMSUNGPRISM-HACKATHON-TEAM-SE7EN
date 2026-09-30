@@ -1,0 +1,406 @@
+{
+  "pid": "5f4a4da1575d605c43bef871",
+  "example_id": "finance_14",
+  "category": "finance_billing",
+  "title": "Two Currency Conversions",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:52:51.546947",
+  "inference_time_s": 49.04,
+  "room_name": "eval-d9b98068",
+  "stream_start_time": 1790761974.5018086,
+  "input_transcript": "Can you tell me how much 50 U .S. dollars would be in Euros and then how much 100 Canadian dollars would be in U .S. dollars? I need both numbers.",
+  "input_asr_chunks": [
+    {
+      "text": "Can",
+      "timestamp": [
+        2.22,
+        2.6
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.6,
+        2.7
+      ]
+    },
+    {
+      "text": "tell",
+      "timestamp": [
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        2.9,
+        3.06
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        3.06,
+        3.24
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        3.24,
+        3.54
+      ]
+    },
+    {
+      "text": "50",
+      "timestamp": [
+        3.54,
+        3.9
+      ]
+    },
+    {
+      "text": "U",
+      "timestamp": [
+        3.9,
+        4.18
+      ]
+    },
+    {
+      "text": ".S.",
+      "timestamp": [
+        4.18,
+        4.38
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        4.52,
+        4.76
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        4.76,
+        5.1
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        5.1,
+        5.28
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        5.28,
+        5.48
+      ]
+    },
+    {
+      "text": "Euros",
+      "timestamp": [
+        5.48,
+        5.86
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.86,
+        6.94
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        6.94,
+        7.2
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        7.2,
+        7.82
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        7.82,
+        8.08
+      ]
+    },
+    {
+      "text": "100",
+      "timestamp": [
+        8.08,
+        8.76
+      ]
+    },
+    {
+      "text": "Canadian",
+      "timestamp": [
+        8.76,
+        9.36
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        9.36,
+        9.92
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        9.92,
+        10.26
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        10.26,
+        10.52
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        10.52,
+        10.86
+      ]
+    },
+    {
+      "text": "U",
+      "timestamp": [
+        10.86,
+        11.08
+      ]
+    },
+    {
+      "text": ".S.",
+      "timestamp": [
+        11.08,
+        11.26
+      ]
+    },
+    {
+      "text": "dollars?",
+      "timestamp": [
+        11.72,
+        11.72
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.86,
+        13.42
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        13.42,
+        13.66
+      ]
+    },
+    {
+      "text": "both",
+      "timestamp": [
+        13.66,
+        13.94
+      ]
+    },
+    {
+      "text": "numbers.",
+      "timestamp": [
+        13.94,
+        14.38
+      ]
+    }
+  ],
+  "user_speech_end_rel": 14.38,
+  "latency": {
+    "input_duration_s": 45.312,
+    "output_duration_s": 45.312,
+    "first_speech_s": 19.0
+  },
+  "user_done_unix": 1790761988.8818088,
+  "transcript": "One moment. Still working on it. 50 US dollars is 45 euros, and 100 Canadian dollars is 90 US dollars.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        18.74,
+        19.26
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        19.26,
+        19.62
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        25.55,
+        26.15
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        26.15,
+        26.47
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        26.47,
+        26.71
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        26.71,
+        26.89
+      ]
+    },
+    {
+      "text": "50",
+      "timestamp": [
+        27.79,
+        28.21
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        28.21,
+        28.55
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        28.55,
+        28.89
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        28.89,
+        29.33
+      ]
+    },
+    {
+      "text": "45",
+      "timestamp": [
+        29.33,
+        29.87
+      ]
+    },
+    {
+      "text": "euros,",
+      "timestamp": [
+        29.87,
+        30.29
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        30.67,
+        31.05
+      ]
+    },
+    {
+      "text": "100",
+      "timestamp": [
+        31.05,
+        31.43
+      ]
+    },
+    {
+      "text": "Canadian",
+      "timestamp": [
+        31.43,
+        31.89
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        31.89,
+        32.35
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        32.35,
+        32.75
+      ]
+    },
+    {
+      "text": "90",
+      "timestamp": [
+        32.75,
+        33.09
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        33.09,
+        33.57
+      ]
+    },
+    {
+      "text": "dollars.",
+      "timestamp": [
+        33.57,
+        33.97
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.36,
+  "audio_agent_speech_start": 18.74,
+  "actual_tool_calls": [
+    {
+      "function": "get_exchange_rate",
+      "args": {
+        "from_currency": "USD",
+        "to_currency": "EUR",
+        "amount": 50
+      },
+      "timestamp_start": 23.39,
+      "timestamp_end": 23.4
+    },
+    {
+      "function": "get_exchange_rate",
+      "args": {
+        "to_currency": "USD",
+        "amount": 100,
+        "from_currency": "CAD"
+      },
+      "timestamp_start": 23.4,
+      "timestamp_end": 23.4
+    }
+  ],
+  "status": "completed"
+}

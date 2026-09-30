@@ -1,0 +1,20 @@
+{"t": 1790759681.5010347, "kind": "session_start", "room": "eval-625ea589", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759681.5822222, "kind": "agent_state", "state": "listening"}
+{"t": 1790759683.8898234, "kind": "user_state", "state": "speaking"}
+{"t": 1790759693.9903593, "kind": "user_state", "state": "listening"}
+{"t": 1790759694.653995, "kind": "metrics", "type": "stt_metrics", "duration": 0.6618608999997377, "audio_duration": 10.708, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759694.6678991, "kind": "heard", "text": "You know, like, we'll go ahead and add the product B7 to my cart. Make it three of them. No, no wait, that's too many. Just do one for now. I'll order more later if I need to."}
+{"t": 1790759694.6700814, "kind": "user_turn", "text": "You know, like, we'll go ahead and add the product B7 to my cart. Make it three of them. No, no wait, that's too many. Just do one for now. I'll order more later if I need to."}
+{"t": 1790759694.6700814, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0301234722137451, "transcription_delay": 1.0285406112670898, "on_user_turn_completed_delay": 0.00046329999895533547, "speech_id": "speech_6f8373ae315f"}
+{"t": 1790759694.672226, "kind": "think_start", "text": "You know, like, we'll go ahead and add the product B7 to my cart. Make it three of them. No, no wait, that's too many. Just do one for now. I'll order more later if I need to.", "audio": false}
+{"t": 1790759694.6943326, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759695.6091428, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759695.734299, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759695.751985, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12361830000008922, "duration": 0.14086909999969066, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6f8373ae315f"}
+{"t": 1790759698.1002188, "kind": "thinker_decided", "tools": true, "after_s": 3.43}
+{"t": 1790759698.1002188, "kind": "tool_start", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "B7"}}
+{"t": 1790759698.1252303, "kind": "tool_done", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "B7"}, "outcome": "success"}
+{"t": 1790759699.3967369, "kind": "thinker_say", "text": "OK. I've added one B7 to your cart.", "after_s": 4.72, "usage": {"input": 4908, "input_audio": 0, "output": 38, "thinking": 68, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759699.6841896, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24908660000073723, "duration": 0.2852058999997098, "audio_duration": 3.1350000000000002, "cancelled": false, "characters_count": 35, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6f8373ae315f"}
+{"t": 1790759702.7833312, "kind": "agent_said", "text": "One moment. OK. I've added one B7 to your cart."}
+{"t": 1790759702.7833312, "kind": "agent_state", "state": "listening"}

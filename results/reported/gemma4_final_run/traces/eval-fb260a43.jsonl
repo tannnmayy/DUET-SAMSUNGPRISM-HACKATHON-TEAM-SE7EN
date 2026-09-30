@@ -1,0 +1,30 @@
+{"t": 1790760991.9978085, "kind": "session_start", "room": "eval-fb260a43", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760992.0388002, "kind": "agent_state", "state": "listening"}
+{"t": 1790760994.6896095, "kind": "user_state", "state": "speaking"}
+{"t": 1790760995.7026117, "kind": "user_state", "state": "listening"}
+{"t": 1790760996.0884702, "kind": "user_state", "state": "speaking"}
+{"t": 1790760996.3267617, "kind": "metrics", "type": "stt_metrics", "duration": 0.6232053999992786, "audio_duration": 1.62, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760996.3282046, "kind": "heard", "text": "like"}
+{"t": 1790761004.2462099, "kind": "user_state", "state": "listening"}
+{"t": 1790761004.681155, "kind": "user_turn", "text": "like"}
+{"t": 1790761004.682155, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.786945104598999, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00037650000012945384, "speech_id": "speech_7c0976536fab"}
+{"t": 1790761004.683156, "kind": "think_start", "text": "like", "audio": false}
+{"t": 1790761004.6841595, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761004.826144, "kind": "metrics", "type": "stt_metrics", "duration": 0.5784910000002128, "audio_duration": 8.724, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761004.8271394, "kind": "heard", "text": "I'm trying to figure out how much 500 US dollars would be if I converted it to euros. Could you check that for me?"}
+{"t": 1790761004.8277638, "kind": "agent_state", "state": "listening"}
+{"t": 1790761005.628391, "kind": "user_turn", "text": "I'm trying to figure out how much 500 US dollars would be if I converted it to euros. Could you check that for me?"}
+{"t": 1790761005.628391, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004761000000144122, "speech_id": "speech_02c1611b62c6"}
+{"t": 1790761005.6293917, "kind": "think_start", "text": "like I'm trying to figure out how much 500 US dollars would be if I converted it to euros. Could you check that for me?", "audio": false}
+{"t": 1790761005.654269, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761005.9177117, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761006.0724888, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761006.087633, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1530172999991919, "duration": 0.16809789999933855, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_02c1611b62c6"}
+{"t": 1790761018.2757201, "kind": "thinker_decided", "tools": true, "after_s": 12.65}
+{"t": 1790761018.2757201, "kind": "tool_start", "name": "get_exchange_rate", "args": {"amount": 500, "to_currency": "EUR", "from_currency": "USD"}}
+{"t": 1790761018.27915, "kind": "tool_done", "name": "get_exchange_rate", "args": {"amount": 500, "to_currency": "EUR", "from_currency": "USD"}, "outcome": "success"}
+{"t": 1790761018.6863706, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.28620019999834767, "duration": 0.3002418999985821, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_02c1611b62c6"}
+{"t": 1790761023.5149436, "kind": "thinker_say", "text": "500 US dollars is 450 euros.", "after_s": 17.89, "usage": {"input": 4894, "input_audio": 0, "output": 46, "thinking": 83, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761023.9337792, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.362939999999071, "duration": 0.41774209999857703, "audio_duration": 3.8850000000000007, "cancelled": false, "characters_count": 28, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_02c1611b62c6"}
+{"t": 1790761027.7619767, "kind": "agent_said", "text": "One moment. Still working on it. 500 US dollars is 450 euros."}
+{"t": 1790761027.7619767, "kind": "agent_state", "state": "listening"}

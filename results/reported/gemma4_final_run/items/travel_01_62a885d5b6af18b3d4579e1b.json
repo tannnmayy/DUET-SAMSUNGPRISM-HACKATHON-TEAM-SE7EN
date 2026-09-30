@@ -1,0 +1,318 @@
+{
+  "pid": "62a885d5b6af18b3d4579e1b",
+  "example_id": "travel_01",
+  "category": "travel_identity",
+  "title": "Simple Flight Search",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:35:25.739176",
+  "inference_time_s": 40.16,
+  "room_name": "eval-9c465672",
+  "stream_start_time": 1790764528.7833116,
+  "input_transcript": "Well, I'm trying to go to Tokyo and I was thinking about leaving around July 15th. Could you look up what flights are available for that day?",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.0,
+        0.56
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        0.8,
+        0.94
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        0.94,
+        1.06
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.06,
+        1.2
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        1.2,
+        1.28
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.28,
+        1.42
+      ]
+    },
+    {
+      "text": "Tokyo",
+      "timestamp": [
+        1.42,
+        1.82
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        1.82,
+        2.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.16,
+        2.22
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        2.22,
+        2.34
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        2.34,
+        2.46
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        2.46,
+        2.62
+      ]
+    },
+    {
+      "text": "leaving",
+      "timestamp": [
+        2.62,
+        2.84
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        2.84,
+        3.04
+      ]
+    },
+    {
+      "text": "July",
+      "timestamp": [
+        3.04,
+        3.26
+      ]
+    },
+    {
+      "text": "15th.",
+      "timestamp": [
+        3.26,
+        3.9
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        4.04,
+        4.3
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        4.3,
+        4.38
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        4.38,
+        4.52
+      ]
+    },
+    {
+      "text": "up",
+      "timestamp": [
+        4.52,
+        4.62
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        4.62,
+        4.74
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        4.74,
+        4.98
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        4.98,
+        5.12
+      ]
+    },
+    {
+      "text": "available",
+      "timestamp": [
+        5.12,
+        5.42
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        5.42,
+        5.62
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        5.62,
+        5.78
+      ]
+    },
+    {
+      "text": "day?",
+      "timestamp": [
+        5.78,
+        5.98
+      ]
+    }
+  ],
+  "user_speech_end_rel": 5.98,
+  "latency": {
+    "input_duration_s": 36.36,
+    "output_duration_s": 36.36,
+    "first_speech_s": 11.5
+  },
+  "user_done_unix": 1790764534.7633116,
+  "transcript": "One moment, I found one flight to Tokyo on July 15th for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        11.18,
+        11.72
+      ]
+    },
+    {
+      "text": "moment,",
+      "timestamp": [
+        11.72,
+        12.06
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        17.0,
+        17.52
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        17.52,
+        17.84
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        17.84,
+        18.1
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        18.1,
+        18.38
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        18.38,
+        18.58
+      ]
+    },
+    {
+      "text": "Tokyo",
+      "timestamp": [
+        18.58,
+        18.96
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        18.96,
+        19.24
+      ]
+    },
+    {
+      "text": "July",
+      "timestamp": [
+        19.24,
+        19.48
+      ]
+    },
+    {
+      "text": "15th",
+      "timestamp": [
+        19.48,
+        20.12
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        20.12,
+        20.54
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        20.54,
+        21.3
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.2,
+  "audio_agent_speech_start": 11.18,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "destination": "Tokyo",
+        "date": "July 15"
+      },
+      "timestamp_start": 11.91,
+      "timestamp_end": 12.18
+    }
+  ],
+  "status": "completed"
+}

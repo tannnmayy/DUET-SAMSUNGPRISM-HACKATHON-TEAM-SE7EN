@@ -1,0 +1,399 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "ecommerce_05",
+  "category": "ecommerce_support",
+  "title": "Product Search with Hesitation",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:06:36.725987",
+  "inference_time_s": 55.59,
+  "room_name": "eval-5b75f0ee",
+  "stream_start_time": 1790759199.4989219,
+  "input_transcript": "Um, so like, uh, I'm looking for, um, for a new, let me think, a desk. Yes. Something under $300. If you have an option like that, that would be great.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.4,
+        1.1
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.8,
+        1.96
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        1.96,
+        2.34
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        2.54,
+        3.12
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        3.86,
+        4.08
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        4.08,
+        4.32
+      ]
+    },
+    {
+      "text": "for,",
+      "timestamp": [
+        4.32,
+        4.92
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        5.08,
+        5.34
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        6.4,
+        6.56
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        6.56,
+        6.76
+      ]
+    },
+    {
+      "text": "new,",
+      "timestamp": [
+        6.76,
+        7.16
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        9.28,
+        9.94
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        9.94,
+        10.08
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        10.08,
+        10.52
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        11.0,
+        11.64
+      ]
+    },
+    {
+      "text": "desk.",
+      "timestamp": [
+        11.64,
+        12.16
+      ]
+    },
+    {
+      "text": "Yes.",
+      "timestamp": [
+        12.78,
+        13.58
+      ]
+    },
+    {
+      "text": "Something",
+      "timestamp": [
+        14.06,
+        14.86
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        14.86,
+        15.18
+      ]
+    },
+    {
+      "text": "$300.",
+      "timestamp": [
+        15.18,
+        15.96
+      ]
+    },
+    {
+      "text": "If",
+      "timestamp": [
+        17.46,
+        18.26
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        18.26,
+        18.36
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        18.36,
+        18.52
+      ]
+    },
+    {
+      "text": "an",
+      "timestamp": [
+        18.52,
+        18.64
+      ]
+    },
+    {
+      "text": "option",
+      "timestamp": [
+        18.64,
+        19.08
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        19.08,
+        19.36
+      ]
+    },
+    {
+      "text": "that,",
+      "timestamp": [
+        19.36,
+        19.84
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        20.08,
+        20.42
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        20.42,
+        20.52
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        20.52,
+        20.62
+      ]
+    },
+    {
+      "text": "great.",
+      "timestamp": [
+        20.62,
+        20.92
+      ]
+    }
+  ],
+  "user_speech_end_rel": 7.16,
+  "latency": {
+    "input_duration_s": 52.08,
+    "output_duration_s": 52.08,
+    "first_speech_s": 11.85
+  },
+  "user_done_unix": 1790759206.658922,
+  "transcript": "One moment. One moment. What are you looking for? Please let me know if you're searching for a product or an apartment.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        11.54,
+        12.08
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        12.08,
+        12.46
+      ]
+    },
+    {
+      "text": "One",
+      "timestamp": [
+        25.33,
+        25.93
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        25.93,
+        26.31
+      ]
+    },
+    {
+      "text": "What",
+      "timestamp": [
+        44.06,
+        44.66
+      ]
+    },
+    {
+      "text": "are",
+      "timestamp": [
+        44.66,
+        44.76
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        44.76,
+        44.86
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        44.86,
+        45.08
+      ]
+    },
+    {
+      "text": "for?",
+      "timestamp": [
+        45.08,
+        45.4
+      ]
+    },
+    {
+      "text": "Please",
+      "timestamp": [
+        45.92,
+        46.52
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        46.52,
+        46.72
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        46.72,
+        46.84
+      ]
+    },
+    {
+      "text": "know",
+      "timestamp": [
+        46.84,
+        47.08
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        47.08,
+        47.42
+      ]
+    },
+    {
+      "text": "you're",
+      "timestamp": [
+        47.42,
+        47.54
+      ]
+    },
+    {
+      "text": "searching",
+      "timestamp": [
+        47.54,
+        47.84
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        47.84,
+        48.08
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        48.08,
+        48.2
+      ]
+    },
+    {
+      "text": "product",
+      "timestamp": [
+        48.2,
+        48.5
+      ]
+    },
+    {
+      "text": "or",
+      "timestamp": [
+        48.5,
+        48.86
+      ]
+    },
+    {
+      "text": "an",
+      "timestamp": [
+        48.86,
+        49.0
+      ]
+    },
+    {
+      "text": "apartment.",
+      "timestamp": [
+        49.0,
+        49.3
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.38,
+  "audio_agent_speech_start": 11.54,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

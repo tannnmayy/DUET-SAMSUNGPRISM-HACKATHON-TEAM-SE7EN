@@ -1,0 +1,346 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "travel_08",
+  "category": "travel_identity",
+  "title": "False Start Flight Search",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:42:56.003374",
+  "inference_time_s": 46.6,
+  "room_name": "eval-f3b64068",
+  "stream_start_time": 1790764978.7471213,
+  "input_transcript": "I was going to ask about hotel options, but never mind for now on that. Can you just find me flights to Seattle November 1st instead?",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        0.18,
+        0.5
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        0.5,
+        0.66
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        0.66,
+        0.82
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        0.82,
+        0.96
+      ]
+    },
+    {
+      "text": "ask",
+      "timestamp": [
+        0.96,
+        1.18
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        1.18,
+        1.42
+      ]
+    },
+    {
+      "text": "hotel",
+      "timestamp": [
+        1.42,
+        1.86
+      ]
+    },
+    {
+      "text": "options,",
+      "timestamp": [
+        1.86,
+        2.42
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        2.84,
+        3.5
+      ]
+    },
+    {
+      "text": "never",
+      "timestamp": [
+        3.5,
+        3.7
+      ]
+    },
+    {
+      "text": "mind",
+      "timestamp": [
+        3.7,
+        3.98
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        3.98,
+        4.16
+      ]
+    },
+    {
+      "text": "now",
+      "timestamp": [
+        4.16,
+        4.4
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        4.4,
+        4.56
+      ]
+    },
+    {
+      "text": "that.",
+      "timestamp": [
+        4.56,
+        4.78
+      ]
+    },
+    {
+      "text": "Can",
+      "timestamp": [
+        5.26,
+        5.8
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        5.8,
+        5.92
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        5.92,
+        6.1
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        6.1,
+        6.36
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.36,
+        6.54
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        6.54,
+        7.0
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.0,
+        7.28
+      ]
+    },
+    {
+      "text": "Seattle",
+      "timestamp": [
+        7.28,
+        7.82
+      ]
+    },
+    {
+      "text": "November",
+      "timestamp": [
+        7.82,
+        8.98
+      ]
+    },
+    {
+      "text": "1st",
+      "timestamp": [
+        8.98,
+        9.58
+      ]
+    },
+    {
+      "text": "instead?",
+      "timestamp": [
+        9.58,
+        9.98
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.98,
+  "latency": {
+    "input_duration_s": 43.08,
+    "output_duration_s": 43.08,
+    "first_speech_s": 14.6
+  },
+  "user_done_unix": 1790764988.7271214,
+  "transcript": "One moment. Still working on it. Okay, I found a flight to Seattle on November 1st for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        14.29,
+        14.83
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        14.83,
+        15.17
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        20.44,
+        21.04
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        21.04,
+        21.34
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        21.34,
+        21.58
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        21.58,
+        21.76
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        25.94,
+        26.54
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        26.86,
+        27.08
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        27.08,
+        27.32
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        27.32,
+        27.42
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        27.42,
+        27.64
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        27.64,
+        27.84
+      ]
+    },
+    {
+      "text": "Seattle",
+      "timestamp": [
+        27.84,
+        28.22
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        28.22,
+        28.42
+      ]
+    },
+    {
+      "text": "November",
+      "timestamp": [
+        28.42,
+        28.7
+      ]
+    },
+    {
+      "text": "1st",
+      "timestamp": [
+        28.7,
+        29.22
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        29.22,
+        29.38
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        29.38,
+        30.18
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.31,
+  "audio_agent_speech_start": 14.29,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "date": "November 1",
+        "destination": "Seattle"
+      },
+      "timestamp_start": 18.46,
+      "timestamp_end": 19.22
+    }
+  ],
+  "status": "completed"
+}

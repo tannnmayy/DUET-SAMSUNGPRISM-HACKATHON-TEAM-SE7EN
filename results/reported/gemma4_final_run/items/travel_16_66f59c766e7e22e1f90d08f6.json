@@ -1,0 +1,402 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "travel_16",
+  "category": "travel_identity",
+  "title": "Filler-Heavy Flight Search",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:47:19.558439",
+  "inference_time_s": 49.65,
+  "room_name": "eval-31674b8e",
+  "stream_start_time": 1790765242.5495865,
+  "input_transcript": "Hmm. Like, I've been thinking about it and I need to book flights to Vegas. I'm looking at going around August 8th if there's anything available.",
+  "input_asr_chunks": [
+    {
+      "text": "Hmm.",
+      "timestamp": [
+        0.43,
+        1.01
+      ]
+    },
+    {
+      "text": "Like,",
+      "timestamp": [
+        1.59,
+        2.01
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        2.13,
+        2.57
+      ]
+    },
+    {
+      "text": "been",
+      "timestamp": [
+        2.57,
+        2.67
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        2.67,
+        2.93
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        2.93,
+        3.23
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        3.23,
+        3.49
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.49,
+        3.95
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.95,
+        5.77
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        5.77,
+        5.93
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.93,
+        6.05
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        6.05,
+        6.25
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        6.25,
+        6.65
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.65,
+        7.11
+      ]
+    },
+    {
+      "text": "Vegas.",
+      "timestamp": [
+        7.11,
+        8.31
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        8.65,
+        9.37
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        9.37,
+        9.59
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        9.59,
+        9.83
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        9.83,
+        10.05
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        10.05,
+        10.63
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        10.63,
+        11.97
+      ]
+    },
+    {
+      "text": "8th",
+      "timestamp": [
+        11.97,
+        12.47
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        12.47,
+        12.81
+      ]
+    },
+    {
+      "text": "there's",
+      "timestamp": [
+        12.81,
+        13.17
+      ]
+    },
+    {
+      "text": "anything",
+      "timestamp": [
+        13.17,
+        13.39
+      ]
+    },
+    {
+      "text": "available.",
+      "timestamp": [
+        13.39,
+        13.81
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.81,
+  "latency": {
+    "input_duration_s": 45.9,
+    "output_duration_s": 45.9,
+    "first_speech_s": 18.4
+  },
+  "user_done_unix": 1790765256.3595865,
+  "transcript": "One moment. Still working on it. I found a flight to Vegas on August 8th for $450. Would you like me to book that for you?",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        18.1,
+        18.62
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        18.62,
+        18.96
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        24.31,
+        24.81
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        24.81,
+        25.11
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        25.11,
+        25.33
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        25.33,
+        25.51
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        28.0,
+        28.5
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        28.5,
+        28.74
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        28.74,
+        28.86
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        28.86,
+        29.06
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        29.06,
+        29.22
+      ]
+    },
+    {
+      "text": "Vegas",
+      "timestamp": [
+        29.22,
+        29.56
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        29.56,
+        29.82
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        29.82,
+        30.12
+      ]
+    },
+    {
+      "text": "8th",
+      "timestamp": [
+        30.12,
+        30.52
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        30.52,
+        30.9
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        30.9,
+        31.76
+      ]
+    },
+    {
+      "text": "Would",
+      "timestamp": [
+        32.78,
+        33.28
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        33.28,
+        33.4
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        33.4,
+        33.62
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        33.62,
+        33.76
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        33.76,
+        33.84
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        33.84,
+        34.02
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        34.02,
+        34.24
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        34.24,
+        34.42
+      ]
+    },
+    {
+      "text": "you?",
+      "timestamp": [
+        34.42,
+        34.62
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.29,
+  "audio_agent_speech_start": 18.1,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "destination": "Vegas",
+        "date": "August 8"
+      },
+      "timestamp_start": 18.32,
+      "timestamp_end": 18.79
+    }
+  ],
+  "status": "completed"
+}

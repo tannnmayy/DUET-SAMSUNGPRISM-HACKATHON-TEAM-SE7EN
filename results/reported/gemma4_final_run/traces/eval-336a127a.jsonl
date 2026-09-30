@@ -1,0 +1,43 @@
+{"t": 1790762173.4806821, "kind": "session_start", "room": "eval-336a127a", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762173.5284185, "kind": "agent_state", "state": "listening"}
+{"t": 1790762176.6800923, "kind": "user_state", "state": "speaking"}
+{"t": 1790762189.1348608, "kind": "user_state", "state": "listening"}
+{"t": 1790762189.7453728, "kind": "metrics", "type": "stt_metrics", "duration": 0.6093558000011399, "audio_duration": 13.044, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762189.759254, "kind": "heard", "text": "I wanted to pay my credit card bill right now, but actually no mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading."}
+{"t": 1790762189.7615085, "kind": "user_turn", "text": "I wanted to pay my credit card bill right now, but actually no mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading."}
+{"t": 1790762189.7615085, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9775638580322266, "transcription_delay": 0.9758892059326172, "on_user_turn_completed_delay": 0.00029910000012023374, "speech_id": "speech_1b0802672052"}
+{"t": 1790762189.7632785, "kind": "think_start", "text": "I wanted to pay my credit card bill right now, but actually no mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading.", "audio": false}
+{"t": 1790762189.7865329, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762189.8361418, "kind": "user_state", "state": "speaking"}
+{"t": 1790762190.194839, "kind": "user_state", "state": "listening"}
+{"t": 1790762190.49696, "kind": "metrics", "type": "stt_metrics", "duration": 0.3012615999996342, "audio_duration": 0.948, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762190.4984877, "kind": "heard", "text": "Thank you."}
+{"t": 1790762190.4990003, "kind": "agent_state", "state": "listening"}
+{"t": 1790762190.6292605, "kind": "user_turn", "text": "Thank you."}
+{"t": 1790762190.6292605, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7849109172821045, "transcription_delay": 0.6561613082885742, "on_user_turn_completed_delay": 0.0004715000013675308, "speech_id": "speech_cf445b69849f"}
+{"t": 1790762190.63126, "kind": "think_start", "text": "I wanted to pay my credit card bill right now, but actually no mind that. I can do it online later for now. Could you just check what benefits come with the gold card? I'm thinking about upgrading. Thank you.", "audio": false}
+{"t": 1790762190.655611, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762191.8210852, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762191.953498, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762191.9680119, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13047069999993255, "duration": 0.14553390000037325, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cf445b69849f"}
+{"t": 1790762194.715802, "kind": "thinker_decided", "tools": true, "after_s": 4.09}
+{"t": 1790762194.7163718, "kind": "tool_start", "name": "get_card_benefits", "args": {"card_type": "gold"}}
+{"t": 1790762194.7193775, "kind": "tool_done", "name": "get_card_benefits", "args": {"card_type": "gold"}, "outcome": "success"}
+{"t": 1790762198.157318, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.31913969999914116, "duration": 0.33151600000019243, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cf445b69849f"}
+{"t": 1790762198.872373, "kind": "thinker_say", "text": "The gold card comes with 2% cashback and no foreign transaction fees.", "after_s": 8.24, "usage": {"input": 4961, "input_audio": 0, "output": 35, "thinking": 139, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762199.054352, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1792286999989301, "duration": 0.18066899999939778, "audio_duration": 5.110000000000002, "cancelled": false, "characters_count": 69, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cf445b69849f"}
+{"t": 1790762205.0598783, "kind": "agent_said", "text": "One moment. Still working on it. The gold card comes with 2% cashback and no foreign transaction fees."}
+{"t": 1790762205.0598783, "kind": "agent_state", "state": "listening"}
+{"t": 1790762208.4823132, "kind": "user_state", "state": "speaking"}
+{"t": 1790762209.134122, "kind": "user_state", "state": "listening"}
+{"t": 1790762209.6208537, "kind": "metrics", "type": "stt_metrics", "duration": 0.48572260000037204, "audio_duration": 1.236, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762209.6222258, "kind": "heard", "text": "Thank you."}
+{"t": 1790762209.6242652, "kind": "user_turn", "text": "Thank you."}
+{"t": 1790762209.6242652, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8410658836364746, "transcription_delay": 0.8401038646697998, "on_user_turn_completed_delay": 0.0002693999995244667, "speech_id": "speech_2f666be9acc1"}
+{"t": 1790762209.6257772, "kind": "think_start", "text": "Thank you.", "audio": false}
+{"t": 1790762209.6315937, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762210.7499077, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762210.9103775, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762210.927096, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15834539999923436, "duration": 0.17543119999936607, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2f666be9acc1"}
+{"t": 1790762220.266183, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790762220.266183, "kind": "agent_state", "state": "listening"}

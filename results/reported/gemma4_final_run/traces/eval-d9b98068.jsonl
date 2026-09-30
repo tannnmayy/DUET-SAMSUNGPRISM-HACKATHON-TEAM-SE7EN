@@ -1,0 +1,36 @@
+{"t": 1790761972.6982923, "kind": "session_start", "room": "eval-d9b98068", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761972.7968252, "kind": "agent_state", "state": "listening"}
+{"t": 1790761977.203204, "kind": "user_state", "state": "speaking"}
+{"t": 1790761981.0950575, "kind": "user_state", "state": "listening"}
+{"t": 1790761981.544551, "kind": "user_state", "state": "speaking"}
+{"t": 1790761981.7142038, "kind": "metrics", "type": "stt_metrics", "duration": 0.6185877999996592, "audio_duration": 4.5, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761981.7162588, "kind": "heard", "text": "Can you tell me how much 50 U.S. dollars would be in euros?"}
+{"t": 1790761986.940825, "kind": "user_state", "state": "listening"}
+{"t": 1790761987.4411445, "kind": "user_state", "state": "speaking"}
+{"t": 1790761987.5018713, "kind": "metrics", "type": "stt_metrics", "duration": 0.5607071000013093, "audio_duration": 6.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761987.5034895, "kind": "heard", "text": "And then how much 100 Canadian dollars would be in U.S. dollars?"}
+{"t": 1790761989.6433172, "kind": "user_state", "state": "listening"}
+{"t": 1790761990.0823965, "kind": "user_turn", "text": "Can you tell me how much 50 U.S. dollars would be in euros? And then how much 100 Canadian dollars would be in U.S. dollars?"}
+{"t": 1790761990.0834048, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7905740737915039, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00043259999984002206, "speech_id": "speech_b378eb068e95"}
+{"t": 1790761990.0844057, "kind": "think_start", "text": "Can you tell me how much 50 U.S. dollars would be in euros? And then how much 100 Canadian dollars would be in U.S. dollars?", "audio": false}
+{"t": 1790761990.0854046, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761990.2155526, "kind": "metrics", "type": "stt_metrics", "duration": 0.574433499999941, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761990.2166562, "kind": "heard", "text": "Mmm, I need both numbers."}
+{"t": 1790761990.2171683, "kind": "agent_state", "state": "listening"}
+{"t": 1790761991.0103595, "kind": "user_turn", "text": "Mmm, I need both numbers."}
+{"t": 1790761991.0113595, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004594000001816312, "speech_id": "speech_066c55b072e3"}
+{"t": 1790761991.0123594, "kind": "think_start", "text": "Can you tell me how much 50 U.S. dollars would be in euros? And then how much 100 Canadian dollars would be in U.S. dollars? Mmm, I need both numbers.", "audio": false}
+{"t": 1790761991.0351145, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761991.3101153, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761991.4408855, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761991.457224, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12865340000098513, "duration": 0.14549210000041057, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_066c55b072e3"}
+{"t": 1790761997.8959575, "kind": "thinker_decided", "tools": true, "after_s": 6.88}
+{"t": 1790761997.8959575, "kind": "tool_start", "name": "get_exchange_rate", "args": {"from_currency": "USD", "to_currency": "EUR", "amount": 50}}
+{"t": 1790761997.8972416, "kind": "tool_done", "name": "get_exchange_rate", "args": {"from_currency": "USD", "to_currency": "EUR", "amount": 50}, "outcome": "success"}
+{"t": 1790761997.8982403, "kind": "tool_start", "name": "get_exchange_rate", "args": {"to_currency": "USD", "amount": 100, "from_currency": "CAD"}}
+{"t": 1790761997.9216855, "kind": "tool_done", "name": "get_exchange_rate", "args": {"to_currency": "USD", "amount": 100, "from_currency": "CAD"}, "outcome": "success"}
+{"t": 1790761998.4153824, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3834912999991502, "duration": 0.39625490000071295, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_066c55b072e3"}
+{"t": 1790762000.1256907, "kind": "thinker_say", "text": "50 US dollars is 45 euros, and 100 Canadian dollars is 90 US dollars.", "after_s": 9.11, "usage": {"input": 5041, "input_audio": 0, "output": 91, "thinking": 112, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762000.52728, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2741323000009288, "duration": 0.3998055000010936, "audio_duration": 7.035000000000004, "cancelled": false, "characters_count": 69, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_066c55b072e3"}
+{"t": 1790762007.444858, "kind": "agent_said", "text": "One moment. Still working on it. 50 US dollars is 45 euros, and 100 Canadian dollars is 90 US dollars."}
+{"t": 1790762007.446224, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,80 @@
+{"t": 1790764370.6584492, "kind": "session_start", "room": "eval-3fc58f9a", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764370.7412097, "kind": "agent_state", "state": "listening"}
+{"t": 1790764374.4904146, "kind": "user_state", "state": "speaking"}
+{"t": 1790764376.9174535, "kind": "user_state", "state": "listening"}
+{"t": 1790764377.3406858, "kind": "user_state", "state": "speaking"}
+{"t": 1790764377.4246483, "kind": "metrics", "type": "stt_metrics", "duration": 0.5062379000009969, "audio_duration": 3.028, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764377.4391053, "kind": "heard", "text": "Um, so, hmm."}
+{"t": 1790764378.1395378, "kind": "user_state", "state": "listening"}
+{"t": 1790764378.3509755, "kind": "user_state", "state": "speaking"}
+{"t": 1790764378.4437258, "kind": "metrics", "type": "stt_metrics", "duration": 0.3022665999997116, "audio_duration": 1.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764378.4446967, "kind": "heard", "text": "Like."}
+{"t": 1790764379.6932313, "kind": "user_state", "state": "listening"}
+{"t": 1790764380.002322, "kind": "metrics", "type": "stt_metrics", "duration": 0.30793050000283984, "audio_duration": 1.94, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764380.0036857, "kind": "heard", "text": "You know, okay."}
+{"t": 1790764380.1187994, "kind": "user_turn", "text": "Um, so, hmm. Like. You know, okay."}
+{"t": 1790764380.1197994, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7765686511993408, "transcription_delay": 0.6614549160003662, "on_user_turn_completed_delay": 0.00045559999853139743, "speech_id": "speech_8a13754f72f3"}
+{"t": 1790764380.1207995, "kind": "think_start", "text": "Um, so, hmm. Like. You know, okay.", "audio": false}
+{"t": 1790764380.143905, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764380.149678, "kind": "user_state", "state": "speaking"}
+{"t": 1790764380.5472028, "kind": "agent_state", "state": "listening"}
+{"t": 1790764383.6102843, "kind": "thinker_decided", "tools": false, "after_s": 3.49}
+{"t": 1790764383.6102843, "kind": "thinker_say", "text": "<silent>", "after_s": 3.49, "usage": {"input": 2386, "input_audio": 0, "output": 3, "thinking": 95, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764384.7409375, "kind": "user_state", "state": "listening"}
+{"t": 1790764385.23899, "kind": "user_state", "state": "speaking"}
+{"t": 1790764385.4332972, "kind": "metrics", "type": "stt_metrics", "duration": 0.6911466999990807, "audio_duration": 5.204, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764385.434297, "kind": "heard", "text": "So first, I want to update my max price to $1,500."}
+{"t": 1790764387.3897471, "kind": "user_state", "state": "listening"}
+{"t": 1790764387.8382826, "kind": "user_turn", "text": "So first, I want to update my max price to $1,500."}
+{"t": 1790764387.8382826, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7990257740020752, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005283999998937361, "speech_id": "speech_906c183c664c"}
+{"t": 1790764387.8395786, "kind": "think_start", "text": "Um, so, hmm. Like. You know, okay. So first, I want to update my max price to $1,500.", "audio": false}
+{"t": 1790764387.8415756, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764387.9449444, "kind": "metrics", "type": "stt_metrics", "duration": 0.5539898999995785, "audio_duration": 2.74, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764387.946476, "kind": "heard", "text": "Because I'm on a tighter budget."}
+{"t": 1790764387.9469795, "kind": "agent_state", "state": "listening"}
+{"t": 1790764387.9469795, "kind": "superseded"}
+{"t": 1790764388.2143521, "kind": "user_state", "state": "speaking"}
+{"t": 1790764392.699311, "kind": "user_state", "state": "listening"}
+{"t": 1790764393.1455545, "kind": "user_turn", "text": "Because I'm on a tighter budget."}
+{"t": 1790764393.1465578, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.798243522644043, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005297000025166199, "speech_id": "speech_41b2efc95b18"}
+{"t": 1790764393.1475577, "kind": "think_start", "text": "Um, so, hmm. Like. You know, okay. So first, I want to update my max price to $1,500. Because I'm on a tighter budget.", "audio": false}
+{"t": 1790764393.150556, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764393.2371354, "kind": "metrics", "type": "stt_metrics", "duration": 0.5372092999969027, "audio_duration": 5.108, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764393.238599, "kind": "heard", "text": "Then search for apartments in Dallas that fit that budget."}
+{"t": 1790764393.2391055, "kind": "agent_state", "state": "listening"}
+{"t": 1790764393.2447972, "kind": "superseded"}
+{"t": 1790764393.45028, "kind": "user_state", "state": "speaking"}
+{"t": 1790764394.7010384, "kind": "user_state", "state": "listening"}
+{"t": 1790764395.0046484, "kind": "metrics", "type": "stt_metrics", "duration": 0.30224380000072415, "audio_duration": 1.812, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764395.0060472, "kind": "heard", "text": "And then..."}
+{"t": 1790764395.1433263, "kind": "user_turn", "text": "Then search for apartments in Dallas that fit that budget. And then..."}
+{"t": 1790764395.1443305, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.794287919998169, "transcription_delay": 0.6570088863372803, "on_user_turn_completed_delay": 0.00041369999962626025, "speech_id": "speech_5d080c4a3d03"}
+{"t": 1790764395.145329, "kind": "think_start", "text": "Um, so, hmm. Like. You know, okay. So first, I want to update my max price to $1,500. Because I'm on a tighter budget. Then search for apartments in Dallas that fit that budget. And then...", "audio": false}
+{"t": 1790764395.1670413, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764395.4484994, "kind": "user_state", "state": "speaking"}
+{"t": 1790764395.852895, "kind": "agent_state", "state": "listening"}
+{"t": 1790764400.5199924, "kind": "thinker_listen", "reason": "The user ended their sentence with \"And then...\", indicating they have more to say.", "after_s": 5.37, "usage": {"input": 2540, "input_audio": 0, "output": 32, "thinking": 78, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764400.9509344, "kind": "user_state", "state": "listening"}
+{"t": 1790764401.6471214, "kind": "metrics", "type": "stt_metrics", "duration": 0.6954681000024721, "audio_duration": 6.1, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764401.6481204, "kind": "heard", "text": "Check the walking time from whatever you find to the grocery store because I want to be close to one."}
+{"t": 1790764401.6517613, "kind": "user_turn", "text": "Check the walking time from whatever you find to the grocery store because I want to be close to one."}
+{"t": 1790764401.6517613, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.050844669342041, "transcription_delay": 1.0491859912872314, "on_user_turn_completed_delay": 0.0005577000010816846, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764401.6536112, "kind": "think_start", "text": "Um, so, hmm. Like. You know, okay. So first, I want to update my max price to $1,500. Because I'm on a tighter budget. Then search for apartments in Dallas that fit that budget. And then... Check the walking time from whatever you find to the grocery store because I want to be close to one.", "audio": false}
+{"t": 1790764401.6577146, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764402.5605874, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764402.7011876, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764402.7182813, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1385286000004271, "duration": 0.1561241000017617, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764412.0790675, "kind": "thinker_decided", "tools": true, "after_s": 10.42}
+{"t": 1790764412.0790675, "kind": "tool_start", "name": "update_search_filter", "args": {"value": 1500, "filter_name": "max_price"}}
+{"t": 1790764412.1591613, "kind": "tool_done", "name": "update_search_filter", "args": {"value": 1500, "filter_name": "max_price"}, "outcome": "success"}
+{"t": 1790764412.1591613, "kind": "tool_start", "name": "search_apartments", "args": {"max_price": 1500, "city": "Dallas"}}
+{"t": 1790764412.533911, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.25672969999868656, "duration": 0.26979280000159633, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764412.5810122, "kind": "tool_done", "name": "search_apartments", "args": {"max_price": 1500, "city": "Dallas"}, "outcome": "success"}
+{"t": 1790764418.7381039, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3811461000004783, "duration": 0.3955820000010135, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764418.9649477, "kind": "tool_start", "name": "calculate_commute", "args": {"mode": "walking", "destination_address": "grocery store", "origin_address": "APT1"}}
+{"t": 1790764419.7222016, "kind": "tool_done", "name": "calculate_commute", "args": {"mode": "walking", "destination_address": "grocery store", "origin_address": "APT1"}, "outcome": "success"}
+{"t": 1790764423.309561, "kind": "thinker_say", "text": "OK. I've updated your max price to $1,500 and found an apartment in Dallas for $1,400. It's a 25-minute walk to the grocery store.", "after_s": 21.66, "usage": {"input": 9400, "input_audio": 0, "output": 135, "thinking": 528, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764423.7699378, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.32411579999825335, "duration": 0.4592073999992863, "audio_duration": 8.660000000000004, "cancelled": false, "characters_count": 86, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764423.9823713, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16070699999909266, "duration": 0.2112719999968249, "audio_duration": 3.2350000000000003, "cancelled": false, "characters_count": 43, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7a23b07c8232"}
+{"t": 1790764432.2920902, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. OK. I've updated your max price to $1,500 and found an apartment in Dallas for $1,400. It's a 25-minute"}
+{"t": 1790764432.2931023, "kind": "agent_state", "state": "listening"}

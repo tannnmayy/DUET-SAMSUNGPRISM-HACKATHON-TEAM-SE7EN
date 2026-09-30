@@ -1,0 +1,25 @@
+{"t": 1790765112.464341, "kind": "session_start", "room": "eval-1b4b5c64", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765112.5155923, "kind": "agent_state", "state": "listening"}
+{"t": 1790765115.9845114, "kind": "user_state", "state": "speaking"}
+{"t": 1790765125.1707678, "kind": "user_state", "state": "listening"}
+{"t": 1790765125.894119, "kind": "metrics", "type": "stt_metrics", "duration": 0.7214662000005774, "audio_duration": 9.812, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765125.908596, "kind": "heard", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling."}
+{"t": 1790765125.9114504, "kind": "user_turn", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling."}
+{"t": 1790765125.9114504, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0910866260528564, "transcription_delay": 1.089512586593628, "on_user_turn_completed_delay": 0.00038700000004610047, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765125.9137554, "kind": "think_start", "text": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling.", "audio": false}
+{"t": 1790765125.9379492, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765126.77851, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765126.919195, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765126.935669, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13791910000145435, "duration": 0.15533480000158306, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765133.8028176, "kind": "thinker_decided", "tools": true, "after_s": 7.89}
+{"t": 1790765133.8028176, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Austin", "date": "February 2"}}
+{"t": 1790765134.1489153, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23514939999950002, "duration": 0.24797279999984312, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765134.3240201, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Austin", "date": "February 2"}, "outcome": "success"}
+{"t": 1790765138.9610407, "kind": "tool_start", "name": "book_flight", "args": {"passenger_name": "Morgan Smith"}}
+{"t": 1790765138.966128, "kind": "tool_done", "name": "book_flight", "args": {"passenger_name": "Morgan Smith"}, "outcome": "success"}
+{"t": 1790765140.1477182, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2319883000018308, "duration": 0.24528710000231513, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765140.7828643, "kind": "thinker_say", "text": "OK. I've booked your flight to Austin on February 2nd for Morgan Smith. The booking reference is B789.", "after_s": 14.87, "usage": {"input": 7886, "input_audio": 0, "output": 71, "thinking": 259, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765140.9485135, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1629021999979159, "duration": 0.1643240000012156, "audio_duration": 4.835000000000002, "cancelled": false, "characters_count": 71, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765141.0983243, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14794889999757288, "duration": 0.1489889000004041, "audio_duration": 3.16, "cancelled": false, "characters_count": 30, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5d006a90b158"}
+{"t": 1790765149.992407, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. OK. I've booked your flight to Austin on February 2nd for Morgan Smith. The booking reference is B789."}
+{"t": 1790765149.992407, "kind": "agent_state", "state": "listening"}

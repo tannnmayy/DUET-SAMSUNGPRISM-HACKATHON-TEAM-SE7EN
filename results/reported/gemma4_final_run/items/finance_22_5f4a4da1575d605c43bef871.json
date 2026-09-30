@@ -1,0 +1,516 @@
+{
+  "pid": "5f4a4da1575d605c43bef871",
+  "example_id": "finance_22",
+  "category": "finance_billing",
+  "title": "Heavy Fillers + Dual Autopay",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:02:06.598432",
+  "inference_time_s": 54.54,
+  "room_name": "eval-a63d7b37",
+  "stream_start_time": 1790762529.419067,
+  "input_transcript": "I want to change my mortgage auto pay so it pulls from savings that's the right account for that then I also want to set my credit card payment to come from my check -in.",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        3.7,
+        4.34
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        4.34,
+        4.56
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.56,
+        4.64
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        4.64,
+        4.9
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        4.9,
+        5.16
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        5.16,
+        5.56
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        5.56,
+        5.94
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        5.94,
+        6.26
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        6.26,
+        6.98
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        6.98,
+        7.14
+      ]
+    },
+    {
+      "text": "pulls",
+      "timestamp": [
+        7.14,
+        7.48
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        7.48,
+        8.0
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        8.0,
+        9.34
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        9.34,
+        10.66
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.66,
+        10.78
+      ]
+    },
+    {
+      "text": "right",
+      "timestamp": [
+        10.78,
+        10.96
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        10.96,
+        11.3
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.3,
+        11.5
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        11.5,
+        11.74
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.74,
+        12.88
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.88,
+        14.66
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        14.66,
+        15.08
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        15.08,
+        15.46
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.46,
+        15.94
+      ]
+    },
+    {
+      "text": "set",
+      "timestamp": [
+        15.94,
+        16.18
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        16.18,
+        16.36
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        16.36,
+        16.64
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        16.64,
+        16.94
+      ]
+    },
+    {
+      "text": "payment",
+      "timestamp": [
+        16.94,
+        17.5
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        17.5,
+        17.8
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        17.8,
+        18.06
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        18.06,
+        18.4
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        18.4,
+        18.64
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        18.64,
+        18.94
+      ]
+    },
+    {
+      "text": "-in.",
+      "timestamp": [
+        18.94,
+        19.1
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.1,
+  "latency": {
+    "input_duration_s": 50.941,
+    "output_duration_s": 50.941,
+    "first_speech_s": 23.7
+  },
+  "user_done_unix": 1790762548.5190668,
+  "transcript": "One moment. Still working on it. Okay, I've updated your auto -pay settings. Your mortgage will now be paid from your savings, and your credit card will be paid from your checking.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        23.41,
+        23.93
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        23.93,
+        24.29
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        29.64,
+        30.1
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        30.1,
+        30.4
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        30.4,
+        30.64
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        30.64,
+        30.82
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        31.62,
+        32.16
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        32.44,
+        32.66
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        32.66,
+        33.02
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        33.02,
+        33.22
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        33.22,
+        33.42
+      ]
+    },
+    {
+      "text": "-pay",
+      "timestamp": [
+        33.42,
+        33.64
+      ]
+    },
+    {
+      "text": "settings.",
+      "timestamp": [
+        33.64,
+        34.06
+      ]
+    },
+    {
+      "text": "Your",
+      "timestamp": [
+        34.56,
+        35.1
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        35.1,
+        35.44
+      ]
+    },
+    {
+      "text": "will",
+      "timestamp": [
+        35.44,
+        35.76
+      ]
+    },
+    {
+      "text": "now",
+      "timestamp": [
+        35.76,
+        35.96
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        35.96,
+        36.16
+      ]
+    },
+    {
+      "text": "paid",
+      "timestamp": [
+        36.16,
+        36.46
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        36.46,
+        36.64
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        36.64,
+        36.76
+      ]
+    },
+    {
+      "text": "savings,",
+      "timestamp": [
+        36.76,
+        37.18
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        37.22,
+        37.78
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        37.78,
+        37.96
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        37.96,
+        38.14
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        38.14,
+        38.46
+      ]
+    },
+    {
+      "text": "will",
+      "timestamp": [
+        38.46,
+        38.68
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        38.68,
+        38.8
+      ]
+    },
+    {
+      "text": "paid",
+      "timestamp": [
+        38.8,
+        39.08
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        39.08,
+        39.32
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        39.32,
+        39.44
+      ]
+    },
+    {
+      "text": "checking.",
+      "timestamp": [
+        39.44,
+        39.7
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.31,
+  "audio_agent_speech_start": 23.41,
+  "actual_tool_calls": [
+    {
+      "function": "modify_autopay",
+      "args": {
+        "bill_type": "mortgage",
+        "source_account": "savings"
+      },
+      "timestamp_start": 27.47,
+      "timestamp_end": 27.47
+    },
+    {
+      "function": "modify_autopay",
+      "args": {
+        "source_account": "checking",
+        "bill_type": "credit_card"
+      },
+      "timestamp_start": 27.47,
+      "timestamp_end": 27.47
+    }
+  ],
+  "status": "completed"
+}

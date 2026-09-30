@@ -1,0 +1,402 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "ecommerce_06",
+  "category": "ecommerce_support",
+  "title": "Simple Cart Addition",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:07:50.921563",
+  "inference_time_s": 48.02,
+  "room_name": "eval-a350f588",
+  "stream_start_time": 1790759273.6577928,
+  "input_transcript": "mm -hmm so I think could you add two items of two of other items k2 to my cart I need one for me and and one as a gift for my friend",
+  "input_asr_chunks": [
+    {
+      "text": "mm",
+      "timestamp": [
+        0.21,
+        0.77
+      ]
+    },
+    {
+      "text": "-hmm",
+      "timestamp": [
+        0.77,
+        1.13
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.13,
+        2.03
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.03,
+        2.23
+      ]
+    },
+    {
+      "text": "think",
+      "timestamp": [
+        2.23,
+        2.57
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        2.57,
+        3.39
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        3.39,
+        3.73
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        3.73,
+        4.25
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        4.25,
+        4.55
+      ]
+    },
+    {
+      "text": "items",
+      "timestamp": [
+        4.55,
+        5.19
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        5.19,
+        6.13
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        6.13,
+        6.29
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        6.29,
+        6.55
+      ]
+    },
+    {
+      "text": "other",
+      "timestamp": [
+        6.55,
+        6.73
+      ]
+    },
+    {
+      "text": "items",
+      "timestamp": [
+        6.73,
+        7.13
+      ]
+    },
+    {
+      "text": "k2",
+      "timestamp": [
+        7.13,
+        7.79
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.79,
+        8.11
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.11,
+        8.29
+      ]
+    },
+    {
+      "text": "cart",
+      "timestamp": [
+        8.29,
+        8.77
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        8.77,
+        9.79
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        9.79,
+        10.29
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        10.29,
+        10.61
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.61,
+        10.87
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        10.87,
+        11.13
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.13,
+        11.55
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.55,
+        11.85
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        11.85,
+        12.17
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        12.17,
+        12.63
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        12.63,
+        12.77
+      ]
+    },
+    {
+      "text": "gift",
+      "timestamp": [
+        12.77,
+        13.05
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        13.05,
+        13.25
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        13.25,
+        13.41
+      ]
+    },
+    {
+      "text": "friend",
+      "timestamp": [
+        13.41,
+        13.73
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.73,
+  "latency": {
+    "input_duration_s": 44.528,
+    "output_duration_s": 44.528,
+    "first_speech_s": 18.55
+  },
+  "user_done_unix": 1790759287.3877928,
+  "transcript": "One moment, okay, I've added two of those items to your cart and your new total is 199 .98.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        18.26,
+        18.8
+      ]
+    },
+    {
+      "text": "moment,",
+      "timestamp": [
+        18.8,
+        19.14
+      ]
+    },
+    {
+      "text": "okay,",
+      "timestamp": [
+        22.92,
+        23.54
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        23.88,
+        24.16
+      ]
+    },
+    {
+      "text": "added",
+      "timestamp": [
+        24.16,
+        24.4
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        24.4,
+        24.62
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        24.62,
+        24.76
+      ]
+    },
+    {
+      "text": "those",
+      "timestamp": [
+        24.76,
+        24.92
+      ]
+    },
+    {
+      "text": "items",
+      "timestamp": [
+        24.92,
+        25.24
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        25.24,
+        25.42
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        25.42,
+        25.52
+      ]
+    },
+    {
+      "text": "cart",
+      "timestamp": [
+        25.52,
+        25.82
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        25.82,
+        26.38
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        26.38,
+        26.52
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        26.52,
+        26.66
+      ]
+    },
+    {
+      "text": "total",
+      "timestamp": [
+        26.66,
+        27.0
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        27.0,
+        27.34
+      ]
+    },
+    {
+      "text": "199",
+      "timestamp": [
+        27.34,
+        27.98
+      ]
+    },
+    {
+      "text": ".98.",
+      "timestamp": [
+        27.98,
+        29.04
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.53,
+  "audio_agent_speech_start": 18.26,
+  "actual_tool_calls": [
+    {
+      "function": "add_to_cart",
+      "args": {
+        "product_id": "K2",
+        "quantity": 2
+      },
+      "timestamp_start": 19.13,
+      "timestamp_end": 19.13
+    }
+  ],
+  "status": "completed"
+}

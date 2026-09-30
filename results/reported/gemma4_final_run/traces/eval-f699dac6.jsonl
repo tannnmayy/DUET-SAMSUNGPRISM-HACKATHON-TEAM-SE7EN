@@ -1,0 +1,44 @@
+{"t": 1790765527.1879385, "kind": "session_start", "room": "eval-f699dac6", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765527.2456727, "kind": "agent_state", "state": "listening"}
+{"t": 1790765530.0445528, "kind": "user_state", "state": "speaking"}
+{"t": 1790765530.8903823, "kind": "user_state", "state": "listening"}
+{"t": 1790765531.1008399, "kind": "user_state", "state": "speaking"}
+{"t": 1790765531.4825342, "kind": "metrics", "type": "stt_metrics", "duration": 0.5916486999994959, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765531.4844458, "kind": "heard", "text": "You know,"}
+{"t": 1790765532.2602735, "kind": "user_state", "state": "listening"}
+{"t": 1790765532.5729253, "kind": "metrics", "type": "stt_metrics", "duration": 0.3118284999982279, "audio_duration": 1.78, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765532.5749075, "kind": "heard", "text": "Okay, so..."}
+{"t": 1790765532.5892293, "kind": "user_state", "state": "speaking"}
+{"t": 1790765533.2921946, "kind": "user_state", "state": "listening"}
+{"t": 1790765533.3984914, "kind": "user_state", "state": "speaking"}
+{"t": 1790765533.5938098, "kind": "metrics", "type": "stt_metrics", "duration": 0.30042780000076164, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765533.5951617, "kind": "heard", "text": "Um,"}
+{"t": 1790765535.4407122, "kind": "user_state", "state": "listening"}
+{"t": 1790765535.7985384, "kind": "user_state", "state": "speaking"}
+{"t": 1790765535.9745312, "kind": "metrics", "type": "stt_metrics", "duration": 0.5320615000018734, "audio_duration": 2.612, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765535.9755173, "kind": "heard", "text": "I need to find flights to..."}
+{"t": 1790765544.2410758, "kind": "user_state", "state": "listening"}
+{"t": 1790765544.3939123, "kind": "user_state", "state": "speaking"}
+{"t": 1790765544.94897, "kind": "metrics", "type": "stt_metrics", "duration": 0.7040806999975757, "audio_duration": 9.076, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765544.9503605, "kind": "heard", "text": "I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790765549.2545009, "kind": "user_state", "state": "listening"}
+{"t": 1790765549.7096913, "kind": "user_turn", "text": "You know, Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790765549.7106907, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8071904182434082, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003991999983554706, "speech_id": "speech_373d81708b6f"}
+{"t": 1790765549.7116914, "kind": "think_start", "text": "You know, Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis.", "audio": false}
+{"t": 1790765549.7126908, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765549.9125361, "kind": "metrics", "type": "stt_metrics", "duration": 0.657092500001454, "audio_duration": 5.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765549.9135747, "kind": "heard", "text": "Oh, and while you're at it, could you also update my visa number to V-77?"}
+{"t": 1790765549.9143054, "kind": "agent_state", "state": "listening"}
+{"t": 1790765549.9172058, "kind": "superseded"}
+{"t": 1790765550.7216227, "kind": "user_turn", "text": "Oh, and while you're at it, could you also update my visa number to V-77?"}
+{"t": 1790765550.7216227, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00048719999904278666, "speech_id": "speech_c59ec8435723"}
+{"t": 1790765550.7226205, "kind": "think_start", "text": "You know, Okay, so... Um, I need to find flights to... I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis. Oh, and while you're at it, could you also update my visa number to V-77?", "audio": false}
+{"t": 1790765550.7454474, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765551.0189333, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765551.1639194, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765551.179542, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14071859999967273, "duration": 0.157309999998688, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c59ec8435723"}
+{"t": 1790765578.7141821, "kind": "thinker_error", "text": "no answer from gemma-4-26b-a4b-it within 28 s (3 request(s) unanswered); last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"}
+{"t": 1790765579.0480242, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.29921400000239373, "duration": 0.33239250000042375, "audio_duration": 2.6599999999999997, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c59ec8435723"}
+{"t": 1790765579.2272966, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14393290000225534, "duration": 0.17711160000180826, "audio_duration": 2.0349999999999993, "cancelled": false, "characters_count": 29, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c59ec8435723"}
+{"t": 1790765579.992381, "kind": "agent_said", "text": "One moment. Sorry,"}
+{"t": 1790765579.9930456, "kind": "agent_state", "state": "listening"}

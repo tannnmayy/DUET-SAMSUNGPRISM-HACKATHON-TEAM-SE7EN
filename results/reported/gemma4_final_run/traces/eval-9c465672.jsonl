@@ -1,0 +1,20 @@
+{"t": 1790764526.9639137, "kind": "session_start", "room": "eval-9c465672", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764527.0353682, "kind": "agent_state", "state": "listening"}
+{"t": 1790764529.332302, "kind": "user_state", "state": "speaking"}
+{"t": 1790764535.5851262, "kind": "user_state", "state": "listening"}
+{"t": 1790764536.2559366, "kind": "metrics", "type": "stt_metrics", "duration": 0.6693132999971567, "audio_duration": 6.868, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764536.2696924, "kind": "heard", "text": "Well, I'm trying to go to Tokyo, and I was thinking about leaving around July 15th. Could you look up what flights are available for that day?"}
+{"t": 1790764537.7138052, "kind": "user_turn", "text": "Well, I'm trying to go to Tokyo, and I was thinking about leaving around July 15th. Could you look up what flights are available for that day?"}
+{"t": 1790764537.7138052, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4795315265655518, "transcription_delay": 1.0365662574768066, "on_user_turn_completed_delay": 0.0004970000009052455, "speech_id": "speech_4e4d8322b17c"}
+{"t": 1790764537.7154243, "kind": "think_start", "text": "Well, I'm trying to go to Tokyo, and I was thinking about leaving around July 15th. Could you look up what flights are available for that day?", "audio": false}
+{"t": 1790764537.7373073, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764538.0098538, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764538.1487815, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764538.165558, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13688019999972312, "duration": 0.1545804000015778, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4e4d8322b17c"}
+{"t": 1790764540.6937027, "kind": "thinker_decided", "tools": true, "after_s": 2.98}
+{"t": 1790764540.6937027, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Tokyo", "date": "July 15"}}
+{"t": 1790764540.9847732, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Tokyo", "date": "July 15"}, "outcome": "success"}
+{"t": 1790764543.757525, "kind": "thinker_say", "text": "I found one flight to Tokyo on July 15th for 450 dollars.", "after_s": 6.04, "usage": {"input": 4836, "input_audio": 0, "output": 44, "thinking": 79, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764544.2193003, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3792261000016879, "duration": 0.4601926000032108, "audio_duration": 5.310000000000002, "cancelled": false, "characters_count": 57, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4e4d8322b17c"}
+{"t": 1790764549.4589057, "kind": "agent_said", "text": "One moment. I found one flight to Tokyo on July 15th for 450 dollars."}
+{"t": 1790764549.4599133, "kind": "agent_state", "state": "listening"}

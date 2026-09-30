@@ -1,0 +1,32 @@
+{"t": 1790759744.025382, "kind": "session_start", "room": "eval-0f327049", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759744.1233552, "kind": "agent_state", "state": "listening"}
+{"t": 1790759746.720146, "kind": "user_state", "state": "speaking"}
+{"t": 1790759748.421004, "kind": "user_state", "state": "listening"}
+{"t": 1790759748.568801, "kind": "user_state", "state": "speaking"}
+{"t": 1790759748.9331143, "kind": "metrics", "type": "stt_metrics", "duration": 0.5114971999992122, "audio_duration": 2.292, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759748.93476, "kind": "heard", "text": "Like, you know, um..."}
+{"t": 1790759756.8688385, "kind": "user_state", "state": "listening"}
+{"t": 1790759757.312357, "kind": "user_turn", "text": "Like, you know, um..."}
+{"t": 1790759757.312357, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7934949398040771, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004687000000558328, "speech_id": "speech_12ffb25ebe10"}
+{"t": 1790759757.3133614, "kind": "think_start", "text": "Like, you know, um...", "audio": false}
+{"t": 1790759757.3143618, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759757.3687513, "kind": "user_state", "state": "speaking"}
+{"t": 1790759757.5336668, "kind": "metrics", "type": "stt_metrics", "duration": 0.6627717999999732, "audio_duration": 8.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759757.5346246, "kind": "heard", "text": "I'm thinking something in the electronic section would be great. He's really into gadgets and tech stuff."}
+{"t": 1790759757.535131, "kind": "agent_state", "state": "listening"}
+{"t": 1790759757.540616, "kind": "superseded"}
+{"t": 1790759757.7192192, "kind": "user_state", "state": "listening"}
+{"t": 1790759758.0190024, "kind": "metrics", "type": "stt_metrics", "duration": 0.2980643000009877, "audio_duration": 0.948, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759758.0197806, "kind": "heard", "text": "Thank you."}
+{"t": 1790759758.161111, "kind": "user_turn", "text": "I'm thinking something in the electronic section would be great. He's really into gadgets and tech stuff. Thank you."}
+{"t": 1790759758.1621115, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7938919067382812, "transcription_delay": 0.6530702114105225, "on_user_turn_completed_delay": 0.0004972999995516147, "speech_id": "speech_b010248927e8"}
+{"t": 1790759758.1633775, "kind": "think_start", "text": "Like, you know, um... I'm thinking something in the electronic section would be great. He's really into gadgets and tech stuff. Thank you.", "audio": false}
+{"t": 1790759758.1863089, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759759.3381488, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759759.465971, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759759.4820635, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1253617000002123, "duration": 0.14212919999954465, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_b010248927e8"}
+{"t": 1790759786.164384, "kind": "thinker_error", "text": "no answer from gemma-4-26b-a4b-it within 28 s (3 request(s) unanswered); last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"}
+{"t": 1790759786.465287, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.27189390000057756, "duration": 0.2990635000005568, "audio_duration": 2.6599999999999997, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_b010248927e8"}
+{"t": 1790759786.6475391, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15449710000029881, "duration": 0.18153689999962808, "audio_duration": 2.0349999999999993, "cancelled": false, "characters_count": 29, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_b010248927e8"}
+{"t": 1790759787.7616003, "kind": "agent_said", "text": "One moment. Sorry,"}
+{"t": 1790759787.7629197, "kind": "agent_state", "state": "listening"}

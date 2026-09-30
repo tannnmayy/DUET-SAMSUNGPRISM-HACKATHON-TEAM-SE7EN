@@ -1,0 +1,36 @@
+{"t": 1790763439.2951949, "kind": "session_start", "room": "eval-6656b850", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763439.3368566, "kind": "agent_state", "state": "listening"}
+{"t": 1790763443.8470256, "kind": "user_state", "state": "speaking"}
+{"t": 1790763445.595257, "kind": "user_state", "state": "listening"}
+{"t": 1790763445.8426082, "kind": "user_state", "state": "speaking"}
+{"t": 1790763446.0999753, "kind": "metrics", "type": "stt_metrics", "duration": 0.5038662000006298, "audio_duration": 2.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763446.109591, "kind": "heard", "text": "You know, like, you know."}
+{"t": 1790763449.1952105, "kind": "user_state", "state": "listening"}
+{"t": 1790763449.8653276, "kind": "metrics", "type": "stt_metrics", "duration": 0.6685668999998597, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763449.8668246, "kind": "heard", "text": "Let's raise the max price to $3,000 per month."}
+{"t": 1790763450.0991855, "kind": "user_state", "state": "speaking"}
+{"t": 1790763454.0972464, "kind": "user_state", "state": "listening"}
+{"t": 1790763454.646044, "kind": "user_state", "state": "speaking"}
+{"t": 1790763454.6816735, "kind": "metrics", "type": "stt_metrics", "duration": 0.5832933000001503, "audio_duration": 4.596, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763454.6816735, "kind": "heard", "text": "And also bump up the minimum bedrooms to three."}
+{"t": 1790763458.5534277, "kind": "user_state", "state": "listening"}
+{"t": 1790763459.0959697, "kind": "metrics", "type": "stt_metrics", "duration": 0.5416602000004787, "audio_duration": 4.468, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763459.0969288, "kind": "heard", "text": "Yeah, I think I need more space than I originally thought."}
+{"t": 1790763460.683625, "kind": "user_turn", "text": "You know, like, you know. Let's raise the max price to $3,000 per month. And also bump up the minimum bedrooms to three. Yeah, I think I need more space than I originally thought."}
+{"t": 1790763460.6849597, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4821972846984863, "transcription_delay": 0.8955011367797852, "on_user_turn_completed_delay": 0.00043989999903715216, "speech_id": "speech_aff8deac6de7"}
+{"t": 1790763460.6859195, "kind": "think_start", "text": "You know, like, you know. Let's raise the max price to $3,000 per month. And also bump up the minimum bedrooms to three. Yeah, I think I need more space than I originally thought.", "audio": false}
+{"t": 1790763460.711136, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763460.9942603, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763461.1429772, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763461.1578588, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14578089999849908, "duration": 0.16166939999857277, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aff8deac6de7"}
+{"t": 1790763465.350153, "kind": "thinker_decided", "tools": true, "after_s": 4.66}
+{"t": 1790763465.350153, "kind": "tool_start", "name": "update_search_filter", "args": {"value": 3000, "filter_name": "max_price"}}
+{"t": 1790763465.4569132, "kind": "tool_done", "name": "update_search_filter", "args": {"value": 3000, "filter_name": "max_price"}, "outcome": "success"}
+{"t": 1790763465.4569132, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "min_bedrooms", "value": 3}}
+{"t": 1790763465.6525939, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "min_bedrooms", "value": 3}, "outcome": "success"}
+{"t": 1790763467.4071872, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3175731999999698, "duration": 0.33104199999979755, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aff8deac6de7"}
+{"t": 1790763473.402863, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3058175999995001, "duration": 0.32130319999851054, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aff8deac6de7"}
+{"t": 1790763475.4165668, "kind": "thinker_say", "text": "OK. I've updated your search filters to a maximum price of $3,000 and a minimum of three bedrooms.", "after_s": 14.73, "usage": {"input": 4980, "input_audio": 0, "output": 82, "thinking": 81, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763475.9077363, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.36798479999924893, "duration": 0.4892300999999861, "audio_duration": 7.335000000000004, "cancelled": false, "characters_count": 98, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aff8deac6de7"}
+{"t": 1790763483.1208549, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. OK. I've updated your search filters to a maximum price of $3,000 and a minimum of three bedrooms."}
+{"t": 1790763483.1220787, "kind": "agent_state", "state": "listening"}

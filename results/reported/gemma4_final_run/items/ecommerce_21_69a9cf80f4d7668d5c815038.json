@@ -1,0 +1,433 @@
+{
+  "pid": "69a9cf80f4d7668d5c815038",
+  "example_id": "ecommerce_21",
+  "category": "ecommerce_support",
+  "title": "Hesitant Tracking Chain",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:31:29.297977",
+  "inference_time_s": 59.78,
+  "room_name": "eval-0d5831c5",
+  "stream_start_time": 1790760692.0426872,
+  "input_transcript": "um so hmm hmm well could you track order BOP for me first then I also want to search for a nice watch under $200 and once you can find something good go ahead and add it to my cart",
+  "input_asr_chunks": [
+    {
+      "text": "um",
+      "timestamp": [
+        0.59,
+        1.15
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.15,
+        2.29
+      ]
+    },
+    {
+      "text": "hmm",
+      "timestamp": [
+        2.29,
+        2.93
+      ]
+    },
+    {
+      "text": "hmm",
+      "timestamp": [
+        2.93,
+        4.67
+      ]
+    },
+    {
+      "text": "well",
+      "timestamp": [
+        4.67,
+        5.85
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        5.85,
+        6.27
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        6.27,
+        6.45
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        6.45,
+        6.73
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        6.73,
+        7.15
+      ]
+    },
+    {
+      "text": "BOP",
+      "timestamp": [
+        7.15,
+        8.09
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        8.09,
+        8.49
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        8.49,
+        8.67
+      ]
+    },
+    {
+      "text": "first",
+      "timestamp": [
+        8.67,
+        9.05
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        9.05,
+        10.33
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        10.33,
+        13.03
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        13.03,
+        14.89
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        14.89,
+        15.19
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.19,
+        15.29
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        15.29,
+        15.53
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        15.53,
+        15.83
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        15.83,
+        15.99
+      ]
+    },
+    {
+      "text": "nice",
+      "timestamp": [
+        15.99,
+        16.17
+      ]
+    },
+    {
+      "text": "watch",
+      "timestamp": [
+        16.17,
+        16.57
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        16.57,
+        16.91
+      ]
+    },
+    {
+      "text": "$200",
+      "timestamp": [
+        16.91,
+        17.41
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        17.41,
+        19.31
+      ]
+    },
+    {
+      "text": "once",
+      "timestamp": [
+        19.31,
+        20.49
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        20.49,
+        20.61
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        20.61,
+        20.75
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        20.75,
+        21.01
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        21.01,
+        21.37
+      ]
+    },
+    {
+      "text": "good",
+      "timestamp": [
+        21.37,
+        21.69
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        21.69,
+        23.45
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        23.45,
+        23.71
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        23.71,
+        23.93
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        23.93,
+        24.13
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        24.13,
+        24.23
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        24.23,
+        24.35
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        24.35,
+        24.49
+      ]
+    },
+    {
+      "text": "cart",
+      "timestamp": [
+        24.49,
+        24.75
+      ]
+    }
+  ],
+  "user_speech_end_rel": 24.75,
+  "latency": {
+    "input_duration_s": 56.34,
+    "output_duration_s": 56.34,
+    "first_speech_s": 29.15
+  },
+  "user_done_unix": 1790760716.7926872,
+  "transcript": "One moment. Still working on it. Still working on it. Still working on it.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        28.88,
+        29.4
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        29.4,
+        29.76
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        42.01,
+        42.61
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        42.61,
+        42.93
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        42.93,
+        43.15
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        43.15,
+        43.35
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        47.98,
+        48.62
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        48.62,
+        48.94
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        48.94,
+        49.16
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        49.16,
+        49.36
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        54.14,
+        54.78
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        54.78,
+        55.1
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        55.1,
+        55.32
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        55.32,
+        55.5
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.13,
+  "audio_agent_speech_start": 28.88,
+  "actual_tool_calls": [
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "BOB"
+      },
+      "timestamp_start": 39.92,
+      "timestamp_end": 39.92
+    },
+    {
+      "function": "search_products",
+      "args": {
+        "max_price": 200,
+        "query": "watch"
+      },
+      "timestamp_start": 39.92,
+      "timestamp_end": 39.92
+    },
+    {
+      "function": "add_to_cart",
+      "args": {
+        "quantity": 1,
+        "product_id": "PROD1"
+      },
+      "timestamp_start": 44.74,
+      "timestamp_end": 44.74
+    }
+  ],
+  "status": "completed"
+}

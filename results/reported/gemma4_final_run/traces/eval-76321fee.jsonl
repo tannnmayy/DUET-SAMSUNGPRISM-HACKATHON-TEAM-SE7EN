@@ -1,0 +1,37 @@
+{"t": 1790760535.6498845, "kind": "session_start", "room": "eval-76321fee", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760535.7573733, "kind": "agent_state", "state": "listening"}
+{"t": 1790760539.4178913, "kind": "user_state", "state": "speaking"}
+{"t": 1790760541.116288, "kind": "user_state", "state": "listening"}
+{"t": 1790760541.4591463, "kind": "user_state", "state": "speaking"}
+{"t": 1790760541.7088952, "kind": "metrics", "type": "stt_metrics", "duration": 0.5913756999998441, "audio_duration": 2.26, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760541.722759, "kind": "heard", "text": "So, um, you know, I..."}
+{"t": 1790760542.359907, "kind": "user_state", "state": "listening"}
+{"t": 1790760542.6812758, "kind": "metrics", "type": "stt_metrics", "duration": 0.3199143000001641, "audio_duration": 1.524, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760542.6823332, "kind": "heard", "text": "And, um,"}
+{"t": 1790760543.268603, "kind": "user_state", "state": "speaking"}
+{"t": 1790760562.2096457, "kind": "user_state", "state": "listening"}
+{"t": 1790760562.6537726, "kind": "user_turn", "text": "So, um, you know, I... And, um,"}
+{"t": 1790760562.6553292, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7951269149780273, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005634000008285511, "speech_id": "speech_3ee5a0e3bcfd"}
+{"t": 1790760562.6563365, "kind": "think_start", "text": "So, um, you know, I... And, um,", "audio": false}
+{"t": 1790760562.6563365, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760563.0240593, "kind": "metrics", "type": "stt_metrics", "duration": 0.8117034000006242, "audio_duration": 19.54, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760563.0251322, "kind": "heard", "text": "So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead."}
+{"t": 1790760563.025637, "kind": "agent_state", "state": "listening"}
+{"t": 1790760563.025637, "kind": "superseded"}
+{"t": 1790760563.8284862, "kind": "user_turn", "text": "So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead."}
+{"t": 1790760563.8295248, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004501000003074296, "speech_id": "speech_c3c839033c63"}
+{"t": 1790760563.8305256, "kind": "think_start", "text": "So, um, you know, I... And, um, So search for a coffee maker first. If you find one that's under $50, go ahead and add two to the cart because they make great gifts. But if everything's over $50, just forget the coffee maker and track order www for me instead.", "audio": false}
+{"t": 1790760563.8530393, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760564.1231499, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760564.2531996, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760564.2686186, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12779670000054466, "duration": 0.14408350000121573, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c3c839033c63"}
+{"t": 1790760567.3107867, "kind": "thinker_decided", "tools": true, "after_s": 3.48}
+{"t": 1790760567.3107867, "kind": "tool_start", "name": "search_products", "args": {"query": "coffee maker"}}
+{"t": 1790760567.3345597, "kind": "tool_done", "name": "search_products", "args": {"query": "coffee maker"}, "outcome": "success"}
+{"t": 1790760570.6315444, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.39468920000035723, "duration": 0.41393670000070415, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c3c839033c63"}
+{"t": 1790760571.1973867, "kind": "tool_start", "name": "track_order", "args": {"order_id": "www"}}
+{"t": 1790760571.2216907, "kind": "tool_done", "name": "track_order", "args": {"order_id": "www"}, "outcome": "success"}
+{"t": 1790760574.19498, "kind": "thinker_say", "text": "I couldn't find any coffee makers under $50, so I tracked order WWW for you, which is currently out for delivery.", "after_s": 10.36, "usage": {"input": 7741, "input_audio": 0, "output": 63, "thinking": 245, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760574.802187, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4446639999987383, "duration": 0.5920717999997578, "audio_duration": 8.535000000000004, "cancelled": false, "characters_count": 113, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c3c839033c63"}
+{"t": 1790760583.1991675, "kind": "agent_said", "text": "One moment. Still working on it. I couldn't find any coffee makers under $50, so I tracked order WWW for you, which is currently out for delivery."}
+{"t": 1790760583.1991675, "kind": "agent_state", "state": "listening"}

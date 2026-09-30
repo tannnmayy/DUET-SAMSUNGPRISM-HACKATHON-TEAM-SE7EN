@@ -1,0 +1,33 @@
+{"t": 1790763938.6989412, "kind": "session_start", "room": "eval-3542ea6d", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763938.743485, "kind": "agent_state", "state": "listening"}
+{"t": 1790763941.7046661, "kind": "user_state", "state": "speaking"}
+{"t": 1790763942.3990655, "kind": "user_state", "state": "listening"}
+{"t": 1790763942.5609758, "kind": "user_state", "state": "speaking"}
+{"t": 1790763942.9758687, "kind": "metrics", "type": "stt_metrics", "duration": 0.5752049000002444, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763942.977313, "kind": "heard", "text": "Well..."}
+{"t": 1790763957.8132536, "kind": "user_state", "state": "listening"}
+{"t": 1790763958.2476037, "kind": "user_turn", "text": "Well..."}
+{"t": 1790763958.248603, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.785351037979126, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005887000006623566, "speech_id": "speech_7f606392c1dd"}
+{"t": 1790763958.2496023, "kind": "think_start", "text": "Well...", "audio": false}
+{"t": 1790763958.2506034, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763958.484483, "kind": "metrics", "type": "stt_metrics", "duration": 0.669478199997684, "audio_duration": 15.86, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763958.4860938, "kind": "heard", "text": "So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work."}
+{"t": 1790763958.4866006, "kind": "agent_state", "state": "listening"}
+{"t": 1790763959.285873, "kind": "user_turn", "text": "So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work."}
+{"t": 1790763959.2868729, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004039999985252507, "speech_id": "speech_fbf3ebce2275"}
+{"t": 1790763959.287873, "kind": "think_start", "text": "Well... So first, search for a one bedroom in Portland that's under $800 per month, then once you find the cheapest option, check how long it would take to bike from there to the coffee shop on 5th street where I work.", "audio": false}
+{"t": 1790763959.3111107, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763959.571251, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763959.7240727, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763959.742992, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14954930000021704, "duration": 0.16986529999849154, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_fbf3ebce2275"}
+{"t": 1790763971.0804598, "kind": "thinker_decided", "tools": true, "after_s": 11.79}
+{"t": 1790763971.0804598, "kind": "tool_start", "name": "search_apartments", "args": {"city": "Portland", "bedrooms": 1, "max_price": 800}}
+{"t": 1790763971.455957, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2721543000006932, "duration": 0.28709909999815864, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_fbf3ebce2275"}
+{"t": 1790763971.7335494, "kind": "tool_done", "name": "search_apartments", "args": {"city": "Portland", "bedrooms": 1, "max_price": 800}, "outcome": "success"}
+{"t": 1790763977.6627798, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3968358999991324, "duration": 0.4120751000009477, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_fbf3ebce2275"}
+{"t": 1790763978.3633966, "kind": "tool_start", "name": "calculate_commute", "args": {"mode": "biking", "destination_address": "the coffee shop on 5th street", "origin_address": "APT1"}}
+{"t": 1790763978.9698637, "kind": "tool_done", "name": "calculate_commute", "args": {"mode": "biking", "destination_address": "the coffee shop on 5th street", "origin_address": "APT1"}, "outcome": "success"}
+{"t": 1790763982.364868, "kind": "thinker_say", "text": "I found a one bedroom apartment in Portland for $700, and it would take you 25 minutes to bike to your coffee shop on 5th street.", "after_s": 23.08, "usage": {"input": 8268, "input_audio": 0, "output": 106, "thinking": 422, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763982.8736348, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3602510999990045, "duration": 0.5068643999984488, "audio_duration": 9.285000000000002, "cancelled": false, "characters_count": 129, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_fbf3ebce2275"}
+{"t": 1790763988.815779, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. I found a one bedroom apartment in Portland for $700, and it would take you 25 minutes to"}
+{"t": 1790763988.81711, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,325 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "travel_03",
+  "category": "travel_identity",
+  "title": "Flight Search with Fillers",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:37:30.497142",
+  "inference_time_s": 46.86,
+  "room_name": "eval-7a7fba6f",
+  "stream_start_time": 1790764653.2959697,
+  "input_transcript": "Well, I've been looking at flights and I was wondering if you could, like, check what's available to London around August 20th for me.",
+  "input_asr_chunks": [
+    {
+      "text": "Well,",
+      "timestamp": [
+        0.0,
+        0.62
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        1.54,
+        2.56
+      ]
+    },
+    {
+      "text": "been",
+      "timestamp": [
+        2.56,
+        2.76
+      ]
+    },
+    {
+      "text": "looking",
+      "timestamp": [
+        2.76,
+        3.14
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        3.14,
+        3.42
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        3.42,
+        3.82
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.82,
+        4.28
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.28,
+        5.9
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        5.9,
+        6.14
+      ]
+    },
+    {
+      "text": "wondering",
+      "timestamp": [
+        6.14,
+        6.46
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        6.46,
+        6.76
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        6.76,
+        6.9
+      ]
+    },
+    {
+      "text": "could,",
+      "timestamp": [
+        6.9,
+        7.38
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        7.44,
+        7.92
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        8.22,
+        8.42
+      ]
+    },
+    {
+      "text": "what's",
+      "timestamp": [
+        8.42,
+        9.3
+      ]
+    },
+    {
+      "text": "available",
+      "timestamp": [
+        9.3,
+        9.66
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        9.66,
+        9.94
+      ]
+    },
+    {
+      "text": "London",
+      "timestamp": [
+        9.94,
+        10.36
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        10.36,
+        10.86
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        10.86,
+        11.3
+      ]
+    },
+    {
+      "text": "20th",
+      "timestamp": [
+        11.3,
+        11.96
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.96,
+        12.18
+      ]
+    },
+    {
+      "text": "me.",
+      "timestamp": [
+        12.18,
+        12.44
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.44,
+  "latency": {
+    "input_duration_s": 43.26,
+    "output_duration_s": 43.26,
+    "first_speech_s": 16.9
+  },
+  "user_done_unix": 1790764665.7359698,
+  "transcript": "One moment. Still working on it. I found one flight to London on August 20th for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        16.59,
+        17.15
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        17.15,
+        17.49
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        22.78,
+        23.42
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        23.42,
+        23.72
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        23.72,
+        23.96
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        23.96,
+        24.12
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        24.68,
+        25.32
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        25.32,
+        25.64
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        25.64,
+        25.9
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        25.9,
+        26.16
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        26.16,
+        26.32
+      ]
+    },
+    {
+      "text": "London",
+      "timestamp": [
+        26.32,
+        26.58
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        26.58,
+        26.86
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        26.86,
+        27.16
+      ]
+    },
+    {
+      "text": "20th",
+      "timestamp": [
+        27.16,
+        27.78
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        27.78,
+        28.24
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        28.24,
+        29.08
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.15,
+  "audio_agent_speech_start": 16.59,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "date": "August 20",
+        "destination": "London"
+      },
+      "timestamp_start": 19.56,
+      "timestamp_end": 20.13
+    }
+  ],
+  "status": "completed"
+}

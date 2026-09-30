@@ -1,0 +1,70 @@
+{
+ "stamp": "20260930_185841",
+ "provider": "duet",
+ "dry_run": false,
+ "scoring_asr": "whisper",
+ "only": "",
+ "agent": {
+  "llm_backend": "gemma",
+  "llm_base_url": "http://127.0.0.1:18001/v1",
+  "llm_model": "qwen3-4b-instruct-2507",
+  "thinker_model": "gemma-4-26b-a4b-it",
+  "thinker_thinking": "",
+  "max_tool_steps": 8,
+  "seed": 7,
+  "temperature": "",
+  "talker_enabled": false,
+  "talker_model": "gemma-4-26b-a4b-it",
+  "talker_timeout_s": 1.2,
+  "asr_backend": "whisper",
+  "asr_model": "large-v3-turbo",
+  "asr_device": "auto",
+  "asr_max_no_speech_prob": 0.6,
+  "asr_min_avg_logprob": -1.0,
+  "vad_activation": 0.5,
+  "vad_min_silence_s": 0.35,
+  "endpoint_min_s": 0.8,
+  "endpoint_max_s": 2.5,
+  "commit_hold_s": 1.1,
+  "revising_hold_s": 1.8,
+  "dangling_hold_s": 2.2,
+  "preemptive": false,
+  "preempt_max_speech_s": 120.0,
+  "preempt_max_retries": 20,
+  "tts_backend": "kokoro",
+  "tts_voice": "af_heart",
+  "fdb_dir": "E:\\Full-Duplex-Bench\\v3",
+  "tool_log": "/tmp/agent_tool_calls.log",
+  "heartbeat_log": "/tmp/agent_heartbeat.log",
+  "latency_profile": "instant",
+  "trace_dir": "E:\\duet_fdb\\results\\live\\20260930_170052\\traces",
+  "thinker_sampling": {
+   "temperature": 1.0,
+   "top_p": 0.95,
+   "top_k": 64,
+   "seed": 7
+  },
+  "api_keys": 3,
+  "tokens_per_minute_per_key": 15000.0
+ },
+ "overrides": {
+  "FDB_V3_DIR": "E:\\Full-Duplex-Bench\\v3",
+  "FDB_DATA_DIR": "E:/fdb_data/fdb_v3_data_released",
+  "DUET_SCORING_DEVICE": "cpu",
+  "DUET_JUDGE": "gemma",
+  "DUET_TRACE_DIR": "E:\\duet_fdb\\results\\live\\20260930_170052\\traces"
+ },
+ "livekit": "local dev server",
+ "provenance": {
+  "git_commit": "e6c1b48b09cb009ffdee30ed0d61944b33e592dc",
+  "git_branch": "fdb-v3",
+  "git_uncommitted": [],
+  "host": "Tanmay-Singh",
+  "time_utc": "2026-09-30 10:58:41",
+  "gpus": [
+   "0, NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB, 0 MiB, 566.07"
+  ],
+  "placement": {}
+ },
+ "language_model": "gemma-4-26b-a4b-it through Google's API"
+}

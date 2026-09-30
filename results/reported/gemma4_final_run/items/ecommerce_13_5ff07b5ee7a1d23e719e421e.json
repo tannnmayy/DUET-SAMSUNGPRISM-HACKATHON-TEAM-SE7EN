@@ -1,0 +1,459 @@
+{
+  "pid": "5ff07b5ee7a1d23e719e421e",
+  "example_id": "ecommerce_13",
+  "category": "ecommerce_support",
+  "title": "Cart + Track Combo",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:16:45.536705",
+  "inference_time_s": 55.41,
+  "room_name": "eval-99089c49",
+  "stream_start_time": 1790759808.527817,
+  "input_transcript": "Um, well, so, well, first, could you add item K -2 to my cart, just one of them? And then can you check on my last order, too? The order ID is D -E -L -I -V.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.88,
+        1.48
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        2.38,
+        2.58
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        3.06,
+        3.24
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        3.72,
+        3.92
+      ]
+    },
+    {
+      "text": "first,",
+      "timestamp": [
+        4.32,
+        4.9
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        5.06,
+        5.18
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        5.18,
+        5.3
+      ]
+    },
+    {
+      "text": "add",
+      "timestamp": [
+        5.3,
+        5.64
+      ]
+    },
+    {
+      "text": "item",
+      "timestamp": [
+        5.64,
+        6.06
+      ]
+    },
+    {
+      "text": "K",
+      "timestamp": [
+        6.06,
+        6.42
+      ]
+    },
+    {
+      "text": "-2",
+      "timestamp": [
+        6.42,
+        7.12
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.12,
+        8.5
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.5,
+        8.68
+      ]
+    },
+    {
+      "text": "cart,",
+      "timestamp": [
+        8.68,
+        9.04
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        9.44,
+        9.92
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        9.92,
+        10.24
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        10.24,
+        10.36
+      ]
+    },
+    {
+      "text": "them?",
+      "timestamp": [
+        10.36,
+        10.6
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        10.78,
+        11.32
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        11.32,
+        11.52
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        11.52,
+        11.78
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        11.78,
+        12.02
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        12.02,
+        12.28
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        12.28,
+        12.54
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        12.54,
+        12.72
+      ]
+    },
+    {
+      "text": "last",
+      "timestamp": [
+        12.72,
+        13.14
+      ]
+    },
+    {
+      "text": "order,",
+      "timestamp": [
+        13.14,
+        13.54
+      ]
+    },
+    {
+      "text": "too?",
+      "timestamp": [
+        13.8,
+        13.92
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        14.54,
+        14.82
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        14.82,
+        15.14
+      ]
+    },
+    {
+      "text": "ID",
+      "timestamp": [
+        15.14,
+        15.52
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        15.52,
+        15.96
+      ]
+    },
+    {
+      "text": "D",
+      "timestamp": [
+        15.96,
+        16.36
+      ]
+    },
+    {
+      "text": "-E",
+      "timestamp": [
+        16.36,
+        17.24
+      ]
+    },
+    {
+      "text": "-L",
+      "timestamp": [
+        17.24,
+        18.14
+      ]
+    },
+    {
+      "text": "-I",
+      "timestamp": [
+        18.14,
+        19.18
+      ]
+    },
+    {
+      "text": "-V.",
+      "timestamp": [
+        19.18,
+        20.12
+      ]
+    }
+  ],
+  "user_speech_end_rel": 20.12,
+  "latency": {
+    "input_duration_s": 51.66,
+    "output_duration_s": 51.66,
+    "first_speech_s": 24.7
+  },
+  "user_done_unix": 1790759828.647817,
+  "transcript": "One moment. Still working on it. Okay, I've added 1K2 to your cart, and your order DELIV is currently out for delivery.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        24.4,
+        24.94
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        24.94,
+        25.28
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        30.56,
+        31.14
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        31.14,
+        31.46
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        31.46,
+        31.68
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        31.68,
+        31.88
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        32.6,
+        33.24
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        33.58,
+        33.82
+      ]
+    },
+    {
+      "text": "added",
+      "timestamp": [
+        33.82,
+        34.1
+      ]
+    },
+    {
+      "text": "1K2",
+      "timestamp": [
+        34.1,
+        34.8
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        34.8,
+        34.96
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        34.96,
+        35.06
+      ]
+    },
+    {
+      "text": "cart,",
+      "timestamp": [
+        35.06,
+        35.34
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        35.48,
+        35.86
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        35.86,
+        36.0
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        36.0,
+        36.26
+      ]
+    },
+    {
+      "text": "DELIV",
+      "timestamp": [
+        36.26,
+        36.96
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        36.96,
+        37.28
+      ]
+    },
+    {
+      "text": "currently",
+      "timestamp": [
+        37.28,
+        37.64
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        37.64,
+        37.88
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        37.88,
+        38.06
+      ]
+    },
+    {
+      "text": "delivery.",
+      "timestamp": [
+        38.06,
+        38.42
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.28,
+  "audio_agent_speech_start": 24.4,
+  "actual_tool_calls": [
+    {
+      "function": "add_to_cart",
+      "args": {
+        "product_id": "K2",
+        "quantity": 1
+      },
+      "timestamp_start": 26.94,
+      "timestamp_end": 26.94
+    },
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "DELIV"
+      },
+      "timestamp_start": 26.94,
+      "timestamp_end": 26.94
+    }
+  ],
+  "status": "completed"
+}

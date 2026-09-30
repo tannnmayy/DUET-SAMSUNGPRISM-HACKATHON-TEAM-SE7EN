@@ -1,0 +1,35 @@
+{"t": 1790761375.0580947, "kind": "session_start", "room": "eval-7b8bd9ac", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761375.1391156, "kind": "agent_state", "state": "listening"}
+{"t": 1790761377.8417144, "kind": "user_state", "state": "speaking"}
+{"t": 1790761384.1439464, "kind": "user_state", "state": "listening"}
+{"t": 1790761384.6844747, "kind": "metrics", "type": "stt_metrics", "duration": 0.53931460000058, "audio_duration": 6.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761384.6854954, "kind": "heard", "text": "So I was wondering what the benefits are for the travel card."}
+{"t": 1790761384.7047236, "kind": "user_state", "state": "speaking"}
+{"t": 1790761386.0108714, "kind": "user_state", "state": "listening"}
+{"t": 1790761386.1053376, "kind": "user_state", "state": "speaking"}
+{"t": 1790761386.319455, "kind": "metrics", "type": "stt_metrics", "duration": 0.30726920000051905, "audio_duration": 1.876, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761386.321043, "kind": "heard", "text": "I think that's..."}
+{"t": 1790761388.8027112, "kind": "user_state", "state": "listening"}
+{"t": 1790761389.2601805, "kind": "user_turn", "text": "So I was wondering what the benefits are for the travel card. I think that's..."}
+{"t": 1790761389.2611814, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8083980083465576, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004231000002619112, "speech_id": "speech_cc2476033c62"}
+{"t": 1790761389.2621806, "kind": "think_start", "text": "So I was wondering what the benefits are for the travel card. I think that's...", "audio": false}
+{"t": 1790761389.2621806, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761389.396973, "kind": "metrics", "type": "stt_metrics", "duration": 0.5928682000012486, "audio_duration": 3.252, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761389.3984525, "kind": "heard", "text": "The one my coworker recommended for me."}
+{"t": 1790761389.398958, "kind": "agent_state", "state": "listening"}
+{"t": 1790761389.403047, "kind": "superseded"}
+{"t": 1790761390.206655, "kind": "user_turn", "text": "The one my coworker recommended for me."}
+{"t": 1790761390.2077298, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000491300001158379, "speech_id": "speech_3180d33e569d"}
+{"t": 1790761390.2195632, "kind": "think_start", "text": "So I was wondering what the benefits are for the travel card. I think that's... The one my coworker recommended for me.", "audio": false}
+{"t": 1790761390.244503, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761390.5114865, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761390.645389, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761390.6604571, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1317946999988635, "duration": 0.14771399999881396, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3180d33e569d"}
+{"t": 1790761399.181616, "kind": "thinker_decided", "tools": true, "after_s": 8.96}
+{"t": 1790761399.181616, "kind": "tool_start", "name": "get_card_benefits", "args": {"card_type": "travel"}}
+{"t": 1790761399.1846173, "kind": "tool_done", "name": "get_card_benefits", "args": {"card_type": "travel"}, "outcome": "success"}
+{"t": 1790761399.5769508, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2749186999990343, "duration": 0.2876479000005929, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3180d33e569d"}
+{"t": 1790761400.7994626, "kind": "thinker_say", "text": "The travel card offers 2% cashback and has no foreign transaction fees.", "after_s": 10.58, "usage": {"input": 5401, "input_audio": 0, "output": 35, "thinking": 344, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761400.9751256, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17227380000076664, "duration": 0.17385540000032051, "audio_duration": 5.5100000000000025, "cancelled": false, "characters_count": 71, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3180d33e569d"}
+{"t": 1790761406.884585, "kind": "agent_said", "text": "One moment. Still working on it. The travel card offers 2% cashback and has no foreign transaction fees."}
+{"t": 1790761406.8860893, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,21 @@
+{"t": 1790761838.576703, "kind": "session_start", "room": "eval-2627fa71", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761838.6822536, "kind": "agent_state", "state": "listening"}
+{"t": 1790761841.2874565, "kind": "user_state", "state": "speaking"}
+{"t": 1790761853.4293845, "kind": "user_state", "state": "listening"}
+{"t": 1790761854.0887697, "kind": "metrics", "type": "stt_metrics", "duration": 0.6583770000015647, "audio_duration": 12.724, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761854.090776, "kind": "heard", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars."}
+{"t": 1790761854.3720684, "kind": "user_turn", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars."}
+{"t": 1790761854.3730683, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7915101051330566, "transcription_delay": 0.5107355117797852, "on_user_turn_completed_delay": 0.0004243000003043562, "speech_id": "speech_7f61097daa4c"}
+{"t": 1790761854.3741229, "kind": "think_start", "text": "Well, I want to calculate how much 100 euros would be in U.S. dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to U.S. dollars.", "audio": false}
+{"t": 1790761854.3976815, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761855.0562675, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761855.198071, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761855.212611, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1394592000015109, "duration": 0.15490980000140553, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7f61097daa4c"}
+{"t": 1790761860.587665, "kind": "thinker_decided", "tools": true, "after_s": 6.21}
+{"t": 1790761860.5881696, "kind": "tool_start", "name": "get_exchange_rate", "args": {"to_currency": "USD", "from_currency": "EUR", "amount": 150}}
+{"t": 1790761860.5918155, "kind": "tool_done", "name": "get_exchange_rate", "args": {"to_currency": "USD", "from_currency": "EUR", "amount": 150}, "outcome": "success"}
+{"t": 1790761861.4502475, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.30215510000016366, "duration": 0.3149909999992815, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7f61097daa4c"}
+{"t": 1790761867.1261358, "kind": "thinker_say", "text": "150 euros is 165 U.S. dollars.", "after_s": 12.75, "usage": {"input": 4894, "input_audio": 0, "output": 49, "thinking": 53, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761867.5458221, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3510306000007404, "duration": 0.4172338000007585, "audio_duration": 4.685000000000001, "cancelled": false, "characters_count": 30, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7f61097daa4c"}
+{"t": 1790761872.1734357, "kind": "agent_said", "text": "One moment. Still working on it. 150 euros is 165 U.S. dollars."}
+{"t": 1790761872.1734357, "kind": "agent_state", "state": "listening"}

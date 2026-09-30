@@ -1,0 +1,465 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "travel_19",
+  "category": "travel_identity",
+  "title": "Double Destination + Date Correction",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:49:43.675710",
+  "inference_time_s": 52.69,
+  "room_name": "eval-9b92dc34",
+  "stream_start_time": 1790765386.4465714,
+  "input_transcript": "um okay i want to look for flights to rome no wait i changed my mind let's do milan instead and i was thinking june 1st well wait but actually june 3rd works better for me sorry about that",
+  "input_asr_chunks": [
+    {
+      "text": "um",
+      "timestamp": [
+        0.27,
+        1.23
+      ]
+    },
+    {
+      "text": "okay",
+      "timestamp": [
+        1.23,
+        1.63
+      ]
+    },
+    {
+      "text": "i",
+      "timestamp": [
+        1.63,
+        1.83
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        1.83,
+        1.95
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.95,
+        2.01
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        2.01,
+        2.15
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        2.15,
+        2.33
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        2.33,
+        2.75
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.75,
+        3.05
+      ]
+    },
+    {
+      "text": "rome",
+      "timestamp": [
+        3.05,
+        3.49
+      ]
+    },
+    {
+      "text": "no",
+      "timestamp": [
+        3.49,
+        4.57
+      ]
+    },
+    {
+      "text": "wait",
+      "timestamp": [
+        4.57,
+        4.85
+      ]
+    },
+    {
+      "text": "i",
+      "timestamp": [
+        4.85,
+        5.13
+      ]
+    },
+    {
+      "text": "changed",
+      "timestamp": [
+        5.13,
+        5.37
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        5.37,
+        5.51
+      ]
+    },
+    {
+      "text": "mind",
+      "timestamp": [
+        5.51,
+        5.71
+      ]
+    },
+    {
+      "text": "let's",
+      "timestamp": [
+        5.71,
+        6.03
+      ]
+    },
+    {
+      "text": "do",
+      "timestamp": [
+        6.03,
+        6.15
+      ]
+    },
+    {
+      "text": "milan",
+      "timestamp": [
+        6.15,
+        6.75
+      ]
+    },
+    {
+      "text": "instead",
+      "timestamp": [
+        6.75,
+        7.31
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        8.19,
+        8.79
+      ]
+    },
+    {
+      "text": "i",
+      "timestamp": [
+        8.79,
+        8.87
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        8.87,
+        8.99
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        8.99,
+        9.25
+      ]
+    },
+    {
+      "text": "june",
+      "timestamp": [
+        9.25,
+        9.73
+      ]
+    },
+    {
+      "text": "1st",
+      "timestamp": [
+        9.73,
+        10.41
+      ]
+    },
+    {
+      "text": "well",
+      "timestamp": [
+        10.41,
+        11.59
+      ]
+    },
+    {
+      "text": "wait",
+      "timestamp": [
+        11.59,
+        11.87
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        11.87,
+        12.23
+      ]
+    },
+    {
+      "text": "actually",
+      "timestamp": [
+        12.23,
+        12.79
+      ]
+    },
+    {
+      "text": "june",
+      "timestamp": [
+        12.79,
+        13.29
+      ]
+    },
+    {
+      "text": "3rd",
+      "timestamp": [
+        13.29,
+        13.93
+      ]
+    },
+    {
+      "text": "works",
+      "timestamp": [
+        13.93,
+        14.57
+      ]
+    },
+    {
+      "text": "better",
+      "timestamp": [
+        14.57,
+        14.83
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        14.83,
+        15.09
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        15.09,
+        15.41
+      ]
+    },
+    {
+      "text": "sorry",
+      "timestamp": [
+        15.41,
+        16.49
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        16.49,
+        16.71
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        16.71,
+        16.93
+      ]
+    }
+  ],
+  "user_speech_end_rel": 16.93,
+  "latency": {
+    "input_duration_s": 49.14,
+    "output_duration_s": 49.14,
+    "first_speech_s": 21.55
+  },
+  "user_done_unix": 1790765403.3765714,
+  "transcript": "One moment. Still working on it. Still working on it. Okay, I found a flight to Milan on June 3rd for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        21.23,
+        21.77
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        21.77,
+        22.11
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        27.31,
+        27.93
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        27.93,
+        28.25
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        28.25,
+        28.47
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        28.47,
+        28.67
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        33.26,
+        33.88
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        33.88,
+        34.22
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        34.22,
+        34.46
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        34.46,
+        34.64
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        38.72,
+        39.22
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        39.56,
+        39.76
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        39.76,
+        40.0
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        40.0,
+        40.1
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        40.1,
+        40.3
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        40.3,
+        40.46
+      ]
+    },
+    {
+      "text": "Milan",
+      "timestamp": [
+        40.46,
+        40.78
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        40.78,
+        41.04
+      ]
+    },
+    {
+      "text": "June",
+      "timestamp": [
+        41.04,
+        41.28
+      ]
+    },
+    {
+      "text": "3rd",
+      "timestamp": [
+        41.28,
+        41.68
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        41.68,
+        42.04
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        42.04,
+        42.82
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.3,
+  "audio_agent_speech_start": 21.23,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "destination": "Milan",
+        "date": "June 3"
+      },
+      "timestamp_start": 22.87,
+      "timestamp_end": 23.08
+    }
+  ],
+  "status": "completed"
+}

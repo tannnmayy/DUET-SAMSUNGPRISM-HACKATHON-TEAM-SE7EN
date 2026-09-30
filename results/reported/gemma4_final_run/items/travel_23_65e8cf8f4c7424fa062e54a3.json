@@ -1,0 +1,453 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "travel_23",
+  "category": "travel_identity",
+  "title": "Heavy Fillers + Document Updates",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:54:36.208013",
+  "inference_time_s": 56.09,
+  "room_name": "eval-efd953bc",
+  "stream_start_time": 1790765678.9959025,
+  "input_transcript": "Hmm. Um, so I need to like update my passport number to P1122 because I just renewed it. And then, uh, I also got a new driver's license. So could you change that one to DL9090 as well?",
+  "input_asr_chunks": [
+    {
+      "text": "Hmm.",
+      "timestamp": [
+        0.21,
+        0.89
+      ]
+    },
+    {
+      "text": "Um,",
+      "timestamp": [
+        1.49,
+        2.19
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        2.83,
+        3.35
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.35,
+        3.67
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        3.67,
+        3.87
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        3.87,
+        4.15
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        4.15,
+        4.59
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        4.59,
+        5.01
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        5.01,
+        5.21
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        5.21,
+        5.71
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        5.71,
+        6.19
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.19,
+        6.63
+      ]
+    },
+    {
+      "text": "P1122",
+      "timestamp": [
+        6.63,
+        8.87
+      ]
+    },
+    {
+      "text": "because",
+      "timestamp": [
+        8.87,
+        9.25
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        9.25,
+        9.43
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        9.43,
+        9.63
+      ]
+    },
+    {
+      "text": "renewed",
+      "timestamp": [
+        9.63,
+        9.97
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        9.97,
+        10.27
+      ]
+    },
+    {
+      "text": "And",
+      "timestamp": [
+        10.45,
+        11.11
+      ]
+    },
+    {
+      "text": "then,",
+      "timestamp": [
+        11.11,
+        11.47
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        11.77,
+        12.09
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        12.45,
+        12.71
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        12.71,
+        13.15
+      ]
+    },
+    {
+      "text": "got",
+      "timestamp": [
+        13.15,
+        13.41
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        13.41,
+        13.53
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        13.53,
+        13.67
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        13.67,
+        14.19
+      ]
+    },
+    {
+      "text": "license.",
+      "timestamp": [
+        14.19,
+        14.59
+      ]
+    },
+    {
+      "text": "So",
+      "timestamp": [
+        14.63,
+        15.33
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        15.33,
+        15.67
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        15.67,
+        15.87
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        15.87,
+        16.27
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        16.27,
+        16.55
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        16.55,
+        16.83
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        16.83,
+        17.05
+      ]
+    },
+    {
+      "text": "DL9090",
+      "timestamp": [
+        17.05,
+        20.91
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        20.91,
+        21.69
+      ]
+    },
+    {
+      "text": "well?",
+      "timestamp": [
+        21.69,
+        21.93
+      ]
+    }
+  ],
+  "user_speech_end_rel": 21.93,
+  "latency": {
+    "input_duration_s": 52.5,
+    "output_duration_s": 52.5,
+    "first_speech_s": 26.4
+  },
+  "user_done_unix": 1790765700.9259026,
+  "transcript": "One moment. Still working on it. Okay. I've updated your passport number to P1122 and your driver's license to DL9090.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        26.13,
+        26.65
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        26.65,
+        26.99
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        32.28,
+        32.84
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        32.84,
+        33.14
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        33.14,
+        33.38
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        33.38,
+        33.56
+      ]
+    },
+    {
+      "text": "Okay.",
+      "timestamp": [
+        37.12,
+        37.78
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        38.14,
+        38.46
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        38.46,
+        38.84
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        38.84,
+        39.04
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        39.04,
+        39.44
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        39.44,
+        39.7
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        39.7,
+        39.9
+      ]
+    },
+    {
+      "text": "P1122",
+      "timestamp": [
+        39.9,
+        41.18
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        41.18,
+        41.76
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        41.76,
+        41.9
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        41.9,
+        42.4
+      ]
+    },
+    {
+      "text": "license",
+      "timestamp": [
+        42.4,
+        42.76
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        42.76,
+        43.02
+      ]
+    },
+    {
+      "text": "DL9090.",
+      "timestamp": [
+        43.02,
+        44.1
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.2,
+  "audio_agent_speech_start": 26.13,
+  "actual_tool_calls": [
+    {
+      "function": "update_identity_doc",
+      "args": {
+        "doc_type": "passport",
+        "doc_number": "P1122"
+      },
+      "timestamp_start": 29.83,
+      "timestamp_end": 29.83
+    },
+    {
+      "function": "update_identity_doc",
+      "args": {
+        "doc_number": "DL9090",
+        "doc_type": "driver_license"
+      },
+      "timestamp_start": 29.83,
+      "timestamp_end": 29.83
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,416 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "travel_14",
+  "category": "travel_identity",
+  "title": "Hesitation with Date",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:46:14.871259",
+  "inference_time_s": 45.1,
+  "room_name": "eval-13d1368b",
+  "stream_start_time": 1790765177.622802,
+  "input_transcript": "So I want to look at flights to Seoul and the date I was thinking of it is let me let me think I'm pretty sure it's March 22nd. Yeah. Yeah. Could you search for that?",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        0.82,
+        1.22
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.22,
+        1.48
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        1.48,
+        1.7
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.7,
+        1.88
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        1.88,
+        2.06
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        2.06,
+        2.18
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        2.18,
+        2.48
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.48,
+        2.8
+      ]
+    },
+    {
+      "text": "Seoul",
+      "timestamp": [
+        2.8,
+        3.18
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        3.18,
+        3.6
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.6,
+        3.8
+      ]
+    },
+    {
+      "text": "date",
+      "timestamp": [
+        3.8,
+        4.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.16,
+        5.1
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        5.1,
+        5.26
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        5.26,
+        5.46
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        5.46,
+        5.7
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        5.7,
+        5.86
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        5.86,
+        6.08
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        6.08,
+        6.26
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.26,
+        6.4
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        6.4,
+        6.5
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        6.5,
+        6.66
+      ]
+    },
+    {
+      "text": "think",
+      "timestamp": [
+        6.66,
+        6.8
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        6.8,
+        7.22
+      ]
+    },
+    {
+      "text": "pretty",
+      "timestamp": [
+        7.22,
+        7.34
+      ]
+    },
+    {
+      "text": "sure",
+      "timestamp": [
+        7.34,
+        7.5
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        7.5,
+        7.68
+      ]
+    },
+    {
+      "text": "March",
+      "timestamp": [
+        7.68,
+        7.96
+      ]
+    },
+    {
+      "text": "22nd.",
+      "timestamp": [
+        7.96,
+        8.66
+      ]
+    },
+    {
+      "text": "Yeah.",
+      "timestamp": [
+        8.88,
+        9.04
+      ]
+    },
+    {
+      "text": "Yeah.",
+      "timestamp": [
+        9.56,
+        9.8
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        9.94,
+        10.04
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.04,
+        10.16
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        10.16,
+        10.4
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.4,
+        10.6
+      ]
+    },
+    {
+      "text": "that?",
+      "timestamp": [
+        10.6,
+        10.8
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.8,
+  "latency": {
+    "input_duration_s": 41.541,
+    "output_duration_s": 41.541,
+    "first_speech_s": 15.4
+  },
+  "user_done_unix": 1790765188.422802,
+  "transcript": "One moment. Still working on it. Okay, I found a flight to Seoul on March 22nd for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        15.09,
+        15.63
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        15.63,
+        15.97
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        22.52,
+        23.12
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        23.12,
+        23.42
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        23.42,
+        23.66
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        23.66,
+        23.84
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        24.36,
+        24.96
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        25.3,
+        25.52
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        25.52,
+        25.74
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        25.74,
+        25.86
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        25.86,
+        26.04
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        26.04,
+        26.22
+      ]
+    },
+    {
+      "text": "Seoul",
+      "timestamp": [
+        26.22,
+        26.52
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        26.52,
+        26.74
+      ]
+    },
+    {
+      "text": "March",
+      "timestamp": [
+        26.74,
+        26.98
+      ]
+    },
+    {
+      "text": "22nd",
+      "timestamp": [
+        26.98,
+        27.72
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        27.72,
+        28.02
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        28.02,
+        28.6
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.29,
+  "audio_agent_speech_start": 15.09,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "date": "March 22",
+        "destination": "Seoul"
+      },
+      "timestamp_start": 20.5,
+      "timestamp_end": 20.76
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,43 @@
+{"t": 1790764977.0142887, "kind": "session_start", "room": "eval-f3b64068", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764977.0662296, "kind": "agent_state", "state": "listening"}
+{"t": 1790764979.3755455, "kind": "user_state", "state": "speaking"}
+{"t": 1790764981.9916008, "kind": "user_state", "state": "listening"}
+{"t": 1790764982.3195765, "kind": "user_state", "state": "speaking"}
+{"t": 1790764982.6466804, "kind": "metrics", "type": "stt_metrics", "duration": 0.6535577000031481, "audio_duration": 3.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764982.6605182, "kind": "heard", "text": "I was going to ask about hotel options."}
+{"t": 1790764984.0354412, "kind": "user_state", "state": "listening"}
+{"t": 1790764984.3526454, "kind": "metrics", "type": "stt_metrics", "duration": 0.3167026999981317, "audio_duration": 2.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764984.3544717, "kind": "heard", "text": "But never mind for now on that."}
+{"t": 1790764984.4893765, "kind": "user_turn", "text": "I was going to ask about hotel options. But never mind for now on that."}
+{"t": 1790764984.490377, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8059353828430176, "transcription_delay": 0.6710305213928223, "on_user_turn_completed_delay": 0.0004372000003058929, "speech_id": "speech_1408f6ea8a48"}
+{"t": 1790764984.4914103, "kind": "think_start", "text": "I was going to ask about hotel options. But never mind for now on that.", "audio": false}
+{"t": 1790764984.5139987, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764984.674741, "kind": "user_state", "state": "speaking"}
+{"t": 1790764985.0693998, "kind": "agent_state", "state": "listening"}
+{"t": 1790764987.2204378, "kind": "user_state", "state": "listening"}
+{"t": 1790764987.7332876, "kind": "user_state", "state": "speaking"}
+{"t": 1790764987.8150213, "kind": "metrics", "type": "stt_metrics", "duration": 0.5935860999998113, "audio_duration": 3.156, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764987.8160203, "kind": "heard", "text": "Can you just find me flights to Seattle?"}
+{"t": 1790764989.5283678, "kind": "user_state", "state": "listening"}
+{"t": 1790764989.9719114, "kind": "user_turn", "text": "Can you just find me flights to Seattle?"}
+{"t": 1790764989.9719114, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7945437431335449, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004231000020809006, "speech_id": "speech_63eb7f580cdb"}
+{"t": 1790764989.972909, "kind": "think_start", "text": "I was going to ask about hotel options. But never mind for now on that. Can you just find me flights to Seattle?", "audio": false}
+{"t": 1790764989.972909, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764989.998435, "kind": "metrics", "type": "stt_metrics", "duration": 0.46878450000076555, "audio_duration": 2.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764990.0001621, "kind": "heard", "text": "November 1st instead."}
+{"t": 1790764990.0006666, "kind": "agent_state", "state": "listening"}
+{"t": 1790764990.7911198, "kind": "user_turn", "text": "November 1st instead."}
+{"t": 1790764990.7916248, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000538200001756195, "speech_id": "speech_ee003cfc874c"}
+{"t": 1790764990.7926457, "kind": "think_start", "text": "I was going to ask about hotel options. But never mind for now on that. Can you just find me flights to Seattle? November 1st instead.", "audio": false}
+{"t": 1790764990.8164947, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764991.1403172, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764991.2896466, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764991.3055725, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14708429999882355, "duration": 0.16388659999938682, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ee003cfc874c"}
+{"t": 1790764997.2100801, "kind": "thinker_decided", "tools": true, "after_s": 6.42}
+{"t": 1790764997.2100801, "kind": "tool_start", "name": "search_flights", "args": {"date": "November 1", "destination": "Seattle"}}
+{"t": 1790764997.5759296, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.26742360000207555, "duration": 0.283164399999805, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ee003cfc874c"}
+{"t": 1790764997.9684997, "kind": "tool_done", "name": "search_flights", "args": {"date": "November 1", "destination": "Seattle"}, "outcome": "success"}
+{"t": 1790765002.6135597, "kind": "thinker_say", "text": "OK. I found a flight to Seattle on November 1st for 450 dollars.", "after_s": 11.82, "usage": {"input": 4904, "input_audio": 0, "output": 44, "thinking": 84, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765003.081218, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.39017669999884674, "duration": 0.46572979999837116, "audio_duration": 5.360000000000002, "cancelled": false, "characters_count": 64, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ee003cfc874c"}
+{"t": 1790765008.3690526, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a flight to Seattle on November 1st for 450 dollars."}
+{"t": 1790765008.3690526, "kind": "agent_state", "state": "listening"}

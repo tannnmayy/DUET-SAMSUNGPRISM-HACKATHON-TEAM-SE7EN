@@ -1,0 +1,629 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "travel_18",
+  "category": "travel_identity",
+  "title": "Search + Book + Passport Update",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:48:27.816545",
+  "inference_time_s": 56.18,
+  "room_name": "eval-e5485e81",
+  "stream_start_time": 1790765310.5937936,
+  "input_transcript": "Hmm. All right. First, I need to find flights to Dubai on April 10th. Then go ahead and book the cheapest option. The name on the ticket should be Casey Lee. Oh, and I almost forgot. I need to update my passport number to E -77 -2 -2 -1 -1.",
+  "input_asr_chunks": [
+    {
+      "text": "Hmm.",
+      "timestamp": [
+        0.37,
+        0.95
+      ]
+    },
+    {
+      "text": "All",
+      "timestamp": [
+        1.79,
+        1.97
+      ]
+    },
+    {
+      "text": "right.",
+      "timestamp": [
+        1.97,
+        2.09
+      ]
+    },
+    {
+      "text": "First,",
+      "timestamp": [
+        2.23,
+        2.55
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.01,
+        4.13
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        4.13,
+        4.33
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.33,
+        4.47
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        4.47,
+        4.71
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        4.71,
+        5.05
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.05,
+        5.31
+      ]
+    },
+    {
+      "text": "Dubai",
+      "timestamp": [
+        5.31,
+        5.65
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        5.65,
+        6.01
+      ]
+    },
+    {
+      "text": "April",
+      "timestamp": [
+        6.01,
+        6.29
+      ]
+    },
+    {
+      "text": "10th.",
+      "timestamp": [
+        6.29,
+        6.73
+      ]
+    },
+    {
+      "text": "Then",
+      "timestamp": [
+        7.29,
+        7.85
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        7.85,
+        8.13
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        8.13,
+        8.41
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        8.41,
+        8.69
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        8.69,
+        8.85
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        8.85,
+        8.99
+      ]
+    },
+    {
+      "text": "cheapest",
+      "timestamp": [
+        8.99,
+        9.27
+      ]
+    },
+    {
+      "text": "option.",
+      "timestamp": [
+        9.27,
+        9.67
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        9.93,
+        10.37
+      ]
+    },
+    {
+      "text": "name",
+      "timestamp": [
+        10.37,
+        10.65
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        10.65,
+        10.81
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.81,
+        10.91
+      ]
+    },
+    {
+      "text": "ticket",
+      "timestamp": [
+        10.91,
+        11.19
+      ]
+    },
+    {
+      "text": "should",
+      "timestamp": [
+        11.19,
+        11.45
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        11.45,
+        11.65
+      ]
+    },
+    {
+      "text": "Casey",
+      "timestamp": [
+        11.65,
+        11.99
+      ]
+    },
+    {
+      "text": "Lee.",
+      "timestamp": [
+        11.99,
+        12.27
+      ]
+    },
+    {
+      "text": "Oh,",
+      "timestamp": [
+        12.69,
+        13.25
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        13.33,
+        13.43
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        13.43,
+        13.53
+      ]
+    },
+    {
+      "text": "almost",
+      "timestamp": [
+        13.53,
+        13.77
+      ]
+    },
+    {
+      "text": "forgot.",
+      "timestamp": [
+        13.77,
+        14.05
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        14.13,
+        14.69
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        14.69,
+        14.83
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        14.83,
+        14.97
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        14.97,
+        15.27
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        15.27,
+        15.43
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        15.43,
+        15.87
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        15.87,
+        16.27
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        16.27,
+        16.63
+      ]
+    },
+    {
+      "text": "E",
+      "timestamp": [
+        16.63,
+        17.09
+      ]
+    },
+    {
+      "text": "-77",
+      "timestamp": [
+        17.09,
+        18.23
+      ]
+    },
+    {
+      "text": "-2",
+      "timestamp": [
+        18.23,
+        19.09
+      ]
+    },
+    {
+      "text": "-2",
+      "timestamp": [
+        19.09,
+        19.61
+      ]
+    },
+    {
+      "text": "-1",
+      "timestamp": [
+        19.61,
+        20.33
+      ]
+    },
+    {
+      "text": "-1.",
+      "timestamp": [
+        20.33,
+        20.73
+      ]
+    }
+  ],
+  "user_speech_end_rel": 20.73,
+  "latency": {
+    "input_duration_s": 52.62,
+    "output_duration_s": 52.62,
+    "first_speech_s": 25.4
+  },
+  "user_done_unix": 1790765331.3237936,
+  "transcript": "One moment. Still working on it. Still working on it. I've booked the cheapest flight to Dubai on April 10th for Casey Lee, with booking reference B789 and updated your passport number.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        25.07,
+        25.61
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        25.61,
+        25.99
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        31.23,
+        31.79
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        31.79,
+        32.09
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        32.09,
+        32.31
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        32.31,
+        32.51
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        37.18,
+        37.74
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        37.74,
+        38.06
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        38.06,
+        38.28
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        38.28,
+        38.48
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        39.24,
+        39.92
+      ]
+    },
+    {
+      "text": "booked",
+      "timestamp": [
+        39.92,
+        40.16
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        40.16,
+        40.32
+      ]
+    },
+    {
+      "text": "cheapest",
+      "timestamp": [
+        40.32,
+        40.66
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        40.66,
+        41.02
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        41.02,
+        41.24
+      ]
+    },
+    {
+      "text": "Dubai",
+      "timestamp": [
+        41.24,
+        41.52
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        41.52,
+        41.88
+      ]
+    },
+    {
+      "text": "April",
+      "timestamp": [
+        41.88,
+        42.2
+      ]
+    },
+    {
+      "text": "10th",
+      "timestamp": [
+        42.2,
+        42.62
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        42.62,
+        42.78
+      ]
+    },
+    {
+      "text": "Casey",
+      "timestamp": [
+        42.78,
+        43.1
+      ]
+    },
+    {
+      "text": "Lee,",
+      "timestamp": [
+        43.1,
+        43.36
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        43.74,
+        44.08
+      ]
+    },
+    {
+      "text": "booking",
+      "timestamp": [
+        44.08,
+        44.36
+      ]
+    },
+    {
+      "text": "reference",
+      "timestamp": [
+        44.36,
+        44.82
+      ]
+    },
+    {
+      "text": "B789",
+      "timestamp": [
+        44.82,
+        45.88
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        45.88,
+        46.6
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        46.6,
+        47.02
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        47.02,
+        47.2
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        47.2,
+        47.64
+      ]
+    },
+    {
+      "text": "number.",
+      "timestamp": [
+        47.64,
+        47.94
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.34,
+  "audio_agent_speech_start": 25.07,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "date": "April 10",
+        "destination": "Dubai"
+      },
+      "timestamp_start": 27.53,
+      "timestamp_end": 27.87
+    },
+    {
+      "function": "book_flight",
+      "args": {
+        "passenger_name": "Casey Lee"
+      },
+      "timestamp_start": 30.67,
+      "timestamp_end": 30.67
+    },
+    {
+      "function": "update_identity_doc",
+      "args": {
+        "doc_number": "E772211",
+        "doc_type": "passport"
+      },
+      "timestamp_start": 33.67,
+      "timestamp_end": 33.67
+    }
+  ],
+  "status": "completed"
+}

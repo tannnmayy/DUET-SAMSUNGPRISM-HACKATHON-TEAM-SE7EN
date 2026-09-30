@@ -1,0 +1,37 @@
+{"t": 1790764074.8921475, "kind": "session_start", "room": "eval-ba1a8890", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764074.9790184, "kind": "agent_state", "state": "listening"}
+{"t": 1790764077.3450127, "kind": "user_state", "state": "speaking"}
+{"t": 1790764083.0893986, "kind": "user_state", "state": "listening"}
+{"t": 1790764083.3832808, "kind": "user_state", "state": "speaking"}
+{"t": 1790764083.761339, "kind": "metrics", "type": "stt_metrics", "duration": 0.6703863000002457, "audio_duration": 6.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764083.76289, "kind": "heard", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000."}
+{"t": 1790764093.944222, "kind": "user_state", "state": "listening"}
+{"t": 1790764094.3969846, "kind": "user_turn", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000."}
+{"t": 1790764094.3980148, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.804762601852417, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003874000030918978, "speech_id": "speech_b2dfc29ad663"}
+{"t": 1790764094.3990233, "kind": "think_start", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000.", "audio": false}
+{"t": 1790764094.3990233, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764094.6095557, "kind": "metrics", "type": "stt_metrics", "duration": 0.6640587000001688, "audio_duration": 11.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764094.6109047, "kind": "heard", "text": "Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work."}
+{"t": 1790764094.6114085, "kind": "agent_state", "state": "listening"}
+{"t": 1790764095.4117, "kind": "user_turn", "text": "Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work."}
+{"t": 1790764095.4117, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004229000005580019, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764095.4127083, "kind": "think_start", "text": "Uh, you know, so here's what I'm thinking. Search for places in Austin under 2000. Then, check the commute to my office. If it's under 15 minutes, that's perfect, but if it's longer, then raise my budget to $2,500 so I can look at places closer to work.", "audio": false}
+{"t": 1790764095.4360495, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764095.707609, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764095.8375506, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764095.8537292, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12576840000110678, "duration": 0.14303389999986393, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764105.8143785, "kind": "thinker_decided", "tools": true, "after_s": 10.4}
+{"t": 1790764105.8143785, "kind": "tool_start", "name": "search_apartments", "args": {"city": "Austin", "max_price": 2000}}
+{"t": 1790764106.223238, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.30127060000086203, "duration": 0.31472320000102627, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764106.3662047, "kind": "tool_done", "name": "search_apartments", "args": {"city": "Austin", "max_price": 2000}, "outcome": "success"}
+{"t": 1790764112.2361412, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24016169999958947, "duration": 0.25460190000012517, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764112.5721836, "kind": "tool_start", "name": "calculate_commute", "args": {"mode": "driving", "destination_address": "my office", "origin_address": "APT1"}}
+{"t": 1790764112.950474, "kind": "tool_done", "name": "calculate_commute", "args": {"mode": "driving", "destination_address": "my office", "origin_address": "APT1"}, "outcome": "success"}
+{"t": 1790764116.258709, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 2500}}
+{"t": 1790764116.356542, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 2500}, "outcome": "success"}
+{"t": 1790764118.2350147, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23528929999883985, "duration": 0.24991659999795957, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764120.4397461, "kind": "thinker_say", "text": "I found an apartment in Austin for $1,900, but the commute to your office is 25 minutes. As you requested, I've increased your maximum budget filter to $2,500.", "after_s": 25.03, "usage": {"input": 12760, "input_audio": 0, "output": 136, "thinking": 666, "calls": 4}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764120.9651508, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4081455999985337, "duration": 0.5230507999986003, "audio_duration": 7.485000000000004, "cancelled": false, "characters_count": 88, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764121.249313, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1842609999985143, "duration": 0.2829031000001123, "audio_duration": 6.160000000000003, "cancelled": false, "characters_count": 70, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8506ffe2addb"}
+{"t": 1790764124.7964294, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. Still working on it. I found an apartment in Austin for $1,900, but the commute"}
+{"t": 1790764124.7975147, "kind": "agent_state", "state": "listening"}

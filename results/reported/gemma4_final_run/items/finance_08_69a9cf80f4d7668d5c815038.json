@@ -1,0 +1,277 @@
+{
+  "pid": "69a9cf80f4d7668d5c815038",
+  "example_id": "finance_08",
+  "category": "finance_billing",
+  "title": "Simple Exchange with Hesitation",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:47:20.213315",
+  "inference_time_s": 47.51,
+  "room_name": "eval-09af765e",
+  "stream_start_time": 1790761642.996189,
+  "input_transcript": "I'm trying to figure out how much money I'd have if I converted, let me think, about 200 euros into US dollars. What would that come out to?",
+  "input_asr_chunks": [
+    {
+      "text": "I'm",
+      "timestamp": [
+        0.78,
+        1.42
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        1.42,
+        1.62
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.62,
+        1.76
+      ]
+    },
+    {
+      "text": "figure",
+      "timestamp": [
+        1.76,
+        1.96
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        1.96,
+        2.18
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        2.18,
+        2.32
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        2.32,
+        2.54
+      ]
+    },
+    {
+      "text": "money",
+      "timestamp": [
+        2.54,
+        2.82
+      ]
+    },
+    {
+      "text": "I'd",
+      "timestamp": [
+        2.82,
+        3.06
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        3.06,
+        3.42
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        3.42,
+        3.96
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.96,
+        5.56
+      ]
+    },
+    {
+      "text": "converted,",
+      "timestamp": [
+        5.56,
+        6.1
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        6.14,
+        7.36
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        7.36,
+        7.5
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        7.5,
+        7.8
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        8.94,
+        9.3
+      ]
+    },
+    {
+      "text": "200",
+      "timestamp": [
+        9.3,
+        9.74
+      ]
+    },
+    {
+      "text": "euros",
+      "timestamp": [
+        9.74,
+        10.08
+      ]
+    },
+    {
+      "text": "into",
+      "timestamp": [
+        10.08,
+        10.32
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        10.32,
+        10.6
+      ]
+    },
+    {
+      "text": "dollars.",
+      "timestamp": [
+        10.6,
+        10.96
+      ]
+    },
+    {
+      "text": "What",
+      "timestamp": [
+        11.58,
+        12.12
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        12.12,
+        12.26
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        12.26,
+        12.48
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        12.48,
+        12.74
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        12.74,
+        12.9
+      ]
+    },
+    {
+      "text": "to?",
+      "timestamp": [
+        12.9,
+        13.12
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.12,
+  "latency": {
+    "input_duration_s": 43.98,
+    "output_duration_s": 43.98,
+    "first_speech_s": 17.65
+  },
+  "user_done_unix": 1790761656.116189,
+  "transcript": "One moment. Still working on it.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        17.36,
+        17.9
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        17.9,
+        18.26
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        42.24,
+        42.8
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        42.8,
+        43.1
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        43.1,
+        43.34
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        43.34,
+        43.5
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.24,
+  "audio_agent_speech_start": 17.36,
+  "actual_tool_calls": [
+    {
+      "function": "get_exchange_rate",
+      "args": {
+        "to_currency": "USD",
+        "from_currency": "EUR",
+        "amount": 200
+      },
+      "timestamp_start": 40.02,
+      "timestamp_end": 40.02
+    }
+  ],
+  "status": "completed"
+}

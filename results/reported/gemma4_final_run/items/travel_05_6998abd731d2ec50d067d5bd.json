@@ -1,0 +1,346 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "travel_05",
+  "category": "travel_identity",
+  "title": "Flight Search with Hesitation",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:39:41.679537",
+  "inference_time_s": 44.09,
+  "room_name": "eval-a3b389de",
+  "stream_start_time": 1790764784.5435884,
+  "input_transcript": "So I need to go to Chicago sometime around, let me think, I believe it's December 12th, yeah? Could you look up flights for the day?",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        0.27,
+        1.11
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.11,
+        1.41
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        1.41,
+        1.61
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.61,
+        1.77
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        1.77,
+        1.93
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        1.93,
+        2.13
+      ]
+    },
+    {
+      "text": "Chicago",
+      "timestamp": [
+        2.13,
+        2.59
+      ]
+    },
+    {
+      "text": "sometime",
+      "timestamp": [
+        2.59,
+        3.39
+      ]
+    },
+    {
+      "text": "around,",
+      "timestamp": [
+        3.39,
+        4.05
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        4.13,
+        4.25
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        4.25,
+        4.41
+      ]
+    },
+    {
+      "text": "think,",
+      "timestamp": [
+        4.41,
+        4.65
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.87,
+        4.93
+      ]
+    },
+    {
+      "text": "believe",
+      "timestamp": [
+        4.93,
+        5.19
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        5.19,
+        5.43
+      ]
+    },
+    {
+      "text": "December",
+      "timestamp": [
+        5.43,
+        5.89
+      ]
+    },
+    {
+      "text": "12th,",
+      "timestamp": [
+        5.89,
+        6.49
+      ]
+    },
+    {
+      "text": "yeah?",
+      "timestamp": [
+        6.63,
+        6.81
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        7.45,
+        7.89
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        7.89,
+        7.99
+      ]
+    },
+    {
+      "text": "look",
+      "timestamp": [
+        7.99,
+        8.19
+      ]
+    },
+    {
+      "text": "up",
+      "timestamp": [
+        8.19,
+        8.41
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        8.41,
+        8.91
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        8.91,
+        9.23
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        9.23,
+        9.41
+      ]
+    },
+    {
+      "text": "day?",
+      "timestamp": [
+        9.41,
+        9.65
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.65,
+  "latency": {
+    "input_duration_s": 40.432,
+    "output_duration_s": 40.432,
+    "first_speech_s": 15.3
+  },
+  "user_done_unix": 1790764794.1935885,
+  "transcript": "One moment. Still working on it. Okay, I found a flight to Chicago on December 12th for $450.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        14.99,
+        15.53
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        15.53,
+        15.89
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        21.05,
+        21.71
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        21.71,
+        22.01
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        22.01,
+        22.25
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        22.25,
+        22.43
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        23.89,
+        24.61
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        24.97,
+        25.13
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        25.13,
+        25.37
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        25.37,
+        25.47
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        25.47,
+        25.69
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        25.69,
+        25.87
+      ]
+    },
+    {
+      "text": "Chicago",
+      "timestamp": [
+        25.87,
+        26.27
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        26.27,
+        26.57
+      ]
+    },
+    {
+      "text": "December",
+      "timestamp": [
+        26.57,
+        26.83
+      ]
+    },
+    {
+      "text": "12th",
+      "timestamp": [
+        26.83,
+        27.37
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        27.37,
+        27.73
+      ]
+    },
+    {
+      "text": "$450.",
+      "timestamp": [
+        27.73,
+        28.55
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.34,
+  "audio_agent_speech_start": 14.99,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "destination": "Chicago",
+        "date": "December 12"
+      },
+      "timestamp_start": 15.7,
+      "timestamp_end": 16.22
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,357 @@
+{
+  "pid": "65e8cf8f4c7424fa062e54a3",
+  "example_id": "travel_21",
+  "category": "travel_identity",
+  "title": "Hesitant Booking Chain",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:52:06.218676",
+  "inference_time_s": 53.87,
+  "room_name": "eval-f699dac6",
+  "stream_start_time": 1790765529.0011687,
+  "input_transcript": "You know, okay, so I need to find flights to Vegas. I was thinking around August 8th, and then once you find something, book it under the name Quinn Davis. Oh, and while you're at it, could you also update my visa number to V77?",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.46,
+        0.94
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        0.94,
+        1.2
+      ]
+    },
+    {
+      "text": "okay,",
+      "timestamp": [
+        1.64,
+        2.14
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        2.36,
+        2.64
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        2.64,
+        4.28
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        4.28,
+        4.44
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        4.44,
+        4.54
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        4.54,
+        4.74
+      ]
+    },
+    {
+      "text": "flights",
+      "timestamp": [
+        4.74,
+        5.14
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.14,
+        5.66
+      ]
+    },
+    {
+      "text": "Vegas.",
+      "timestamp": [
+        5.66,
+        6.92
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        6.92,
+        7.44
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        7.44,
+        7.6
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        7.6,
+        7.84
+      ]
+    },
+    {
+      "text": "around",
+      "timestamp": [
+        7.84,
+        8.18
+      ]
+    },
+    {
+      "text": "August",
+      "timestamp": [
+        8.18,
+        8.56
+      ]
+    },
+    {
+      "text": "8th,",
+      "timestamp": [
+        8.56,
+        9.16
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        9.16,
+        9.62
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        9.62,
+        9.9
+      ]
+    },
+    {
+      "text": "once",
+      "timestamp": [
+        9.9,
+        10.68
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.68,
+        10.84
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        10.84,
+        11.16
+      ]
+    },
+    {
+      "text": "something,",
+      "timestamp": [
+        11.16,
+        11.66
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        11.92,
+        12.5
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        12.5,
+        12.66
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        12.66,
+        12.98
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        12.98,
+        13.22
+      ]
+    },
+    {
+      "text": "name",
+      "timestamp": [
+        13.22,
+        13.52
+      ]
+    },
+    {
+      "text": "Quinn",
+      "timestamp": [
+        13.52,
+        13.88
+      ]
+    },
+    {
+      "text": "Davis.",
+      "timestamp": [
+        13.88,
+        14.4
+      ]
+    },
+    {
+      "text": "Oh,",
+      "timestamp": [
+        14.88,
+        15.34
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        15.44,
+        15.56
+      ]
+    },
+    {
+      "text": "while",
+      "timestamp": [
+        15.56,
+        15.74
+      ]
+    },
+    {
+      "text": "you're",
+      "timestamp": [
+        15.74,
+        15.92
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        15.92,
+        16.08
+      ]
+    },
+    {
+      "text": "it,",
+      "timestamp": [
+        16.08,
+        16.28
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        16.4,
+        16.52
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        16.52,
+        16.64
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        16.64,
+        16.98
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        16.98,
+        17.34
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        17.34,
+        17.58
+      ]
+    },
+    {
+      "text": "visa",
+      "timestamp": [
+        17.58,
+        17.88
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        17.88,
+        18.2
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        18.2,
+        18.46
+      ]
+    },
+    {
+      "text": "V77?",
+      "timestamp": [
+        18.46,
+        19.24
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.24,
+  "latency": {
+    "input_duration_s": 50.34,
+    "output_duration_s": 50.34,
+    "first_speech_s": 24.3
+  },
+  "user_done_unix": 1790765548.2411687,
+  "transcript": "One moment.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        24.02,
+        24.56
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        24.56,
+        24.84
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.78,
+  "audio_agent_speech_start": 24.02,
+  "actual_tool_calls": [],
+  "status": "completed"
+}

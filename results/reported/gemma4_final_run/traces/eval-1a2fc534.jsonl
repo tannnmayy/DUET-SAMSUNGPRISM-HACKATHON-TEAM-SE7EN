@@ -1,0 +1,35 @@
+{"t": 1790761707.3031187, "kind": "session_start", "room": "eval-1a2fc534", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761707.353843, "kind": "agent_state", "state": "listening"}
+{"t": 1790761710.5098119, "kind": "user_state", "state": "speaking"}
+{"t": 1790761716.261068, "kind": "user_state", "state": "listening"}
+{"t": 1790761716.6197026, "kind": "user_state", "state": "speaking"}
+{"t": 1790761716.7982678, "kind": "metrics", "type": "stt_metrics", "duration": 0.534261200000401, "audio_duration": 6.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761716.7992694, "kind": "heard", "text": "Firstly, could you tell me what the benefits are for the travel card?"}
+{"t": 1790761725.3094933, "kind": "user_state", "state": "listening"}
+{"t": 1790761725.759805, "kind": "user_turn", "text": "Firstly, could you tell me what the benefits are for the travel card?"}
+{"t": 1790761725.759805, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8018054962158203, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00043650000043271575, "speech_id": "speech_032835811d68"}
+{"t": 1790761725.7616372, "kind": "think_start", "text": "Firstly, could you tell me what the benefits are for the travel card?", "audio": false}
+{"t": 1790761725.7626445, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761726.0025992, "kind": "metrics", "type": "stt_metrics", "duration": 0.6913903000004211, "audio_duration": 9.268, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761726.003599, "kind": "heard", "text": "I'm considering applying and then separately, I also need to know how much 200 British pounds would be in Japanese yen."}
+{"t": 1790761726.0043054, "kind": "agent_state", "state": "listening"}
+{"t": 1790761726.0119455, "kind": "superseded"}
+{"t": 1790761726.8005168, "kind": "user_turn", "text": "I'm considering applying and then separately, I also need to know how much 200 British pounds would be in Japanese yen."}
+{"t": 1790761726.801515, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003630999999586493, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761726.8025472, "kind": "think_start", "text": "Firstly, could you tell me what the benefits are for the travel card? I'm considering applying and then separately, I also need to know how much 200 British pounds would be in Japanese yen.", "audio": false}
+{"t": 1790761726.8240979, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761727.0901687, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761727.239196, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761727.2546828, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14680299999963609, "duration": 0.16274700000030862, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761732.0462437, "kind": "thinker_decided", "tools": true, "after_s": 5.24}
+{"t": 1790761732.0462437, "kind": "tool_start", "name": "get_card_benefits", "args": {"card_type": "travel"}}
+{"t": 1790761732.0473287, "kind": "tool_done", "name": "get_card_benefits", "args": {"card_type": "travel"}, "outcome": "success"}
+{"t": 1790761732.0473287, "kind": "tool_start", "name": "get_exchange_rate", "args": {"to_currency": "JPY", "amount": 200, "from_currency": "GBP"}}
+{"t": 1790761732.071069, "kind": "tool_done", "name": "get_exchange_rate", "args": {"to_currency": "JPY", "amount": 200, "from_currency": "GBP"}, "outcome": "success"}
+{"t": 1790761733.494304, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3762760999998136, "duration": 0.389271899999585, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761739.4815357, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2864776999995229, "duration": 0.2998470000002271, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761743.9874194, "kind": "thinker_say", "text": "The travel card offers 2% cashback and no foreign transaction fees. Also, 200 British pounds is currently 180 Japanese yen.", "after_s": 17.18, "usage": {"input": 5083, "input_audio": 0, "output": 85, "thinking": 137, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761744.3954542, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.33428599999933795, "duration": 0.40568050000001676, "audio_duration": 5.235000000000002, "cancelled": false, "characters_count": 67, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761744.6435475, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1654221000007965, "duration": 0.2468012000008457, "audio_duration": 5.2600000000000025, "cancelled": false, "characters_count": 55, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_588d21f77af8"}
+{"t": 1790761754.8319516, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. The travel card offers 2% cashback and no foreign transaction fees. Also, 200 British pounds is currently 180 Japanese yen."}
+{"t": 1790761754.8319516, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,25 @@
+{"t": 1790764782.7426546, "kind": "session_start", "room": "eval-a3b389de", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764782.8353791, "kind": "agent_state", "state": "listening"}
+{"t": 1790764785.3387032, "kind": "user_state", "state": "speaking"}
+{"t": 1790764792.240928, "kind": "user_state", "state": "listening"}
+{"t": 1790764792.4894147, "kind": "user_state", "state": "speaking"}
+{"t": 1790764792.9469895, "kind": "metrics", "type": "stt_metrics", "duration": 0.7049640999975963, "audio_duration": 7.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764792.9618816, "kind": "heard", "text": "So I need to go to Chicago sometime around, let me think, I believe it's December 12th, yeah."}
+{"t": 1790764795.179343, "kind": "user_state", "state": "listening"}
+{"t": 1790764795.690405, "kind": "metrics", "type": "stt_metrics", "duration": 0.5096172000012302, "audio_duration": 3.284, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764795.6914032, "kind": "heard", "text": "Could you look up flights for the day?"}
+{"t": 1790764797.3225288, "kind": "user_turn", "text": "So I need to go to Chicago sometime around, let me think, I believe it's December 12th, yeah. Could you look up flights for the day?"}
+{"t": 1790764797.3230405, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4946630001068115, "transcription_delay": 0.8640601634979248, "on_user_turn_completed_delay": 0.00044809999963035807, "speech_id": "speech_8241b4557257"}
+{"t": 1790764797.3240619, "kind": "think_start", "text": "So I need to go to Chicago sometime around, let me think, I believe it's December 12th, yeah. Could you look up flights for the day?", "audio": false}
+{"t": 1790764797.347573, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764797.6271262, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764797.7620952, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764797.7791662, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13243990000046324, "duration": 0.1502007000017329, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8241b4557257"}
+{"t": 1790764800.2400627, "kind": "thinker_decided", "tools": true, "after_s": 2.92}
+{"t": 1790764800.2400627, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Chicago", "date": "December 12"}}
+{"t": 1790764800.7866557, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Chicago", "date": "December 12"}, "outcome": "success"}
+{"t": 1790764804.0295858, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.31075369999962277, "duration": 0.32354169999962323, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8241b4557257"}
+{"t": 1790764806.406078, "kind": "thinker_say", "text": "OK. I found a flight to Chicago on December 12th for 450 dollars.", "after_s": 9.08, "usage": {"input": 4836, "input_audio": 0, "output": 46, "thinking": 45, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764806.9131043, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4243343000016466, "duration": 0.5046180999997887, "audio_duration": 5.660000000000003, "cancelled": false, "characters_count": 65, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8241b4557257"}
+{"t": 1790764812.47881, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a flight to Chicago on December 12th for 450 dollars."}
+{"t": 1790764812.4798114, "kind": "agent_state", "state": "listening"}
