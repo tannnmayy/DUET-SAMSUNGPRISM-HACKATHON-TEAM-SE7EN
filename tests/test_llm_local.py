@@ -102,7 +102,10 @@ def test_an_empty_reply_is_asked_again_once():
 
 def test_a_plan_overtaken_during_a_tool_call_stops_at_once():
     box = Box()
-    box.on_call = box.coord.user_started_speaking   # the user speaks while the call runs
+    def says_more():                                # the user speaks while the call runs
+        box.coord.user_started_speaking()
+        box.coord.heard("wait, not that one")
+    box.on_call = says_more
     with pytest.raises(Superseded):
         run([reply(calls=[("track_order", {"order_id": "A1"})]), reply("never asked")], box=box)
 

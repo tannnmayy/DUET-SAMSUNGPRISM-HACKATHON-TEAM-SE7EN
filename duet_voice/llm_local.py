@@ -232,7 +232,7 @@ class LocalThinker:
                     continue
                 yield ThinkEvent("tool_start", name=c["name"], args=args)
                 out = await toolbox.call(c["name"], args, epoch=start_epoch)
-                if toolbox.coord.epoch != start_epoch:
+                if toolbox.coord.overtaken(start_epoch):
                     raise Superseded()  # the user's words changed: this plan is void
                 parsed = json.loads(out)
                 yield ThinkEvent("tool_done", name=c["name"], args=args,

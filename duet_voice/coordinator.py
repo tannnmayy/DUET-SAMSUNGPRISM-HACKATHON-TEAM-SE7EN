@@ -5,7 +5,9 @@ The FDB-v3 paper names the failure that costs every published system the most:
 module is the answer, carried over from DUET's first version:
 
 * **Epochs (M1).** Every time the user starts speaking, the epoch advances. Work
-  planned under an older epoch was planned on words the user may be changing.
+  planned under an older epoch was planned on words the user may be changing: it
+  waits, and it is void as soon as the new speech brings words. Speech that brings
+  none (a cough, a burst of room noise) does not void it.
 * **Commit gate (M2).** No tool runs while the user is speaking, and none runs
   until the user has been quiet for a short hold after their last word. A call
   that meets new speech at the gate is superseded: it is never executed and never
@@ -83,6 +85,8 @@ class Coordinator:
     user_speaking: bool = False
     last_speech_end: float = 0.0
     transcript_due: bool = False        # speech ended and its transcript has not arrived yet
+    last_words_epoch: int = -1          # the epoch in which words were last heard
+    words_wait_s: float = 2.5           # after speech ends, how long its words may take to arrive
     open_utterance: str = ""            # what the user said since the agent last acted
     ledger: Dict[str, CallRecord] = field(default_factory=dict)
     history: List[CallRecord] = field(default_factory=list)
@@ -111,18 +115,26 @@ class Coordinator:
             return
         if self.committed_epoch == self.epoch and not self.user_speaking:
             self.epoch += 1
+        self.last_words_epoch = self.epoch
         self.transcript_due = False
         self.open_utterance = (self.open_utterance + " " + text).strip()
+
+    def overtaken(self, epoch: int) -> bool:
+        """Has the user said new words since a plan made at `epoch`? Then the plan is
+        void. Speech without words (a cough, room noise) leaves it standing: in one
+        benchmark recording a noise burst after the request had voided a correct plan,
+        and with no words there was no new turn to answer."""
+        return self.last_words_epoch > epoch
 
     async def settle(self, epoch: int, max_wait_s: float) -> None:
         """Before a model call is spent on a closed turn: if the user's last words are
         still being transcribed, wait for them (at most max_wait_s after the speech
         ended; a noise burst has no words). Raises Superseded if they change the turn."""
         while self.transcript_due and self.clock() - self.last_speech_end < max_wait_s:
-            if self.epoch != epoch:
+            if self.overtaken(epoch):
                 raise Superseded()
             await asyncio.sleep(0.03)
-        if self.epoch != epoch:
+        if self.overtaken(epoch):
             raise Superseded()
 
     def agent_acted(self) -> None:
@@ -134,12 +146,14 @@ class Coordinator:
 
     async def wait_committed(self, epoch: Optional[int] = None) -> int:
         """Planning may start early, during a pause; acting may not. Wait until the
-        turn the plan was made in is closed. Raises Superseded if the user resumes."""
+        turn the plan was made in is closed. Raises Superseded if the user says more."""
         epoch = self.epoch if epoch is None else epoch
-        while self.committed_epoch != epoch:
-            if self.epoch != epoch:
+        while self.committed_epoch < epoch:
+            if self.overtaken(epoch):
                 raise Superseded()
             await asyncio.sleep(0.03)
+        if self.overtaken(epoch):
+            raise Superseded()
         return epoch
 
     def hold(self) -> float:
@@ -156,17 +170,23 @@ class Coordinator:
         """Wait until the user has been quiet for the commit hold.
 
         `epoch` is the epoch the plan was made in (default: now). A call from a
-        plan made before the words changed (the user spoke again, or late words
+        plan made before the words changed (the user said more, or late words
         arrived) raises Superseded, even if the new turn has since closed: it is
-        never executed under the newer turn. Returns the epoch it commits under."""
+        never executed under the newer turn. Speech since the plan makes the call
+        wait until its words are in (or, for a noise burst, clearly never coming).
+        Returns the epoch it commits under."""
         epoch = await self.wait_committed(epoch)
         while True:
-            if self.user_speaking or self.epoch != epoch:
+            if self.overtaken(epoch):
                 raise Superseded()
-            hold = self.hold()
             quiet_for = self.clock() - self.last_speech_end
+            if self.user_speaking or (self.epoch != epoch and self.transcript_due
+                                      and quiet_for < self.words_wait_s):
+                await asyncio.sleep(0.05)
+                continue
+            hold = self.hold()
             if quiet_for >= hold:
-                return epoch
+                return self.epoch
             await asyncio.sleep(min(0.05, hold - quiet_for))
 
     # -- execution with the ledger and the failure policy -----------------------------

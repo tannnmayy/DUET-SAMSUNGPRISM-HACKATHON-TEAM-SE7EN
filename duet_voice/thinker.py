@@ -216,8 +216,8 @@ class Thinker:
                 args = dict(fc.args or {})
                 yield ThinkEvent("tool_start", name=fc.name, args=args)
                 out = await toolbox.call(fc.name, args, epoch=start_epoch)
-                if toolbox.coord.epoch != start_epoch:
-                    # the user spoke again, or late words arrived: this plan is void,
+                if toolbox.coord.overtaken(start_epoch):
+                    # the user said more, or late words arrived: this plan is void,
                     # and asking the model to continue it would only waste a call
                     raise Superseded()
                 parsed = json.loads(out)

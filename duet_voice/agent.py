@@ -271,8 +271,8 @@ class DuetAgent(Agent):
                     await events.put(ev)
                 if listened:
                     while self._quiet_for() < LISTEN_WAIT_S:
-                        if self._coord.epoch != epoch:
-                            return  # they resumed: the next turn re-reads everything
+                        if self._coord.overtaken(epoch):
+                            return  # they said more: the next turn re-reads everything
                         await asyncio.sleep(0.05)
                     await events.put("resumed_thinking")
                     final_note = (note + "\n" if note else "") + RESPOND_NOW_NOTE

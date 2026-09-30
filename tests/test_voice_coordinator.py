@@ -44,18 +44,42 @@ def test_gate_waits_for_the_turn_to_close():
     assert run(go()) == c.epoch
 
 
-def test_gate_supersedes_when_the_user_resumes():
+def test_gate_supersedes_when_the_user_says_more():
     c, clock = make(commit_hold_s=5.0)
     c.turn_committed()
 
     async def go():
         task = asyncio.ensure_future(c.gate())
         await asyncio.sleep(0.1)
-        c.user_started_speaking()  # "...no wait, Milan"
+        c.user_started_speaking()
+        await asyncio.sleep(0.1)
+        assert not task.done()     # speech: the call waits for its words
+        c.heard("no wait, Milan")
         with pytest.raises(Superseded):
             await asyncio.wait_for(task, 1)
 
     run(go())
+
+
+def test_speech_without_words_does_not_void_the_plan():
+    """A cough or a burst of room noise after the request: the call waits while it
+    lasts and while its words could still arrive, then goes ahead."""
+    c, clock = make(commit_hold_s=0.5)
+    c.heard("track order XK42")
+    c.turn_committed()
+    planned_in = c.epoch
+
+    async def go():
+        task = asyncio.ensure_future(c.gate(planned_in))
+        await asyncio.sleep(0.05)
+        c.user_started_speaking()
+        c.user_stopped_speaking()    # no transcript follows
+        await asyncio.sleep(0.1)
+        assert not task.done()       # its words might still come
+        clock.t += c.words_wait_s
+        return await asyncio.wait_for(task, 1)
+
+    assert run(go()) == c.epoch
 
 
 def test_hold_is_longer_while_the_user_is_revising_or_mid_sentence():
@@ -204,6 +228,7 @@ def test_a_call_from_a_plan_the_user_has_overtaken_never_runs_under_the_new_turn
     c.turn_committed()
     planned_in = c.epoch
     c.user_started_speaking()
+    c.heard("and a hotel too")
     c.user_stopped_speaking()
     c.turn_committed()
     performed = []

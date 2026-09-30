@@ -33,8 +33,8 @@ load_dotenv(REPO / ".env.local")
 
 
 def settings(CONFIG) -> Dict[str, Any]:
-    """The thinker's effective settings, and which weights the model server really
-    serves (vLLM reports the checkpoint it loaded as the model's "root")."""
+    """The thinker's effective settings, and, with a local model server, which weights
+    it really serves (an OpenAI-compatible server reports them as the model's "root")."""
     s: Dict[str, Any] = {"backend": CONFIG.llm_backend, "seed": CONFIG.seed}
     if CONFIG.llm_backend == "local":
         from duet_voice import llm_local
@@ -135,7 +135,7 @@ def main() -> int:
     ap.add_argument("--asr-file", default=str(REPO / "results" / "offline" / "asr_large-v3-turbo.json"))
     from duet_voice.config import CONFIG
     ap.add_argument("--model", default=CONFIG.thinker_model)
-    ap.add_argument("--thinking", default=os.environ.get("DUET_THINKER_THINKING", "low"))
+    ap.add_argument("--thinking", default=CONFIG.thinker_thinking)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--only", default="", help="comma-separated example ids")
     ap.add_argument("--concurrency", type=int, default=6)

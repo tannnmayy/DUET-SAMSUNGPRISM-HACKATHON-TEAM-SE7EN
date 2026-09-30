@@ -72,7 +72,8 @@ def test_a_missing_permission_is_passed_on_and_not_remembered():
 def test_a_plan_the_user_overtook_never_reaches_the_phone():
     box, sent, events = make()
     stale = box.coord.epoch
-    box.coord.user_started_speaking()       # "no no, cancel that ..."
+    box.coord.user_started_speaking()
+    box.coord.heard("no no, cancel that")
     out = json.loads(asyncio.run(box.call("set_alarm", {"time": "15:30"}, epoch=stale)))
     assert out["status"] == "not_executed" and sent == []
     assert events[-1]["kind"] == "tool_dropped"
@@ -126,6 +127,7 @@ def test_a_held_back_call_is_remembered_for_the_request_only():
     box, sent, _ = make()
     stale = box.coord.epoch
     box.coord.user_started_speaking()
+    box.coord.heard("actually, no")
     asyncio.run(box.call("set_alarm", {"time": "15:30"}, epoch=stale))
     assert box.held_back == [{"tool": "set_alarm", "args": {"time": "15:30"}}]
     box.new_request()
