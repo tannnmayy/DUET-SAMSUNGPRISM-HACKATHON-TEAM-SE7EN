@@ -1,7 +1,7 @@
 # DUET: submission video script
 
-**Length:** 4:45 (limit 5:00) · **Cast:** Tanmay (host, live use cases), Pranjal and Naman
-(the benchmark, the harness and the results) · **Format:** 1920×1080, 30 fps
+**Length:** 4:45 (limit 5:00) · **Cast:** Tanmay Singh (host, live use cases), Panshul Arora and Naman Rai
+(the benchmark, the harness and the results), Devansh Goenka (introductions and close) · **Format:** 1920×1080, 30 fps
 
 Every file named below is in the repository or in `results/galaxy/video/`.
 
@@ -10,11 +10,11 @@ Every file named below is in the repository or in `results/galaxy/video/`.
 | # | Time | Who | Segment | On screen |
 |---|---|---|---|---|
 | 1 | 0:00-0:30 | (no one) | Opening | `intro.mp4`, ready to use |
-| 2 | 0:30-0:42 | All three | Who we are | Camera, name titles |
+| 2 | 0:30-0:42 | All four | Who we are | Camera, name titles |
 | 3 | 0:42-1:05 | Naman | The benchmark | Benchmark card, recording waveform |
-| 4 | 1:05-1:35 | Pranjal | How DUET works | Diagrams: system, one turn |
+| 4 | 1:05-1:35 | Panshul | How DUET works | Diagrams: system, one turn |
 | 5 | 1:35-1:58 | Naman | How we worked, and the harness | Pipeline diagram, terminal |
-| 6 | 1:58-2:18 | Pranjal | Results | `results_card.png` |
+| 6 | 1:58-2:18 | Panshul | Results | `results_card.png` |
 | 7 | 2:18-2:30 | Tanmay | From benchmark to phone | Film opening card |
 | 8 | 2:30-4:15 | Tanmay | Four live use cases | The four scene clips |
 | 9 | 4:15-4:45 | Tanmay, then all | Close | Film closing card, repository |
@@ -33,14 +33,16 @@ What it shows:
 - 9-25 s: "People pause, hesitate and correct themselves mid-sentence." / "Voice agents act before the correction arrives." / "The best published system on Full-Duplex-Bench v3 passes 60%." / "So we built an agent that waits for what you mean: 81%."
 - 25-30 s: the DUET title.
 
-## 2 · Who we are (0:30-0:42) · all three
+## 2 · Who we are (0:30-0:42) · all four
 
-**On screen:** the three of you, or three quick shots; name titles:
-"Tanmay Singh", "Pranjal", "Naman", "Team SE7EN · SRM".
+**On screen:** the four of you, or four quick shots; name titles:
+"Tanmay Singh", "Panshul Arora", "Naman Rai", "Devansh Goenka", "Team SE7EN · SRM".
 
 > **Tanmay:** Hi, we're Team SE7EN from SRM. I'm Tanmay.
 >
-> **Pranjal:** I'm Pranjal.
+> **Panshul:** I'm Panshul.
+>
+> **Devansh:** I'm Devansh.
 >
 > **Naman:** And I'm Naman. This is DUET.
 
@@ -54,12 +56,12 @@ Pass@1", then a waveform of a real request with its pauses.
 > pausing and correcting themselves all the way. The agent has twelve tools, and the score
 > is strict: one wrong or extra tool call, and the whole request fails.
 
-## 4 · How DUET works (1:05-1:35) · Pranjal
+## 4 · How DUET works (1:05-1:35) · Panshul
 
 **On screen:** `docs/diagrams/README-1.png` (the system), then `docs/diagrams/README-2.png`
 (one turn with a correction). Highlight each box as it is named.
 
-> **Pranjal:** So we split the agent into two minds and a referee. A fast voice answers the
+> **Panshul:** So we split the agent into two minds and a referee. A fast voice answers the
 > moment you finish, so there's never dead air. A thinker, Google's Gemma 4 26B, reads
 > everything you've said since its last answer and plans the tool calls. And every call goes
 > through the coordinator: nothing runs while you're still talking, a plan your correction
@@ -77,11 +79,11 @@ with its reports, traces and logs.
 > through the official runner, and scores them with the official scripts, with every
 > conversation traced and logged.
 
-## 6 · Results (1:58-2:18) · Pranjal
+## 6 · Results (1:58-2:18) · Panshul
 
 **On screen:** `results/galaxy/video/results_card.png`.
 
-> **Pranjal:** On all hundred recordings, DUET passes eighty-one percent, against sixty for
+> **Panshul:** On all hundred recordings, DUET passes eighty-one percent, against sixty for
 > the best published system. It answered every conversation and never interrupted once.
 > What's left is mostly spelled-out codes the recogniser mishears, and items whose expected
 > answer contradicts the benchmark's own data.
@@ -123,14 +125,14 @@ app's web build simulates the phone's side of each action. Talk over the moments
 > text to Priya carries the real arrival time, and ten minutes out, DUET speaks first and
 > offers to cool the house.
 
-## 9 · Close (4:15-4:45) · Tanmay, then all three
+## 9 · Close (4:15-4:45) · Tanmay, then all four
 
 **On screen:** `results/galaxy/video/card_outro.mp4`, then the repository address.
 
 > **Tanmay:** Interrupt it, correct it, change your mind: DUET acts on what you mean. It
 > reproduces with one command, runs on Gemma 4, and every run is fully logged.
 >
-> **All three:** Thank you!
+> **All four:** Thank you!
 
 ---
 

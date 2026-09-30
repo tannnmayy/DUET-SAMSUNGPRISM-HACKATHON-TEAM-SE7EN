@@ -164,7 +164,7 @@ const cover = `
     <div><b>0%</b><span>interruptions, and every one of the 100 conversations answered</span></div>
     <div><b>1</b><span>command to reproduce: <code>bash reproduce.sh</code></span></div>
   </div>
-  <div class="team"><b>Team SE7EN</b> · SRM Institute of Science and Technology · SRM_SE7EN<br>Tanmay Singh · Pranjal · Naman</div>
+  <div class="team"><b>Team SE7EN</b> · SRM Institute of Science and Technology · SRM_SE7EN<br>Tanmay Singh · Panshul Arora · Naman Rai · Devansh Goenka</div>
   <div class="repo">${REPO}</div>
 </section>`;
 

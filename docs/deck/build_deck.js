@@ -121,7 +121,7 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
     { text: "Team SE7EN", options: { bold: true, fontFace: FB, color: B.ink, fontSize: 14 } },
     { text: "   ·   SRM Institute of Science and Technology   ·   SRM_SE7EN", options: { color: B.soft, fontSize: 13 } },
   ], 0.7, 6.0, 9, 0.35, {});
-  t(s, "Tanmay Singh  ·  Pranjal  ·  Naman", 0.7, 6.36, 9, 0.3, { fontSize: 13, color: B.ink });
+  t(s, "Tanmay Singh  ·  Panshul Arora  ·  Naman Rai  ·  Devansh Goenka", 0.7, 6.36, 9, 0.3, { fontSize: 13, color: B.ink });
   t(s, "Gemma 4 26B-A4B · LiveKit Agents · faster-whisper · Kokoro-82M · one command to reproduce", 0.7, 6.8, 7.2, 0.25, { fontSize: 10, color: B.faint });
   t(s, "github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN", 7.6, 6.8, 5.05, 0.25, { fontSize: 10, color: B.faint, align: "right" });
 }
@@ -132,28 +132,27 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
   frame(s, 2, "The problem, in our words", "The failure isn't hearing the correction. It's acting before it arrives.",
     "One real Full-Duplex-Bench recording (travel_19), moment by moment. Times are from DUET's own trace of the reported run.");
   const mono = "Consolas";
-  // storyboard: four moments of the recording, then the outcome
   box(s, 0.55, 1.75, 8.5, 3.78, { fill: C.panel, line: C.line });
-  const lx = 0.72, cx0 = 2.2, cw = 1.36, gx = 0.08, ow = 1.02;
+  const cx0 = 2.2, cw = 1.36, gx = 0.08, ow = 1.02;
   const colX = (i) => cx0 + i * (cw + gx);
   const outX = colX(4);
-  const moments = ["3.0 s", "6.4 s", "10.7 s", "13.4 s"];
-  moments.forEach((m, i) => {
-    t(s, m, colX(i), 1.88, cw, 0.24, { fontSize: 9.5, bold: true, color: C.accent, align: "center", charSpacing: 1 });
-  });
-  t(s, "OUTCOME", outX, 1.88, ow, 0.24, { fontSize: 9, bold: true, color: C.muted, align: "center", charSpacing: 2 });
-  s.addShape(S.line, { x: cx0, y: 2.16, w: outX - cx0 - 0.08, h: 0, line: { color: C.accent, width: 1, endArrowType: "triangle" } });
+  ["3.0 s", "6.4 s", "10.7 s", "13.4 s"].forEach((m, i) =>
+    t(s, m, colX(i), 1.86, cw, 0.24, { fontSize: 9.5, bold: true, color: C.accent, align: "center", charSpacing: 1 }));
+  t(s, "OUTCOME", outX, 1.86, ow, 0.24, { fontSize: 9, bold: true, color: C.muted, align: "center", charSpacing: 2 });
+  s.addShape(S.line, { x: cx0, y: 2.13, w: outX - cx0 - 0.08, h: 0, line: { color: C.accent, width: 1, endArrowType: "triangle" } });
 
   const rowLabel = (y, h, head, sub, col) => {
-    t(s, head, lx, y + 0.08, 1.45, 0.3, { fontSize: 11.5, bold: true, color: col || C.ink });
-    t(s, sub, lx, y + 0.38, 1.42, h - 0.42, { fontSize: 8.5, color: C.muted });
+    s.addShape(S.rect, { x: 0.68, y: y + 0.1, w: 0.05, h: h - 0.2, fill: { color: col }, line: { color: col, width: 0 } });
+    t(s, head, 0.82, y + 0.1, 1.33, 0.3, { fontSize: 11.5, bold: true, color: C.ink });
+    t(s, sub, 0.82, y + 0.4, 1.3, h - 0.45, { fontSize: 8.5, color: C.muted });
   };
   const cell = (i, y, h, fill, line, dash) => s.addShape(S.roundRect, {
     x: colX(i), y, w: cw, h, rectRadius: 0.06, fill: { color: fill }, line: { color: line, width: 1, dashType: dash || "solid" } });
+  const quiet = (i, y, h) => { cell(i, y, h, "FFFFFF", C.grid); t(s, "listening", colX(i), y, cw, h, { fontSize: 9, italic: true, color: C.faint, align: "center", valign: "middle" }); };
 
-  // row 1: what the user said, and the intent so far
-  const y1 = 2.28, h1 = 1.02;
-  rowLabel(y1, h1, "The user", "a real recording: the request is corrected twice");
+  // row 1: the user's own words, their audio, and the intent so far
+  const y1 = 2.24, h1 = 1.16;
+  rowLabel(y1, h1, "The user", "a real recording, corrected twice", C.accent);
   const said = ["“…flights to Rome.”", "“No, wait… let's do Milan instead.”", "“…June 1st.”", "“Well, wait, but actually June 3rd…”"];
   const intent = [
     [{ text: "Rome", options: {} }],
@@ -163,32 +162,33 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
   ];
   said.forEach((q, i) => {
     cell(i, y1, h1, "FFFFFF", C.line);
-    t(s, q, colX(i) + 0.1, y1 + 0.08, cw - 0.2, 0.5, { fontSize: 9.5, italic: true, color: C.ink });
-    t(s, "INTENT", colX(i) + 0.1, y1 + 0.6, cw - 0.2, 0.16, { fontSize: 7, bold: true, color: C.faint, charSpacing: 1.5 });
-    t(s, intent[i], colX(i) + 0.1, y1 + 0.75, cw - 0.2, 0.22, { fontSize: 9.5, bold: true, color: C.accent });
+    t(s, q, colX(i) + 0.1, y1 + 0.06, cw - 0.2, 0.42, { fontSize: 9.5, italic: true, color: C.ink });
+    s.addImage({ path: path.join(ASSETS, "wave" + (i + 1) + ".png"), x: colX(i) + 0.1, y: y1 + 0.5, w: cw - 0.2, h: 0.22 });
+    t(s, "INTENT", colX(i) + 0.1, y1 + 0.78, cw - 0.2, 0.14, { fontSize: 7, bold: true, color: C.faint, charSpacing: 1.5 });
+    t(s, intent[i], colX(i) + 0.1, y1 + 0.9, cw - 0.2, 0.22, { fontSize: 9.5, bold: true, color: C.accent });
   });
   s.addShape(S.roundRect, { x: outX, y: y1, w: ow, h: h1, rectRadius: 0.06, fill: { color: C.accentDim }, line: { color: C.accent, width: 1 } });
-  t(s, "Final intent", outX + 0.08, y1 + 0.12, ow - 0.16, 0.22, { fontSize: 8.5, color: C.muted, align: "center" });
-  t(s, "Milan\nJune 3", outX + 0.08, y1 + 0.36, ow - 0.16, 0.5, { fontSize: 11.5, bold: true, color: C.accent, align: "center" });
+  t(s, "Final intent", outX + 0.06, y1 + 0.14, ow - 0.12, 0.22, { fontSize: 8.5, color: C.muted, align: "center" });
+  t(s, "Milan\nJune 3", outX + 0.06, y1 + 0.4, ow - 0.12, 0.55, { fontSize: 12, bold: true, color: C.accent, align: "center" });
 
   // row 2: an agent that acts whenever a turn ends
-  const y2 = 3.4, h2 = 0.92;
-  rowLabel(y2, h2, "Acts at every pause", "what acting at each turn end would call");
-  cell(0, y2, h2, C.panel2, C.panel2); t(s, "listening", colX(0), y2, cw, h2, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
-  cell(1, y2, h2, C.panel2, C.panel2); t(s, "no date yet", colX(1), y2, cw, h2, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
+  const y2 = 3.48, h2 = 0.9;
+  rowLabel(y2, h2, "Greedy agent", "what acting at every turn end would call", C.bad);
+  quiet(0, y2, h2);
+  cell(1, y2, h2, "FFFFFF", C.grid); t(s, "no date yet", colX(1), y2, cw, h2, { fontSize: 9, italic: true, color: C.faint, align: "center", valign: "middle" });
   cell(2, y2, h2, C.badDim, C.bad);
   t(s, "search_flights(\nMilan, June 1)", colX(2) + 0.08, y2 + 0.1, cw - 0.16, 0.45, { fontSize: 9, fontFace: mono, color: C.bad, align: "center" });
-  t(s, "✗ stale call", colX(2), y2 + 0.58, cw, 0.25, { fontSize: 9, bold: true, color: C.bad, align: "center" });
+  t(s, "✗ stale call", colX(2), y2 + 0.57, cw, 0.25, { fontSize: 9, bold: true, color: C.bad, align: "center" });
   cell(3, y2, h2, "FFFFFF", C.line);
   t(s, "search_flights(\nMilan, June 3)", colX(3) + 0.08, y2 + 0.1, cw - 0.16, 0.45, { fontSize: 9, fontFace: mono, color: C.ink, align: "center" });
-  t(s, "right, but too late", colX(3), y2 + 0.58, cw, 0.25, { fontSize: 9, color: C.muted, align: "center" });
+  t(s, "right, but one too many", colX(3), y2 + 0.57, cw, 0.25, { fontSize: 8.5, color: C.muted, align: "center" });
   s.addShape(S.roundRect, { x: outX, y: y2, w: ow, h: h2, rectRadius: 0.06, fill: { color: C.bad }, line: { color: C.bad, width: 0 } });
   t(s, "2 calls\nFAILS", outX, y2, ow, h2, { fontSize: 12, bold: true, color: "FFFFFF", align: "center", valign: "middle" });
 
   // row 3: DUET, from its trace
-  const y3 = 4.42, h3 = 0.98;
-  rowLabel(y3, h3, "DUET", "from its own trace of the reported run", C.accent);
-  cell(0, y3, h3, C.panel2, C.panel2); t(s, "listening", colX(0), y3, cw, h3, { fontSize: 9, color: C.faint, align: "center", valign: "middle" });
+  const y3 = 4.46, h3 = 0.98;
+  rowLabel(y3, h3, "DUET", "from its own trace of the reported run", C.ok);
+  quiet(0, y3, h3);
   [[1, "10.7 s"], [2, "13.4 s"]].forEach(([i, when]) => {
     cell(i, y3, h3, "FFFFFF", C.faint, "dash");
     t(s, "plans on it…", colX(i), y3 + 0.1, cw, 0.25, { fontSize: 9, color: C.muted, align: "center" });
@@ -205,21 +205,19 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
   // self-corrections across systems
   box(s, 9.28, 1.75, 3.5, 3.78, { fill: C.panel, line: C.line });
   t(s, "SELF-CORRECTION ITEMS", 9.48, 1.9, 3.1, 0.22, { fontSize: 9, bold: true, color: C.muted, charSpacing: 2 });
-  t(s, "Pass@1, strict", 9.48, 2.1, 3.1, 0.22, { fontSize: 9, color: C.faint });
-  t(s, "0.88", 9.48, 2.32, 1.5, 0.7, { fontSize: 36, bold: true, color: C.accent });
-  t(s, "DUET\n15 of 17 items", 10.95, 2.44, 1.7, 0.5, { fontSize: 10, color: C.muted });
-  const sc = [["GPT-Realtime", 0.588], ["Gemini Live 3.1", 0.353], ["Whisper → GPT-4o", 0.176]];
-  const bx = 9.48, bw = 2.55;
-  s.addShape(S.rect, { x: bx, y: 3.12, w: bw * 0.88, h: 0.2, fill: { color: C.accent }, line: { color: C.accent, width: 0 } });
-  t(s, "DUET", bx, 3.34, 2, 0.2, { fontSize: 8.5, color: C.ink, bold: true });
-  sc.forEach(([n, v], i) => {
-    const y = 3.62 + i * 0.5;
-    s.addShape(S.rect, { x: bx, y, w: bw * v, h: 0.2, fill: { color: C.base }, line: { color: C.base, width: 0 } });
-    t(s, v.toFixed(2), bx + bw * v + 0.06, y - 0.03, 0.6, 0.26, { fontSize: 9.5, bold: true, color: C.ink });
-    t(s, n, bx, y + 0.22, 2.4, 0.2, { fontSize: 8.5, color: C.muted });
+  t(s, "0.88", 9.48, 2.15, 1.55, 0.75, { fontSize: 40, bold: true, color: C.accent });
+  t(s, "DUET's Pass@1\n15 of 17 items", 11.05, 2.3, 1.65, 0.5, { fontSize: 10, color: C.muted });
+  const rows = [["DUET", 0.88, C.accent, true], ["GPT-Realtime", 0.588], ["Gemini Live 3.1", 0.353], ["Whisper → GPT-4o", 0.176]];
+  const lw = 1.18, bw = 1.55;
+  rows.forEach(([n, v, col, me], i) => {
+    const y = 3.12 + i * 0.44;
+    t(s, n, 9.44, y, lw - 0.08, 0.26, { fontSize: 9, bold: !!me, color: me ? C.ink : C.muted, align: "right", valign: "middle" });
+    s.addShape(S.rect, { x: 9.44 + lw, y: y + 0.03, w: bw, h: 0.2, fill: { color: "FFFFFF" }, line: { color: C.grid, width: 0.75 } });
+    s.addShape(S.rect, { x: 9.44 + lw, y: y + 0.03, w: bw * v, h: 0.2, fill: { color: col || C.base }, line: { color: col || C.base, width: 0 } });
+    t(s, v.toFixed(2), 9.44 + lw + bw + 0.05, y, 0.5, 0.26, { fontSize: 9.5, bold: true, color: me ? C.accent : C.ink, valign: "middle" });
   });
-  t(s, "0.88", bx + bw * 0.88 + 0.06, 3.09, 0.6, 0.26, { fontSize: 9.5, bold: true, color: C.accent });
-  t(s, "Baselines: FDB-v3 paper, which names the cause: “models commit intermediate parameters before the correction arrives.”", 9.48, 5.08, 3.15, 0.42, { fontSize: 7.5, color: C.faint });
+  t(s, "Strict Pass@1 on the benchmark's self-correction items. Baselines: the FDB-v3 paper, which names the cause: “models commit intermediate parameters before the correction arrives.”",
+    9.48, 4.92, 3.15, 0.55, { fontSize: 7.5, color: C.faint });
 
   // what theme 05 asks, and DUET's answer
   const asks = [["STAY RESPONSIVE", "“One moment.” as soon as the user is clearly done and the thinker is still working. All 100 conversations answered.", C.accent],
@@ -477,38 +475,51 @@ function hbar(slide, label, value, max, x, y, w, color, o = {}) {
   ], 8.7, 4.72, 3.95, 1.62, { fontSize: 9.3, color: C.ink, paraSpaceAfter: 5 });
 }
 
-// ============================================================================ 8. limits + next
+// ============================================================================ 8. impact + next
 {
   const s = pptx.addSlide();
-  frame(s, 8, "Limitations and what's next", "What we still lose, and where DUET goes next",
-    "Every limitation below is measured in the reported run; every next step is a PRISM worklet.");
-  box(s, 0.55, 1.78, 5.95, 4.47, { fill: C.panel, line: C.line });
-  t(s, "LIMITATIONS WE MEASURED", 0.75, 1.92, 5, 0.25, { fontSize: 10, bold: true, color: C.bad, charSpacing: 1.5 });
-  const lim = [["Latency.", "First response 4.8 s; key information 14.4 s (GPT-Realtime: 6.9 s). A hosted model call takes 3.3 s at the median, 7.2 s at p90."],
-    ["Provider stalls.", "3 of 100 recordings were lost to model calls Google never answered (504), despite backups on every key."],
-    ["Hearing.", "Spelled-out codes are misheard (“D, E, L, bye, V” for DELIV): 7 of 100 items."],
-    ["Response quality 0.73", "(GPT-Realtime 0.79): the answers are correct but plain."],
-    ["Our scoring.", "A Gemma stand-in for the gpt-4o judge; 75 of 100 by exact match with no judge at all."],
-    ["The extension's demo", "runs the app's web build; the home, medicines and car are simulated."]];
-  t(s, lim.map(([h, b]) => [{ text: h + " ", options: { bold: true, fontFace: FB, color: C.ink } }, { text: b, options: { color: C.muted, breakLine: true } }]).flat(),
-    0.75, 2.3, 5.6, 3.9, { fontSize: 11.5, paraSpaceAfter: 13 });
-  box(s, 6.75, 1.78, 6.03, 4.47, { fill: C.panel, line: C.line });
-  t(s, "NEXT, AS A PRISM WORKLET", 6.95, 1.92, 5, 0.25, { fontSize: 10, bold: true, color: C.ok, charSpacing: 1.5 });
-  const nxt = [["01", "On-device Gemma on Galaxy", "No round trip and no key limits: the answer's latency drops, and the user's words never leave the phone."],
-    ["02", "Confirm before acting on codes", "Recognizer confidence per word; a low-confidence order id is read back before the tool runs."],
-    ["03", "Speculative reads, gated writes", "Start safe lookups while the user is still talking; keep every state change behind the gate."],
-    ["04", "SmartThings and Android Auto", "The Care and Drive modes on real devices, with Knox-consented health reads."],
-    ["05", "Field metrics", "Stale-action rate, duplicate-action rate and time to first feedback, measured on real users."]];
-  nxt.forEach(([n, h, b], i) => {
-    const y = 2.28 + i * 0.78;
-    t(s, n, 6.95, y, 0.55, 0.4, { fontSize: 17, bold: true, color: C.accent });
-    t(s, [{ text: h, options: { bold: true, fontFace: FB, color: C.ink, breakLine: true } }, { text: b, options: { color: C.muted } }], 7.55, y, 5.05, 0.75, { fontSize: 10.3 });
+  frame(s, 8, "Impact and what's next", "One coordinator for every surface where a voice can act",
+    "Wherever a spoken request can change something real, a correction has to win and nothing may happen twice.");
+  // left: where the same guarantee matters (the directions from our use-case research)
+  box(s, 0.55, 1.75, 7.62, 4.5, { fill: C.panel, line: C.line });
+  t(s, "WHERE THE SAME GUARANTEE MATTERS", 0.75, 1.9, 6, 0.24, { fontSize: 9.5, bold: true, color: C.muted, charSpacing: 2 });
+  const surfaces = [
+    ["SmartThings home", "“Lock the front door… actually, not yet.”", "The lock never acts on a plan the user took back.", C.accent],
+    ["Samsung service line", "“Book a technician for the washer… no, the dryer.”", "One visit is booked, for the dryer.", C.hold],
+    ["Android Auto and Car-to-Home", "“The Starbucks on 5th… no, the one by the office.”", "The route is set once, to the final place.", C.warn],
+    ["Galaxy, beside Bixby", "“Send it to Priya… actually, to Mom.”", "The message goes once, to Mom.", C.ok],
+  ];
+  surfaces.forEach(([name, said, done, col], i) => {
+    const x = 0.75 + (i % 2) * 3.68, y = 2.25 + Math.floor(i / 2) * 1.95;
+    s.addShape(S.roundRect, { x, y, w: 3.52, h: 1.8, rectRadius: 0.08, fill: { color: "FFFFFF" }, line: { color: C.line, width: 1 } });
+    s.addShape(S.rect, { x, y: y + 0.14, w: 0.06, h: 1.52, fill: { color: col }, line: { color: col, width: 0 } });
+    t(s, name, x + 0.22, y + 0.14, 3.2, 0.28, { fontSize: 12, bold: true, color: col });
+    t(s, said, x + 0.22, y + 0.5, 3.18, 0.55, { fontSize: 10.5, italic: true, color: C.ink });
+    t(s, [{ text: "DUET  ", options: { bold: true, fontFace: FB, color: C.ok } }, { text: done, options: { color: C.ink } }], x + 0.22, y + 1.1, 3.18, 0.55, { fontSize: 10.5 });
   });
-  pill(s, "ROUND 2: INTERRUPT IT LIVE", 0.55, 6.42, 3.9, 0.38, C.accentDim, C.pillText, { size: 11, cs: 2 });
+
+  // right: the roadmap as a PRISM worklet
+  box(s, 8.4, 1.75, 4.38, 4.5, { fill: C.panel, line: C.line });
+  t(s, "ROADMAP AS A PRISM WORKLET", 8.6, 1.9, 4, 0.24, { fontSize: 9.5, bold: true, color: C.muted, charSpacing: 2 });
+  const steps = [
+    ["NOW", "Round 1", "DUET scores 0.81 Pass@1 on Full-Duplex-Bench v3, and runs on a Samsung phone in three modes.", C.accent],
+    ["NEXT", "On the device", "Gemma on Galaxy: no round trip, no key limits, and the user's words stay on the phone. A code the recognizer is unsure of is read back before any tool runs.", C.hold],
+    ["THEN", "Across Samsung", "SmartThings, Android Auto and the service line on real devices, measured by stale-action and duplicate-action rates.", C.ok],
+  ];
+  s.addShape(S.line, { x: 8.83, y: 2.45, w: 0, h: 3.0, line: { color: C.line, width: 2 } });
+  steps.forEach(([tag, head, body, col], i) => {
+    const y = 2.3 + i * 1.3;
+    s.addShape(S.ellipse, { x: 8.72, y: y + 0.04, w: 0.22, h: 0.22, fill: { color: col }, line: { color: "FFFFFF", width: 2 } });
+    t(s, [{ text: tag + "  ", options: { bold: true, fontFace: FB, color: col, charSpacing: 1.5 } }, { text: head, options: { bold: true, fontFace: FB, color: C.ink } }],
+      9.1, y, 3.55, 0.3, { fontSize: 11.5 });
+    t(s, body, 9.1, y + 0.32, 3.55, 0.9, { fontSize: 10, color: C.muted });
+  });
+
+  pill(s, "ROUND 2: INTERRUPT IT LIVE", 0.55, 6.44, 3.9, 0.38, C.accentDim, C.pillText, { size: 11, cs: 2 });
   t(s, [{ text: "Reproduce:  ", options: { color: C.muted } }, { text: "bash reproduce.sh", options: { color: C.ok, fontFace: "Consolas" } },
     { text: "     The app:  ", options: { color: C.muted } }, { text: "app/README.md", options: { color: C.ink, fontFace: "Consolas" } },
     { text: "     Every trace:  ", options: { color: C.muted } }, { text: "results/reported/", options: { color: C.ink, fontFace: "Consolas" } }],
-  4.7, 6.42, 8.1, 0.38, { fontSize: 11, valign: "middle" });
+  4.7, 6.44, 8.1, 0.38, { fontSize: 11, valign: "middle" });
 }
 
 pptx.writeFile({ fileName: OUT }).then((f) => console.log("wrote", f));
