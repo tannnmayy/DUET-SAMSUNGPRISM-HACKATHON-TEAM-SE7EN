@@ -97,8 +97,8 @@ with its reports, traces and logs.
 
 **On screen:** the four scene clips from `results/galaxy/video/`, cut to about 25 seconds
 each (cut only the waiting between turns, and mark the cuts "trimmed for time"). The user's
-voice in the clips is scripted; the agent, the model and every action are live. Talk over
-the moments listed.
+voice in the clips is scripted; the agent, the model and every tool call are live, and the
+app's web build simulates the phone's side of each action. Talk over the moments listed.
 
 **Assistant: changing your mind (2:30-2:55)** · `correction.mp4`
 

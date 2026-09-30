@@ -106,13 +106,13 @@ The effect on the live pipeline: on a three-recording pilot with the model, firs
 ## 5. Making a hosted model dependable
 
 Gemma 4 26B-A4B through Google's API answers a thinker call in 3.3 s at the median and
-6.5 s at the 90th percentile (226 answers in one full run). Two properties of a hosted
+7.2 s at the 90th percentile (220 answers in the reported run). Two properties of a hosted
 model decide whole recordings, because a recording's room closes about 30 s after the
 request:
 
 - **Per-minute limits.** A project may send 16,000 input tokens per minute per model, and
   one thinker call is 2,300-2,600 tokens (the instructions and 13 tool definitions), so a
-  single key allows about six calls a minute. Across a full run DUET used about 7,200 input
+  single key allows about six calls a minute. Across an earlier full run DUET used about 7,200 input
   tokens a minute on average, and a busy minute reached about 19,600. *Decisions:* a token
   budget per key that books every call before it is sent, several keys whose limits add up,
   and no calls spent on plans that are already void (no preemptive planning; the transcript
@@ -121,8 +121,8 @@ request:
   within about 1.5 s; retries absorb them. A few simply stall with no answer. Waiting for a
   stalled request, then starting over, could use up a whole deadline. *Decision:* backup
   requests. A request unanswered after 6 s stays in flight and a second one goes to the key
-  with the most room; the first answer wins. In a full run, 58 backups were sent, and in 29
-  calls an answer arrived while backups were pending.
+  with the most room; the first answer wins. In the reported run, 109 backups were sent, and
+  in 38 calls an answer arrived while backups were pending.
 
 Every request is logged in `agent.log` (key, time, tokens, and every retry, backup and
 cancellation), so a slow day at the provider can be told apart from a wrong answer.

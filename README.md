@@ -389,12 +389,16 @@ legacy/                  DUET v1 on the original Theme 05 kit (research record, 
 
 | Document | What it covers |
 |---|---|
+| [SRM_SE7EN.pptx](SRM_SE7EN.pptx) · [SRM_SE7EN.pdf](SRM_SE7EN.pdf) | The presentation: problem, architecture, the coordinator, tech stack, results, the extension, limitations and next steps (8 slides) |
+| [SRM_SE7EN_Documentation.pdf](SRM_SE7EN_Documentation.pdf) | Everything in one document, starting with each of Samsung's requirements and where it is met |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Every component, the turn lifecycle, the coordinator, the model client, the tools, with diagrams |
 | [docs/RESULTS.md](docs/RESULTS.md) | The reported run in detail: metrics, breakdowns, the remaining misses |
 | [docs/ENGINEERING_NOTES.md](docs/ENGINEERING_NOTES.md) | How the benchmark scores, what we measured, and the decisions each measurement led to |
 | [docs/SAMSUNG_REQUIREMENTS.md](docs/SAMSUNG_REQUIREMENTS.md) | Each line of the Theme 05 guide and where it is met |
 | [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md) | The research behind the extension |
 | [app/README.md](app/README.md) | DUET for Galaxy: build, run, demo |
+| [docs/VIDEO_SCRIPT.md](docs/VIDEO_SCRIPT.md) | The demo video's plan |
+| [docs/deck/](docs/deck/) | How the presentation and this documentation are built from the repository |
 
 ## References
 

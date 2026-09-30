@@ -1,0 +1,14 @@
+{
+  "name": "duet-submission-documents",
+  "private": true,
+  "description": "Builds SRM_SE7EN.pptx (the deck) and SRM_SE7EN_Documentation.pdf from the repository's own text and numbers.",
+  "scripts": {
+    "deck": "node build_deck.js ../../SRM_SE7EN.pptx assets",
+    "doc": "node build_doc.js ../.. ../../SRM_SE7EN_Documentation.pdf assets"
+  },
+  "dependencies": {
+    "marked": "12.0.2",
+    "playwright-core": "1.49.1",
+    "pptxgenjs": "3.12.0"
+  }
+}
