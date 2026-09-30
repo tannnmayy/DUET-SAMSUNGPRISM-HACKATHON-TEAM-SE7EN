@@ -53,4 +53,22 @@ mapped to where this submission meets it.
 | Keep the extension honest | Marked in the README; the demo states which phone actions are real and which are simulated |
 | Don't hardcode or memorise test items | `tests/test_voice_integrity.py` fails if any benchmark value appears in the agent's strings; nothing is trained or tuned on the benchmark |
 | Don't call your own servers | The only remote services are Google's API and, with a Cloud project, LiveKit |
-| Don't cache across scenarios | A fresh coordinator, toolbox and conversation for every room |
+| Don't cache across scenarios | A fresh coordinator, toolbox and conversation for every room. The warm-up conversation before the run streams silence only, and the benchmark's mock backend is stateless (its answers depend only on the arguments), shared per process exactly as in the benchmark's own reference agents |
+
+## Hackathon submission rules (launch deck and FAQ)
+
+| Rule | Where it is met |
+|---|---|
+| Working prototype code in a public or shared GitHub repository | This repository (public) |
+| README with reproducible setup instructions, Docker files and other requirements | [README.md](../README.md), "Reproduce the benchmark"; [`reproduce.sh`](../reproduce.sh); [`Dockerfile`](../Dockerfile); every package pinned in `requirements*.lock` |
+| Release tag `PRISM_GENAI_HACKATHON_Y2026` on the final commit; everything the submission references is in that commit | The tagged commit holds the code, the documentation, the reported run with its logs and traces, the video script and the extension's demo recordings (`results/galaxy/video/`) |
+| Demo video, at most 5 minutes | Planned in [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md) (4:45) |
+| No keys in the submission | Keys are read from the environment or the git-ignored `.env.local`; no key has ever been committed |
+
+## Theme 05 FAQ: the organizers' clarifications
+
+| Clarification | How DUET fits it |
+|---|---|
+| One GPU with 48 GB (A6000 class); frugal compute is encouraged | The GPU holds only the speech models: 2.9 GB at peak in the reported run. The benchmark's own scoring recognizer adds a few GB during evaluation. The language model runs at Google |
+| Dependencies from public, reliably safe sources such as PyPI and Hugging Face; other domains allowlisted on request | README, "Network access", lists every host the reproduction contacts and why |
+| A per-scenario wall-clock cap of 300 s | In the reported run a conversation took at most 62 s (median 38 s), and the 100 recordings took 116 minutes end to end, about 70 s each including the runner's own transcription |

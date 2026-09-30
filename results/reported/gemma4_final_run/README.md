@@ -19,3 +19,14 @@ Source: `results/live/20260930_170052` (live run through the official FDB-v3 run
 Settings: thinker `gemma-4-26b-a4b-it` (sampling {'temperature': 1.0, 'top_p': 0.95, 'top_k': 64, 'seed': 7}), fast voice: fixed lines, seed 7, endpointing 0.8-2.5 s, commit hold 1.1 s.
 
 Full settings: `run_config.json`. Headline numbers: `summary.json`.
+
+Scoring: the benchmark's own evaluation scripts, with two disclosed stand-ins on this
+Windows laptop. The LLM judge is Gemma 4 26B-A4B answering the official gpt-4o prompts
+unchanged (`DUET_JUDGE = gemma`), and DUET's own speech is transcribed by faster-whisper
+instead of the Linux-only Parakeet (`scoring_asr = whisper`). By exact match, with no
+judge, 75 of 100 pass. Analysis: [docs/RESULTS.md](../../../docs/RESULTS.md).
+
+In `run_config.json`, `agent.llm_backend = gemma` is the backend this run used: every
+model call went to `gemma-4-26b-a4b-it` through Google's API (one line per request in
+`agent.log`). The `agent.llm_base_url` and `agent.llm_model` fields are the unused
+defaults of the optional on-device backend that only the phone app's laptop mode reads.

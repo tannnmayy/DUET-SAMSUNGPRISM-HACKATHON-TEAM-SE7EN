@@ -233,9 +233,10 @@ flowchart LR
 ```
 
 - **Machine:** Linux x86_64, an NVIDIA GPU with about 8 GB free and a CUDA 12.x or 13.x
-  driver, `git`, `curl`, internet access, about 30 GB of disk. No sudo, no system
-  Python: a pinned `uv` supplies Python 3.11; ffmpeg and the LiveKit server are
-  fetched into `third_party/`.
+  driver, 16 GB of RAM or more (loading the benchmark's NeMo scoring recognizer takes
+  several GB on top of the agent's own), `git`, `curl`, internet access, about 30 GB of
+  disk. No sudo, no system Python: a pinned `uv` supplies Python 3.11; ffmpeg and the
+  LiveKit server are fetched into `third_party/`.
 - **Time:** about two hours for all 100 recordings (the benchmark streams each one in
   real time), plus about 15 minutes of installation on the first run.
 - **What it runs:** the benchmark's **unmodified** `run_tool_benchmark_all_released.py
@@ -251,10 +252,40 @@ at the repository root (git-ignored).
 
 | Variable | Purpose | Required |
 |---|---|---|
-| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create one at [aistudio.google.com](https://aistudio.google.com) (Get API key); Gemma is served free of charge on the free tier | **Yes** (or the next line) |
-| `GOOGLE_API_KEYS` | Several keys, comma-separated, from different projects. Their per-minute limits add up; two or three are recommended for a full run | Recommended |
+| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create one at [aistudio.google.com](https://aistudio.google.com) (Get API key) **in a project without billing**: Google serves Gemma free of charge on the free tier. The preflight tests every key before the run starts and names any problem | **Yes** (or the next line) |
+| `GOOGLE_API_KEYS` | Several keys, comma-separated, each from a different project without billing. Their per-minute limits add up; two or three are recommended for a full run | Recommended |
 | `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | Optional |
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project instead of the local LiveKit server | Optional |
+
+### In a container
+
+The [`Dockerfile`](Dockerfile) runs the same `reproduce.sh` on a clean Ubuntu 22.04 image,
+adding only the tools the script expects (git, curl, xz). It needs the NVIDIA Container
+Toolkit on the host.
+
+```bash
+docker build -t duet .
+docker run --rm --gpus all --shm-size 8g -e GOOGLE_API_KEYS=key1,key2 \
+  -v duet-cache:/duet/third_party -v "$PWD/results/live:/duet/results/live" \
+  duet --only travel_19_695bd157114f0d2317f88617        # or --force for all 100 recordings
+```
+
+### Network access
+
+For a machine behind a firewall, these are every host the reproduction contacts:
+
+| Host | What for | When |
+|---|---|---|
+| `generativelanguage.googleapis.com` | Gemma 4, the language model | Every run |
+| `api.openai.com` | The official gpt-4o judge, when `OPENAI_API_KEY` is set | Evaluation |
+| `pypi.org`, `files.pythonhosted.org` | Python packages, from the lock files | First run |
+| `huggingface.co` and its download hosts (`*.huggingface.co`, `*.hf.co`) | The speech models and the benchmark's Parakeet recognizer | First run |
+| `github.com` and its download hosts (`objects.githubusercontent.com`, `release-assets.githubusercontent.com`) | Full-Duplex-Bench, the LiveKit server, ffmpeg, Python 3.11 builds, one spaCy model | First run |
+| `astral.sh`, `releases.astral.sh` | The pinned `uv`, if it is not installed | First run |
+| `drive.usercontent.google.com` | The benchmark audio, unless `FDB_DATA_DIR` points at a copy | First run |
+
+`bash scripts/doctor.sh` checks that the main one in each row can be reached (all but the
+optional judge's).
 
 ### Run it under your own harness
 

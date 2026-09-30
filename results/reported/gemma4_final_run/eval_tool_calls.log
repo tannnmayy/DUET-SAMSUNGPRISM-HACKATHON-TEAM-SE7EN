@@ -1,0 +1,33 @@
+judge: gemma-4-26b-a4b-it through Google's API (PROXY judge, not official)
+📖 Loading benchmark data from benchmark_data_v2.json...
+📁 Scanning E:\fdb_data\fdb_v3_data_released for provider 'duet'...
+🔍 Found 100 valid result files matching benchmark scenarios.
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+
+📊 EVALUATION REPORT
+========================================================
+  Scenarios evaluated : 100
+  Turn-Take Success   : 100/100 (100.0%)
+
+  By Metric (turn-taken only, N=100):
+    Tool Selection Acc : 91.5%
+    Argument Acc       : 85.0%
+    Response Qual      : 73.0%
+
+  Latency (N=100, turn-taken only):
+    Avg latency        : 4.80s ± 2.37s  (excl. interruptions)
+    Min / Max          : 4.11s / 26.80s
+    Interruptions      : 0 / 100  (0.0%)
+
+  By Domain (all samples):
+    ecommerce_support: tool_selection_acc=89.7%, argument_acc=82.8%, response_qual=75.9%
+    finance_billing: tool_selection_acc=94.7%, argument_acc=94.0%, response_qual=76.0%
+    housing_location: tool_selection_acc=92.3%, argument_acc=87.8%, response_qual=65.4%
+    travel_identity: tool_selection_acc=89.0%, argument_acc=73.3%, response_qual=75.0%
+
+  By Difficulty (all samples):
+    easy: tool_selection_acc=97.2%, argument_acc=86.1%, response_qual=88.9%
+    medium: tool_selection_acc=92.6%, argument_acc=89.7%, response_qual=82.4%
+    hard: tool_selection_acc=83.2%, argument_acc=78.3%, response_qual=43.3%
+
+  📄 Full report saved: E:\duet_fdb\results\live\20260930_170052\duet_evaluation_report.json

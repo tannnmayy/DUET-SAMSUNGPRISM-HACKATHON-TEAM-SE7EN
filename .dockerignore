@@ -1,0 +1,27 @@
+# Never copied into the image: keys, local environments, downloads, run outputs.
+.env
+.env.*
+.venv
+.venv-bench
+.venv-llm
+venv
+third_party
+models
+generated
+results/live
+results/offline
+results/plumbing
+results/llm_server
+**/__pycache__
+**/*.pyc
+.pytest_cache
+*.log
+*.wav
+doctor_report.txt
+duet_results_*.tar.gz
+# the phone app's build outputs and media are not needed to reproduce the benchmark
+app/node_modules
+app/android/.gradle
+app/android/build
+app/android/app/build
+results/galaxy/video

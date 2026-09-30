@@ -28,3 +28,5 @@ doctor_report.txt
 duet_results_*.tar.gz
 .venv-bench/
 .venv-llm/
+# the reported runs keep their process logs: they are part of the record
+!results/reported/*/*.log

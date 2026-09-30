@@ -1,5 +1,5 @@
-// Builds SRM_SE7EN.pptx - the DUET deck. Every number lives in N below.
-// Rebuild after numbers change:  cd tools/deck && npm install pptxgenjs && node build_deck.js ../../SRM_SE7EN.pptx
+// Builds DUET_v1_kit_deck.pptx - the deck of the retired v1. Every number lives in N below.
+// Rebuild after numbers change:  cd tools/deck && npm install pptxgenjs && node build_deck.js ../../DUET_v1_kit_deck.pptx
 const pptxgen = require("pptxgenjs");
 const path = require("path");
 

@@ -1,0 +1,125 @@
+judge: gemma-4-26b-a4b-it through Google's API (PROXY judge, not official)
+📁 Found 100 result files for provider 'duet'
+  🔍 ecommerce_01... Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+FR=4.56s  TC=4.79s  TK=9.81s  filler=✓
+  🔍 ecommerce_01... FR=4.15s  TC=9.76s  TK=15.38s  filler=✓
+  🔍 ecommerce_02... FR=4.15s  TC=4.68s  TK=9.72s  filler=✓
+  🔍 ecommerce_04... FR=4.69s  TC=6.97s  TK=12.5s  filler=✓
+  🔍 ecommerce_05... FR=4.38s  TC=Nones  TK=Nones  filler=✗
+  🔍 ecommerce_06... FR=4.53s  TC=5.4s  TK=Nones  filler=✗
+  🔍 ecommerce_07... FR=4.96s  TC=5.48s  TK=9.69s  filler=✓
+  🔍 ecommerce_08... FR=4.12s  TC=5.7s  TK=9.89s  filler=✓
+  🔍 ecommerce_08... FR=4.14s  TC=4.49s  TK=Nones  filler=✗
+  🔍 ecommerce_09... FR=4.27s  TC=4.56s  TK=9.22s  filler=✓
+  🔍 ecommerce_10... FR=4.83s  TC=6.86s  TK=Nones  filler=✗
+  🔍 ecommerce_11... FR=4.16s  TC=4.74s  TK=8.07s  filler=✓
+  🔍 ecommerce_12... FR=5.08s  TC=Nones  TK=Nones  filler=✓
+  🔍 ecommerce_13... FR=4.28s  TC=6.82s  TK=12.48s  filler=✓
+  🔍 ecommerce_13... FR=5.16s  TC=9.66s  TK=Nones  filler=✗
+  🔍 ecommerce_14... FR=4.29s  TC=5.77s  TK=9.32s  filler=✓
+  🔍 ecommerce_14... FR=4.5s  TC=8.57s  TK=Nones  filler=✗
+  🔍 ecommerce_15... FR=4.22s  TC=6.68s  TK=12.08s  filler=✓
+  🔍 ecommerce_15... FR=4.56s  TC=7.38s  TK=Nones  filler=✗
+  🔍 ecommerce_16... FR=4.67s  TC=8.7s  TK=18.61s  filler=✓
+  🔍 ecommerce_17... FR=4.15s  TC=10.4s  TK=14.63s  filler=✓
+  🔍 ecommerce_18... FR=5.26s  TC=8.24s  TK=Nones  filler=✗
+  🔍 ecommerce_19... FR=4.15s  TC=10.07s  TK=17.32s  filler=✓
+  🔍 ecommerce_20... FR=4.66s  TC=5.92s  TK=Nones  filler=✗
+  🔍 ecommerce_21... FR=4.34s  TC=18.11s  TK=28.02s  filler=✓
+  🔍 ecommerce_21... FR=4.13s  TC=15.17s  TK=Nones  filler=✗
+  🔍 ecommerce_23... FR=4.52s  TC=12.09s  TK=Nones  filler=✗
+  🔍 ecommerce_25... FR=4.16s  TC=10.52s  TK=Nones  filler=✗
+  🔍 ecommerce_25... FR=4.27s  TC=6.6s  TK=Nones  filler=✗
+  🔍 finance_01... FR=4.33s  TC=14.68s  TK=22.28s  filler=✓
+  🔍 finance_01... FR=4.12s  TC=4.79s  TK=8.55s  filler=✓
+  🔍 finance_02... FR=4.56s  TC=5.15s  TK=12.4s  filler=✓
+  🔍 finance_03... FR=4.32s  TC=9.21s  TK=Nones  filler=✗
+  🔍 finance_03... FR=5.83s  TC=7.8s  TK=Nones  filler=✗
+  🔍 finance_04... FR=4.11s  TC=7.05s  TK=Nones  filler=✗
+  🔍 finance_06... FR=4.24s  TC=10.98s  TK=14.74s  filler=✓
+  🔍 finance_07... FR=4.43s  TC=13.41s  TK=17.27s  filler=✓
+  🔍 finance_07... FR=4.21s  TC=30.49s  TK=Nones  filler=✗
+  🔍 finance_08... FR=5.83s  TC=9.15s  TK=14.41s  filler=✓
+  🔍 finance_08... FR=4.24s  TC=26.9s  TK=Nones  filler=✗
+  🔍 finance_10... FR=4.36s  TC=7.41s  TK=Nones  filler=✗
+  🔍 finance_11... FR=4.21s  TC=7.78s  TK=12.16s  filler=✓
+  🔍 finance_12... FR=4.25s  TC=7.88s  TK=Nones  filler=✗
+  🔍 finance_12... FR=4.16s  TC=5.4s  TK=9.33s  filler=✓
+  🔍 finance_14... FR=4.36s  TC=9.01s  TK=13.41s  filler=✓
+  🔍 finance_15... FR=4.4s  TC=7.74s  TK=Nones  filler=✗
+  🔍 finance_16... FR=11.58s  TC=19.53s  TK=24.52s  filler=✓
+  🔍 finance_17... FR=5.52s  TC=6.48s  TK=Nones  filler=✗
+  🔍 finance_18... FR=5.15s  TC=Nones  TK=Nones  filler=✓
+  🔍 finance_19... FR=4.32s  TC=7.77s  TK=12.79s  filler=✓
+  🔍 finance_20... FR=4.54s  TC=15.54s  TK=Nones  filler=✗
+  🔍 finance_21... FR=4.48s  TC=6.99s  TK=13.05s  filler=✓
+  🔍 finance_22... FR=4.31s  TC=8.37s  TK=Nones  filler=✗
+  🔍 finance_23... FR=4.4s  TC=14.38s  TK=19.66s  filler=✓
+  🔍 housing_01... FR=4.31s  TC=7.76s  TK=12.19s  filler=✓
+  🔍 housing_02... FR=5.13s  TC=6.85s  TK=13.02s  filler=✓
+  🔍 housing_03... FR=4.37s  TC=7.02s  TK=Nones  filler=✗
+  🔍 housing_04... FR=4.46s  TC=6.08s  TK=12.29s  filler=✓
+  🔍 housing_05... FR=4.61s  TC=5.44s  TK=12.33s  filler=✓
+  🔍 housing_05... FR=5.42s  TC=6.48s  TK=Nones  filler=✗
+  🔍 housing_06... FR=5.13s  TC=6.21s  TK=10.66s  filler=✓
+  🔍 housing_08... FR=4.99s  TC=8.26s  TK=12.87s  filler=✓
+  🔍 housing_09... FR=4.3s  TC=5.89s  TK=Nones  filler=✗
+  🔍 housing_10... FR=4.33s  TC=8.32s  TK=14.39s  filler=✓
+  🔍 housing_11... FR=4.11s  TC=22.97s  TK=Nones  filler=✗
+  🔍 housing_13... FR=5.12s  TC=7.51s  TK=Nones  filler=✗
+  🔍 housing_14... FR=4.38s  TC=6.13s  TK=12.31s  filler=✓
+  🔍 housing_14... FR=4.4s  TC=7.55s  TK=Nones  filler=✗
+  🔍 housing_15... FR=4.3s  TC=7.68s  TK=Nones  filler=✗
+  🔍 housing_15... FR=5.86s  TC=9.21s  TK=Nones  filler=✗
+  🔍 housing_17... FR=4.67s  TC=19.49s  TK=23.78s  filler=✓
+  🔍 housing_17... FR=4.33s  TC=9.39s  TK=14.87s  filler=✓
+  🔍 housing_18... FR=4.3s  TC=13.84s  TK=Nones  filler=✗
+  🔍 housing_19... FR=4.44s  TC=14.2s  TK=19.47s  filler=✓
+  🔍 housing_20... FR=4.28s  TC=12.45s  TK=Nones  filler=✗
+  🔍 housing_21... FR=4.36s  TC=Nones  TK=Nones  filler=✓
+  🔍 housing_22... FR=4.52s  TC=11.61s  TK=Nones  filler=✗
+  🔍 housing_24... FR=4.3s  TC=13.69s  TK=Nones  filler=✗
+  🔍 housing_24... FR=4.19s  TC=11.75s  TK=Nones  filler=✗
+  🔍 housing_25... FR=4.2s  TC=28.46s  TK=Nones  filler=✗
+  🔍 travel_01... FR=5.2s  TC=5.93s  TK=11.02s  filler=✓
+  🔍 travel_02... FR=4.32s  TC=11.89s  TK=15.66s  filler=✓
+  🔍 travel_03... FR=4.15s  TC=7.12s  TK=Nones  filler=✗
+  🔍 travel_03... FR=4.11s  TC=4.97s  TK=11.96s  filler=✓
+  🔍 travel_05... FR=5.34s  TC=6.05s  TK=Nones  filler=✗
+  🔍 travel_07... FR=4.27s  TC=11.51s  TK=Nones  filler=✗
+  🔍 travel_07... FR=4.24s  TC=9.26s  TK=13.2s  filler=✓
+  🔍 travel_08... FR=4.31s  TC=8.48s  TK=15.96s  filler=✓
+  🔍 travel_10... FR=4.89s  TC=16.68s  TK=22.49s  filler=✓
+  🔍 travel_11... FR=4.48s  TC=9.55s  TK=Nones  filler=✗
+  🔍 travel_14... FR=4.29s  TC=9.7s  TK=13.56s  filler=✓
+  🔍 travel_16... FR=4.29s  TC=4.51s  TK=Nones  filler=✗
+  🔍 travel_18... FR=4.34s  TC=6.8s  TK=Nones  filler=✗
+  🔍 travel_19... FR=4.3s  TC=5.94s  TK=Nones  filler=✗
+  🔍 travel_20... FR=4.31s  TC=8.47s  TK=24.5s  filler=✓
+  🔍 travel_21... FR=4.78s  TC=Nones  TK=Nones  filler=✓
+  🔍 travel_21... FR=4.64s  TC=15.18s  TK=Nones  filler=✗
+  🔍 travel_23... FR=4.2s  TC=7.9s  TK=15.19s  filler=✓
+  🔍 travel_23... FR=26.8s  TC=27.47s  TK=Nones  filler=✗
+  🔍 travel_24... FR=4.37s  TC=Nones  TK=Nones  filler=✓
+
+============================================================
+✅ Analyzed: 100, Skipped (existing): 0, Failed: 0
+
+📊 LATENCY REPORT — DUET
+========================================================
+  Turn-Take Success: 100/100 (100.0%)
+  (Latency metrics below exclude interruptions)
+
+  First Response (N=100):
+    Mean: 4.80s ± 2.37s
+    Min / Median / Max: 4.11s / 4.36s / 26.80s
+  Tool Call (N=94):
+    Mean: 9.78s ± 5.42s
+    Min / Median / Max: 4.49s / 7.90s / 30.49s
+  Task Completion (N=48):
+    Mean: 14.44s ± 4.66s
+    Min / Median / Max: 8.07s / 13.05s / 28.02s
+
+  Filler Usage: 53/53 (100%) use filler sentences
+
+  📄 Report saved: duet_latency_report.json
