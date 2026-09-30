@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>DUET · opening</title>
+<style>
+  :root {
+    --bg: #0b0d12; --ink: #f3f4f7; --muted: #9aa0ad; --faint: #5d6372;
+    --accent: #5b8ff5; --ok: #62c98b; --bad: #f07b70; --hold: #a48ff5; --warn: #e8a54b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink);
+    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+  .scene { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; opacity: 0; }
+  .glow { position: absolute; inset: 0; background:
+    radial-gradient(900px 500px at 50% 42%, rgba(91,143,245,.16), transparent 70%),
+    radial-gradient(700px 400px at 80% 90%, rgba(164,143,245,.10), transparent 70%); }
+
+  /* --- scene 1: the sentence --------------------------------------------------- */
+  #s1 .label { font-size: 26px; letter-spacing: .32em; text-transform: uppercase; color: var(--muted); margin-bottom: 46px; }
+  #wave { display: flex; gap: 7px; align-items: center; height: 120px; margin-bottom: 54px; }
+  #wave i { display: block; width: 9px; border-radius: 5px; background: var(--accent); height: 8px; opacity: .85;
+    transition: height .08s linear; }
+  #say { font-size: 76px; font-weight: 650; letter-spacing: -.01em; min-height: 100px; text-align: center; }
+  #say span { opacity: 0; transition: opacity .25s; }
+  #say span.on { opacity: 1; }
+  #say .fix { color: var(--ok); }
+  #say .old { transition: color .3s, text-decoration-color .3s; text-decoration: line-through transparent 4px; }
+  #say .old.struck { color: var(--faint); text-decoration-color: var(--bad); }
+
+  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 1500px; margin-top: 70px; }
+  .agent { border-radius: 26px; padding: 30px 36px; background: #141824; border: 2px solid #232939; min-height: 190px;
+    opacity: 0; transform: translateY(18px); transition: opacity .5s, transform .5s; }
+  .agent.show { opacity: 1; transform: none; }
+  .agent h3 { font-size: 24px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .agent h3 b { color: var(--ink); }
+  .state { font-size: 40px; font-weight: 600; display: flex; align-items: center; gap: 18px; min-height: 64px; }
+  .state i { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; font-style: normal;
+    font-size: 30px; flex: none; }
+  .st-wait i { background: #262040; color: var(--hold); }
+  .st-go i { background: rgba(232,165,75,.18); color: var(--warn); }
+  .st-bad i { background: rgba(240,123,112,.18); color: var(--bad); }
+  .st-ok i { background: rgba(98,201,139,.18); color: var(--ok); }
+  .st-bad { color: var(--bad); }
+  .st-ok { color: var(--ok); }
+  .note { font-size: 24px; color: var(--muted); margin-top: 12px; min-height: 30px; }
+
+  /* --- scene 2: the problem, in three beats -------------------------------------- */
+  .beat { position: absolute; width: 1500px; text-align: center; font-size: 78px; font-weight: 700;
+    letter-spacing: -.015em; line-height: 1.12; opacity: 0; transform: translateY(24px); }
+  .beat em { font-style: normal; color: var(--accent); }
+  .beat .big { display: block; font-size: 190px; font-weight: 800; color: var(--warn); letter-spacing: -.03em; margin-top: 10px; }
+  .beat small { display: block; font-size: 32px; font-weight: 500; color: var(--muted); margin-top: 22px; letter-spacing: 0; }
+  .beat .big.ok { color: var(--ok); }
+  .nw { white-space: nowrap; }
+
+  /* --- scene 3: the name ------------------------------------------------------------ */
+  #s3 .mark { display: flex; align-items: center; gap: 34px; }
+  #s3 .dot { width: 110px; height: 110px; border-radius: 34px; position: relative;
+    background: linear-gradient(135deg, var(--accent), var(--hold)); box-shadow: 0 0 80px rgba(91,143,245,.45); }
+  #s3 .dot::after { content: ""; position: absolute; inset: 30px 26px; border-radius: 12px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,.95) 0 10px, transparent 10px 20px); opacity: .9; }
+  #s3 h1 { font-size: 200px; font-weight: 800; letter-spacing: .06em; }
+  #s3 .tag { font-size: 50px; font-weight: 600; margin-top: 34px; text-align: center; }
+  #s3 .tag em { font-style: normal; color: var(--accent); }
+  #s3 .sub { font-size: 30px; color: var(--muted); margin-top: 26px; text-align: center; letter-spacing: .01em; }
+  #s3 .foot { position: absolute; bottom: 64px; font-size: 26px; color: var(--faint); letter-spacing: .12em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<section class="scene" id="s1">
+  <div class="label">A real request, as people really say it</div>
+  <div id="wave"></div>
+  <div id="say">
+    <span>Book</span> <span>me</span> <span>a</span> <span>flight</span> <span>to</span> <span class="old">Rome…</span>
+    <span class="fix">no</span> <span class="fix">wait,</span> <span class="fix">Milan.</span>
+  </div>
+  <div class="agents">
+    <div class="agent" id="typical">
+      <h3>A typical voice agent</h3>
+      <div class="state" id="typical-state"></div>
+      <div class="note" id="typical-note"></div>
+    </div>
+    <div class="agent" id="duet">
+      <h3><b>DUET</b></h3>
+      <div class="state" id="duet-state"></div>
+      <div class="note" id="duet-note"></div>
+    </div>
+  </div>
+</section>
+
+<section class="scene" id="s2">
+  <div class="beat" id="b1">People <em>pause</em>, <em>hesitate</em> and <em>correct themselves</em> mid-sentence.</div>
+  <div class="beat" id="b2">Voice agents act <em>before the correction arrives.</em></div>
+  <div class="beat" id="b3">The best published system on <span class="nw">Full-Duplex-Bench v3</span> passes
+    <span class="big">60%</span><small>GPT-Realtime, strict Pass@1 on 100 real recordings</small></div>
+  <div class="beat" id="b4">So we built an agent that <em>waits for what you mean</em>.
+    <span class="big ok" id="pass">–</span><small>DUET on the same 100 recordings, scored by the benchmark's own scripts</small></div>
+</section>
+
+<section class="scene" id="s3">
+  <div class="mark"><div class="dot"></div><h1>DUET</h1></div>
+  <div class="tag">Interrupt it. Correct it. <em>It acts on what you mean.</em></div>
+  <div class="sub">A full-duplex voice agent · Gemma 4 · LiveKit · on Full-Duplex-Bench v3 and on a Samsung Galaxy</div>
+  <div class="foot">Samsung PRISM GenAI Hackathon · Theme 05 · Team SE7EN, SRM</div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+  // One timeline, in seconds from the start of the clip (30 s). The voice lines are laid
+  // under the video at the same times by app/tools/record_intro.js.
+  const T = { lineA: 1.0, lineB: 3.9, s1out: 9.2, b1: 9.6, b2: 13.2, b3: 16.8, b4: 21.4, s2out: 25.0, s3: 25.4 };
+  const $ = (id) => document.getElementById(id);
+  const at = (t, fn) => setTimeout(fn, t * 1000);
+  const fade = (el, on, ms) => { el.style.transition = "opacity " + (ms || 600) + "ms, transform " + (ms || 600) + "ms";
+    el.style.opacity = on ? 1 : 0; el.style.transform = on ? "none" : el.style.transform; };
+
+  // the waveform follows the voice: a fixed envelope per phrase
+  const bars = [];
+  for (let i = 0; i < 44; i++) { const b = document.createElement("i"); $("wave").appendChild(b); bars.push(b); }
+  let speaking = false;
+  (function tick() {
+    bars.forEach((b, i) => {
+      const h = speaking ? 14 + Math.abs(Math.sin(performance.now() / 110 + i * 0.7)) * 70 * (0.45 + 0.55 * Math.abs(Math.sin(i * 1.3)))
+                         : 8;
+      b.style.height = h.toFixed(0) + "px";
+    });
+    requestAnimationFrame(tick);
+  })();
+  const words = Array.from(document.querySelectorAll("#say span"));
+  const show = (i) => words[i].classList.add("on");
+  const state = (who, cls, icon, text, note) => {
+    const el = $(who + "-state");
+    el.className = "state " + cls;
+    el.innerHTML = "<i>" + icon + "</i><span>" + text + "</span>";
+    $(who + "-note").textContent = note || "";
+  };
+
+  const pass = new URLSearchParams(location.search).get("pass");
+  if (pass) $("pass").textContent = pass;
+  // the recorder calls start() once its first frame is in, so the clip and its voice lines line up
+  window.start = () => { run(); return true; };
+  if (!new URLSearchParams(location.search).get("wait")) window.start();
+  function run() {
+  at(0.2, () => fade($("s1"), true, 700));
+  // "Book me a flight to Rome..."
+  at(T.lineA, () => { speaking = true; });
+  [0, 0.28, 0.46, 0.6, 0.98, 1.18].forEach((d, i) => at(T.lineA + d, () => show(i)));
+  at(T.lineA + 1.9, () => { speaking = false; });
+  at(T.lineA + 1.3, () => { $("typical").classList.add("show"); $("duet").classList.add("show");
+    state("typical", "", "…", "Listening"); state("duet", "", "…", "Listening"); });
+  // the pause: the typical agent commits, DUET holds
+  at(T.lineA + 2.2, () => state("typical", "st-go", "✈", "Booking a flight to Rome", "acted on the words so far"));
+  at(T.lineA + 2.2, () => state("duet", "st-wait", "⏸", "Holding the action", "you may not have finished"));
+  // "...no wait, Milan."
+  at(T.lineB, () => { speaking = true; words[5].classList.add("struck"); });
+  [0, 0.3, 0.75].forEach((d, i) => at(T.lineB + d, () => show(6 + i)));
+  at(T.lineB + 1.5, () => { speaking = false; });
+  at(T.lineB + 0.8, () => state("typical", "st-bad", "✕", "Booked: Rome", "the wrong city, and it cannot be undone"));
+  at(T.lineB + 2.6, () => state("duet", "st-ok", "✓", "Booked: Milan", "only the final value, exactly once"));
+  at(T.s1out, () => fade($("s1"), false, 600));
+
+  // three beats
+  at(T.b1 - 0.4, () => fade($("s2"), true, 200));
+  const beat = (id, t0, t1) => { at(t0, () => fade($(id), true, 700)); at(t1, () => fade($(id), false, 450)); };
+  beat("b1", T.b1, T.b2 - 0.5);
+  beat("b2", T.b2, T.b3 - 0.5);
+  beat("b3", T.b3, T.b4 - 0.5);
+  beat("b4", T.b4, T.s2out);
+  at(T.s2out + 0.2, () => fade($("s2"), false, 300));
+
+  // the name
+  at(T.s3, () => fade($("s3"), true, 900));
+  }
+  window.__introLength = 30;
+})();
+</script>
+</body>
+</html>

@@ -63,12 +63,15 @@ def main() -> int:
     lines = ["# %s" % args.name, "", args.note or "", "",
              "Source: `%s` (%s)." % ((src.relative_to(REPO) if REPO in src.parents else src).as_posix(), kind), "",
              "| Metric | Value |", "|---|---|", *headline(summary), ""]
-    if agent:
-        lines += ["Settings: thinker `%s` (thinking %s, sampling %s), talker `%s`, seed %s, "
+    if agent and config.get("dry_run"):
+        lines += ["Settings: no language model (dry run: every closed turn is answered \"Okay.\"); "
                   "endpointing %s-%s s, commit hold %s s." % (
-                      agent.get("thinker_model"), agent.get("thinker_thinking"), agent.get("thinker_sampling"),
-                      agent.get("talker_model"), agent.get("seed"), agent.get("endpoint_min_s"),
-                      agent.get("endpoint_max_s"), agent.get("commit_hold_s")), ""]
+                      agent.get("endpoint_min_s"), agent.get("endpoint_max_s"), agent.get("commit_hold_s")), ""]
+    elif agent:
+        voice = ("talker `%s`" % agent.get("talker_model")) if agent.get("talker_enabled") else "fast voice: fixed lines"
+        lines += ["Settings: thinker `%s` (sampling %s), %s, seed %s, endpointing %s-%s s, commit hold %s s." % (
+                      agent.get("thinker_model"), agent.get("thinker_sampling"), voice, agent.get("seed"),
+                      agent.get("endpoint_min_s"), agent.get("endpoint_max_s"), agent.get("commit_hold_s")), ""]
     if "judge" in summary:
         lines += ["Judge: %s." % summary["judge"], ""]
     lines += ["Full settings: `run_config.json`. Headline numbers: `summary.json`."

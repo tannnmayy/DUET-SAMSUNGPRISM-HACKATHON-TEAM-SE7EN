@@ -17,7 +17,7 @@
         {
           "say": "Set an alarm for 3:30.",
           "wait": "reply",
-          "after": 0.35
+          "after": 1.5
         },
         {
           "say": "No no, cancel that. Set it for 4:30 instead."
@@ -43,7 +43,7 @@
         {
           "say": "Oh wait, I think I know. My brightness is always really high, and I play a lot of games. Is that it?",
           "wait": "barge",
-          "into": 11.0
+          "into": 4.0
         },
         {
           "say": "Yes please, bring the brightness down to forty percent.",

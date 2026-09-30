@@ -40,8 +40,8 @@ SCENARIOS = {
         ("@What alarms do I have now?", 8.0),
     ]),
     "alarm_late": ("assistant", [     # corrected after DUET acted: it must undo 3:30, then set 4:30
-        ("@Set an alarm for 3:30.", 3.5),
-        ("No no, cancel that. Could you set it for 4:30 instead?", 10.0),
+        ("@Set an alarm for 3:30.", 1.0),
+        ("@No no, cancel that. Could you set it for 4:30 instead?", 10.0),
         ("@What alarms do I have now?", 8.0),
     ]),
     "waver": ("assistant", [

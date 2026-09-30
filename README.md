@@ -1,329 +1,375 @@
-# DUET: an interruption-safe, dual-mind voice agent for Full-Duplex-Bench v3
+# DUET: a full-duplex voice agent that acts on what you mean
 
 **Samsung PRISM GenAI Hackathon 3.0 · Theme 05: Interruptible Real-Time Agents · Team SE7EN, SRM**
 
-People interrupt, hesitate and correct themselves mid-sentence. Voice agents that
-act on their behalf break exactly there. The Full-Duplex-Bench v3 paper
-names the failure that costs every published system the most: *"models commit
-intermediate parameters before the correction arrives."* Even the best system
-(GPT-Realtime) fails over 40% of self-correction scenarios.
+People interrupt, hesitate and correct themselves mid-sentence: *"Book a flight to
+Rome, no wait, Milan."* A voice agent that acts on their behalf fails exactly there.
+The Full-Duplex-Bench v3 paper names the failure that costs every published system
+the most: *"models commit intermediate parameters before the correction arrives."*
 
-DUET is a custom LiveKit voice agent built around not doing that, without going
-quiet while it waits:
+**DUET** is a LiveKit voice agent built so that this cannot happen, without going
+quiet while it waits. It pairs two minds, a fast voice that keeps the conversation
+alive and a thinker (**Gemma 4 26B-A4B**) that reasons over the whole request and
+calls the tools, with a **coordinator** that decides *when acting is allowed*.
 
-- **Two minds.**
-  - A **thinker**, **Gemma 4 26B-A4B-it** (Google's open-weights model, Apache 2.0),
-    reasons over the whole request, calls the tools and speaks the outcome.
-  - A **fast voice** covers the wait as soon as the user has clearly finished
-    ("One moment."), gives progress on slow steps, and never claims a result it
-    does not have.
-- **One coordinator** decides *when acting is allowed*:
-  - No tool runs while the user is still speaking, or before the turn has
-    closed and the user has been quiet for a short hold. The hold is longer
-    while they are revising ("no wait…") or mid-sentence ("…and").
-  - A plan made on words the user has since changed is never carried out.
-  - An identical action is never performed twice.
-  - A failed read is retried once, and a failed or uncertain write is never
-    blindly re-sent.
-
-That maps onto the three capabilities the Theme 05 guide asks for:
-
-| Guide | DUET |
+| | |
 |---|---|
-| **Stay responsive**: no dead air, no false "done!" claims | The fast voice speaks while the thinker works. Nothing is announced as done before its tool result. A thinker failure still produces a spoken reply. |
-| **Work asynchronously**: tools, perception and reasoning never block the conversation | Speech recognition, TTS, the model calls and every tool run off the audio loop. A progress line covers slow steps. |
-| **Recover cleanly**: discard stale intent, update tool arguments, never repeat a state-changing action | Epochs discard plans made on words the user has since changed. The commit gate keeps stale values from reaching a tool. The idempotency ledger gives exactly-once actions, including when the user barges in mid-call. |
+| **Benchmark** | Full-Duplex-Bench v3: 100 real recordings, 12 tools, four domains, the official runner and scripts |
+| **Language model** | Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's API |
+| **Speech** | faster-whisper large-v3-turbo, Silero VAD, LiveKit end-of-turn model, Kokoro-82M, all local |
+| **Use-case extension** | DUET for Galaxy: the same agent on a Samsung phone, in three modes ([`app/`](app/README.md)) |
+| **Reproduction** | One command, `bash reproduce.sh` ([below](#reproduce-the-benchmark)) |
 
 ## Results
 
-> Filled in from the reported run's `results/reported/<run>/summary.json`; the full
-> run logs sit next to it (see [Run logs](#run-logs)).
+Full-Duplex-Bench v3, all 100 recordings, streamed in real time through the
+benchmark's own runner and scored by its own scripts. The complete record of the run,
+with every trace and log, is in [`results/reported/{{run_name}}`](results/reported/{{run_name}}).
 
-| System (FDB-v3, 100 items) | Pass@1 | Tool F1 | Arg acc | Resp qual | Turn-take | Latency (task) | Interrupt |
+| System | Pass@1 | Tool selection | Argument accuracy | Response quality | Turn-take | Task latency | Interruptions |
 |---|---|---|---|---|---|---|---|
+| **DUET, Gemma 4 26B-A4B (ours)** | **{{pass_at_1}}** | **{{tool_f1}}** | **{{arg_acc}}** | **{{resp_qual}}** | **{{turn_take}}** | **{{task_latency}}** | **{{interruptions}}** |
 | GPT-Realtime (paper) | 0.600 | 0.876 | 0.680 | 0.792 | 96.0% | 6.89 s | 13.5% |
 | Gemini Live 3.1 (paper) | 0.540 | 0.817 | 0.588 | 0.718 | 78.0% | 4.25 s | 19.2% |
-| Cascaded Whisper→GPT-4o→TTS (paper) | 0.450 | 0.803 | 0.562 | 0.600 | 100% | 10.12 s | 33.0% |
-| **DUET, Gemma 4 26B-A4B (ours)** | *pending* | | | | | | |
+| Cascaded Whisper → GPT-4o → TTS (paper) | 0.450 | 0.803 | 0.562 | 0.600 | 100% | 10.12 s | 33.0% |
 
-**Listening alone, no model** (all 100 recordings through the official runner
-and scripts, the agent answering "Okay." to every closed turn): every
-conversation answered, 12% interruptions, and 4.09 s first-response latency as
-the benchmark measures it, including its constant ~1.9 s recorder offset.
-Record: [`results/reported/listening_dry_run`](results/reported/listening_dry_run).
+{{results_note}}
 
-## Architecture
+How we measured, what the remaining misses are, and how DUET behaves on each kind of
+disfluency: [docs/RESULTS.md](docs/RESULTS.md).
+
+## How DUET works
 
 ```mermaid
-flowchart LR
-    subgraph LiveKit["LiveKit agent: ears and mouth (local GPU)"]
-        A[Room audio in] --> V[Silero VAD]
-        V --> S["ASR: faster-whisper<br/>large-v3-turbo + non-speech filter"]
-        V --> E["End of turn:<br/>turn-detector v1-mini"]
-        TTS["TTS: Kokoro-82M"] --> O[Room audio out]
+flowchart TB
+    U(["User<br/>phone or benchmark recording"]) <-->|"audio · WebRTC"| ROOM[["LiveKit room"]]
+    ROOM --> VAD
+
+    subgraph EARS["Ears · local"]
+        direction LR
+        VAD["Silero VAD"] --> ASR["faster-whisper<br/>large-v3-turbo"]
+        VAD --> EOT["End-of-turn model<br/>turn-detector v1-mini"]
     end
-    subgraph DUET["DUET: the brain"]
-        F["Fast voice<br/>'One moment.', progress lines"]
-        K["Thinker: own tool loop<br/>keep-listening · second look"]
-        C["Coordinator<br/>epochs · commit gate · ledger · failure policy"]
-        P["Key pool<br/>token budget per key · retries · deadline"]
+
+    ASR -->|words| COORD
+    EOT -->|turn closed| COORD
+
+    subgraph BRAIN["DUET brain"]
+        direction LR
+        FAST["Fast voice<br/>'One moment.'"]
+        COORD{{"Coordinator<br/>epochs · commit gate · ledger"}}
+        THINK["Thinker<br/>Gemma 4 26B-A4B"]
+        COORD -->|"open request"| THINK
+        THINK -->|"proposed call"| COORD
+        COORD -.->|"cover the wait"| FAST
     end
-    S --> K
-    E -->|turn closed| C
-    K -->|tool call| C
-    C -->|gate open| B[(12 FDB-v3 tools<br/>benchmark's mock backend)]
-    B --> K
-    K -->|there is work| F
-    F --> TTS
-    K -->|answer with the key facts| TTS
-    K <--> P
-    P <--> G["Gemma 4 26B-A4B-it<br/>Google's API (free tier)"]
+
+    COORD -->|"committed call"| TOOLS[("Tools<br/>12 FDB-v3 APIs")]
+    TOOLS -->|result| THINK
+    THINK <-->|"key pool · backups"| API(["Google API<br/>gemma-4-26b-a4b-it"])
+    THINK -->|"answer with the key facts"| TTS
+    FAST --> TTS
+
+    subgraph MOUTH["Mouth · local"]
+        TTS["Kokoro-82M"]
+    end
+    TTS -->|audio| ROOM
 ```
 
-Details, and why each piece exists: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- **The ears** turn the room audio into words and decide when a turn has ended. They
+  never decide what to do.
+- **The thinker** sees the *open request*, everything the user has said since the last
+  answer that was actually spoken, so a correction that arrives as a separate
+  sentence is always read together with what it corrects. It runs its own tool loop
+  and speaks once, after the tools, with the facts from their results.
+- **The fast voice** covers the wait with a fixed line once the user has clearly
+  finished ("One moment.", then "Still working on it." on long chains). It never
+  names a value, because the user may still be correcting it, and never claims a
+  result.
+- **The coordinator** owns every action. No tool runs while the user is speaking or
+  before the turn has closed and the user has been quiet for a short hold, and a
+  plan made on words the user has since changed is never carried out.
+
+### One turn, with a self-correction
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Ears as Ears<br/>VAD · ASR · end of turn
+    participant Coord as Coordinator
+    participant Thinker as Thinker<br/>Gemma 4
+    participant Voice as Fast voice
+    participant Tools as Tool backend
+
+    User->>Ears: "Book a flight to Rome..."
+    Ears->>Coord: speech started: epoch 1
+    User->>Ears: "...no wait, Milan, on June 3"
+    Ears->>Coord: words, then the turn closes
+    Coord->>Thinker: open request (both sentences)
+    Note over Voice: user quiet for 1.6 s,<br/>thinker still working
+    Voice-->>User: "One moment."
+    Thinker->>Coord: search_flights(Milan, June 3)
+    Coord->>Coord: gate: turn closed, no new words,<br/>quiet for the hold
+    Coord->>Tools: executed once, recorded in the ledger
+    Tools-->>Thinker: FL123, 450 dollars
+    Thinker-->>User: "I found flight FL123 to Milan on June 3 for 450 dollars."
+```
+
+Had the user spoken again at step 8 ("...actually, June 4"), the call would have
+waited at the gate while they spoke and been dropped the moment their new words
+arrived. The next turn re-reads everything and plans again. A cough or a burst of
+room noise, which brings no words, only delays the call.
+
+### The coordinator: when an action may run
+
+```mermaid
+stateDiagram-v2
+    [*] --> Planned: thinker proposes a call
+    Planned --> Held: wait for the turn to close
+    Held --> Held: user speaking, or words may still arrive
+    Held --> Dropped: new words since the plan
+    Held --> Ledger: turn closed, quiet for the hold
+    Ledger --> Answered: identical call already made
+    Ledger --> Running: first time
+    Running --> Done: result
+    Running --> Retried: a read failed, retried once
+    Running --> Unknown: a write timed out, never re-sent
+    Retried --> Done
+    Dropped --> [*]
+    Answered --> [*]
+    Done --> [*]
+    Unknown --> [*]
+```
+
+| Mechanism | What it guarantees |
+|---|---|
+| **Epochs** | Every call carries the epoch of the words its plan was made on. Once the user says anything new, older plans are void, even after the newer turn has closed. |
+| **Commit gate** | A tool runs only after the turn has closed and the user has been quiet for 1.1 s, 1.8 s while they have been revising ("no wait", "actually"), 2.2 s when their last words leave a sentence open ("and...", "um"). |
+| **Idempotency ledger** | An identical call already made in the conversation is answered from the ledger: a state-changing action never happens twice, even when the user barges in mid-call. |
+| **Failure policy** | A failed read is retried once. A failed or timed-out write is never blindly re-sent; the user is told and offered a human agent. |
+| **Keep listening** | When the words are cut off mid-sentence, or announce a detail still to come ("the order number is..."), the thinker calls `keep_listening`: nothing is said or done until the user has been quiet for 2.5 s. |
+
+The full design, with the reasoning behind every threshold:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Reliable model calls
+
+Each benchmark recording gives the agent about 30 seconds after the request before
+the room closes, so a model call must never be lost to a rate limit, a transient
+error or a request that stalls. Every call goes through `duet_voice/gemma_api.py`:
+
+```mermaid
+flowchart TD
+    CALL["Thinker call"] --> ROOM{"A key with room in its<br/>per-minute token budget?"}
+    ROOM -- "not yet" --> WAIT["Wait for room<br/>inside the 28 s deadline"] --> ROOM
+    ROOM -- yes --> SEND["Send the request"]
+    SEND --> ANS{"Outcome"}
+    ANS -- answer --> USE(["Use the first answer"])
+    ANS -- "429 rate limit" --> REST["Rest that key for the delay<br/>Google asks for; next key"] --> ROOM
+    ANS -- "500 · 503 · 504" --> RETRY["Retry in 0.3-0.7 s"] --> ROOM
+    ANS -- "no answer after 6 s" --> BACKUP["Send a backup to the key<br/>with the most room<br/>(up to 4 in flight)"] --> ANS
+```
+
+- **Several keys** (`GOOGLE_API_KEYS`) add up their limits; each call goes to the key
+  with the most room.
+- **A token budget per key and model** (15,000 of Google's 16,000 input tokens per
+  minute): a call is booked before it is sent and waits for room instead of being
+  refused.
+- **Backup requests** for stalls: answers take about 3 s at the median; a request with
+  no answer after 6 s is not abandoned, a second one goes out, and the first answer
+  wins.
+- **No wasted calls**: a turn that closed while its last words were still being
+  transcribed waits for them before the model is called, and nothing is planned
+  during the user's pauses.
+- **Visible**: every request is logged in `agent.log` with its key, time and tokens.
 
 ## Models and providers (declaration)
 
-This is a **custom LiveKit agent**. It is not one of the benchmark's
-realtime-provider presets.
+DUET is a **custom LiveKit agent**, not one of the benchmark's realtime-provider presets.
 
 | Role | Model | Where it runs |
 |---|---|---|
-| Thinker (reasoning, tool calls) | **Gemma 4 26B-A4B-it** (`gemma-4-26b-a4b-it`, open weights, Apache 2.0), with `gemma-4-31b-it` as the fallback if a key is not served the 26B. Sampling: Google's recommendation for Gemma 4 (temperature 1.0, top-p 0.95, top-k 64), seed 7. Gemma 4 always thinks before answering; the API takes no setting for it | **Google's API** (`google-genai` 2.25.0), free of charge on free-tier projects |
-| Fast voice (acknowledgements, progress) | Fixed lines, no model: a hosted call takes seconds, too slow for a line that must come at once | Local |
-| Speech recognition | `faster-whisper` large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, CTranslate2, float16) | Local GPU |
-| Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
+| Thinker: reasoning and tool calls | **Gemma 4 26B-A4B-it** (`gemma-4-26b-a4b-it`), open weights, Apache 2.0. `gemma-4-31b-it` is the fallback if a key is not served the 26B. Sampling as Google recommends for Gemma 4 (temperature 1.0, top-p 0.95, top-k 64), seed 7 on every call | Google's API (`google-genai` 2.25.0) |
+| Fast voice | Fixed lines, no model | Local |
+| Speech recognition | faster-whisper large-v3-turbo (`mobiuslabsgmbh/faster-whisper-large-v3-turbo` @ `0a363e9`, float16) | Local GPU |
 | Voice activity | Silero VAD (LiveKit plugin) | Local CPU |
-| End of turn | LiveKit `turn-detector-v1-mini` (audio model in `livekit-local-inference`) | Local CPU |
+| End of turn | LiveKit `turn-detector-v1-mini` (audio model) | Local CPU |
+| Text-to-speech | Kokoro-82M (`hexgrad/Kokoro-82M` @ `f3ff357`, voice `af_heart`) | Local GPU |
 | Tool backend | The benchmark's own `mock_apis.py`, unmodified | Local |
-| Our own proxy judge (only without gpt-4o) | `gemma-4-26b-a4b-it` (`DUET_PROXY_JUDGE_MODEL` to change), labelled "PROXY judge" in every report | Google's API |
+| LLM judge | The benchmark's gpt-4o when an `OPENAI_API_KEY` is set; otherwise Gemma 4 26B-A4B answers the same prompts and every report says so | OpenAI / Google |
 
-**Why Gemma 4 through Google's API.**
-- **Samsung's preference, and strong at tools.** Gemma 4 26B-A4B is a
-  mixture-of-experts model (25.2B parameters, 3.8B active per token) with native
-  function calling; Google reports 68.2 on τ²-bench for it.
-- **A light, dependable re-run.** Nothing large is downloaded or served locally: the
-  GPU only runs speech (about 6 GB), well inside Samsung's 48 GB card.
-- **Free.** Google serves Gemma free of charge on free-tier projects. The limit
-  that matters is 16,000 input tokens per minute per model per project; a
-  benchmark recording needs a few thousand. See [Rate limits](#rate-limits-and-robustness).
+**Why Gemma 4 26B-A4B.** A mixture-of-experts model (25.2B parameters, 3.8B active per
+token) with native function calling, strong on tool use (68.2 on τ²-bench), and open
+weights anyone can inspect. Served through Google's API, the re-run downloads no large
+model: the GPU runs only the speech models, a few GB, far inside Samsung's 48 GB card.
 
-Every setting can be overridden (`DUET_THINKER_MODEL`, `DUET_TEMPERATURE`, and the
-rest in `duet_voice/config.py`); each run records the effective values in
-`run_config.json`.
+## Reproduce the benchmark
 
-## API keys: which ones, and where they go
+```bash
+export GOOGLE_API_KEYS=key1,key2        # or GOOGLE_API_KEY=key (also read from .env.local)
+bash scripts/doctor.sh                  # optional: is this machine ready? (checks the keys too)
+bash reproduce.sh --only travel_19_695bd157114f0d2317f88617   # a two-minute check
+bash reproduce.sh --force               # all 100 recordings, then the three official evaluations
+```
 
-Set them in the environment, or in `.env.local` at the repository root (git-ignored).
-No key is included in this repository.
+```mermaid
+flowchart LR
+    subgraph SETUP["Set up · first run only"]
+        direction TB
+        A["reproduce.sh"] --> B["Environments<br/>uv · Python 3.11 · lock files"]
+        B --> C["FDB-v3 @ 3e799c4<br/>data, SHA-256 checked"]
+        C --> D["LiveKit server v1.13.7<br/>or your LiveKit Cloud"]
+        D --> E["Speech models<br/>pinned revisions"]
+    end
+    subgraph RUN["Run · bench/run_live.py"]
+        direction TB
+        F["Preflight<br/>every key · tool-calling test"] --> G["Agent worker<br/>+ warm-up conversation"]
+        G --> H["Official runner<br/>100 recordings, real time"]
+        H --> I["Official evaluations<br/>tool calls · pass rate · latency"]
+        I --> J[("results/live/&lt;time&gt;/")]
+    end
+    SETUP ==> RUN
+```
 
-| Variable | Needed for | Required? |
+- **Machine:** Linux x86_64, an NVIDIA GPU with about 8 GB free and a CUDA 12.x or 13.x
+  driver, `git`, `curl`, internet access, about 30 GB of disk. No sudo, no system
+  Python: a pinned `uv` supplies Python 3.11; ffmpeg and the LiveKit server are
+  fetched into `third_party/`.
+- **Time:** about two hours for all 100 recordings (the benchmark streams each one in
+  real time), plus about 15 minutes of installation on the first run.
+- **What it runs:** the benchmark's **unmodified** `run_tool_benchmark_all_released.py
+  --provider duet`, then its three evaluation scripts with `--use-llm`, and prints the
+  headline numbers and the GPU's peak memory.
+- **`--force`** re-runs recordings that already have a result; use it on every full run
+  after the quick check.
+
+### API keys
+
+No key is included in this repository. Set them in the environment or in `.env.local`
+at the repository root (git-ignored).
+
+| Variable | Purpose | Required |
 |---|---|---|
-| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create it at [aistudio.google.com](https://aistudio.google.com) (Get API key) **in a project without billing**: Google serves Gemma free of charge on the free tier and lists no paid-tier offer for it, and a project whose prepaid credits are used up cannot call any model | **Yes** (or the next line) |
-| `GOOGLE_API_KEYS` | Several keys, comma-separated, **recommended: two or three from different free-tier projects**. Each project allows 16,000 input tokens per minute, and a benchmark conversation with a long tool chain can use most of that; a call always goes to the key with the most room | Optional, recommended |
-| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency). Without it our own reports use Gemma 4 as a labelled proxy judge | Optional |
-| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project. Without them, `reproduce.sh` downloads and runs a local LiveKit server (v1.13.7, checksum-verified) on free local ports | Optional |
+| `GOOGLE_API_KEY` | Gemma 4 through Google's API. Create one at [aistudio.google.com](https://aistudio.google.com) (Get API key); Gemma is served free of charge on the free tier | **Yes** (or the next line) |
+| `GOOGLE_API_KEYS` | Several keys, comma-separated, from different projects. Their per-minute limits add up; two or three are recommended for a full run | Recommended |
+| `OPENAI_API_KEY` | The benchmark's gpt-4o judge (argument and response scoring, key-information latency) | Optional |
+| `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | A LiveKit Cloud project instead of the local LiveKit server | Optional |
 
-## Reproduce the benchmark: one command
+### Run it under your own harness
 
-```bash
-export GOOGLE_API_KEY=...        # or GOOGLE_API_KEYS=key1,key2,key3
-bash scripts/doctor.sh           # optional: is this machine ready? (checks the key too)
-bash reproduce.sh --only travel_19_695bd157114f0d2317f88617   # a quick check first
-bash reproduce.sh --force        # all 100 items, then the three official evaluations
-```
-
-- **Target machine:** Linux x86_64 with an NVIDIA GPU (about 8 GB free is enough;
-  Samsung's 48 GB card is plenty) and a driver for CUDA 12.x or 13.x, plus `git`,
-  `curl`, internet access and about 30 GB of disk. No sudo and no system Python
-  needed: a pinned `uv` supplies Python 3.11, and `ffmpeg` and the LiveKit server
-  are fetched into `third_party/`.
-- **Runtime:** about 2 hours. The benchmark streams every recording in real
-  time, and each is about 47 s long. The first run also installs (about 15
-  minutes) and downloads about 5 GB of speech models.
-- **`--force`** re-runs recordings that already have a result (the runner skips
-  them otherwise); use it on every full run after the quick check.
-
-What the script does, in order:
-1. Creates two Python environments with uv (Python 3.11), each from its lock file,
-   so every package, direct and transitive, is at the version of our runs: `.venv`
-   is the agent (`requirements.lock`), `.venv-bench` the benchmark's runner and
-   scoring recognizer (`requirements-bench.lock`, with NVIDIA NeMo).
-2. Clones Full-Duplex-Bench and checks out the pinned commit `3e799c4`.
-3. Downloads the benchmark audio from the Google Drive link in the v3 README and
-   verifies its SHA-256 (retried; an existing copy can be used via `FDB_DATA_DIR`).
-4. Uses your LiveKit Cloud project, or starts a local LiveKit server on free ports.
-5. Pre-downloads the speech models and the scoring recognizer, so the timed run is
-   not a download.
-6. Runs `bench/run_live.py`:
-   - checks, in seconds, that every Google key can use Gemma 4 and that tool calling
-     works (a key on a paid project, a wrong key or no network stops the run here,
-     with the fix, instead of producing 100 failures);
-   - starts the agent (`python -m duet_voice.agent start`) and holds one throwaway
-     warm-up conversation with it;
-   - runs the benchmark's **unmodified** `run_tool_benchmark_all_released.py
-     --provider duet`;
-   - runs its three evaluation scripts (`evaluate_tool_calls.py`,
-     `evaluate_pass_rate.py`, `analyze_tool_latency.py`) with `--use-llm`;
-   - prints the headline numbers and the GPU's peak memory.
-
-### Running the agent under your own harness
-
-The agent is an ordinary LiveKit worker, so it also runs under a harness other
-than ours. It joins every new room in the LiveKit project (no agent name, no
-explicit dispatch), so run only this worker in that project.
+The agent is an ordinary LiveKit worker. It joins every new room in the project (no
+agent name, no explicit dispatch), so run only this worker there.
 
 ```bash
-export LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=... GOOGLE_API_KEY=...
-.venv/bin/python -m duet_voice.prefetch          # once: download and warm the speech models
-.venv/bin/python -m duet_voice.gemma_api         # the keys reach Gemma 4 and tool calling works
-.venv/bin/python -m duet_voice.agent start       # FDB_V3_DIR=... if the benchmark is elsewhere
+.venv/bin/python -m duet_voice.prefetch        # once: download and warm the speech models
+.venv/bin/python -m duet_voice.gemma_api       # the keys reach Gemma 4 and tool calling works
+.venv/bin/python -m duet_voice.agent start     # ready when the log shows "registered worker"
 ```
 
-The worker is ready when its log shows `registered worker`. Then run the
-benchmark's own runner and evaluations with `--provider duet` (or any name). Tool
-calls go to `/tmp/agent_tool_calls.log` in the benchmark's format. The agent's tool
-backend is the benchmark's own `mock_apis.py`, found in
-`third_party/Full-Duplex-Bench/v3` (where `reproduce.sh` clones it) or in `FDB_V3_DIR`.
-
-## Rate limits and robustness
-
-Each benchmark recording gives the agent about 30 seconds after the request ends,
-then the room closes; a model call that waits out a rate limit is a failed
-recording. `duet_voice/gemma_api.py` is built for that:
-
-- **A token budget per key and model** (`DUET_GEMMA_TPM`, 15,000 of the 16,000
-  allowed): each call is booked before it is sent and waits for room rather than
-  being refused. One DUET thinker call is about 2,300 input tokens, and a recording
-  typically needs one to three.
-- **Several keys** (`GOOGLE_API_KEYS`): each call goes to the key with the most room.
-  If Google still refuses one (429), that key rests for the delay Google asks for
-  and the call moves to another at once.
-- **Fast retries** of Google's transient errors (500, 503, 504, timeouts), common
-  on the free tier, within one deadline per call (`DUET_GEMMA_DEADLINE_S`, 28 s: a recording's room closes about 30 s after the request anyway).
-  A bad key, a model the key cannot use, or a malformed request fails at once.
-- **Backup requests.** Now and then a request simply hangs. A request with no
-  answer after 6 s (`DUET_GEMMA_HEDGE_S`; answers take 3 s at the median) is not
-  abandoned: a second one goes to the key with the most room, and the first answer
-  wins. At most four are in flight.
-- **No wasted calls:**
-  - planning during the user's pauses (LiveKit's preemptive generation) is off
-    with a hosted model, and the fast voice needs no model;
-  - a turn that closed while the user's last words were still being transcribed
-    waits for that transcript instead of sending a call the new words would void.
-- **The first recording is not the first conversation.** Before the benchmark
-  starts, `bench/warmup.py` holds one throwaway conversation, so the agent's
-  one-time start-up (WebRTC, the first session) never eats a request.
-- **Every request is logged** in `agent.log` (`gemma: ... answered on key 2 in
-  3.4 s (2,412 input tokens)`, refusals, retries and cancellations), so a run on
-  a slow or busy day can be told apart from a wrong answer.
+Then run the benchmark's own runner and evaluations with `--provider duet`. Tool calls
+go to `/tmp/agent_tool_calls.log` in the benchmark's format.
 
 ## Run logs
 
-Every run writes `results/live/<time>/` (git-ignored). The run we report is copied,
-without audio, to the committed `results/reported/` folder with
-`python bench/publish_run.py results/live/<time> --name <name>`:
+Every run writes `results/live/<time>/`; the run reported above is copied, without
+audio, to [`results/reported/`](results/reported/) by `bench/publish_run.py`.
 
 | File | Content |
 |---|---|
-| `run_config.json` | The agent's effective settings (model, sampling, seed, number of API keys, token budget, listening thresholds), any `DUET_*`/`FDB_*` overrides, the LiveKit target, the scoring ASR, and the code version and machine. |
-| `summary.json` | Headline metrics, plus what the agent did (thinker errors, keep-listening decisions, tool calls), the tokens used, and the GPU's peak memory. |
-| `duet_evaluation_report.json`, `duet_pass_rate_report.json`, `duet_latency_report.json` | The benchmark's own reports. |
-| `items/*.json` | The benchmark's per-item results: transcripts, tool calls, timings. |
-| `traces/*.jsonl` | Our per-conversation trace: every heard segment, turn decision, thinker step, tool call with arguments and outcome, token usage, and STT/TTS/end-of-turn timings. |
-| `agent.log`, `runner.log`, `eval_*.log` | Process logs. |
-
-## Develop
-
-```bash
-python -m duet_voice.agent console          # talk to the agent with your own mic
-python -m duet_voice.gemma_api              # which keys reach Gemma 4; does tool calling work
-python bench/run_live.py --only travel_19   # one benchmark item, official scripts
-python bench/run_live.py --dry-run          # no model, no key: checks listening and plumbing
-python bench/offline_asr.py                 # what the agent's ears hear on all 100 inputs
-python bench/offline_eval.py --judge        # the thinker alone on those transcripts, officially scored
-python bench/offline_eval.py --text script --judge   # on the exact scripts: the reasoning ceiling
-bash scripts/offline_eval.sh                # the same, on a machine set up by reproduce.sh
-python bench/compare_runs.py                # one table of every evaluation, with code version and machine
-python bench/failures.py results/offline/eval_<...>.json   # the failures, grouped by kind of mistake
-python bench/cost_report.py results/live/<run>   # model calls and tokens, from the traces
-python -m pytest tests -q
-```
-
-## Integrity and reproducibility
-
-- **No benchmark item is written into the agent.** Prompts and tool schemas are
-  written from general principles. `tests/test_voice_integrity.py` fails if any
-  argument value the benchmark expects appears in any string the agent contains.
-- **Nothing is cached across scenarios.** Each LiveKit room gets a fresh
-  coordinator, toolbox and conversation state. No model is trained or tuned on
-  the benchmark.
-- **No calls to our own servers.** The only remote services are Google's API
-  (the model) and, when a LiveKit Cloud project is used, LiveKit.
-- **Pinned:**
-  - every Python package, including transitive ones (`requirements*.lock`);
-  - the benchmark commit, the data checksum and the LiveKit server version;
-  - the exact Hugging Face revisions of the speech models;
-  - the model (`gemma-4-26b-a4b-it`, open weights anyone can inspect or run),
-    its sampling settings and a fixed seed on every call. A hosted model is served
-    by Google, so repeated runs can differ slightly; the run logs record exactly
-    what happened in ours.
-- **Robust on someone else's machine.**
-  - The preflight names the problem with a key before anything runs.
-  - The local LiveKit server takes free ports and never reuses another user's.
-  - Downloads and caches stay inside the repository folder.
-- **Tool schemas.** Names, argument names and the call log format are the
-  benchmark's. Arguments that a real API would treat as optional (for example an
-  apartment budget) are optional here, rather than forcing the model to invent a
-  value. Where the mock backend's Python signature needs such a value anyway, the
-  adapter passes a neutral default, and the logged call keeps exactly what the
-  agent asked for. See `duet_voice/fdb_tools.py`.
+| `run_config.json` | The agent's effective settings (model, sampling, seed, keys, token budget, listening thresholds), overrides, the LiveKit target, the scoring recognizer, the code version and the machine |
+| `summary.json` | Headline metrics, what the agent did (keep-listening decisions, tool calls, model errors), tokens, and the GPU's peak memory |
+| `duet_*_report.json` | The benchmark's own evaluation, pass-rate and latency reports |
+| `items/*.json` | The benchmark's per-recording results: transcripts, tool calls, timings |
+| `traces/*.jsonl` | DUET's own trace of each conversation: every heard segment, turn decision, thinker step, tool call with arguments and outcome, token counts, and speech timings |
+| `agent.log`, `runner.log`, `eval_*.log` | Process logs, including one line per model request |
 
 ## Use-case extension: DUET for Galaxy
 
-**The extension is the `app/` folder and `duet_voice/galaxy/`.** It is not used by the
-benchmark run.
+**The extension lives in [`app/`](app/README.md) and [`duet_voice/galaxy/`](duet_voice/galaxy).**
+It is not used by the benchmark run.
 
-The same agent and coordinator run on a Samsung Galaxy phone as an Android app, in
-three modes:
-- **Assistant:** alarms corrected mid-sentence, battery troubleshooting you can
-  interrupt, apps, settings, Maps and the home.
-- **Care:** a companion for older people living alone, with a double-dose guard,
-  family calls and check-ins.
-- **Drive:** route changes mid-sentence, arrival-time messages, the home from the car.
+The same agent, coordinator and model run behind an Android app on a Samsung Galaxy
+phone, in three modes:
 
-Every phone action goes over LiveKit RPC through the same commit gate and ledger,
-plus two guards added for real users:
-- a **consent gate**: a change the user did not ask for is offered, not made;
-- a **second look before speaking**: the answer is checked against the actions
-  that really ran.
+| Mode | For whom | What it shows |
+|---|---|---|
+| **Assistant** | Every Galaxy owner | An alarm corrected mid-sentence; battery troubleshooting from the phone's real readings that you can interrupt; apps, settings, Maps and the home |
+| **Care** | An older person living alone, and their family | Medicines with a double-dose guard, calls and messages to family, reminders, a daily check-in |
+| **Drive** | A driver, eyes on the road | A destination changed mid-sentence, arrival-time messages, the car's climate, the home from the car |
 
-The app shows DUET's steps live ("Never ran", "Done", "Asked first"). How to build
-it, run it and record the demo: [app/README.md](app/README.md). The use-case
-research behind it: [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md).
+```mermaid
+flowchart LR
+    UI["Galaxy phone<br/>DUET app + native plugin"] <==>|"audio · RPC duet.tool ·<br/>timeline events"| ROOM[["LiveKit Cloud room"]]
+    ROOM <==> AGENT["DUET agent<br/>duet_voice/galaxy"]
+    AGENT <--> GEMMA(["Gemma 4 26B-A4B<br/>Google API"])
+```
+
+Every phone action passes the same coordinator as in the benchmark, and the app shows
+each step live: **Planned**, **Never ran** (a plan the user's correction overtook),
+**Done**, **Not repeated**. Real Android interfaces handle alarms, battery and screen
+readings, installed apps, brightness, settings screens, Maps navigation, calls and
+messages; the smart home, the medicine schedule and the car are simulated inside the
+app. Build, run and demo instructions: [app/README.md](app/README.md).
+
+## Engineering quality
+
+- **75 unit tests** (`python -m pytest tests -q`): the coordinator's gate, epochs and
+  ledger; the key pool, backups and deadlines; the speaking rules; tool argument
+  handling; the phone bridge.
+- **No benchmark item is written into the agent.** `tests/test_voice_integrity.py`
+  fails if any argument value the benchmark expects appears in any string the agent
+  contains. Prompts and tool schemas are written from general principles, and nothing
+  is trained or tuned on the benchmark.
+- **Nothing is cached across scenarios.** Each LiveKit room gets a fresh coordinator,
+  toolbox and conversation.
+- **Pinned:** every Python package including transitive ones (`requirements*.lock`),
+  the benchmark commit, the data checksum, the LiveKit server version, the Hugging Face
+  revisions of the speech models, the model name, its sampling and a fixed seed.
+- **Robust on someone else's machine:** the preflight names any problem with a key
+  before anything runs; the local LiveKit server takes free ports and never reuses
+  another user's; downloads and caches stay inside the repository folder.
+- **Tool schemas** keep the benchmark's names, arguments and log format. Arguments a
+  real API treats as optional stay optional, and values are cleaned the way an API
+  takes them (numbers as numbers, dates as month and day, spelled-out ids joined).
 
 ## Repository map
 
 ```
-duet_voice/        the agent: LiveKit entrypoint, thinker, fast voice, coordinator, tools, speech models
-duet_voice/gemma_api.py   Gemma 4 through Google's API: key pool, token budget, retries, preflight
-duet_voice/galaxy/ the use-case extension's agent (phone tools over LiveKit RPC, three modes)
-bench/             benchmark drivers: live runner, offline evaluators, judge adapter, reports
-scripts/           machine check, fast offline evaluation, the extension's demo tools
-app/               the extension: DUET for Galaxy (Android app, web build, demo recorder)
-tests/             coordinator, key pool, speaking-flow, phone-bridge and integrity tests
-docs/              architecture, requirements checklist, findings, use-case research
-reproduce.sh       one-command reproduction
-legacy/kit_v1/     the previous Theme 05 kit and DUET v1 (research record, not used)
+duet_voice/              the agent
+  agent.py               LiveKit entrypoint: ears, fast voice, the turn loop
+  coordinator.py         epochs, commit gate, idempotency ledger, failure policy
+  thinker.py             Gemma 4 tool loop, keep-listening
+  gemma_api.py           key pool, token budget, retries, backup requests, preflight
+  fdb_tools.py           the 12 FDB-v3 tools over the benchmark's mock backend
+  prompts.py             the thinker's instructions
+  galaxy/                the use-case extension's agent: phone tools, three modes
+bench/                   live runner, warm-up, offline evaluators, judge adapter, reports
+scripts/                 machine check, offline evaluation, the extension's demo tools
+app/                     DUET for Galaxy: Android app, web build, demo recorder
+tests/                   75 unit tests
+docs/                    architecture, results, engineering notes, requirements, research
+results/reported/        the reported run: reports, traces and logs
+reproduce.sh             one-command reproduction
+legacy/                  DUET v1 on the original Theme 05 kit (research record, not used)
 ```
+
+## Documentation
+
+| Document | What it covers |
+|---|---|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Every component, the turn lifecycle, the coordinator, the model client, the tools, with diagrams |
+| [docs/RESULTS.md](docs/RESULTS.md) | The reported run in detail: metrics, breakdowns, the remaining misses |
+| [docs/ENGINEERING_NOTES.md](docs/ENGINEERING_NOTES.md) | How the benchmark scores, what we measured, and the decisions each measurement led to |
+| [docs/SAMSUNG_REQUIREMENTS.md](docs/SAMSUNG_REQUIREMENTS.md) | Each line of the Theme 05 guide and where it is met |
+| [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md) | The research behind the extension |
+| [app/README.md](app/README.md) | DUET for Galaxy: build, run, demo |
 
 ## References
 
-- G.-T. Lin, C. Chen, Z. Chen, H.-y. Lee. *Full-Duplex-Bench-v3: Benchmarking Tool Use
-  for Full-Duplex Voice Agents Under Real-World Disfluency.* arXiv:2604.04847, 2026.
-  Code and data: <https://github.com/DanielLin94144/Full-Duplex-Bench> (v3).
-- Gemma 4: <https://ai.google.dev/gemma> · Google's API: <https://ai.google.dev> ·
-  LiveKit Agents: <https://github.com/livekit/agents> · faster-whisper:
-  <https://github.com/SYSTRAN/faster-whisper> · Kokoro-82M:
-  <https://huggingface.co/hexgrad/Kokoro-82M> · Silero VAD:
-  <https://github.com/snakers4/silero-vad>.
+- G.-T. Lin, C. Chen, Z. Chen, H.-y. Lee. *Full-Duplex-Bench-v3: Benchmarking Tool Use for
+  Full-Duplex Voice Agents Under Real-World Disfluency.* arXiv:2604.04847, 2026. Code and
+  data: <https://github.com/DanielLin94144/Full-Duplex-Bench> (v3).
+- Gemma 4: <https://ai.google.dev/gemma> · LiveKit Agents: <https://github.com/livekit/agents> ·
+  faster-whisper: <https://github.com/SYSTRAN/faster-whisper> · Kokoro-82M:
+  <https://huggingface.co/hexgrad/Kokoro-82M> · Silero VAD: <https://github.com/snakers4/silero-vad>

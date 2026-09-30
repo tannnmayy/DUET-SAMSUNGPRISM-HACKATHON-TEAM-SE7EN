@@ -1,6 +1,7 @@
 """The demo's user voices: every scripted line of app/www/demo/scenes.json, spoken by
 Kokoro in the scene's voice (a different voice from DUET's), saved as
-app/www/demo/audio/<scene>_<n>.wav for the app's demo mode to play into the room.
+app/www/demo/audio/<scene>_<n>.wav for the app's demo mode to play into the room; and
+the two lines of the film's opening (app/www/demo/intro.html) as intro_<n>.wav.
 
     python scripts/galaxy_demo_voices.py
 """
@@ -22,6 +23,9 @@ from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(os.path.join(ROOT, ".env.local"))
 
+# the opening's request and its correction, as timed in app/www/demo/intro.html
+INTRO = ["Book me a flight to Rome...", "No wait, Milan."]
+
 
 def main() -> int:
     from duet_voice import speech_models
@@ -39,6 +43,11 @@ def main() -> int:
             path = os.path.join(out, "%s_%d.wav" % (name, i))
             sf.write(path, audio, 24000, subtype="PCM_16")
             print("%-28s %4.1f s  %s" % (os.path.basename(path), len(audio) / 24000, line["say"]))
+    for i, text in enumerate(INTRO):
+        audio = np.concatenate([np.asarray(r.audio, dtype=np.float32) for r in pipe(text, voice="am_michael", speed=1.0)])
+        path = os.path.join(out, "intro_%d.wav" % i)
+        sf.write(path, audio, 24000, subtype="PCM_16")
+        print("%-28s %4.1f s  %s" % (os.path.basename(path), len(audio) / 24000, text))
     return 0
 
 
