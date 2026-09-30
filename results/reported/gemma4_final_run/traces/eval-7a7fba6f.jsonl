@@ -1,0 +1,39 @@
+{"t": 1790764651.4924343, "kind": "session_start", "room": "eval-7a7fba6f", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764651.5895138, "kind": "agent_state", "state": "listening"}
+{"t": 1790764653.8493938, "kind": "user_state", "state": "speaking"}
+{"t": 1790764654.5542927, "kind": "user_state", "state": "listening"}
+{"t": 1790764655.0989916, "kind": "user_state", "state": "speaking"}
+{"t": 1790764655.1244102, "kind": "metrics", "type": "stt_metrics", "duration": 0.5688222999997379, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764655.1387832, "kind": "heard", "text": "Well?"}
+{"t": 1790764658.5007305, "kind": "user_state", "state": "listening"}
+{"t": 1790764658.643061, "kind": "user_state", "state": "speaking"}
+{"t": 1790764659.1065192, "kind": "metrics", "type": "stt_metrics", "duration": 0.6048456999997143, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764659.1078954, "kind": "heard", "text": "I've been looking at flights and"}
+{"t": 1790764662.2887473, "kind": "user_state", "state": "listening"}
+{"t": 1790764662.545287, "kind": "user_state", "state": "speaking"}
+{"t": 1790764662.9141276, "kind": "metrics", "type": "stt_metrics", "duration": 0.6241260999995575, "audio_duration": 4.212, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764662.9159513, "kind": "heard", "text": "I was wondering if you could like check."}
+{"t": 1790764666.3444686, "kind": "user_state", "state": "listening"}
+{"t": 1790764666.7821686, "kind": "user_turn", "text": "Well? I've been looking at flights and I was wondering if you could like check."}
+{"t": 1790764666.7831705, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7897000312805176, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005963000003248453, "speech_id": "speech_ce7abb727c06"}
+{"t": 1790764666.784167, "kind": "think_start", "text": "Well? I've been looking at flights and I was wondering if you could like check.", "audio": false}
+{"t": 1790764666.785168, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764666.927212, "kind": "metrics", "type": "stt_metrics", "duration": 0.5813793000015721, "audio_duration": 4.372, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764666.9279668, "kind": "heard", "text": "What's available to London around August 20th for me?"}
+{"t": 1790764666.9279668, "kind": "agent_state", "state": "listening"}
+{"t": 1790764666.9325721, "kind": "superseded"}
+{"t": 1790764667.7143338, "kind": "user_turn", "text": "What's available to London around August 20th for me?"}
+{"t": 1790764667.7143338, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004945000000589062, "speech_id": "speech_078a4c7c3557"}
+{"t": 1790764667.7156365, "kind": "think_start", "text": "Well? I've been looking at flights and I was wondering if you could like check. What's available to London around August 20th for me?", "audio": false}
+{"t": 1790764667.7388952, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764668.013605, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764668.1417828, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764668.158061, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1255868999978702, "duration": 0.1426711999993131, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_078a4c7c3557"}
+{"t": 1790764672.8583202, "kind": "thinker_decided", "tools": true, "after_s": 5.14}
+{"t": 1790764672.8583202, "kind": "tool_start", "name": "search_flights", "args": {"date": "August 20", "destination": "London"}}
+{"t": 1790764673.4523258, "kind": "tool_done", "name": "search_flights", "args": {"date": "August 20", "destination": "London"}, "outcome": "success"}
+{"t": 1790764674.468781, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3572537000000011, "duration": 0.37097310000172, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_078a4c7c3557"}
+{"t": 1790764676.1945739, "kind": "thinker_say", "text": "I found one flight to London on August 20th for 450 dollars.", "after_s": 8.48, "usage": {"input": 4832, "input_audio": 0, "output": 44, "thinking": 82, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764676.5554237, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.27965540000150213, "duration": 0.3592943000003288, "audio_duration": 5.310000000000002, "cancelled": false, "characters_count": 60, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_078a4c7c3557"}
+{"t": 1790764681.7845218, "kind": "agent_said", "text": "One moment. Still working on it. I found one flight to London on August 20th for 450 dollars."}
+{"t": 1790764681.7860193, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,27 @@
+{"t": 1790762240.5704556, "kind": "session_start", "room": "eval-a37f0fe0", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762240.6266878, "kind": "agent_state", "state": "listening"}
+{"t": 1790762243.3725357, "kind": "user_state", "state": "speaking"}
+{"t": 1790762253.4948907, "kind": "user_state", "state": "listening"}
+{"t": 1790762253.6201098, "kind": "user_state", "state": "speaking"}
+{"t": 1790762254.0865002, "kind": "metrics", "type": "stt_metrics", "duration": 0.5891888000005565, "audio_duration": 10.676, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762254.087687, "kind": "heard", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card."}
+{"t": 1790762262.7708232, "kind": "user_state", "state": "listening"}
+{"t": 1790762263.2179396, "kind": "user_turn", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card."}
+{"t": 1790762263.2189395, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7979533672332764, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004661999992094934, "speech_id": "speech_05307039741d"}
+{"t": 1790762263.2209415, "kind": "think_start", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card.", "audio": false}
+{"t": 1790762263.221942, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762263.4349394, "kind": "metrics", "type": "stt_metrics", "duration": 0.6623334000014438, "audio_duration": 9.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762263.4364038, "kind": "heard", "text": "And finally, can you tell me what kind of benefits the premium car it has?"}
+{"t": 1790762263.4369087, "kind": "agent_state", "state": "listening"}
+{"t": 1790762264.239083, "kind": "user_turn", "text": "And finally, can you tell me what kind of benefits the premium car it has?"}
+{"t": 1790762264.2401454, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003859999997075647, "speech_id": "speech_f62ded10a611"}
+{"t": 1790762264.2411542, "kind": "think_start", "text": "So alright, so first I need to know how much thousand US dollars would be nearest, then I want to change my credit card. And finally, can you tell me what kind of benefits the premium car it has?", "audio": false}
+{"t": 1790762264.2621949, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762264.5377018, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762264.6645935, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762264.681236, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12529999999969732, "duration": 0.1424641999983578, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f62ded10a611"}
+{"t": 1790762292.2293334, "kind": "thinker_error", "text": "no answer from gemma-4-26b-a4b-it within 28 s (3 request(s) unanswered); last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"}
+{"t": 1790762292.5581462, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2983938000015769, "duration": 0.32573600000068836, "audio_duration": 2.6599999999999997, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f62ded10a611"}
+{"t": 1790762292.7306902, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.145802699998967, "duration": 0.17106599999897298, "audio_duration": 2.0349999999999993, "cancelled": false, "characters_count": 29, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_f62ded10a611"}
+{"t": 1790762292.8645394, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790762292.8650455, "kind": "agent_state", "state": "listening"}

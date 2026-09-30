@@ -1,0 +1,450 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "finance_17",
+  "category": "finance_billing",
+  "title": "False Start then Benefits Check",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:56:12.478491",
+  "inference_time_s": 47.87,
+  "room_name": "eval-336a127a",
+  "stream_start_time": 1790762175.2780952,
+  "input_transcript": "I wanted to pay my credit card bill right now, but actually no mind that I can do it online later for now Could you just check what benefits come with the gold card? I'm thinking about upgrading",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        1.62,
+        2.1
+      ]
+    },
+    {
+      "text": "wanted",
+      "timestamp": [
+        2.1,
+        2.32
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.32,
+        2.54
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        2.54,
+        2.74
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        2.74,
+        2.94
+      ]
+    },
+    {
+      "text": "credit",
+      "timestamp": [
+        2.94,
+        3.18
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        3.18,
+        3.42
+      ]
+    },
+    {
+      "text": "bill",
+      "timestamp": [
+        3.42,
+        3.68
+      ]
+    },
+    {
+      "text": "right",
+      "timestamp": [
+        3.68,
+        3.9
+      ]
+    },
+    {
+      "text": "now,",
+      "timestamp": [
+        3.9,
+        4.12
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        4.34,
+        4.36
+      ]
+    },
+    {
+      "text": "actually",
+      "timestamp": [
+        4.36,
+        4.8
+      ]
+    },
+    {
+      "text": "no",
+      "timestamp": [
+        4.8,
+        5.0
+      ]
+    },
+    {
+      "text": "mind",
+      "timestamp": [
+        5.0,
+        5.28
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        5.28,
+        5.62
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.62,
+        6.46
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        6.46,
+        6.64
+      ]
+    },
+    {
+      "text": "do",
+      "timestamp": [
+        6.64,
+        6.98
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        6.98,
+        7.12
+      ]
+    },
+    {
+      "text": "online",
+      "timestamp": [
+        7.12,
+        7.36
+      ]
+    },
+    {
+      "text": "later",
+      "timestamp": [
+        7.36,
+        7.7
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        7.7,
+        7.94
+      ]
+    },
+    {
+      "text": "now",
+      "timestamp": [
+        7.94,
+        8.16
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.16,
+        8.48
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.48,
+        8.68
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        8.68,
+        8.94
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        8.94,
+        9.32
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        9.32,
+        10.2
+      ]
+    },
+    {
+      "text": "benefits",
+      "timestamp": [
+        10.2,
+        10.6
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        10.6,
+        10.84
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        10.84,
+        11.02
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        11.02,
+        11.16
+      ]
+    },
+    {
+      "text": "gold",
+      "timestamp": [
+        11.16,
+        11.36
+      ]
+    },
+    {
+      "text": "card?",
+      "timestamp": [
+        11.36,
+        11.62
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        11.74,
+        11.9
+      ]
+    },
+    {
+      "text": "thinking",
+      "timestamp": [
+        11.9,
+        12.12
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        12.12,
+        12.4
+      ]
+    },
+    {
+      "text": "upgrading",
+      "timestamp": [
+        12.4,
+        12.96
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.96,
+  "latency": {
+    "input_duration_s": 44.293,
+    "output_duration_s": 44.293,
+    "first_speech_s": 18.8
+  },
+  "user_done_unix": 1790762188.2380953,
+  "transcript": "One moment. Still working on it. The gold card comes with 2 % cashback and no foreign transaction fees. One moment.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        18.48,
+        19.02
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        19.02,
+        19.36
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        24.52,
+        25.14
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        25.14,
+        25.46
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        25.46,
+        25.68
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        25.68,
+        25.86
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        26.24,
+        26.76
+      ]
+    },
+    {
+      "text": "gold",
+      "timestamp": [
+        26.76,
+        26.98
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        26.98,
+        27.24
+      ]
+    },
+    {
+      "text": "comes",
+      "timestamp": [
+        27.24,
+        27.58
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        27.58,
+        27.76
+      ]
+    },
+    {
+      "text": "2",
+      "timestamp": [
+        27.76,
+        28.0
+      ]
+    },
+    {
+      "text": "%",
+      "timestamp": [
+        28.0,
+        28.3
+      ]
+    },
+    {
+      "text": "cashback",
+      "timestamp": [
+        28.3,
+        28.92
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        28.92,
+        29.38
+      ]
+    },
+    {
+      "text": "no",
+      "timestamp": [
+        29.38,
+        29.58
+      ]
+    },
+    {
+      "text": "foreign",
+      "timestamp": [
+        29.58,
+        29.92
+      ]
+    },
+    {
+      "text": "transaction",
+      "timestamp": [
+        29.92,
+        30.44
+      ]
+    },
+    {
+      "text": "fees.",
+      "timestamp": [
+        30.44,
+        30.9
+      ]
+    },
+    {
+      "text": "One",
+      "timestamp": [
+        37.34,
+        37.98
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        37.98,
+        38.3
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.52,
+  "audio_agent_speech_start": 18.48,
+  "actual_tool_calls": [
+    {
+      "function": "get_card_benefits",
+      "args": {
+        "card_type": "gold"
+      },
+      "timestamp_start": 19.44,
+      "timestamp_end": 19.44
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,42 @@
+{"t": 1790760106.7702117, "kind": "session_start", "room": "eval-9380358a", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760106.856512, "kind": "agent_state", "state": "listening"}
+{"t": 1790760110.7597184, "kind": "user_state", "state": "speaking"}
+{"t": 1790760115.2685738, "kind": "user_state", "state": "listening"}
+{"t": 1790760115.8465004, "kind": "metrics", "type": "stt_metrics", "duration": 0.5767543999991176, "audio_duration": 5.076, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760115.8599765, "kind": "heard", "text": "Um, so, well, can, can you, uh, track order?"}
+{"t": 1790760115.9718912, "kind": "user_state", "state": "speaking"}
+{"t": 1790760118.1098502, "kind": "user_state", "state": "listening"}
+{"t": 1790760118.258883, "kind": "user_state", "state": "speaking"}
+{"t": 1790760118.6051886, "kind": "metrics", "type": "stt_metrics", "duration": 0.4948084999996354, "audio_duration": 2.708, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760118.6068125, "kind": "heard", "text": "B.O.B. 1-2 for me."}
+{"t": 1790760122.1110256, "kind": "user_state", "state": "listening"}
+{"t": 1790760122.4199617, "kind": "user_state", "state": "speaking"}
+{"t": 1790760122.6363888, "kind": "metrics", "type": "stt_metrics", "duration": 0.5242139000001771, "audio_duration": 4.436, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760122.6383493, "kind": "heard", "text": "I ordered it a few days ago and it should be arriving."}
+{"t": 1790760123.4090528, "kind": "user_state", "state": "listening"}
+{"t": 1790760123.609403, "kind": "user_state", "state": "speaking"}
+{"t": 1790760123.7059364, "kind": "metrics", "type": "stt_metrics", "duration": 0.29536230000121577, "audio_duration": 1.588, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760123.7069364, "kind": "heard", "text": "Soon."}
+{"t": 1790760125.5608554, "kind": "user_state", "state": "listening"}
+{"t": 1790760126.0048647, "kind": "user_turn", "text": "Um, so, well, can, can you, uh, track order? B.O.B. 1-2 for me. I ordered it a few days ago and it should be arriving. Soon."}
+{"t": 1790760126.0058649, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7960093021392822, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00041760000021895394, "speech_id": "speech_71f792aba9be"}
+{"t": 1790760126.0068643, "kind": "think_start", "text": "Um, so, well, can, can you, uh, track order? B.O.B. 1-2 for me. I ordered it a few days ago and it should be arriving. Soon.", "audio": false}
+{"t": 1790760126.0078652, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760126.1063807, "kind": "metrics", "type": "stt_metrics", "duration": 0.5446441000003688, "audio_duration": 2.548, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760126.1082747, "kind": "heard", "text": "But I just wanted to make sure."}
+{"t": 1790760126.1087804, "kind": "agent_state", "state": "listening"}
+{"t": 1790760126.9051883, "kind": "user_turn", "text": "But I just wanted to make sure."}
+{"t": 1790760126.9051883, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004851000012422446, "speech_id": "speech_62abc9523d3c"}
+{"t": 1790760126.9066944, "kind": "think_start", "text": "Um, so, well, can, can you, uh, track order? B.O.B. 1-2 for me. I ordered it a few days ago and it should be arriving. Soon. But I just wanted to make sure.", "audio": false}
+{"t": 1790760126.9320297, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760127.2012596, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760127.340895, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760127.3546553, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13752849999946193, "duration": 0.15167979999932868, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_62abc9523d3c"}
+{"t": 1790760131.5930321, "kind": "thinker_decided", "tools": true, "after_s": 4.69}
+{"t": 1790760131.5930321, "kind": "tool_start", "name": "track_order", "args": {"order_id": "BOB12"}}
+{"t": 1790760131.616284, "kind": "tool_done", "name": "track_order", "args": {"order_id": "BOB12"}, "outcome": "success"}
+{"t": 1790760133.5586565, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23269359999903827, "duration": 0.24650239999937185, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_62abc9523d3c"}
+{"t": 1790760134.5074003, "kind": "thinker_say", "text": "Your order BOB12 is out for delivery.", "after_s": 7.6, "usage": {"input": 5020, "input_audio": 0, "output": 31, "thinking": 163, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760134.6915624, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1815385999998398, "duration": 0.18250529999932041, "audio_duration": 2.96, "cancelled": false, "characters_count": 37, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_62abc9523d3c"}
+{"t": 1790760138.2888343, "kind": "agent_said", "text": "One moment. Still working on it. Your order BOB12 is out for delivery."}
+{"t": 1790760138.2888343, "kind": "agent_state", "state": "listening"}

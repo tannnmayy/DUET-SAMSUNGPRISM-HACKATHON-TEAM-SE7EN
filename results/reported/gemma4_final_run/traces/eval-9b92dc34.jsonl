@@ -1,0 +1,48 @@
+{"t": 1790765384.6469545, "kind": "session_start", "room": "eval-9b92dc34", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765384.6897042, "kind": "agent_state", "state": "listening"}
+{"t": 1790765387.6830447, "kind": "user_state", "state": "speaking"}
+{"t": 1790765390.4732056, "kind": "user_state", "state": "listening"}
+{"t": 1790765391.083581, "kind": "user_state", "state": "speaking"}
+{"t": 1790765391.132387, "kind": "metrics", "type": "stt_metrics", "duration": 0.6580388000002131, "audio_duration": 3.38, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765391.1333861, "kind": "heard", "text": "Okay, I want to look for flights to Rome."}
+{"t": 1790765394.3781152, "kind": "user_state", "state": "listening"}
+{"t": 1790765395.2058275, "kind": "metrics", "type": "stt_metrics", "duration": 0.826476599999296, "audio_duration": 3.924, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765395.2089152, "kind": "heard", "text": "No, wait, I changed my mind. Let's do Milan instead."}
+{"t": 1790765395.2128255, "kind": "user_turn", "text": "Okay, I want to look for flights to Rome. No, wait, I changed my mind. Let's do Milan instead."}
+{"t": 1790765395.2128255, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.1861867904663086, "transcription_delay": 1.1838047504425049, "on_user_turn_completed_delay": 0.00037149999843677506, "speech_id": "speech_770166541961"}
+{"t": 1790765395.216177, "kind": "think_start", "text": "Okay, I want to look for flights to Rome. No, wait, I changed my mind. Let's do Milan instead.", "audio": false}
+{"t": 1790765395.2415984, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765395.3757944, "kind": "user_state", "state": "speaking"}
+{"t": 1790765395.7805238, "kind": "agent_state", "state": "listening"}
+{"t": 1790765397.3872058, "kind": "user_state", "state": "listening"}
+{"t": 1790765397.916704, "kind": "metrics", "type": "stt_metrics", "duration": 0.5293987000004563, "audio_duration": 2.612, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765397.918843, "kind": "heard", "text": "And I was thinking June 1st."}
+{"t": 1790765397.927519, "kind": "user_turn", "text": "And I was thinking June 1st."}
+{"t": 1790765397.927519, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8858261108398438, "transcription_delay": 0.8841421604156494, "on_user_turn_completed_delay": 0.0004001000015705358, "speech_id": "speech_dd01722352cf"}
+{"t": 1790765397.9295642, "kind": "think_start", "text": "Okay, I want to look for flights to Rome. No, wait, I changed my mind. Let's do Milan instead. And I was thinking June 1st.", "audio": false}
+{"t": 1790765397.9519944, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765398.080219, "kind": "user_state", "state": "speaking"}
+{"t": 1790765398.4727044, "kind": "agent_state", "state": "listening"}
+{"t": 1790765402.4270618, "kind": "user_state", "state": "listening"}
+{"t": 1790765402.9284403, "kind": "user_state", "state": "speaking"}
+{"t": 1790765402.9585896, "kind": "metrics", "type": "stt_metrics", "duration": 0.5299822999986645, "audio_duration": 4.948, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765402.9595382, "kind": "heard", "text": "Well, wait, but actually June 3rd works better for me."}
+{"t": 1790765404.081824, "kind": "user_state", "state": "listening"}
+{"t": 1790765404.395139, "kind": "metrics", "type": "stt_metrics", "duration": 0.3119125000011991, "audio_duration": 1.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765404.3961594, "kind": "heard", "text": "Sorry about that."}
+{"t": 1790765404.5131795, "kind": "user_turn", "text": "Well, wait, but actually June 3rd works better for me. Sorry about that."}
+{"t": 1790765404.5147521, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7833554744720459, "transcription_delay": 0.6663353443145752, "on_user_turn_completed_delay": 0.0004718000018328894, "speech_id": "speech_36bd57bcbb78"}
+{"t": 1790765404.515921, "kind": "think_start", "text": "Okay, I want to look for flights to Rome. No, wait, I changed my mind. Let's do Milan instead. And I was thinking June 1st. Well, wait, but actually June 3rd works better for me. Sorry about that.", "audio": false}
+{"t": 1790765404.51795, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765405.7023442, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765405.8433454, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765405.8588595, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1392825000002631, "duration": 0.15520480000122916, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_36bd57bcbb78"}
+{"t": 1790765409.3208728, "kind": "thinker_decided", "tools": true, "after_s": 4.8}
+{"t": 1790765409.3208728, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Milan", "date": "June 3"}}
+{"t": 1790765409.5304656, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Milan", "date": "June 3"}, "outcome": "success"}
+{"t": 1790765412.0610807, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2540542999995523, "duration": 0.2690922000001592, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_36bd57bcbb78"}
+{"t": 1790765418.062478, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24749789999987115, "duration": 0.26235730000189506, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_36bd57bcbb78"}
+{"t": 1790765422.8456879, "kind": "thinker_say", "text": "OK. I've found a flight to Milan on June 3rd for 450 dollars.", "after_s": 18.33, "usage": {"input": 4946, "input_audio": 0, "output": 46, "thinking": 82, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765423.3762226, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.43956210000033025, "duration": 0.5284777999986545, "audio_duration": 5.310000000000002, "cancelled": false, "characters_count": 61, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_36bd57bcbb78"}
+{"t": 1790765428.5956314, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. OK. I've found a flight to Milan on June 3rd for 450 dollars."}
+{"t": 1790765428.5956314, "kind": "agent_state", "state": "listening"}

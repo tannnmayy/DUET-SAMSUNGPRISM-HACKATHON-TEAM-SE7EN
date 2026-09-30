@@ -1,0 +1,409 @@
+{
+  "pid": "66f59c766e7e22e1f90d08f6",
+  "example_id": "housing_08",
+  "category": "housing_location",
+  "title": "False Start Before Filter Update",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:12:44.734169",
+  "inference_time_s": 49.21,
+  "room_name": "eval-2ec08480",
+  "stream_start_time": 1790763167.4945736,
+  "input_transcript": "Okay, so I want to check the listings in. Actually, before I do that, could you just update my search filter so that it only shows me places that allow pets? I have a cat.",
+  "input_asr_chunks": [
+    {
+      "text": "Okay,",
+      "timestamp": [
+        0.34,
+        1.04
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.36,
+        1.6
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        1.6,
+        2.96
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        2.96,
+        3.16
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        3.16,
+        3.26
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        3.26,
+        3.5
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.5,
+        3.76
+      ]
+    },
+    {
+      "text": "listings",
+      "timestamp": [
+        3.76,
+        4.06
+      ]
+    },
+    {
+      "text": "in.",
+      "timestamp": [
+        4.06,
+        4.38
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        4.46,
+        4.74
+      ]
+    },
+    {
+      "text": "before",
+      "timestamp": [
+        5.16,
+        5.58
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.58,
+        6.08
+      ]
+    },
+    {
+      "text": "do",
+      "timestamp": [
+        6.08,
+        6.2
+      ]
+    },
+    {
+      "text": "that,",
+      "timestamp": [
+        6.2,
+        6.42
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        7.12,
+        7.7
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        7.7,
+        7.82
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        7.82,
+        8.02
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        8.02,
+        8.32
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        8.32,
+        8.64
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        8.64,
+        8.98
+      ]
+    },
+    {
+      "text": "filter",
+      "timestamp": [
+        8.98,
+        9.58
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        9.58,
+        9.86
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        9.86,
+        10.04
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        10.04,
+        10.16
+      ]
+    },
+    {
+      "text": "only",
+      "timestamp": [
+        10.16,
+        10.4
+      ]
+    },
+    {
+      "text": "shows",
+      "timestamp": [
+        10.4,
+        10.72
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        10.72,
+        10.88
+      ]
+    },
+    {
+      "text": "places",
+      "timestamp": [
+        10.88,
+        11.2
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        11.2,
+        11.4
+      ]
+    },
+    {
+      "text": "allow",
+      "timestamp": [
+        11.4,
+        11.56
+      ]
+    },
+    {
+      "text": "pets?",
+      "timestamp": [
+        11.56,
+        11.9
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        11.9,
+        12.38
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        12.38,
+        12.52
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        12.52,
+        12.62
+      ]
+    },
+    {
+      "text": "cat.",
+      "timestamp": [
+        12.62,
+        12.82
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.82,
+  "latency": {
+    "input_duration_s": 45.72,
+    "output_duration_s": 45.72,
+    "first_speech_s": 18.1
+  },
+  "user_done_unix": 1790763180.3145735,
+  "transcript": "One moment. Still working on it. Okay, I've updated your search filter to only show pet -friendly listings.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        17.81,
+        18.33
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        18.33,
+        18.69
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        23.89,
+        24.47
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        24.47,
+        24.77
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        24.77,
+        25.01
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        25.01,
+        25.19
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        25.69,
+        26.33
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        26.71,
+        26.89
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        26.89,
+        27.27
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        27.27,
+        27.47
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        27.47,
+        27.67
+      ]
+    },
+    {
+      "text": "filter",
+      "timestamp": [
+        27.67,
+        28.05
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        28.05,
+        28.41
+      ]
+    },
+    {
+      "text": "only",
+      "timestamp": [
+        28.41,
+        28.65
+      ]
+    },
+    {
+      "text": "show",
+      "timestamp": [
+        28.65,
+        28.91
+      ]
+    },
+    {
+      "text": "pet",
+      "timestamp": [
+        28.91,
+        29.17
+      ]
+    },
+    {
+      "text": "-friendly",
+      "timestamp": [
+        29.17,
+        29.47
+      ]
+    },
+    {
+      "text": "listings.",
+      "timestamp": [
+        29.47,
+        29.87
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.99,
+  "audio_agent_speech_start": 17.81,
+  "actual_tool_calls": [
+    {
+      "function": "update_search_filter",
+      "args": {
+        "value": true,
+        "filter_name": "pets_allowed"
+      },
+      "timestamp_start": 21.08,
+      "timestamp_end": 21.13
+    }
+  ],
+  "status": "completed"
+}

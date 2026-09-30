@@ -1,0 +1,50 @@
+{"t": 1790763656.4375286, "kind": "session_start", "room": "eval-829f2546", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763656.481872, "kind": "agent_state", "state": "listening"}
+{"t": 1790763658.731529, "kind": "user_state", "state": "speaking"}
+{"t": 1790763660.9858723, "kind": "user_state", "state": "listening"}
+{"t": 1790763661.61702, "kind": "metrics", "type": "stt_metrics", "duration": 0.6304569000003539, "audio_duration": 2.836, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763661.6183746, "kind": "heard", "text": "Um, so, hmm."}
+{"t": 1790763661.6200109, "kind": "user_turn", "text": "Um, so, hmm."}
+{"t": 1790763661.6210382, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9861385822296143, "transcription_delay": 0.9845023155212402, "on_user_turn_completed_delay": 0.00029010000071139075, "speech_id": "speech_76ebb6951f5d"}
+{"t": 1790763661.6225593, "kind": "think_start", "text": "Um, so, hmm.", "audio": false}
+{"t": 1790763661.646113, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763661.7302341, "kind": "user_state", "state": "speaking"}
+{"t": 1790763662.150384, "kind": "agent_state", "state": "listening"}
+{"t": 1790763665.1012378, "kind": "thinker_decided", "tools": false, "after_s": 3.48}
+{"t": 1790763665.1012378, "kind": "thinker_say", "text": "<silent>", "after_s": 3.48, "usage": {"input": 2379, "input_audio": 0, "output": 3, "thinking": 57, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763666.6039045, "kind": "user_state", "state": "listening"}
+{"t": 1790763666.979256, "kind": "user_state", "state": "speaking"}
+{"t": 1790763667.2277992, "kind": "metrics", "type": "stt_metrics", "duration": 0.6234060999995563, "audio_duration": 5.492, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763667.2294037, "kind": "heard", "text": "I wanted to check the commute from that one listing."}
+{"t": 1790763669.5846884, "kind": "user_state", "state": "listening"}
+{"t": 1790763669.7889156, "kind": "user_state", "state": "speaking"}
+{"t": 1790763670.1656573, "kind": "metrics", "type": "stt_metrics", "duration": 0.5805156000005809, "audio_duration": 3.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763670.167157, "kind": "heard", "text": "Actually, let me skip that for now."}
+{"t": 1790763673.4350111, "kind": "user_state", "state": "listening"}
+{"t": 1790763673.5433862, "kind": "user_state", "state": "speaking"}
+{"t": 1790763674.0055134, "kind": "metrics", "type": "stt_metrics", "duration": 0.5699612999997044, "audio_duration": 4.244, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763674.0074983, "kind": "heard", "text": "Could you just search for a three bedroom in Atlanta?"}
+{"t": 1790763676.6792686, "kind": "user_state", "state": "listening"}
+{"t": 1790763677.129189, "kind": "user_turn", "text": "I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta?"}
+{"t": 1790763677.1301885, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8009202480316162, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0007557999997516163, "speech_id": "speech_6d11d2e6b424"}
+{"t": 1790763677.13162, "kind": "think_start", "text": "Um, so, hmm. I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta?", "audio": false}
+{"t": 1790763677.1326785, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763677.2427013, "kind": "metrics", "type": "stt_metrics", "duration": 0.5622279999988677, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763677.2437017, "kind": "heard", "text": "That's pet friendly. I've got two cats."}
+{"t": 1790763677.2443576, "kind": "agent_state", "state": "listening"}
+{"t": 1790763677.2470744, "kind": "superseded"}
+{"t": 1790763678.0508611, "kind": "user_turn", "text": "That's pet friendly. I've got two cats."}
+{"t": 1790763678.0508611, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00039539999852422625, "speech_id": "speech_c1479e131807"}
+{"t": 1790763678.052871, "kind": "think_start", "text": "Um, so, hmm. I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta? That's pet friendly. I've got two cats.", "audio": false}
+{"t": 1790763678.0760567, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763678.3496752, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763678.482188, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763678.4980931, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13025440000092203, "duration": 0.1468966000011278, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c1479e131807"}
+{"t": 1790763683.6363394, "kind": "thinker_decided", "tools": true, "after_s": 5.58}
+{"t": 1790763683.6363394, "kind": "tool_start", "name": "search_apartments", "args": {"bedrooms": 3, "pets_allowed": true, "city": "Atlanta"}}
+{"t": 1790763684.0386043, "kind": "tool_done", "name": "search_apartments", "args": {"bedrooms": 3, "pets_allowed": true, "city": "Atlanta"}, "outcome": "success"}
+{"t": 1790763684.7487464, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3104846999995061, "duration": 0.324279899999965, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c1479e131807"}
+{"t": 1790763686.7374692, "kind": "thinker_say", "text": "I found one pet-friendly, three-bedroom apartment in Atlanta for $4,900.", "after_s": 8.68, "usage": {"input": 5137, "input_audio": 0, "output": 48, "thinking": 159, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763687.2455814, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4128294000001915, "duration": 0.5053026000005048, "audio_duration": 6.4600000000000035, "cancelled": false, "characters_count": 72, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_c1479e131807"}
+{"t": 1790763693.6332083, "kind": "agent_said", "text": "One moment. Still working on it. I found one pet-friendly, three-bedroom apartment in Atlanta for $4,900."}
+{"t": 1790763693.6332083, "kind": "agent_state", "state": "listening"}

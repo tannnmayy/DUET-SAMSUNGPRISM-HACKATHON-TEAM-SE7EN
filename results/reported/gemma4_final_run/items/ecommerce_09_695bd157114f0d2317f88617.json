@@ -1,0 +1,331 @@
+{
+  "pid": "695bd157114f0d2317f88617",
+  "example_id": "ecommerce_09",
+  "category": "ecommerce_support",
+  "title": "Product Search Self-Correction",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:12:21.358814",
+  "inference_time_s": 48.62,
+  "room_name": "eval-38a2f5c5",
+  "stream_start_time": 1790759544.1573052,
+  "input_transcript": "like, well, um, could you search for running shoes? Actually, no. I just remembered I already have running shoes. Search for hiking boots instead. That's what I actually need.",
+  "input_asr_chunks": [
+    {
+      "text": "like,",
+      "timestamp": [
+        0.11,
+        0.63
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        0.75,
+        0.87
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        1.03,
+        1.29
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        2.37,
+        2.47
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.47,
+        2.61
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        2.61,
+        2.95
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        2.95,
+        3.33
+      ]
+    },
+    {
+      "text": "running",
+      "timestamp": [
+        3.33,
+        3.79
+      ]
+    },
+    {
+      "text": "shoes?",
+      "timestamp": [
+        3.79,
+        4.25
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        4.75,
+        5.43
+      ]
+    },
+    {
+      "text": "no.",
+      "timestamp": [
+        5.49,
+        5.73
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.99,
+        6.55
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        6.55,
+        6.75
+      ]
+    },
+    {
+      "text": "remembered",
+      "timestamp": [
+        6.75,
+        7.21
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        7.21,
+        7.39
+      ]
+    },
+    {
+      "text": "already",
+      "timestamp": [
+        7.39,
+        7.63
+      ]
+    },
+    {
+      "text": "have",
+      "timestamp": [
+        7.63,
+        7.89
+      ]
+    },
+    {
+      "text": "running",
+      "timestamp": [
+        7.89,
+        8.15
+      ]
+    },
+    {
+      "text": "shoes.",
+      "timestamp": [
+        8.15,
+        8.53
+      ]
+    },
+    {
+      "text": "Search",
+      "timestamp": [
+        8.71,
+        9.13
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.13,
+        9.37
+      ]
+    },
+    {
+      "text": "hiking",
+      "timestamp": [
+        9.37,
+        9.75
+      ]
+    },
+    {
+      "text": "boots",
+      "timestamp": [
+        9.75,
+        10.09
+      ]
+    },
+    {
+      "text": "instead.",
+      "timestamp": [
+        10.09,
+        10.57
+      ]
+    },
+    {
+      "text": "That's",
+      "timestamp": [
+        10.93,
+        11.57
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        11.57,
+        11.71
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        11.71,
+        11.93
+      ]
+    },
+    {
+      "text": "actually",
+      "timestamp": [
+        11.93,
+        12.93
+      ]
+    },
+    {
+      "text": "need.",
+      "timestamp": [
+        12.93,
+        13.35
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.35,
+  "latency": {
+    "input_duration_s": 45.06,
+    "output_duration_s": 45.06,
+    "first_speech_s": 17.9
+  },
+  "user_done_unix": 1790759557.5073051,
+  "transcript": "One moment, I found one pair of hiking boots premium for $99 .99.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        17.62,
+        18.16
+      ]
+    },
+    {
+      "text": "moment,",
+      "timestamp": [
+        18.16,
+        18.48
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        22.57,
+        23.07
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        23.07,
+        23.35
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        23.35,
+        23.61
+      ]
+    },
+    {
+      "text": "pair",
+      "timestamp": [
+        23.61,
+        23.85
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        23.85,
+        23.99
+      ]
+    },
+    {
+      "text": "hiking",
+      "timestamp": [
+        23.99,
+        24.25
+      ]
+    },
+    {
+      "text": "boots",
+      "timestamp": [
+        24.25,
+        24.55
+      ]
+    },
+    {
+      "text": "premium",
+      "timestamp": [
+        24.55,
+        24.91
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        24.91,
+        25.51
+      ]
+    },
+    {
+      "text": "$99",
+      "timestamp": [
+        25.51,
+        26.11
+      ]
+    },
+    {
+      "text": ".99.",
+      "timestamp": [
+        26.11,
+        26.75
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.27,
+  "audio_agent_speech_start": 17.62,
+  "actual_tool_calls": [
+    {
+      "function": "search_products",
+      "args": {
+        "query": "hiking boots"
+      },
+      "timestamp_start": 17.91,
+      "timestamp_end": 17.91
+    }
+  ],
+  "status": "completed"
+}

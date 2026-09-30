@@ -1,0 +1,50 @@
+{"t": 1790762527.613629, "kind": "session_start", "room": "eval-a63d7b37", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762527.6654131, "kind": "agent_state", "state": "listening"}
+{"t": 1790762532.8526516, "kind": "user_state", "state": "speaking"}
+{"t": 1790762533.7068982, "kind": "user_state", "state": "listening"}
+{"t": 1790762533.899316, "kind": "user_state", "state": "speaking"}
+{"t": 1790762534.3276405, "kind": "metrics", "type": "stt_metrics", "duration": 0.6200487000005523, "audio_duration": 1.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762534.3291533, "kind": "heard", "text": "Just, um..."}
+{"t": 1790762536.3111823, "kind": "user_state", "state": "listening"}
+{"t": 1790762536.513302, "kind": "user_state", "state": "speaking"}
+{"t": 1790762536.8521562, "kind": "metrics", "type": "stt_metrics", "duration": 0.5389159999995172, "audio_duration": 3.028, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762536.8530257, "kind": "heard", "text": "I want to change my mortgage autopay."}
+{"t": 1790762539.5044906, "kind": "user_state", "state": "listening"}
+{"t": 1790762540.0531137, "kind": "user_state", "state": "speaking"}
+{"t": 1790762540.096262, "kind": "metrics", "type": "stt_metrics", "duration": 0.5913123999998788, "audio_duration": 3.572, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762540.097581, "kind": "heard", "text": "So it pulls from savings."}
+{"t": 1790762541.7109642, "kind": "user_state", "state": "listening"}
+{"t": 1790762542.0083525, "kind": "user_state", "state": "speaking"}
+{"t": 1790762542.0278237, "kind": "metrics", "type": "stt_metrics", "duration": 0.3156403000011778, "audio_duration": 2.292, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762542.0288267, "kind": "heard", "text": "That's the right account for that."}
+{"t": 1790762542.9578235, "kind": "user_state", "state": "listening"}
+{"t": 1790762543.258551, "kind": "metrics", "type": "stt_metrics", "duration": 0.299522799999977, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762543.2598522, "kind": "heard", "text": "Then"}
+{"t": 1790762543.3504884, "kind": "user_state", "state": "speaking"}
+{"t": 1790762549.1005077, "kind": "user_state", "state": "listening"}
+{"t": 1790762549.543816, "kind": "user_turn", "text": "Just, um... I want to change my mortgage autopay. So it pulls from savings. That's the right account for that. Then"}
+{"t": 1790762549.5448184, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7953083515167236, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004552000009425683, "speech_id": "speech_5af12b34e79b"}
+{"t": 1790762549.5458157, "kind": "think_start", "text": "Just, um... I want to change my mortgage autopay. So it pulls from savings. That's the right account for that. Then", "audio": false}
+{"t": 1790762549.5468154, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762549.7584145, "kind": "metrics", "type": "stt_metrics", "duration": 0.6570312000003469, "audio_duration": 6.324, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762549.759996, "kind": "heard", "text": "I also want to set my credit card payment to come from my checking."}
+{"t": 1790762549.7605062, "kind": "agent_state", "state": "listening"}
+{"t": 1790762549.7605062, "kind": "superseded"}
+{"t": 1790762550.5675845, "kind": "user_turn", "text": "I also want to set my credit card payment to come from my checking."}
+{"t": 1790762550.5685976, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0023879000000306405, "speech_id": "speech_88c5bcc7bb61"}
+{"t": 1790762550.569664, "kind": "think_start", "text": "Just, um... I want to change my mortgage autopay. So it pulls from savings. That's the right account for that. Then I also want to set my credit card payment to come from my checking.", "audio": false}
+{"t": 1790762550.5939207, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762550.8696938, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762550.9981666, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762551.0134554, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12616999999954714, "duration": 0.14151359999959823, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88c5bcc7bb61"}
+{"t": 1790762556.8877125, "kind": "thinker_decided", "tools": true, "after_s": 6.32}
+{"t": 1790762556.8877125, "kind": "tool_start", "name": "modify_autopay", "args": {"bill_type": "mortgage", "source_account": "savings"}}
+{"t": 1790762556.8888156, "kind": "tool_done", "name": "modify_autopay", "args": {"bill_type": "mortgage", "source_account": "savings"}, "outcome": "success"}
+{"t": 1790762556.8888156, "kind": "tool_start", "name": "modify_autopay", "args": {"source_account": "checking", "bill_type": "credit_card"}}
+{"t": 1790762556.9120984, "kind": "tool_done", "name": "modify_autopay", "args": {"source_account": "checking", "bill_type": "credit_card"}, "outcome": "success"}
+{"t": 1790762557.2562392, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24322250000113854, "duration": 0.2559270000001561, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88c5bcc7bb61"}
+{"t": 1790762559.0248003, "kind": "thinker_say", "text": "OK. I've updated your autopay settings. Your mortgage will now be paid from your savings, and your credit card will be paid from your checking.", "after_s": 8.46, "usage": {"input": 5170, "input_audio": 0, "output": 89, "thinking": 177, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762559.2715244, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.206548300000577, "duration": 0.24374859999988985, "audio_duration": 3.1100000000000003, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88c5bcc7bb61"}
+{"t": 1790762559.58141, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2170962000000145, "duration": 0.30858809999881487, "audio_duration": 5.685000000000002, "cancelled": false, "characters_count": 103, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88c5bcc7bb61"}
+{"t": 1790762568.0322425, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your autopay settings. Your mortgage will now be paid from your savings, and your credit card will be paid from your checking."}
+{"t": 1790762568.0322425, "kind": "agent_state", "state": "listening"}

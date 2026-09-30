@@ -1,0 +1,53 @@
+{"t": 1790764217.410815, "kind": "session_start", "room": "eval-883a0b26", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764217.460378, "kind": "agent_state", "state": "listening"}
+{"t": 1790764220.115858, "kind": "user_state", "state": "speaking"}
+{"t": 1790764221.7658226, "kind": "user_state", "state": "listening"}
+{"t": 1790764221.8602607, "kind": "user_state", "state": "speaking"}
+{"t": 1790764222.2682202, "kind": "metrics", "type": "stt_metrics", "duration": 0.5011902999976883, "audio_duration": 2.228, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764222.2694516, "kind": "heard", "text": "You know, um..."}
+{"t": 1790764224.7602704, "kind": "user_state", "state": "listening"}
+{"t": 1790764225.180581, "kind": "user_state", "state": "speaking"}
+{"t": 1790764225.261221, "kind": "metrics", "type": "stt_metrics", "duration": 0.4991226000020106, "audio_duration": 3.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764225.262219, "kind": "heard", "text": "Can you first update my filter so pets are allowed?"}
+{"t": 1790764227.5591028, "kind": "user_state", "state": "listening"}
+{"t": 1790764227.9802213, "kind": "user_state", "state": "speaking"}
+{"t": 1790764228.061869, "kind": "metrics", "type": "stt_metrics", "duration": 0.5005375999971875, "audio_duration": 2.996, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764228.0632656, "kind": "heard", "text": "Um, I keep forgetting to set that."}
+{"t": 1790764230.8156295, "kind": "user_state", "state": "listening"}
+{"t": 1790764231.265913, "kind": "user_state", "state": "speaking"}
+{"t": 1790764231.423768, "kind": "metrics", "type": "stt_metrics", "duration": 0.6075086999990162, "audio_duration": 3.412, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764231.424582, "kind": "heard", "text": "Then like search in Seattle for one bedroom."}
+{"t": 1790764234.662136, "kind": "user_state", "state": "listening"}
+{"t": 1790764235.0225651, "kind": "user_state", "state": "speaking"}
+{"t": 1790764235.261487, "kind": "metrics", "type": "stt_metrics", "duration": 0.5980920000001788, "audio_duration": 4.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764235.2634554, "kind": "heard", "text": "And then once you find something, check the transit time."}
+{"t": 1790764238.617354, "kind": "user_state", "state": "listening"}
+{"t": 1790764239.067911, "kind": "user_turn", "text": "You know, um... Can you first update my filter so pets are allowed? Um, I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, check the transit time."}
+{"t": 1790764239.0699098, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8004560470581055, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00043540000115172006, "speech_id": "speech_01d47f22ba89"}
+{"t": 1790764239.071947, "kind": "think_start", "text": "You know, um... Can you first update my filter so pets are allowed? Um, I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, check the transit time.", "audio": false}
+{"t": 1790764239.0729504, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764239.2596595, "kind": "metrics", "type": "stt_metrics", "duration": 0.6405029000015929, "audio_duration": 4.18, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764239.2596595, "kind": "heard", "text": "From there to the stadium because, you know, I go to games pretty often."}
+{"t": 1790764239.2596595, "kind": "agent_state", "state": "listening"}
+{"t": 1790764239.2614584, "kind": "superseded"}
+{"t": 1790764240.0429504, "kind": "user_turn", "text": "From there to the stadium because, you know, I go to games pretty often."}
+{"t": 1790764240.0440273, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00041399999827262945, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764240.0450397, "kind": "think_start", "text": "You know, um... Can you first update my filter so pets are allowed? Um, I keep forgetting to set that. Then like search in Seattle for one bedroom. And then once you find something, check the transit time. From there to the stadium because, you know, I go to games pretty often.", "audio": false}
+{"t": 1790764240.0675914, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764240.355986, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764240.4842587, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764240.5006933, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12686519999988377, "duration": 0.14311569999699714, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764249.4209692, "kind": "thinker_decided", "tools": true, "after_s": 9.37}
+{"t": 1790764249.4209692, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "pets_allowed", "value": true}}
+{"t": 1790764249.5172288, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "pets_allowed", "value": true}, "outcome": "success"}
+{"t": 1790764249.5172288, "kind": "tool_start", "name": "search_apartments", "args": {"bedrooms": 1, "city": "Seattle"}}
+{"t": 1790764249.7830353, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2592697000000044, "duration": 0.2720459000011033, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764250.2186966, "kind": "tool_done", "name": "search_apartments", "args": {"bedrooms": 1, "city": "Seattle"}, "outcome": "success"}
+{"t": 1790764255.9967897, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.391044600000896, "duration": 0.40423530000043684, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764256.3974357, "kind": "tool_start", "name": "calculate_commute", "args": {"origin_address": "APT1", "mode": "transit", "destination_address": "the stadium"}}
+{"t": 1790764257.0342295, "kind": "tool_done", "name": "calculate_commute", "args": {"origin_address": "APT1", "mode": "transit", "destination_address": "the stadium"}, "outcome": "success"}
+{"t": 1790764260.7365363, "kind": "thinker_say", "text": "I've updated your filter to allow pets and found a one-bedroom apartment in Seattle for 4,900. The transit time from that apartment to the stadium is 25 minutes.", "after_s": 20.69, "usage": {"input": 8999, "input_audio": 0, "output": 123, "thinking": 582, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764261.1478264, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2992210000011255, "duration": 0.41008100000181, "audio_duration": 7.435000000000004, "cancelled": false, "characters_count": 94, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764261.3975677, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1742947999991884, "duration": 0.2479867000001832, "audio_duration": 4.685000000000001, "cancelled": false, "characters_count": 66, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_25c37dbd03b6"}
+{"t": 1790764269.959332, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. I've updated your filter to allow pets and found a one-bedroom apartment in Seattle for 4,900. The transit time from that apartment"}
+{"t": 1790764269.959332, "kind": "agent_state", "state": "listening"}

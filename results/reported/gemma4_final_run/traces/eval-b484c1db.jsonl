@@ -1,0 +1,32 @@
+{"t": 1790763099.0827718, "kind": "session_start", "room": "eval-b484c1db", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763099.1399977, "kind": "agent_state", "state": "listening"}
+{"t": 1790763103.94096, "kind": "user_state", "state": "speaking"}
+{"t": 1790763105.238455, "kind": "user_state", "state": "listening"}
+{"t": 1790763105.547266, "kind": "user_state", "state": "speaking"}
+{"t": 1790763105.773379, "kind": "metrics", "type": "stt_metrics", "duration": 0.5331600999998045, "audio_duration": 1.908, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763105.777439, "kind": "heard", "text": "So, hmm."}
+{"t": 1790763109.8440826, "kind": "user_state", "state": "listening"}
+{"t": 1790763110.4009962, "kind": "metrics", "type": "stt_metrics", "duration": 0.5558110000001761, "audio_duration": 4.884, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763110.4028287, "kind": "heard", "text": "I was wondering how long it would take to walk from Oak Street to the gym."}
+{"t": 1790763110.4083366, "kind": "user_state", "state": "speaking"}
+{"t": 1790763112.5986848, "kind": "user_state", "state": "listening"}
+{"t": 1790763112.6937163, "kind": "user_state", "state": "speaking"}
+{"t": 1790763113.142741, "kind": "metrics", "type": "stt_metrics", "duration": 0.5418100999995659, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763113.143884, "kind": "heard", "text": "I'm trying to figure out if"}
+{"t": 1790763115.645373, "kind": "user_state", "state": "listening"}
+{"t": 1790763116.1580067, "kind": "metrics", "type": "stt_metrics", "duration": 0.511382999999114, "audio_duration": 3.54, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763116.1597939, "kind": "heard", "text": "Mmm, I can walk there in the mornings."}
+{"t": 1790763117.783221, "kind": "user_turn", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym. I'm trying to figure out if Mmm, I can walk there in the mornings."}
+{"t": 1790763117.7843509, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4898478984832764, "transcription_delay": 0.8664207458496094, "on_user_turn_completed_delay": 0.0004320999996707542, "speech_id": "speech_defcf245f79d"}
+{"t": 1790763117.785354, "kind": "think_start", "text": "So, hmm. I was wondering how long it would take to walk from Oak Street to the gym. I'm trying to figure out if Mmm, I can walk there in the mornings.", "audio": false}
+{"t": 1790763117.8092856, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763118.0720356, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763118.204718, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763118.220149, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13004619999992428, "duration": 0.14614960000108113, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_defcf245f79d"}
+{"t": 1790763121.1118863, "kind": "thinker_decided", "tools": true, "after_s": 3.33}
+{"t": 1790763121.1118863, "kind": "tool_start", "name": "calculate_commute", "args": {"origin_address": "Oak Street", "mode": "walking", "destination_address": "the gym"}}
+{"t": 1790763121.433815, "kind": "tool_done", "name": "calculate_commute", "args": {"origin_address": "Oak Street", "mode": "walking", "destination_address": "the gym"}, "outcome": "success"}
+{"t": 1790763123.6702538, "kind": "thinker_say", "text": "It will take you about 25 minutes to walk from Oak Street to the gym.", "after_s": 5.88, "usage": {"input": 4877, "input_audio": 0, "output": 53, "thinking": 94, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763124.0132482, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2764251000007789, "duration": 0.340680400000565, "audio_duration": 4.560000000000001, "cancelled": false, "characters_count": 69, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_defcf245f79d"}
+{"t": 1790763128.5107956, "kind": "agent_said", "text": "One moment. It will take you about 25 minutes to walk from Oak Street to the gym."}
+{"t": 1790763128.5107956, "kind": "agent_state", "state": "listening"}

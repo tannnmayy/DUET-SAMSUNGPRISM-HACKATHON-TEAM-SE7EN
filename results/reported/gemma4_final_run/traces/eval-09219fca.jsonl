@@ -1,0 +1,34 @@
+{"t": 1790760386.1915114, "kind": "session_start", "room": "eval-09219fca", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760386.2976902, "kind": "agent_state", "state": "listening"}
+{"t": 1790760388.208719, "kind": "user_state", "state": "speaking"}
+{"t": 1790760389.8138692, "kind": "user_state", "state": "listening"}
+{"t": 1790760390.0644627, "kind": "user_state", "state": "speaking"}
+{"t": 1790760390.3421452, "kind": "metrics", "type": "stt_metrics", "duration": 0.527607199999693, "audio_duration": 2.196, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760390.3569474, "kind": "heard", "text": "Hmm, so like..."}
+{"t": 1790760395.9994745, "kind": "user_state", "state": "listening"}
+{"t": 1790760396.154237, "kind": "user_state", "state": "speaking"}
+{"t": 1790760396.6023538, "kind": "metrics", "type": "stt_metrics", "duration": 0.6021593999994366, "audio_duration": 6.548, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760396.604119, "kind": "heard", "text": "First search for gaming mouse, I want to see what you have, then add the cheapest option in my cart so I can buy it later."}
+{"t": 1790760402.202585, "kind": "user_state", "state": "listening"}
+{"t": 1790760402.7824183, "kind": "metrics", "type": "stt_metrics", "duration": 0.5783410999993066, "audio_duration": 6.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760402.7834892, "kind": "heard", "text": "And while you're at it, could you also track my order PO999? I've been waiting on that one."}
+{"t": 1790760404.3420851, "kind": "user_turn", "text": "Hmm, so like... First search for gaming mouse, I want to see what you have, then add the cheapest option in my cart so I can buy it later. And while you're at it, could you also track my order PO999? I've been waiting on that one."}
+{"t": 1790760404.3430855, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.49049973487854, "transcription_delay": 0.9319038391113281, "on_user_turn_completed_delay": 0.0004406000007293187, "speech_id": "speech_7ea415b3dda2"}
+{"t": 1790760404.3440855, "kind": "think_start", "text": "Hmm, so like... First search for gaming mouse, I want to see what you have, then add the cheapest option in my cart so I can buy it later. And while you're at it, could you also track my order PO999? I've been waiting on that one.", "audio": false}
+{"t": 1790760404.3658667, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760404.6401775, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760404.8021955, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760404.8160384, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16008220000003348, "duration": 0.17499150000003283, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7ea415b3dda2"}
+{"t": 1790760409.557681, "kind": "thinker_decided", "tools": true, "after_s": 5.21}
+{"t": 1790760409.5586824, "kind": "tool_start", "name": "search_products", "args": {"query": "gaming mouse"}}
+{"t": 1790760409.5596807, "kind": "tool_done", "name": "search_products", "args": {"query": "gaming mouse"}, "outcome": "success"}
+{"t": 1790760409.5606835, "kind": "tool_start", "name": "track_order", "args": {"order_id": "PO999"}}
+{"t": 1790760409.5825298, "kind": "tool_done", "name": "track_order", "args": {"order_id": "PO999"}, "outcome": "success"}
+{"t": 1790760411.061981, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3247529000000213, "duration": 0.3398178999996162, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7ea415b3dda2"}
+{"t": 1790760414.0184603, "kind": "tool_start", "name": "add_to_cart", "args": {"product_id": "PROD1", "quantity": 1}}
+{"t": 1790760414.0437396, "kind": "tool_done", "name": "add_to_cart", "args": {"product_id": "PROD1", "quantity": 1}, "outcome": "success"}
+{"t": 1790760417.090066, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.24684350000097766, "duration": 0.2663704999995389, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7ea415b3dda2"}
+{"t": 1790760418.22293, "kind": "thinker_say", "text": "I've added the gaming mouse Premium to your cart for $99.99, and your order PO999 is currently out for delivery.", "after_s": 13.88, "usage": {"input": 8083, "input_audio": 0, "output": 96, "thinking": 315, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760418.4802132, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2512996999994357, "duration": 0.25486999999884574, "audio_duration": 10.059999999999999, "cancelled": false, "characters_count": 112, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7ea415b3dda2"}
+{"t": 1790760428.9975488, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. I've added the gaming mouse Premium to your cart for $99.99, and your order PO999 is currently out for delivery."}
+{"t": 1790760428.9975488, "kind": "agent_state", "state": "listening"}

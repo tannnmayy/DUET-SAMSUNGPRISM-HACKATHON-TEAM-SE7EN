@@ -1,0 +1,21 @@
+{"t": 1790764145.4041739, "kind": "session_start", "room": "eval-2e0b3d51", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764145.5087686, "kind": "agent_state", "state": "listening"}
+{"t": 1790764148.7764914, "kind": "user_state", "state": "speaking"}
+{"t": 1790764164.9539816, "kind": "user_state", "state": "listening"}
+{"t": 1790764165.5494986, "kind": "user_state", "state": "speaking"}
+{"t": 1790764165.6796148, "kind": "metrics", "type": "stt_metrics", "duration": 0.7248779999972612, "audio_duration": 16.788, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764165.693527, "kind": "heard", "text": "So, well, so, you know, I want to search for a place with two bedrooms. Wait, actually, I mean, I meant three bedrooms. We decided we need a home office. Also, check the transit time to the train station. Actually, I'd rather walk, so make that."}
+{"t": 1790764166.854972, "kind": "user_state", "state": "listening"}
+{"t": 1790764167.1555128, "kind": "metrics", "type": "stt_metrics", "duration": 0.2989372000010917, "audio_duration": 1.908, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764167.1563842, "kind": "heard", "text": "Walking time."}
+{"t": 1790764167.3017588, "kind": "user_turn", "text": "So, well, so, you know, I want to search for a place with two bedrooms. Wait, actually, I mean, I meant three bedrooms. We decided we need a home office. Also, check the transit time to the train station. Actually, I'd rather walk, so make that. Walking time."}
+{"t": 1790764167.3029006, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7987868785858154, "transcription_delay": 0.6534123420715332, "on_user_turn_completed_delay": 0.000505299998621922, "speech_id": "speech_505e78f46cd6"}
+{"t": 1790764167.3040078, "kind": "think_start", "text": "So, well, so, you know, I want to search for a place with two bedrooms. Wait, actually, I mean, I meant three bedrooms. We decided we need a home office. Also, check the transit time to the train station. Actually, I'd rather walk, so make that. Walking time.", "audio": false}
+{"t": 1790764167.3287337, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764168.4804695, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764168.6224732, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764168.6364446, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13971639999726904, "duration": 0.15491019999899436, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_505e78f46cd6"}
+{"t": 1790764184.3431509, "kind": "thinker_listen", "reason": "The user hasn't specified a city for the apartment search or which train station they want to check the walking time to.", "after_s": 17.04, "usage": {"input": 2439, "input_audio": 0, "output": 40, "thinking": 702, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764184.3431509, "kind": "listen_done", "quiet_s": 17.49}
+{"t": 1790764197.6573608, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790764197.6584435, "kind": "agent_state", "state": "listening"}

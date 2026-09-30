@@ -1,0 +1,40 @@
+{"t": 1790764452.6702292, "kind": "session_start", "room": "eval-33348151", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764452.7653291, "kind": "agent_state", "state": "listening"}
+{"t": 1790764455.7044618, "kind": "user_state", "state": "speaking"}
+{"t": 1790764462.4499884, "kind": "user_state", "state": "listening"}
+{"t": 1790764462.951871, "kind": "user_state", "state": "speaking"}
+{"t": 1790764463.119236, "kind": "metrics", "type": "stt_metrics", "duration": 0.668555500000366, "audio_duration": 7.348, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764463.1216896, "kind": "heard", "text": "You know, you know, all right, first set the filter so pets are allowed and set the max price to $3,000."}
+{"t": 1790764470.3987486, "kind": "user_state", "state": "listening"}
+{"t": 1790764470.505854, "kind": "user_state", "state": "speaking"}
+{"t": 1790764471.0408196, "kind": "metrics", "type": "stt_metrics", "duration": 0.6396154000030947, "audio_duration": 8.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764471.041776, "kind": "heard", "text": "Then search for places in San Francisco. Wait, actually, change the max price to $3,500 instead."}
+{"t": 1790764474.8096535, "kind": "user_state", "state": "listening"}
+{"t": 1790764475.2438297, "kind": "user_turn", "text": "You know, you know, all right, first set the filter so pets are allowed and set the max price to $3,000. Then search for places in San Francisco. Wait, actually, change the max price to $3,500 instead."}
+{"t": 1790764475.244963, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7848570346832275, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005192999997234438, "speech_id": "speech_d1884556b36c"}
+{"t": 1790764475.2464826, "kind": "think_start", "text": "You know, you know, all right, first set the filter so pets are allowed and set the max price to $3,000. Then search for places in San Francisco. Wait, actually, change the max price to $3,500 instead.", "audio": false}
+{"t": 1790764475.2464826, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764475.4063995, "kind": "metrics", "type": "stt_metrics", "duration": 0.5944387999988976, "audio_duration": 4.916, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764475.4084399, "kind": "heard", "text": "San Francisco is expensive, so I need more room in the budget."}
+{"t": 1790764475.408945, "kind": "agent_state", "state": "listening"}
+{"t": 1790764475.4263642, "kind": "superseded"}
+{"t": 1790764476.197766, "kind": "user_turn", "text": "San Francisco is expensive, so I need more room in the budget."}
+{"t": 1790764476.1987398, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003956000000471249, "speech_id": "speech_5936eaaec652"}
+{"t": 1790764476.200026, "kind": "think_start", "text": "You know, you know, all right, first set the filter so pets are allowed and set the max price to $3,000. Then search for places in San Francisco. Wait, actually, change the max price to $3,500 instead. San Francisco is expensive, so I need more room in the budget.", "audio": false}
+{"t": 1790764476.222945, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764476.4958646, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764476.627708, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764476.642653, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12959300000147778, "duration": 0.1453934000019217, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5936eaaec652"}
+{"t": 1790764502.6800692, "kind": "thinker_decided", "tools": true, "after_s": 26.48}
+{"t": 1790764502.6800692, "kind": "tool_start", "name": "update_search_filter", "args": {"value": true, "filter_name": "pets_allowed"}}
+{"t": 1790764502.856503, "kind": "tool_done", "name": "update_search_filter", "args": {"value": true, "filter_name": "pets_allowed"}, "outcome": "success"}
+{"t": 1790764502.856503, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 3500}}
+{"t": 1790764502.980164, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "max_price", "value": 3500}, "outcome": "success"}
+{"t": 1790764502.980164, "kind": "tool_start", "name": "search_apartments", "args": {"pets_allowed": true, "max_price": 3500, "city": "San Francisco"}}
+{"t": 1790764503.108285, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3161402999976417, "duration": 0.3313445999992837, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5936eaaec652"}
+{"t": 1790764503.6405385, "kind": "tool_done", "name": "search_apartments", "args": {"pets_allowed": true, "max_price": 3500, "city": "San Francisco"}, "outcome": "success"}
+{"t": 1790764505.7685378, "kind": "thinker_say", "text": "OK. I've updated your search filters to allow pets and set a maximum price of $3,500. I found one apartment in San Francisco for $3,400 with one bedroom.", "after_s": 29.57, "usage": {"input": 6828, "input_audio": 0, "output": 131, "thinking": 946, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764506.246506, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.36203549999845563, "duration": 0.47575270000015735, "audio_duration": 7.260000000000004, "cancelled": false, "characters_count": 85, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5936eaaec652"}
+{"t": 1790764506.5649748, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.20374850000007427, "duration": 0.3165558999971836, "audio_duration": 6.285000000000003, "cancelled": false, "characters_count": 67, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5936eaaec652"}
+{"t": 1790764506.7294774, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've"}
+{"t": 1790764506.7304783, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,66 @@
+{
+ "tool_selection_f1": 0.915,
+ "argument_acc": 0.85,
+ "response_qual": 0.73,
+ "turn_take_rate": 1.0,
+ "interruption_rate": 0.0,
+ "avg_response_latency_s": 4.8,
+ "pass_at_1": 0.81,
+ "passed": 81,
+ "total": 100,
+ "pass_by_difficulty": {
+  "easy": 0.861,
+  "medium": 0.882,
+  "hard": 0.667
+ },
+ "pass_by_disfluency": {
+  "PAUSE": 0.722,
+  "FILLER": 0.828,
+  "HESITATION": 0.8,
+  "FALSE_START": 0.917,
+  "SELF_CORRECTION": 0.882
+ },
+ "pass_by_domain": {
+  "ecommerce_support": 0.793,
+  "finance_billing": 0.92,
+  "housing_location": 0.808,
+  "travel_identity": 0.7
+ },
+ "first_response_latency_mean_s": 4.8,
+ "tool_call_latency_mean_s": 9.784,
+ "task_completion_latency_mean_s": 14.438,
+ "agent": {
+  "conversations": 100,
+  "thinker_errors": 4,
+  "keep_listening": 6,
+  "superseded": 46,
+  "talker_lines": 114,
+  "fallback_acks": 114,
+  "thinker_answers": 98,
+  "tool_calls": 139,
+  "tokens": {
+   "gemma-4-26b-a4b-it (thinker)": {
+    "input": 549712,
+    "input_audio": 0,
+    "output": 5824,
+    "thinking": 21211,
+    "calls": 212,
+    "usd": 0.0
+   }
+  },
+  "cost_usd": 0.0,
+  "cost_usd_per_conversation": 0.0,
+  "first_thinker_error": "no answer from gemma-4-26b-a4b-it within 28 s (3 request(s) unanswered); last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'sta"
+ },
+ "gpu": {
+  "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+  "index": "0",
+  "total_mib": 6144,
+  "peak_used_mib": 2947,
+  "peak_used_gib": 2.9,
+  "ours_peak_mib": 0,
+  "ours_peak_gib": 0.0,
+  "ours_at_peak_mib": {}
+ },
+ "git_commit": "add3efd19d89277575c8540d365594f278f880fa"
+}

@@ -1,0 +1,304 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "travel_07",
+  "category": "travel_identity",
+  "title": "Driver License Update",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:41:52.171284",
+  "inference_time_s": 45.39,
+  "room_name": "eval-70c63438",
+  "stream_start_time": 1790764914.9497468,
+  "input_transcript": "The new driver's license number is DL555. Could you swap out the old one and put this new one in there?",
+  "input_asr_chunks": [
+    {
+      "text": "The",
+      "timestamp": [
+        2.27,
+        2.71
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        2.71,
+        2.93
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        2.93,
+        3.49
+      ]
+    },
+    {
+      "text": "license",
+      "timestamp": [
+        3.49,
+        3.75
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        3.75,
+        4.09
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        4.09,
+        4.31
+      ]
+    },
+    {
+      "text": "DL555.",
+      "timestamp": [
+        4.31,
+        7.41
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.17,
+        8.61
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.61,
+        8.73
+      ]
+    },
+    {
+      "text": "swap",
+      "timestamp": [
+        8.73,
+        9.11
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        9.11,
+        9.29
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        9.29,
+        9.47
+      ]
+    },
+    {
+      "text": "old",
+      "timestamp": [
+        9.47,
+        9.67
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        9.67,
+        9.91
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        9.91,
+        10.07
+      ]
+    },
+    {
+      "text": "put",
+      "timestamp": [
+        10.07,
+        10.29
+      ]
+    },
+    {
+      "text": "this",
+      "timestamp": [
+        10.29,
+        10.59
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        10.59,
+        10.99
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        10.99,
+        11.21
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        11.21,
+        11.35
+      ]
+    },
+    {
+      "text": "there?",
+      "timestamp": [
+        11.35,
+        11.55
+      ]
+    }
+  ],
+  "user_speech_end_rel": 11.55,
+  "latency": {
+    "input_duration_s": 41.82,
+    "output_duration_s": 41.82,
+    "first_speech_s": 16.1
+  },
+  "user_done_unix": 1790764926.4997468,
+  "transcript": "One moment. Still working on it. Okay, I've updated your driver's license number on file. One moment.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        15.79,
+        16.35
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        16.35,
+        16.67
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        22.93,
+        23.53
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        23.53,
+        23.85
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        23.85,
+        24.09
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        24.09,
+        24.27
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        24.75,
+        25.37
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        25.77,
+        25.95
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        25.95,
+        26.33
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        26.33,
+        26.53
+      ]
+    },
+    {
+      "text": "driver's",
+      "timestamp": [
+        26.53,
+        27.01
+      ]
+    },
+    {
+      "text": "license",
+      "timestamp": [
+        27.01,
+        27.33
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        27.33,
+        27.69
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        27.69,
+        27.91
+      ]
+    },
+    {
+      "text": "file.",
+      "timestamp": [
+        27.91,
+        28.29
+      ]
+    },
+    {
+      "text": "One",
+      "timestamp": [
+        34.68,
+        35.32
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        35.32,
+        35.62
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.24,
+  "audio_agent_speech_start": 15.79,
+  "actual_tool_calls": [
+    {
+      "function": "update_identity_doc",
+      "args": {
+        "doc_type": "driver_license",
+        "doc_number": "DL55555"
+      },
+      "timestamp_start": 20.81,
+      "timestamp_end": 20.81
+    }
+  ],
+  "status": "completed"
+}

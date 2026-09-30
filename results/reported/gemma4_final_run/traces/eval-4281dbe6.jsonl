@@ -1,0 +1,24 @@
+{"t": 1790761054.602595, "kind": "session_start", "room": "eval-4281dbe6", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761054.7064245, "kind": "agent_state", "state": "listening"}
+{"t": 1790761057.6696002, "kind": "user_state", "state": "speaking"}
+{"t": 1790761064.6230044, "kind": "user_state", "state": "listening"}
+{"t": 1790761065.0095026, "kind": "user_state", "state": "speaking"}
+{"t": 1790761065.2096171, "kind": "metrics", "type": "stt_metrics", "duration": 0.5865051000000676, "audio_duration": 7.54, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761065.211733, "kind": "heard", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to Euros."}
+{"t": 1790761066.3637362, "kind": "user_state", "state": "listening"}
+{"t": 1790761066.6780035, "kind": "metrics", "type": "stt_metrics", "duration": 0.31278930000007676, "audio_duration": 1.94, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761066.6785076, "kind": "heard", "text": "Could you check that for me?"}
+{"t": 1790761066.8092277, "kind": "user_turn", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to Euros. Could you check that for me?"}
+{"t": 1790761066.8102264, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7974915504455566, "transcription_delay": 0.666771411895752, "on_user_turn_completed_delay": 0.0004673999992519384, "speech_id": "speech_5ce1946d2de3"}
+{"t": 1790761066.8112268, "kind": "think_start", "text": "Like I'm trying to figure out how much 500 US dollars would be if I converted it to Euros. Could you check that for me?", "audio": false}
+{"t": 1790761066.835048, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761067.9780827, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761068.1230147, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761068.1394873, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14289889999963634, "duration": 0.15985120000004827, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5ce1946d2de3"}
+{"t": 1790761070.5643904, "kind": "thinker_decided", "tools": true, "after_s": 3.75}
+{"t": 1790761070.5653892, "kind": "tool_start", "name": "get_exchange_rate", "args": {"to_currency": "EUR", "amount": 500, "from_currency": "USD"}}
+{"t": 1790761070.5683885, "kind": "tool_done", "name": "get_exchange_rate", "args": {"to_currency": "EUR", "amount": 500, "from_currency": "USD"}, "outcome": "success"}
+{"t": 1790761072.2865882, "kind": "thinker_say", "text": "500 US dollars is 450 Euros.", "after_s": 5.48, "usage": {"input": 4894, "input_audio": 0, "output": 46, "thinking": 83, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761072.7400136, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3977595000014844, "duration": 0.4515673000005336, "audio_duration": 3.8850000000000007, "cancelled": false, "characters_count": 28, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_5ce1946d2de3"}
+{"t": 1790761076.5839007, "kind": "agent_said", "text": "One moment. 500 US dollars is 450 Euros."}
+{"t": 1790761076.5839007, "kind": "agent_state", "state": "listening"}

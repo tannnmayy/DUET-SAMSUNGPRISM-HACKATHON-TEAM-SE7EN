@@ -1,0 +1,466 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "ecommerce_10",
+  "category": "ecommerce_support",
+  "title": "Track + Search Combo",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:13:28.106995",
+  "inference_time_s": 53.71,
+  "room_name": "eval-7d500023",
+  "stream_start_time": 1790759610.8993986,
+  "input_transcript": "hmm like like first can you track my order the ID is 123 ABC and then while we're at it could you also search for winter jackets under $150 um I need one for my trip",
+  "input_asr_chunks": [
+    {
+      "text": "hmm",
+      "timestamp": [
+        0.0,
+        0.6
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        0.6,
+        1.3
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        1.3,
+        1.82
+      ]
+    },
+    {
+      "text": "first",
+      "timestamp": [
+        1.82,
+        3.26
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        3.26,
+        3.6
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        3.6,
+        3.88
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        3.88,
+        4.5
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        4.5,
+        4.92
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        4.92,
+        5.32
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.32,
+        6.06
+      ]
+    },
+    {
+      "text": "ID",
+      "timestamp": [
+        6.06,
+        6.34
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        6.34,
+        6.82
+      ]
+    },
+    {
+      "text": "123",
+      "timestamp": [
+        6.82,
+        7.44
+      ]
+    },
+    {
+      "text": "ABC",
+      "timestamp": [
+        7.44,
+        8.06
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        8.06,
+        9.72
+      ]
+    },
+    {
+      "text": "then",
+      "timestamp": [
+        9.72,
+        10.08
+      ]
+    },
+    {
+      "text": "while",
+      "timestamp": [
+        10.08,
+        11.42
+      ]
+    },
+    {
+      "text": "we're",
+      "timestamp": [
+        11.42,
+        12.32
+      ]
+    },
+    {
+      "text": "at",
+      "timestamp": [
+        12.32,
+        12.48
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        12.48,
+        12.72
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        12.72,
+        13.42
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        13.42,
+        13.62
+      ]
+    },
+    {
+      "text": "also",
+      "timestamp": [
+        13.62,
+        14.02
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        14.02,
+        14.44
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        14.44,
+        14.98
+      ]
+    },
+    {
+      "text": "winter",
+      "timestamp": [
+        14.98,
+        15.4
+      ]
+    },
+    {
+      "text": "jackets",
+      "timestamp": [
+        15.4,
+        15.86
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        15.86,
+        16.2
+      ]
+    },
+    {
+      "text": "$150",
+      "timestamp": [
+        16.2,
+        16.92
+      ]
+    },
+    {
+      "text": "um",
+      "timestamp": [
+        16.92,
+        17.52
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        17.52,
+        18.14
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        18.14,
+        18.42
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        18.42,
+        18.76
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        18.76,
+        19.02
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        19.02,
+        19.26
+      ]
+    },
+    {
+      "text": "trip",
+      "timestamp": [
+        19.26,
+        19.54
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.54,
+  "latency": {
+    "input_duration_s": 50.16,
+    "output_duration_s": 50.16,
+    "first_speech_s": 24.65
+  },
+  "user_done_unix": 1790759630.4393985,
+  "transcript": "One moment. Still working on it. Okay, your order 123 ABC is out for delivery, and I found a winter jackets premium for $140.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        24.37,
+        24.91
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        24.91,
+        25.25
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        30.46,
+        31.04
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        31.04,
+        31.34
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        31.34,
+        31.56
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        31.56,
+        31.74
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        32.24,
+        32.94
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        33.42,
+        33.56
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        33.56,
+        33.82
+      ]
+    },
+    {
+      "text": "123",
+      "timestamp": [
+        33.82,
+        34.6
+      ]
+    },
+    {
+      "text": "ABC",
+      "timestamp": [
+        34.6,
+        35.34
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        35.34,
+        35.94
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        35.94,
+        36.16
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        36.16,
+        36.34
+      ]
+    },
+    {
+      "text": "delivery,",
+      "timestamp": [
+        36.34,
+        36.74
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        36.98,
+        37.4
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        37.4,
+        37.52
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        37.52,
+        37.78
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        37.78,
+        37.9
+      ]
+    },
+    {
+      "text": "winter",
+      "timestamp": [
+        37.9,
+        38.14
+      ]
+    },
+    {
+      "text": "jackets",
+      "timestamp": [
+        38.14,
+        38.6
+      ]
+    },
+    {
+      "text": "premium",
+      "timestamp": [
+        38.6,
+        39.0
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        39.0,
+        39.42
+      ]
+    },
+    {
+      "text": "$140.",
+      "timestamp": [
+        39.42,
+        40.26
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.83,
+  "audio_agent_speech_start": 24.37,
+  "actual_tool_calls": [
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "123ABC"
+      },
+      "timestamp_start": 26.4,
+      "timestamp_end": 26.4
+    },
+    {
+      "function": "search_products",
+      "args": {
+        "query": "winter jackets",
+        "max_price": 150
+      },
+      "timestamp_start": 26.4,
+      "timestamp_end": 26.4
+    }
+  ],
+  "status": "completed"
+}

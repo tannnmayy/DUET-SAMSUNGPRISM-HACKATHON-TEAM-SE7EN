@@ -2,25 +2,25 @@
 
 The reported run: **all 100 recordings of Full-Duplex-Bench v3**, streamed in real time
 through the benchmark's own runner and scored by its own evaluation scripts, on the code
-in this repository ({{commit}}). The complete record, with every report, per-recording
+in this repository (`e6c1b48`). The complete record, with every report, per-recording
 result, conversation trace and log, is
-[`results/reported/{{run_name}}`](../results/reported/{{run_name}}).
+[`results/reported/gemma4_final_run`](../results/reported/gemma4_final_run).
 
 ## Headline
 
 | Metric | DUET | GPT-Realtime (paper) |
 |---|---|---|
-| **Pass@1**, strict: every expected tool, no extra call, every argument right | **{{pass_at_1}}** ({{passed}} of 100) | 0.600 |
-| Tool selection | {{tool_f1}} | 0.876 |
-| Argument accuracy | {{arg_acc}} | 0.680 |
-| Response quality | {{resp_qual}} | 0.792 |
-| Conversations answered (turn-take) | {{turn_take}} | 96.0% |
-| Interruptions | {{interruptions}} | 13.5% |
-| First response, as the benchmark measures it | {{first_response}} | |
-| First tool call | {{tool_latency}} | |
-| Key information spoken (task completion) | {{task_latency}} | 6.89 s |
+| **Pass@1**, strict: every expected tool, no extra call, every argument right | **0.81** (81 of 100) | 0.600 |
+| Tool selection | 0.915 | 0.876 |
+| Argument accuracy | 0.850 | 0.680 |
+| Response quality | 0.730 | 0.792 |
+| Conversations answered (turn-take) | 100% | 96.0% |
+| Interruptions | 0% | 13.5% |
+| First response, as the benchmark measures it | 4.80 s | |
+| First tool call | 9.78 s | |
+| Key information spoken (task completion) | 14.44 s | 6.89 s |
 
-{{judged_note}}
+Judged by Gemma 4 26B-A4B standing in for gpt-4o. By exact match, with no judge, DUET passes 75 of 100.
 
 ## How it was measured
 
@@ -40,7 +40,26 @@ result, conversation trace and log, is
 
 ## Pass@1 by kind of item
 
-{{breakdown}}
+| Items | Passed | Pass@1 |
+|---|---|---|
+| Difficulty: easy | 31 of 36 | 0.86 |
+| Difficulty: medium | 30 of 34 | 0.88 |
+| Difficulty: hard | 20 of 30 | 0.67 |
+| Disfluency: none | 21 of 31 | 0.68 |
+| Disfluency: FILLER | 24 of 29 | 0.83 |
+| Disfluency: PAUSE | 13 of 18 | 0.72 |
+| Disfluency: SELF_CORRECTION | 15 of 17 | 0.88 |
+| Disfluency: FALSE_START | 11 of 12 | 0.92 |
+| Disfluency: HESITATION | 8 of 10 | 0.80 |
+| Domain: ecommerce_support | 23 of 29 | 0.79 |
+| Domain: housing_location | 21 of 26 | 0.81 |
+| Domain: finance_billing | 23 of 25 | 0.92 |
+| Domain: travel_identity | 14 of 20 | 0.70 |
+| State rollback: no | 66 of 83 | 0.80 |
+| State rollback: yes | 15 of 17 | 0.88 |
+| Tools expected: 1 | 58 of 66 | 0.88 |
+| Tools expected: 2 | 13 of 18 | 0.72 |
+| Tools expected: 3 | 10 of 16 | 0.62 |
 
 ## Where the remaining points are
 
@@ -64,7 +83,14 @@ stalls and two judgement calls.
 
 Every request to Google's API is logged in the run's `agent.log`:
 
-{{requests}}
+| | |
+|---|---|
+| answered | 220 |
+| backup requests | 109 |
+| calls answered while backups were pending | 38 |
+| calls cancelled (plan overtaken) | 33 |
+| transient errors, retried | 221 |
+| answer time | median 3.3 s, p90 7.2 s |
 
 Transient errors are retried within about 1.5 s, and a request with no answer after 6 s gets
 a backup on the key with the most room, so a burst of server errors costs seconds, not the

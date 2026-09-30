@@ -1,0 +1,394 @@
+{
+  "pid": "56780a5a89319e0011644cb4",
+  "example_id": "ecommerce_15",
+  "category": "ecommerce_support",
+  "title": "Order Track with Pause and Filler",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:21:45.789004",
+  "inference_time_s": 51.77,
+  "room_name": "eval-9380358a",
+  "stream_start_time": 1790760108.571024,
+  "input_transcript": "Um, so, well, can, can you, uh, track order B .O .B. 1 .2 for me? Um, I ordered it a few days ago and it should be arriving soon, but I just wanted to make sure.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        1.62,
+        2.24
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        2.78,
+        2.88
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        2.96,
+        3.08
+      ]
+    },
+    {
+      "text": "can,",
+      "timestamp": [
+        3.84,
+        3.98
+      ]
+    },
+    {
+      "text": "can",
+      "timestamp": [
+        3.98,
+        4.22
+      ]
+    },
+    {
+      "text": "you,",
+      "timestamp": [
+        4.22,
+        4.44
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        4.56,
+        4.66
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        4.74,
+        4.96
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        4.96,
+        5.72
+      ]
+    },
+    {
+      "text": "B",
+      "timestamp": [
+        5.72,
+        7.48
+      ]
+    },
+    {
+      "text": ".O",
+      "timestamp": [
+        7.48,
+        7.64
+      ]
+    },
+    {
+      "text": ".B.",
+      "timestamp": [
+        7.64,
+        7.88
+      ]
+    },
+    {
+      "text": "1",
+      "timestamp": [
+        8.06,
+        8.18
+      ]
+    },
+    {
+      "text": ".2",
+      "timestamp": [
+        8.18,
+        8.4
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        8.4,
+        8.6
+      ]
+    },
+    {
+      "text": "me?",
+      "timestamp": [
+        8.6,
+        8.84
+      ]
+    },
+    {
+      "text": "Um,",
+      "timestamp": [
+        9.22,
+        9.66
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        9.94,
+        10.14
+      ]
+    },
+    {
+      "text": "ordered",
+      "timestamp": [
+        10.14,
+        10.42
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        10.42,
+        10.52
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        10.52,
+        10.64
+      ]
+    },
+    {
+      "text": "few",
+      "timestamp": [
+        10.64,
+        10.78
+      ]
+    },
+    {
+      "text": "days",
+      "timestamp": [
+        10.78,
+        11.04
+      ]
+    },
+    {
+      "text": "ago",
+      "timestamp": [
+        11.04,
+        11.54
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        11.54,
+        11.9
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        11.9,
+        12.0
+      ]
+    },
+    {
+      "text": "should",
+      "timestamp": [
+        12.0,
+        12.18
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        12.18,
+        12.36
+      ]
+    },
+    {
+      "text": "arriving",
+      "timestamp": [
+        12.36,
+        12.8
+      ]
+    },
+    {
+      "text": "soon,",
+      "timestamp": [
+        12.8,
+        13.92
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        13.94,
+        15.12
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        15.12,
+        15.24
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        15.24,
+        15.4
+      ]
+    },
+    {
+      "text": "wanted",
+      "timestamp": [
+        15.4,
+        15.58
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        15.58,
+        15.88
+      ]
+    },
+    {
+      "text": "make",
+      "timestamp": [
+        15.88,
+        16.08
+      ]
+    },
+    {
+      "text": "sure.",
+      "timestamp": [
+        16.08,
+        16.34
+      ]
+    }
+  ],
+  "user_speech_end_rel": 16.34,
+  "latency": {
+    "input_duration_s": 48.24,
+    "output_duration_s": 48.24,
+    "first_speech_s": 20.85
+  },
+  "user_done_unix": 1790760124.9110239,
+  "transcript": "One moment. Still working on it. Your order Bob 12 is out for delivery.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        20.56,
+        21.08
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        21.08,
+        21.44
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        26.64,
+        27.24
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        27.24,
+        27.54
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        27.54,
+        27.76
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        27.76,
+        27.94
+      ]
+    },
+    {
+      "text": "Your",
+      "timestamp": [
+        28.42,
+        28.9
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        28.9,
+        29.08
+      ]
+    },
+    {
+      "text": "Bob",
+      "timestamp": [
+        29.08,
+        29.3
+      ]
+    },
+    {
+      "text": "12",
+      "timestamp": [
+        29.3,
+        29.64
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        29.64,
+        30.06
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        30.06,
+        30.26
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        30.26,
+        30.44
+      ]
+    },
+    {
+      "text": "delivery.",
+      "timestamp": [
+        30.44,
+        30.78
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.22,
+  "audio_agent_speech_start": 20.56,
+  "actual_tool_calls": [
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "BOB12"
+      },
+      "timestamp_start": 23.02,
+      "timestamp_end": 23.02
+    }
+  ],
+  "status": "completed"
+}

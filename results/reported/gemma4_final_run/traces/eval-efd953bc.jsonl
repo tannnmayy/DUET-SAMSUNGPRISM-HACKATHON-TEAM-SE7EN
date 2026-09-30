@@ -1,0 +1,45 @@
+{"t": 1790765677.20992, "kind": "session_start", "room": "eval-efd953bc", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765677.2517493, "kind": "agent_state", "state": "listening"}
+{"t": 1790765679.7413397, "kind": "user_state", "state": "speaking"}
+{"t": 1790765680.6444917, "kind": "user_state", "state": "listening"}
+{"t": 1790765681.2354076, "kind": "metrics", "type": "stt_metrics", "duration": 0.5914827999986301, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765681.2383144, "kind": "heard", "text": "Hmm."}
+{"t": 1790765681.3019917, "kind": "user_state", "state": "speaking"}
+{"t": 1790765681.8901482, "kind": "user_state", "state": "listening"}
+{"t": 1790765682.2112188, "kind": "metrics", "type": "stt_metrics", "duration": 0.31988990000172635, "audio_duration": 1.172, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765682.2125683, "kind": "heard", "text": "Um..."}
+{"t": 1790765682.34178, "kind": "user_state", "state": "speaking"}
+{"t": 1790765689.8104641, "kind": "user_state", "state": "listening"}
+{"t": 1790765690.1502962, "kind": "user_state", "state": "speaking"}
+{"t": 1790765690.4941225, "kind": "metrics", "type": "stt_metrics", "duration": 0.6806456000012986, "audio_duration": 8.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765690.4950674, "kind": "heard", "text": "So I need to like update my passport number to P1122 because I just renewed it."}
+{"t": 1790765697.2996132, "kind": "user_state", "state": "listening"}
+{"t": 1790765697.4401243, "kind": "user_state", "state": "speaking"}
+{"t": 1790765697.891858, "kind": "metrics", "type": "stt_metrics", "duration": 0.5903991000013775, "audio_duration": 7.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765697.8932362, "kind": "heard", "text": "And then I also got a new driver's license. So could you change that one to D?"}
+{"t": 1790765701.5412188, "kind": "user_state", "state": "listening"}
+{"t": 1790765701.986823, "kind": "user_turn", "text": "Hmm. Um... So I need to like update my passport number to P1122 because I just renewed it. And then I also got a new driver's license. So could you change that one to D?"}
+{"t": 1790765701.987921, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7976043224334717, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00047420000191777945, "speech_id": "speech_3c4b0ff849b4"}
+{"t": 1790765701.9884527, "kind": "think_start", "text": "Hmm. Um... So I need to like update my passport number to P1122 because I just renewed it. And then I also got a new driver's license. So could you change that one to D?", "audio": false}
+{"t": 1790765701.990267, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765702.069853, "kind": "metrics", "type": "stt_metrics", "duration": 0.5270207000030496, "audio_duration": 4.724, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765702.070981, "kind": "heard", "text": "L9090 as well."}
+{"t": 1790765702.0716457, "kind": "agent_state", "state": "listening"}
+{"t": 1790765702.0752826, "kind": "superseded"}
+{"t": 1790765702.8701358, "kind": "user_turn", "text": "L9090 as well."}
+{"t": 1790765702.8701358, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004732000015792437, "speech_id": "speech_2288b3e197da"}
+{"t": 1790765702.871135, "kind": "think_start", "text": "Hmm. Um... So I need to like update my passport number to P1122 because I just renewed it. And then I also got a new driver's license. So could you change that one to D? L9090 as well.", "audio": false}
+{"t": 1790765702.8957858, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765703.166443, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765703.306393, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765703.3222106, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13682930000140914, "duration": 0.15326210000057472, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2288b3e197da"}
+{"t": 1790765708.821777, "kind": "thinker_decided", "tools": true, "after_s": 5.95}
+{"t": 1790765708.8227847, "kind": "tool_start", "name": "update_identity_doc", "args": {"doc_type": "passport", "doc_number": "P1122"}}
+{"t": 1790765708.82378, "kind": "tool_done", "name": "update_identity_doc", "args": {"doc_type": "passport", "doc_number": "P1122"}, "outcome": "success"}
+{"t": 1790765708.82378, "kind": "tool_start", "name": "update_identity_doc", "args": {"doc_number": "DL9090", "doc_type": "driver_license"}}
+{"t": 1790765708.8490646, "kind": "tool_done", "name": "update_identity_doc", "args": {"doc_number": "DL9090", "doc_type": "driver_license"}, "outcome": "success"}
+{"t": 1790765709.57932, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3148068999980751, "duration": 0.33104000000093947, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2288b3e197da"}
+{"t": 1790765713.9644165, "kind": "thinker_say", "text": "OK. I've updated your passport number to P1122 and your driver's license to DL9090.", "after_s": 11.09, "usage": {"input": 5121, "input_audio": 0, "output": 94, "thinking": 137, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765714.5816977, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.482708299998194, "duration": 0.6144720000011148, "audio_duration": 7.585000000000004, "cancelled": false, "characters_count": 83, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2288b3e197da"}
+{"t": 1790765722.0417397, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your passport number to P1122 and your driver's license to DL9090."}
+{"t": 1790765722.0428047, "kind": "agent_state", "state": "listening"}

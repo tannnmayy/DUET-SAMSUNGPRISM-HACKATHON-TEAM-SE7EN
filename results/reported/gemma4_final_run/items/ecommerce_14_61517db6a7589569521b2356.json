@@ -1,0 +1,486 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "ecommerce_14",
+  "category": "ecommerce_support",
+  "title": "Filler-Heavy Cart Addition",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:20:31.809156",
+  "inference_time_s": 54.81,
+  "room_name": "eval-cd5ae299",
+  "stream_start_time": 1790760034.5796075,
+  "input_transcript": "Um, well, yeah, so, um, yeah, so I already found what I want. Can you add, like, two of item, uh, P5 -2 to my card? I want to get one for myself and one as a gift.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.3,
+        1.02
+      ]
+    },
+    {
+      "text": "well,",
+      "timestamp": [
+        1.9,
+        2.76
+      ]
+    },
+    {
+      "text": "yeah,",
+      "timestamp": [
+        3.4,
+        4.14
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        4.32,
+        4.8
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        5.02,
+        5.18
+      ]
+    },
+    {
+      "text": "yeah,",
+      "timestamp": [
+        6.68,
+        7.08
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        7.26,
+        7.5
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        7.5,
+        8.42
+      ]
+    },
+    {
+      "text": "already",
+      "timestamp": [
+        8.42,
+        8.7
+      ]
+    },
+    {
+      "text": "found",
+      "timestamp": [
+        8.7,
+        9.0
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        9.0,
+        9.16
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        9.16,
+        9.26
+      ]
+    },
+    {
+      "text": "want.",
+      "timestamp": [
+        9.26,
+        9.86
+      ]
+    },
+    {
+      "text": "Can",
+      "timestamp": [
+        10.34,
+        10.64
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.64,
+        10.9
+      ]
+    },
+    {
+      "text": "add,",
+      "timestamp": [
+        10.9,
+        11.44
+      ]
+    },
+    {
+      "text": "like,",
+      "timestamp": [
+        11.48,
+        11.82
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        12.72,
+        12.94
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        12.94,
+        13.44
+      ]
+    },
+    {
+      "text": "item,",
+      "timestamp": [
+        13.44,
+        13.82
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        13.84,
+        15.04
+      ]
+    },
+    {
+      "text": "P5",
+      "timestamp": [
+        15.3,
+        15.76
+      ]
+    },
+    {
+      "text": "-2",
+      "timestamp": [
+        15.76,
+        16.06
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        16.06,
+        16.24
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        16.24,
+        16.42
+      ]
+    },
+    {
+      "text": "card?",
+      "timestamp": [
+        16.42,
+        16.82
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        16.82,
+        16.96
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        16.96,
+        17.08
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        17.08,
+        17.16
+      ]
+    },
+    {
+      "text": "get",
+      "timestamp": [
+        17.16,
+        17.3
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        17.3,
+        17.86
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        17.86,
+        18.06
+      ]
+    },
+    {
+      "text": "myself",
+      "timestamp": [
+        18.06,
+        18.46
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        18.46,
+        18.68
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        18.68,
+        18.84
+      ]
+    },
+    {
+      "text": "as",
+      "timestamp": [
+        18.84,
+        19.0
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        19.0,
+        19.12
+      ]
+    },
+    {
+      "text": "gift.",
+      "timestamp": [
+        19.12,
+        19.36
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.36,
+  "latency": {
+    "input_duration_s": 51.24,
+    "output_duration_s": 51.24,
+    "first_speech_s": 24.15
+  },
+  "user_done_unix": 1790760053.9396074,
+  "transcript": "one moment still working on it okay I've added two of item P 52 to your cart and your new total is $199 .98 one moment",
+  "asr_chunks": [
+    {
+      "text": "one",
+      "timestamp": [
+        23.86,
+        24.4
+      ]
+    },
+    {
+      "text": "moment",
+      "timestamp": [
+        24.4,
+        24.78
+      ]
+    },
+    {
+      "text": "still",
+      "timestamp": [
+        24.78,
+        25.78
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        30.58,
+        30.94
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        30.94,
+        31.16
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        31.16,
+        31.36
+      ]
+    },
+    {
+      "text": "okay",
+      "timestamp": [
+        31.36,
+        32.52
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        32.52,
+        33.2
+      ]
+    },
+    {
+      "text": "added",
+      "timestamp": [
+        33.2,
+        33.44
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        33.44,
+        33.68
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        33.68,
+        33.88
+      ]
+    },
+    {
+      "text": "item",
+      "timestamp": [
+        33.88,
+        34.18
+      ]
+    },
+    {
+      "text": "P",
+      "timestamp": [
+        34.18,
+        34.44
+      ]
+    },
+    {
+      "text": "52",
+      "timestamp": [
+        34.44,
+        34.94
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        34.94,
+        35.16
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        35.16,
+        35.26
+      ]
+    },
+    {
+      "text": "cart",
+      "timestamp": [
+        35.26,
+        35.56
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        35.56,
+        36.14
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        36.14,
+        36.26
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        36.26,
+        36.4
+      ]
+    },
+    {
+      "text": "total",
+      "timestamp": [
+        36.4,
+        36.74
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        36.74,
+        37.06
+      ]
+    },
+    {
+      "text": "$199",
+      "timestamp": [
+        37.06,
+        38.14
+      ]
+    },
+    {
+      "text": ".98",
+      "timestamp": [
+        38.14,
+        39.5
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        39.5,
+        41.0
+      ]
+    },
+    {
+      "text": "moment",
+      "timestamp": [
+        48.45,
+        48.77
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.5,
+  "audio_agent_speech_start": 23.86,
+  "actual_tool_calls": [
+    {
+      "function": "add_to_cart",
+      "args": {
+        "product_id": "P52",
+        "quantity": 2
+      },
+      "timestamp_start": 27.93,
+      "timestamp_end": 27.93
+    }
+  ],
+  "status": "completed"
+}

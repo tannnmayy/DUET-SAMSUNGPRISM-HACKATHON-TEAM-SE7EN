@@ -1,0 +1,45 @@
+{"t": 1790760248.7247126, "kind": "session_start", "room": "eval-1e32328f", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760248.8248396, "kind": "agent_state", "state": "listening"}
+{"t": 1790760250.9895034, "kind": "user_state", "state": "speaking"}
+{"t": 1790760254.478651, "kind": "user_state", "state": "listening"}
+{"t": 1790760255.002101, "kind": "metrics", "type": "stt_metrics", "duration": 0.5222821000006661, "audio_duration": 4.052, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760255.0166667, "kind": "heard", "text": "Um, like, uh, I need a new..."}
+{"t": 1790760255.0200543, "kind": "user_turn", "text": "Um, like, uh, I need a new..."}
+{"t": 1790760255.0200543, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8923776149749756, "transcription_delay": 0.8900156021118164, "on_user_turn_completed_delay": 0.0005056999998487299, "speech_id": "speech_e0503a7e4050"}
+{"t": 1790760255.0210536, "kind": "think_start", "text": "Um, like, uh, I need a new...", "audio": false}
+{"t": 1790760255.044628, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760255.4311373, "kind": "user_state", "state": "speaking"}
+{"t": 1790760255.8825014, "kind": "agent_state", "state": "listening"}
+{"t": 1790760257.6398063, "kind": "user_state", "state": "listening"}
+{"t": 1790760257.7804585, "kind": "user_state", "state": "speaking"}
+{"t": 1790760258.1609504, "kind": "metrics", "type": "stt_metrics", "duration": 0.5195626000004268, "audio_duration": 2.772, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760258.1617525, "kind": "heard", "text": "Let me think, what is it called?"}
+{"t": 1790760260.143583, "kind": "user_state", "state": "listening"}
+{"t": 1790760260.3788846, "kind": "user_state", "state": "speaking"}
+{"t": 1790760260.6683722, "kind": "metrics", "type": "stt_metrics", "duration": 0.5232706000006146, "audio_duration": 2.932, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760260.6691725, "kind": "heard", "text": "A coffee maker. Yeah."}
+{"t": 1790760267.2862382, "kind": "user_state", "state": "listening"}
+{"t": 1790760267.7368767, "kind": "user_turn", "text": "Let me think, what is it called? A coffee maker. Yeah."}
+{"t": 1790760267.7368767, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8016281127929688, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004849999986618059, "speech_id": "speech_b338c49956ae"}
+{"t": 1790760267.738879, "kind": "think_start", "text": "Um, like, uh, I need a new... Let me think, what is it called? A coffee maker. Yeah.", "audio": false}
+{"t": 1790760267.738879, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760268.006908, "kind": "metrics", "type": "stt_metrics", "duration": 0.7198585999994975, "audio_duration": 7.476, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760268.008395, "kind": "heard", "text": "I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal."}
+{"t": 1790760268.0089016, "kind": "agent_state", "state": "listening"}
+{"t": 1790760268.0121822, "kind": "superseded"}
+{"t": 1790760268.817137, "kind": "user_turn", "text": "I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal."}
+{"t": 1790760268.8181376, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005010999993828591, "speech_id": "speech_06a1cdc9487b"}
+{"t": 1790760268.8191369, "kind": "think_start", "text": "Um, like, uh, I need a new... Let me think, what is it called? A coffee maker. Yeah. I'm looking for a new coffee maker. That's what it's called. Something under $50 would be ideal.", "audio": false}
+{"t": 1790760268.8428643, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760269.1106277, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760269.2783895, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760269.2949235, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16533539999909408, "duration": 0.1825329999992391, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_06a1cdc9487b"}
+{"t": 1790760275.0895436, "kind": "thinker_decided", "tools": true, "after_s": 6.27}
+{"t": 1790760275.0895436, "kind": "tool_start", "name": "search_products", "args": {"query": "coffee maker", "max_price": 50}}
+{"t": 1790760275.0935435, "kind": "tool_done", "name": "search_products", "args": {"query": "coffee maker", "max_price": 50}, "outcome": "success"}
+{"t": 1790760275.497056, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.292083399999683, "duration": 0.30491169999913836, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_06a1cdc9487b"}
+{"t": 1790760281.6930764, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3984603999997489, "duration": 0.41224829999919166, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_06a1cdc9487b"}
+{"t": 1790760282.0105474, "kind": "thinker_say", "text": "I found a coffee maker Premium for 40 dollars.", "after_s": 13.19, "usage": {"input": 4888, "input_audio": 0, "output": 36, "thinking": 122, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760282.169319, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15533869999853778, "duration": 0.1565597999997408, "audio_duration": 3.4600000000000004, "cancelled": false, "characters_count": 46, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_06a1cdc9487b"}
+{"t": 1790760286.9226499, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. I found a coffee maker Premium for 40 dollars."}
+{"t": 1790760286.9226499, "kind": "agent_state", "state": "listening"}

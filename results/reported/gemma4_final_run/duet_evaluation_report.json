@@ -1,0 +1,5668 @@
+{
+  "benchmark_name": "In-the-Wild Speech & Multi-Step Tool Calling",
+  "evaluated_at": "2026-09-30T19:57:49.240027",
+  "total_scenarios": 100,
+  "turn_taking": {
+    "total": 100,
+    "turn_taken": 100,
+    "no_response": 0,
+    "turn_take_rate": 1.0
+  },
+  "by_metric": {
+    "tool_selection_acc": 0.915,
+    "argument_acc": 0.85,
+    "response_qual": 0.73,
+    "tool_selection_acc_all": 0.915,
+    "argument_acc_all": 0.85,
+    "note": "*_all includes no-response samples (scored 0); default metrics are turn-taken only"
+  },
+  "latency": {
+    "total_samples": 100,
+    "interruption_count": 0,
+    "interruption_rate": 0.0,
+    "avg_response_latency_s": 4.8,
+    "std_response_latency_s": 2.367,
+    "min_latency_s": 4.11,
+    "max_latency_s": 26.8,
+    "note": "avg/std/min/max exclude interruption samples; computed on turn-taken samples only"
+  },
+  "by_domain": {
+    "ecommerce_support": {
+      "tool_selection_acc": 0.897,
+      "argument_acc": 0.828,
+      "response_qual": 0.759
+    },
+    "finance_billing": {
+      "tool_selection_acc": 0.947,
+      "argument_acc": 0.94,
+      "response_qual": 0.76
+    },
+    "housing_location": {
+      "tool_selection_acc": 0.923,
+      "argument_acc": 0.878,
+      "response_qual": 0.654
+    },
+    "travel_identity": {
+      "tool_selection_acc": 0.89,
+      "argument_acc": 0.733,
+      "response_qual": 0.75
+    }
+  },
+  "by_difficulty": {
+    "easy": {
+      "tool_selection_acc": 0.972,
+      "argument_acc": 0.861,
+      "response_qual": 0.889
+    },
+    "medium": {
+      "tool_selection_acc": 0.926,
+      "argument_acc": 0.897,
+      "response_qual": 0.824
+    },
+    "hard": {
+      "tool_selection_acc": 0.832,
+      "argument_acc": 0.783,
+      "response_qual": 0.433
+    }
+  },
+  "by_domain_turn_taken": {
+    "ecommerce_support": {
+      "tool_selection_acc": 0.897,
+      "argument_acc": 0.828,
+      "response_qual": 0.759
+    },
+    "finance_billing": {
+      "tool_selection_acc": 0.947,
+      "argument_acc": 0.94,
+      "response_qual": 0.76
+    },
+    "housing_location": {
+      "tool_selection_acc": 0.923,
+      "argument_acc": 0.878,
+      "response_qual": 0.654
+    },
+    "travel_identity": {
+      "tool_selection_acc": 0.89,
+      "argument_acc": 0.733,
+      "response_qual": 0.75
+    }
+  },
+  "by_difficulty_turn_taken": {
+    "easy": {
+      "tool_selection_acc": 0.972,
+      "argument_acc": 0.861,
+      "response_qual": 0.889
+    },
+    "medium": {
+      "tool_selection_acc": 0.926,
+      "argument_acc": 0.897,
+      "response_qual": 0.824
+    },
+    "hard": {
+      "tool_selection_acc": 0.832,
+      "argument_acc": 0.783,
+      "response_qual": 0.433
+    }
+  },
+  "scenario_results": [
+    {
+      "scenario_id": "ecommerce_01",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Order Tracking",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "ABC123"
+              },
+              "actual_args": {
+                "order_id": "ABC123"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully provided the status of the requested order as intended."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.23,
+        "audio_agent_speech_start": 19.79,
+        "agent_response_latency_s": 4.56,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_01",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Order Tracking",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "ABC123"
+              },
+              "actual_args": {
+                "order_id": "ABC123"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully retrieved and provided the status for the specific order requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.27,
+        "audio_agent_speech_start": 22.42,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_02",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Product Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "wireless headphones",
+                "max_price": 100
+              },
+              "actual_args": {
+                "max_price": 100,
+                "query": "wireless headphones"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found a pair of wireless headphones that met the user's price criteria (under $100) and provided the specific result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.19,
+        "audio_agent_speech_start": 16.34,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_04",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Order Tracking with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "XYZ88"
+              },
+              "actual_args": {
+                "order_id": "XYZ88"
+              },
+              "explanation": "The arguments match exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully looked up the order and provided the status, fulfilling the user's request with helpful additional detail."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.21,
+        "audio_agent_speech_start": 14.9,
+        "agent_response_latency_s": 4.69,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_05",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Product Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to perform the requested search and instead asked for clarification on what the user was looking for, despite the user having already specified 'desks'."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 7.16,
+        "audio_agent_speech_start": 11.54,
+        "agent_response_latency_s": 4.38,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_06",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Simple Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "K2",
+                "quantity": 2
+              },
+              "actual_args": {
+                "product_id": "K2",
+                "quantity": 2
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully added the requested two units to the cart and provided additional helpful information regarding the new total."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.73,
+        "audio_agent_speech_start": 18.26,
+        "agent_response_latency_s": 4.53,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_07",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "False Start Before Track",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "expected_args": {
+                "order_id": "FAST99"
+              },
+              "actual_args": {
+                "order_id": "FASTT99"
+              },
+              "explanation": "The order_id 'FASTT99' contains an extra 'T' and does not match the expected 'FAST99'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully tracked the order and provided the status as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.98,
+        "audio_agent_speech_start": 21.94,
+        "agent_response_latency_s": 4.96,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_08",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "mechanical keyboards",
+                "max_price": 200
+              },
+              "actual_args": {
+                "query": "mechanical keyboard",
+                "max_price": 200
+              },
+              "explanation": "The difference between 'mechanical keyboards' and 'mechanical keyboard' is a minor linguistic variation that does not change the search intent."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found a mechanical keyboard that met the user's price criteria of being under $200."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.36,
+        "audio_agent_speech_start": 18.48,
+        "agent_response_latency_s": 4.12,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_08",
+      "domain": "ecommerce_support",
+      "difficulty": "easy",
+      "title": "Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "mechanical keyboards",
+                "max_price": 200
+              },
+              "actual_args": {
+                "max_price": 200,
+                "query": "mechanical keyboard"
+              },
+              "explanation": "The difference between 'mechanical keyboards' and 'mechanical keyboard' is a minor grammatical variation that does not change the search intent."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found a mechanical keyboard that meets the user's price criteria of being under $200."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.39,
+        "audio_agent_speech_start": 16.53,
+        "agent_response_latency_s": 4.14,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_09",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Product Search Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "hiking boots"
+              },
+              "actual_args": {
+                "query": "hiking boots"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the search and provided a specific result, fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.35,
+        "audio_agent_speech_start": 17.62,
+        "agent_response_latency_s": 4.27,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_10",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Track + Search Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "123ABC"
+              },
+              "actual_args": {
+                "order_id": "123ABC"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "winter jackets",
+                "max_price": 150
+              },
+              "actual_args": {
+                "query": "winter jackets",
+                "max_price": 150
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed both parts of the request: tracking the order and finding a winter jacket under the $150 limit."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.54,
+        "audio_agent_speech_start": 24.37,
+        "agent_response_latency_s": 4.83,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_11",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Quantity Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "B7",
+                "quantity": 1
+              },
+              "actual_args": {
+                "quantity": 1,
+                "product_id": "B7"
+              },
+              "explanation": "The arguments match the expected values exactly; key order in JSON does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully confirmed that it added one unit of product B7 to the cart, fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.06,
+        "audio_agent_speech_start": 14.22,
+        "agent_response_latency_s": 4.16,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_12",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Hesitation with Category",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_products"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent did not perform the requested search or provide any gift ideas; it only provided a placeholder response ('One moment') without completing the task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.33,
+        "audio_agent_speech_start": 15.41,
+        "agent_response_latency_s": 5.08,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "ecommerce_13",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Cart + Track Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "K2",
+                "quantity": 1
+              },
+              "actual_args": {
+                "product_id": "K2",
+                "quantity": 1
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "DELIV"
+              },
+              "actual_args": {
+                "order_id": "DELIV"
+              },
+              "explanation": "The arguments match exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed both requested actions: adding the item to the cart and providing the tracking status for the order."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.12,
+        "audio_agent_speech_start": 24.4,
+        "agent_response_latency_s": 4.28,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_13",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Cart + Track Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.5,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "K2",
+                "quantity": 1
+              },
+              "actual_args": {
+                "product_id": "K2",
+                "quantity": 1
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "expected_args": {
+                "order_id": "DELIV"
+              },
+              "actual_args": {
+                "order_id": "DELBV"
+              },
+              "explanation": "The order_id 'DELBV' is a typo and does not match the expected 'DELIV'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "LLM parsing error: 500 INTERNAL. {'error': {'code': 500, 'message': 'Internal error encountered.', 'status': 'INTERNAL'}}"
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 26.09,
+        "audio_agent_speech_start": 31.25,
+        "agent_response_latency_s": 5.16,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_14",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "P52",
+                "quantity": 2
+              },
+              "actual_args": {
+                "product_id": "P52",
+                "quantity": 2
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested action of adding two units to the cart and provided helpful additional information regarding the total price."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.96,
+        "audio_agent_speech_start": 23.25,
+        "agent_response_latency_s": 4.29,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_14",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Cart Addition",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "P52",
+                "quantity": 2
+              },
+              "actual_args": {
+                "product_id": "P52",
+                "quantity": 2
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully added the requested 2 units of item P52 to the cart and confirmed the action to the user."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.36,
+        "audio_agent_speech_start": 23.86,
+        "agent_response_latency_s": 4.5,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_15",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Order Track with Pause and Filler",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "BOB12"
+              },
+              "actual_args": {
+                "order_id": "BOB12"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully tracked the order and provided the specific status, fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.34,
+        "audio_agent_speech_start": 20.56,
+        "agent_response_latency_s": 4.22,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_15",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Order Track with Pause and Filler",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.5,
+          "recall": 1.0,
+          "precision": 0.333,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": [
+            "track_order",
+            "track_order"
+          ]
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 0.0,
+              "expected_args": {
+                "order_id": "BOB12"
+              },
+              "actual_args": {
+                "order_id": "B0"
+              },
+              "explanation": "The order_id 'B0' is not equivalent to the expected 'BOB12'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent provided status for orders B0, B1, and B2 instead of the requested order BOB12."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.81,
+        "audio_agent_speech_start": 20.37,
+        "agent_response_latency_s": 4.56,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "ecommerce_16",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "Search with Hesitation Before Item",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "coffee maker",
+                "max_price": 50
+              },
+              "actual_args": {
+                "query": "coffee maker",
+                "max_price": 50
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found a coffee maker that met the user's price criteria of being under $50."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.86,
+        "audio_agent_speech_start": 20.53,
+        "agent_response_latency_s": 4.67,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_17",
+      "domain": "ecommerce_support",
+      "difficulty": "medium",
+      "title": "False Start then Track",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "GG5"
+              },
+              "actual_args": {
+                "order_id": "GG5"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully tracked the requested order (GG5) and provided its current status, fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.81,
+        "audio_agent_speech_start": 18.96,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "ecommerce_18",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Search + Cart + Track Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "gaming mouse"
+              },
+              "actual_args": {
+                "query": "gaming mouse"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_0.cheapest_product_id",
+                "quantity": 1
+              },
+              "actual_args": {
+                "product_id": "PROD1",
+                "quantity": 1
+              },
+              "explanation": "The product_id 'PROD1' is a plausible real value for the dynamic reference, and the quantity matches exactly."
+            },
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "PO999"
+              },
+              "actual_args": {
+                "order_id": "PO999"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all three parts of the requested task: searching/adding the mouse to the cart and providing the tracking status of the order."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.32,
+        "audio_agent_speech_start": 18.58,
+        "agent_response_latency_s": 5.26,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "ecommerce_19",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Product + Quantity Double Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "tablet"
+              },
+              "actual_args": {
+                "query": "tablet"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_0.products[0].product_id",
+                "quantity": 1
+              },
+              "actual_args": {
+                "quantity": 1,
+                "product_id": "PROD1"
+              },
+              "explanation": "The dynamic reference for product_id was correctly replaced with a plausible value, and the quantity matches exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed both requested actions (searching and adding to cart) and provided helpful additional details like the price."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.81,
+        "audio_agent_speech_start": 22.96,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_20",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Conditional Logic: Price Check then Cart",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.5,
+          "recall": 0.5,
+          "precision": 0.5,
+          "matched": 1,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [
+            "add_to_cart"
+          ],
+          "unexpected_calls": [
+            "track_order"
+          ]
+        },
+        "argument_acc": {
+          "score": 0.5,
+          "details": [
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "coffee maker"
+              },
+              "actual_args": {
+                "query": "coffee maker"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to complete the primary task of finding a coffee maker under $50 and instead performed an unrelated action (tracking an order), which constitutes performing the wrong action."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 23.93,
+        "audio_agent_speech_start": 28.59,
+        "agent_response_latency_s": 4.66,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_21",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Hesitant Tracking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "BOB"
+              },
+              "actual_args": {
+                "order_id": "BOB"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "watch",
+                "max_price": 200
+              },
+              "actual_args": {
+                "max_price": 200,
+                "query": "watch"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_1.products[0].product_id",
+                "quantity": 1
+              },
+              "actual_args": {
+                "product_id": "PROD1",
+                "quantity": 1
+              },
+              "explanation": "The product_id 'PROD1' is a plausible value for the dynamic reference, and the quantity matches exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent only completed the first part of the multi-step task (tracking the order) and failed to search for a watch or add it to the cart. Per the criteria, partial delivery of multi-step tasks is incorrect."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 24.22,
+        "audio_agent_speech_start": 28.56,
+        "agent_response_latency_s": 4.34,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "ecommerce_21",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Hesitant Tracking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "BOB"
+              },
+              "actual_args": {
+                "order_id": "BOB"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "watch",
+                "max_price": 200
+              },
+              "actual_args": {
+                "max_price": 200,
+                "query": "watch"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_1.products[0].product_id",
+                "quantity": 1
+              },
+              "actual_args": {
+                "quantity": 1,
+                "product_id": "PROD1"
+              },
+              "explanation": "The product_id 'PROD1' is a plausible value for the dynamic reference, and the quantity matches exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to complete any of the multi-step tasks (tracking, searching, and adding to cart) and instead provided a repetitive, non-productive response."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 24.75,
+        "audio_agent_speech_start": 28.88,
+        "agent_response_latency_s": 4.13,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "ecommerce_23",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "Unsupported Tool (Refund) + Valid Requests",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "GG5"
+              },
+              "actual_args": {
+                "order_id": "GG5"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "X1",
+                "quantity": 1
+              },
+              "actual_args": {
+                "product_id": "X1",
+                "quantity": 1
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all parts of the requested task: tracking the order, adding the item to the cart, and stating the inability to process refunds."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.3,
+        "audio_agent_speech_start": 24.82,
+        "agent_response_latency_s": 4.52,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "ecommerce_25",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "False Start into Complex Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "CAT"
+              },
+              "actual_args": {
+                "order_id": "CAT"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "cat food"
+              },
+              "actual_args": {
+                "query": "cat food"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_1.products[0].product_id",
+                "quantity": 3
+              },
+              "actual_args": {
+                "product_id": "PROD1",
+                "quantity": 3
+              },
+              "explanation": "The product_id 'PROD1' is a plausible value for the dynamic reference, and the quantity matches exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all three parts of the request: tracking the order, finding the cat food, and adding three bags to the cart."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.93,
+        "audio_agent_speech_start": 23.09,
+        "agent_response_latency_s": 4.16,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "ecommerce_25",
+      "domain": "ecommerce_support",
+      "difficulty": "hard",
+      "title": "False Start into Complex Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "track_order",
+              "score": 1.0,
+              "expected_args": {
+                "order_id": "CAT"
+              },
+              "actual_args": {
+                "order_id": "CAT"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_products",
+              "score": 1.0,
+              "expected_args": {
+                "query": "cat food"
+              },
+              "actual_args": {
+                "query": "cat food"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "add_to_cart",
+              "score": 1.0,
+              "expected_args": {
+                "product_id": "$RESULT_1.products[0].product_id",
+                "quantity": 3
+              },
+              "actual_args": {
+                "product_id": "PROD1",
+                "quantity": 3
+              },
+              "explanation": "The product_id 'PROD1' is a plausible value for the dynamic reference, and the quantity matches exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all three parts of the request: tracking the order, finding the cat food, and adding three packs to the cart."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 22.72,
+        "audio_agent_speech_start": 26.99,
+        "agent_response_latency_s": 4.27,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "finance_01",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Currency Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 500,
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "actual_args": {
+                "amount": 500,
+                "to_currency": "EUR",
+                "from_currency": "USD"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested currency conversion and provided the specific result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.8,
+        "audio_agent_speech_start": 14.13,
+        "agent_response_latency_s": 4.33,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_01",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Currency Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 500,
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "actual_args": {
+                "to_currency": "EUR",
+                "amount": 500,
+                "from_currency": "USD"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested currency conversion and provided the specific result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.37,
+        "audio_agent_speech_start": 13.49,
+        "agent_response_latency_s": 4.12,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_02",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Check Card Benefits",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 1.0,
+              "expected_args": {
+                "card_type": "platinum"
+              },
+              "actual_args": {
+                "card_type": "platinum"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully provided the specific benefits of the platinum card as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 8.99,
+        "audio_agent_speech_start": 13.55,
+        "agent_response_latency_s": 4.56,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_03",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Modify Autopay with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "source_account": "savings",
+                "bill_type": "mortgage"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully confirmed that the mortgage autopay was updated to pull from the savings account, matching the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.76,
+        "audio_agent_speech_start": 16.08,
+        "agent_response_latency_s": 4.32,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_03",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Modify Autopay with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent explicitly confirmed that the mortgage autopay was updated to pull from the savings account, matching the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.79,
+        "audio_agent_speech_start": 21.62,
+        "agent_response_latency_s": 5.83,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_04",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Exchange with Pause Before Currency",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 1000,
+                "from_currency": "USD",
+                "to_currency": "GBP"
+              },
+              "actual_args": {
+                "from_currency": "USD",
+                "amount": 1000,
+                "to_currency": "GBP"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested calculation and provided the correct conversion result and exchange rate."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 8.8,
+        "audio_agent_speech_start": 12.91,
+        "agent_response_latency_s": 4.11,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_06",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Card Benefits with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 1.0,
+              "expected_args": {
+                "card_type": "travel"
+              },
+              "actual_args": {
+                "card_type": "travel"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully looked up and provided the specific benefits of the travel card as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.33,
+        "audio_agent_speech_start": 15.57,
+        "agent_response_latency_s": 4.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_07",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "False Start then Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "source_account": "savings",
+                "bill_type": "mortgage"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent explicitly confirmed that the mortgage autopay was updated to be paid from the savings account, directly fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.42,
+        "audio_agent_speech_start": 20.85,
+        "agent_response_latency_s": 4.43,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_07",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "False Start then Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response is a stalling phrase and does not confirm that the task was completed or even that it is being processed successfully."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.73,
+        "audio_agent_speech_start": 17.94,
+        "agent_response_latency_s": 4.21,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_08",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Exchange with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 200,
+                "from_currency": "EUR",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "amount": 200,
+                "from_currency": "EUR",
+                "to_currency": "USD"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested currency conversion and provided the specific result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.99,
+        "audio_agent_speech_start": 16.82,
+        "agent_response_latency_s": 5.83,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_08",
+      "domain": "finance_billing",
+      "difficulty": "easy",
+      "title": "Simple Exchange with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 200,
+                "from_currency": "EUR",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "to_currency": "USD",
+                "from_currency": "EUR",
+                "amount": 200
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent did not complete the task of converting the currency; it only provided a status update indicating it was still working on it."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.12,
+        "audio_agent_speech_start": 17.36,
+        "agent_response_latency_s": 4.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_10",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Benefits + Exchange Combo",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 1.0,
+              "expected_args": {
+                "card_type": "travel"
+              },
+              "actual_args": {
+                "card_type": "travel"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 200,
+                "from_currency": "GBP",
+                "to_currency": "JPY"
+              },
+              "actual_args": {
+                "to_currency": "JPY",
+                "amount": 200,
+                "from_currency": "GBP"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed both parts of the request: providing the travel card benefits and calculating the currency exchange from GBP to JPY."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.59,
+        "audio_agent_speech_start": 19.95,
+        "agent_response_latency_s": 4.36,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "finance_11",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Autopay with Filler Words",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "credit_card",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "source_account": "savings",
+                "bill_type": "credit_card"
+              },
+              "explanation": "The arguments contain the same key-value pairs; the order of keys does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent explicitly confirmed that the credit card autopay source was updated to the savings account, matching the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.66,
+        "audio_agent_speech_start": 13.87,
+        "agent_response_latency_s": 4.21,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_12",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Amount Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 150,
+                "from_currency": "EUR",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "to_currency": "USD",
+                "from_currency": "EUR",
+                "amount": 150
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a dictionary does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested calculation and provided the correct conversion result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.34,
+        "audio_agent_speech_start": 16.59,
+        "agent_response_latency_s": 4.25,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_12",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Amount Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 150,
+                "from_currency": "EUR",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "from_currency": "EUR",
+                "to_currency": "USD",
+                "amount": 150
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested calculation and provided the correct conversion result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.22,
+        "audio_agent_speech_start": 18.38,
+        "agent_response_latency_s": 4.16,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_14",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Two Currency Conversions",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 50,
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "actual_args": {
+                "from_currency": "USD",
+                "to_currency": "EUR",
+                "amount": 50
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect equality."
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 100,
+                "from_currency": "CAD",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "to_currency": "USD",
+                "amount": 100,
+                "from_currency": "CAD"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed both requested currency conversions and provided the specific results."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.38,
+        "audio_agent_speech_start": 18.74,
+        "agent_response_latency_s": 4.36,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "finance_15",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Autopay Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully confirmed that the mortgage autopay was updated to pull from the savings account, directly fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.16,
+        "audio_agent_speech_start": 16.56,
+        "agent_response_latency_s": 4.4,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_16",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "Hesitant Exchange Query",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 500,
+                "from_currency": "JPY",
+                "to_currency": "USD"
+              },
+              "actual_args": {
+                "from_currency": "JPY",
+                "to_currency": "USD",
+                "amount": 500
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "LLM parsing error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 5.78,
+        "audio_agent_speech_start": 17.36,
+        "agent_response_latency_s": 11.58,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_17",
+      "domain": "finance_billing",
+      "difficulty": "medium",
+      "title": "False Start then Benefits Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 1.0,
+              "expected_args": {
+                "card_type": "gold"
+              },
+              "actual_args": {
+                "card_type": "gold"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully provided the specific benefits of the gold card (2% cashback and no foreign transaction fees) as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.96,
+        "audio_agent_speech_start": 18.48,
+        "agent_response_latency_s": 5.52,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_18",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Exchange + Autopay + Benefits Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "get_exchange_rate",
+            "modify_autopay",
+            "get_card_benefits"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "get_card_benefits",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response 'One moment' does not confirm the completion of the multi-step task (conversion, autopay update, and benefit check)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.96,
+        "audio_agent_speech_start": 24.11,
+        "agent_response_latency_s": 5.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "finance_19",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Double Self-Correction in Exchange",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 300,
+                "from_currency": "EUR",
+                "to_currency": "GBP"
+              },
+              "actual_args": {
+                "from_currency": "EUR",
+                "amount": 300,
+                "to_currency": "GBP"
+              },
+              "explanation": "The arguments are identical; the order of keys does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested currency conversion and provided the specific result."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.94,
+        "audio_agent_speech_start": 18.26,
+        "agent_response_latency_s": 4.32,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_20",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Conditional Autopay Based on Exchange Rate",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.667,
+          "recall": 0.5,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 2,
+          "total_actual": 1,
+          "unmatched_expected": [
+            "modify_autopay"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.5,
+          "details": [
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 1000,
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "actual_args": {
+                "from_currency": "USD",
+                "amount": 1000,
+                "to_currency": "EUR"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            },
+            {
+              "function": "modify_autopay",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response is incomplete and cut off. It only began to provide the exchange rate and failed to complete the second step of the task (updating the autopay), which constitutes a partial delivery of a multi-step task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.92,
+        "audio_agent_speech_start": 25.46,
+        "agent_response_latency_s": 4.54,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "finance_21",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Hesitant Multi-Task",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "get_card_benefits",
+              "score": 1.0,
+              "expected_args": {
+                "card_type": "gold"
+              },
+              "actual_args": {
+                "card_type": "gold"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "get_exchange_rate",
+              "score": 1.0,
+              "expected_args": {
+                "amount": 500,
+                "from_currency": "USD",
+                "to_currency": "JPY"
+              },
+              "actual_args": {
+                "from_currency": "USD",
+                "to_currency": "JPY",
+                "amount": 500
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "LLM parsing error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.3,
+        "audio_agent_speech_start": 20.78,
+        "agent_response_latency_s": 4.48,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "finance_22",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Dual Autopay",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "credit_card",
+                "source_account": "checking"
+              },
+              "actual_args": {
+                "source_account": "checking",
+                "bill_type": "credit_card"
+              },
+              "explanation": "The arguments match the expected values; the order of keys in a dictionary does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed both requested updates: changing the mortgage payment source to savings and the credit card payment source to checking."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.1,
+        "audio_agent_speech_start": 23.41,
+        "agent_response_latency_s": 4.31,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "finance_23",
+      "domain": "finance_billing",
+      "difficulty": "hard",
+      "title": "False Start + Autopay Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "modify_autopay",
+              "score": 1.0,
+              "expected_args": {
+                "bill_type": "mortgage",
+                "source_account": "savings"
+              },
+              "actual_args": {
+                "source_account": "savings",
+                "bill_type": "mortgage"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully confirmed that the mortgage autopay was updated to pull from the savings account, directly fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.12,
+        "audio_agent_speech_start": 21.52,
+        "agent_response_latency_s": 4.4,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_01",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Simple Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Seattle",
+                "bedrooms": 2,
+                "max_price": 2500
+              },
+              "actual_args": {
+                "max_price": 2500,
+                "city": "Seattle",
+                "bedrooms": 2
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully fulfilled the request by finding a 2-bedroom apartment in Seattle that met the price criteria of being under $2500."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.56,
+        "audio_agent_speech_start": 13.87,
+        "agent_response_latency_s": 4.31,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_02",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Simple Commute Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "101 Main Street",
+                "destination_address": "Downtown Office",
+                "mode": "driving"
+              },
+              "actual_args": {
+                "mode": "driving",
+                "destination_address": "downtown office",
+                "origin_address": "101 Main Street"
+              },
+              "explanation": "All arguments match, including case-insensitive address strings."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully calculated and provided the driving commute time as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.67,
+        "audio_agent_speech_start": 18.8,
+        "agent_response_latency_s": 5.13,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_03",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Filter Update with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 1800
+              },
+              "actual_args": {
+                "filter_name": "max_price",
+                "value": 1800
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully updated the max price filter to the requested amount of $1,800."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.15,
+        "audio_agent_speech_start": 21.52,
+        "agent_response_latency_s": 4.37,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_04",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Apartment Search with Pause",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Denver",
+                "bedrooms": 1
+              },
+              "actual_args": {
+                "bedrooms": 1,
+                "city": "Denver"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the search and provided a specific result that matched the user's criteria (1-bedroom in Denver)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.92,
+        "audio_agent_speech_start": 22.38,
+        "agent_response_latency_s": 4.46,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_05",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Pet-Friendly Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Miami",
+                "max_price": 1500,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "max_price": 1500,
+                "city": "Miami",
+                "pets_allowed": true
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found an apartment that met all the user's specific criteria (location, price, and pet-friendliness)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.0,
+        "audio_agent_speech_start": 22.61,
+        "agent_response_latency_s": 4.61,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_05",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Pet-Friendly Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Miami",
+                "max_price": 1500,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "city": "Miami",
+                "pets_allowed": true,
+                "max_price": 1500
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found an apartment that meets all the user's specific criteria: pet-friendly, located in Miami, and priced under $1500."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.4,
+        "audio_agent_speech_start": 24.82,
+        "agent_response_latency_s": 5.42,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_06",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "Walking Commute Check",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "Oak Street",
+                "destination_address": "Gym",
+                "mode": "walking"
+              },
+              "actual_args": {
+                "origin_address": "Oak Street",
+                "mode": "walking",
+                "destination_address": "the gym"
+              },
+              "explanation": "The destination_address 'the gym' is a minor variation of 'Gym', which is acceptable under the rules for common aliases/formatting."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully provided the walking commute time for the specific route requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.02,
+        "audio_agent_speech_start": 19.15,
+        "agent_response_latency_s": 5.13,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_08",
+      "domain": "housing_location",
+      "difficulty": "easy",
+      "title": "False Start Before Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "pets_allowed",
+                "value": true
+              },
+              "actual_args": {
+                "value": true,
+                "filter_name": "pets_allowed"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent explicitly confirmed that it updated the search filter to show only pet-friendly listings, directly fulfilling the user's request."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.82,
+        "audio_agent_speech_start": 17.81,
+        "agent_response_latency_s": 4.99,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_09",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "City Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Chicago",
+                "bedrooms": 2,
+                "max_price": 2000
+              },
+              "actual_args": {
+                "max_price": 2000,
+                "city": "Chicago",
+                "bedrooms": 2
+              },
+              "explanation": "All arguments match the expected values; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully fulfilled the request by finding a 2-bedroom apartment in Chicago that met the price constraint of under $2000."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.66,
+        "audio_agent_speech_start": 18.96,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_10",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute + Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "500 Central Ave",
+                "destination_address": "University",
+                "mode": "transit"
+              },
+              "actual_args": {
+                "origin_address": "500 Central Ave",
+                "mode": "transit",
+                "destination_address": "the university"
+              },
+              "explanation": "The destination_address 'the university' is a minor variation of 'University', which is acceptable under the formatting rules."
+            },
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "neighborhood",
+                "value": "Northside"
+              },
+              "actual_args": {
+                "filter_name": "neighborhood",
+                "value": "Northside"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed both parts of the requested task: calculating the transit time and updating the neighborhood preference."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.49,
+        "audio_agent_speech_start": 20.82,
+        "agent_response_latency_s": 4.33,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "housing_11",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Bedroom and Price Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "matched": 0,
+          "total_expected": 1,
+          "total_actual": 2,
+          "unmatched_expected": [
+            "search_apartments"
+          ],
+          "unexpected_calls": [
+            "update_search_filter",
+            "update_search_filter"
+          ]
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response is incomplete and cut off, failing to provide any search results or successfully complete the requested task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.5,
+        "audio_agent_speech_start": 14.61,
+        "agent_response_latency_s": 4.11,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "housing_13",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Dual Filter Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 3000
+              },
+              "actual_args": {
+                "value": 3000,
+                "filter_name": "max_price"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not matter."
+            },
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "min_bedrooms",
+                "value": 3
+              },
+              "actual_args": {
+                "filter_name": "min_bedrooms",
+                "value": 3
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully updated both the maximum price and the minimum bedroom filters as requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.75,
+        "audio_agent_speech_start": 21.87,
+        "agent_response_latency_s": 5.12,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "housing_14",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Portland",
+                "bedrooms": 1,
+                "max_price": 1800,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "bedrooms": 1,
+                "city": "Portland",
+                "pets_allowed": true,
+                "max_price": 1800
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found an apartment that meets all the user's specific criteria: 1-bedroom, located in Portland, priced under $1800, and pet-friendly."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.65,
+        "audio_agent_speech_start": 22.03,
+        "agent_response_latency_s": 4.38,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_14",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Apartment Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Portland",
+                "bedrooms": 1,
+                "max_price": 1800,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "max_price": 1800,
+                "pets_allowed": true,
+                "city": "Portland",
+                "bedrooms": 1
+              },
+              "explanation": "All arguments match the expected values, regardless of key order."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found an apartment that meets all the user's specific criteria: 1-bedroom, located in Portland, priced under $1800, and pet-friendly."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.1,
+        "audio_agent_speech_start": 24.5,
+        "agent_response_latency_s": 4.4,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_15",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "False Start then Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Atlanta",
+                "bedrooms": 3,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "bedrooms": 3,
+                "pets_allowed": true,
+                "city": "Atlanta"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully found a result that matches all the user's specific criteria (pet-friendly, 3-bedroom, and Atlanta) and provided additional helpful information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 17.7,
+        "audio_agent_speech_start": 22.0,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_15",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "False Start then Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Atlanta",
+                "bedrooms": 3,
+                "pets_allowed": true
+              },
+              "actual_args": {
+                "city": "Atlanta",
+                "pets_allowed": true,
+                "bedrooms": 3
+              },
+              "explanation": "The arguments are semantically identical; the order of keys in a JSON object does not affect the result."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to provide any search results or meaningful information, instead providing a repetitive and broken stalling response."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.05,
+        "audio_agent_speech_start": 24.91,
+        "agent_response_latency_s": 5.86,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_17",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute Mode Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "my house",
+                "destination_address": "the office",
+                "mode": "driving"
+              },
+              "actual_args": {
+                "destination_address": "the office",
+                "origin_address": "my house",
+                "mode": "driving"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a dictionary does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully calculated and provided the requested driving commute time."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.28,
+        "audio_agent_speech_start": 19.95,
+        "agent_response_latency_s": 4.67,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_17",
+      "domain": "housing_location",
+      "difficulty": "medium",
+      "title": "Commute Mode Self-Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "my house",
+                "destination_address": "the office",
+                "mode": "driving"
+              },
+              "actual_args": {
+                "destination_address": "the office",
+                "origin_address": "my house",
+                "mode": "driving"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a dictionary does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully calculated the driving commute and provided the specific time requested."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.53,
+        "audio_agent_speech_start": 19.86,
+        "agent_response_latency_s": 4.33,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_18",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Search + Commute Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.5,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "expected_args": {
+                "city": "Portland",
+                "bedrooms": 1,
+                "max_price": 1800
+              },
+              "actual_args": {
+                "city": "Portland",
+                "bedrooms": 1,
+                "max_price": 800
+              },
+              "explanation": "The max_price of 800 is significantly different from the expected 1800 and falls outside the 5% numeric tolerance."
+            },
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "$RESULT_0.cheapest_apartment_address",
+                "destination_address": "coffee shop on 5th",
+                "mode": "biking"
+              },
+              "actual_args": {
+                "mode": "biking",
+                "destination_address": "the coffee shop on 5th street",
+                "origin_address": "APT1"
+              },
+              "explanation": "The mode matches, the destination address is a minor wording variation, and 'APT1' is a plausible value for the dynamic origin address reference."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent only completed the first part of the multi-step task (finding an apartment) but failed to perform the second part (checking the bike commute). According to the criteria, partial delivery of multi-step tasks should be scored as incorrect."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.74,
+        "audio_agent_speech_start": 21.04,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "housing_19",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Double Commute Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "my house",
+                "destination_address": "the gym",
+                "mode": "driving"
+              },
+              "actual_args": {
+                "mode": "driving",
+                "origin_address": "my house",
+                "destination_address": "the gym"
+              },
+              "explanation": "All arguments match the expected values; the order of keys in a dictionary does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully provided the requested driving commute time from the house to the gym."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.76,
+        "audio_agent_speech_start": 17.2,
+        "agent_response_latency_s": 4.44,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "housing_20",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Conditional Search Logic",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Austin",
+                "max_price": 2000
+              },
+              "actual_args": {
+                "city": "Austin",
+                "max_price": 2000
+              },
+              "explanation": "The arguments match the expected values exactly."
+            },
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "$RESULT_0.apartments[0].address",
+                "destination_address": "my office",
+                "mode": "driving"
+              },
+              "actual_args": {
+                "mode": "driving",
+                "destination_address": "my office",
+                "origin_address": "APT1"
+              },
+              "explanation": "The dynamic reference for origin_address was correctly replaced with a plausible value, and all other arguments match."
+            },
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 2500
+              },
+              "actual_args": {
+                "filter_name": "max_price",
+                "value": 2500
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent only partially addressed the multi-step task (it only began to provide search results and did not address the commute or budget adjustment) and the response was repetitive and incomplete."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.66,
+        "audio_agent_speech_start": 20.94,
+        "agent_response_latency_s": 4.28,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "housing_21",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Multi-Correction Across Statements",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 2,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_apartments",
+            "calculate_commute"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "calculate_commute",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent did not perform the requested task or provide any of the required information; it only provided a placeholder response."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.82,
+        "audio_agent_speech_start": 23.18,
+        "agent_response_latency_s": 4.36,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "housing_22",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Filler-Heavy Multi-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "pets_allowed",
+                "value": true
+              },
+              "actual_args": {
+                "filter_name": "pets_allowed",
+                "value": true
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "Seattle",
+                "bedrooms": 1
+              },
+              "actual_args": {
+                "bedrooms": 1,
+                "city": "Seattle"
+              },
+              "explanation": "The arguments are identical; the order of keys in a dictionary does not affect the correctness."
+            },
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "$RESULT_1.apartments[0].address",
+                "destination_address": "the stadium",
+                "mode": "transit"
+              },
+              "actual_args": {
+                "origin_address": "APT1",
+                "mode": "transit",
+                "destination_address": "the stadium"
+              },
+              "explanation": "The dynamic reference for origin_address was correctly resolved to a plausible value, and all other arguments match the expected values."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent completed the pet filter update and the Seattle search, but failed to perform the third part of the request: checking the stadium commute. Per the instructions, partial delivery of multi-step tasks is incorrect."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 18.6,
+        "audio_agent_speech_start": 23.12,
+        "agent_response_latency_s": 4.52,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "housing_24",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Hesitant Three-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.667,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 1500
+              },
+              "actual_args": {
+                "value": 1500,
+                "filter_name": "max_price"
+              },
+              "explanation": "The arguments are identical; key order in JSON does not affect equality."
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "expected_args": {
+                "city": "Dallas"
+              },
+              "actual_args": {
+                "max_price": 1500,
+                "city": "Dallas"
+              },
+              "explanation": "The agent included an extra argument 'max_price' that was not present in the expected arguments."
+            },
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "$RESULT_1.apartments[0].address",
+                "destination_address": "the grocery store",
+                "mode": "walking"
+              },
+              "actual_args": {
+                "destination_address": "grocery store",
+                "mode": "walking",
+                "origin_address": "APT1"
+              },
+              "explanation": "The destination_address has a minor formatting difference, and the origin_address 'APT1' is a plausible value for the dynamic reference."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to complete any of the requested steps (updating price, searching Dallas, or checking walking time) and instead provided a repetitive placeholder response."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 25.44,
+        "audio_agent_speech_start": 29.74,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "housing_24",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Hesitant Three-Tool Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.667,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 1500
+              },
+              "actual_args": {
+                "value": 1500,
+                "filter_name": "max_price"
+              },
+              "explanation": "The arguments are identical; key order in JSON does not affect equality."
+            },
+            {
+              "function": "search_apartments",
+              "score": 0.0,
+              "expected_args": {
+                "city": "Dallas"
+              },
+              "actual_args": {
+                "max_price": 1500,
+                "city": "Dallas"
+              },
+              "explanation": "The agent included an extra argument 'max_price' that was not present in the expected arguments."
+            },
+            {
+              "function": "calculate_commute",
+              "score": 1.0,
+              "expected_args": {
+                "origin_address": "$RESULT_1.apartments[0].address",
+                "destination_address": "the grocery store",
+                "mode": "walking"
+              },
+              "actual_args": {
+                "mode": "walking",
+                "destination_address": "grocery store",
+                "origin_address": "APT1"
+              },
+              "explanation": "The actual arguments match the expected values, including a plausible real-world value for the dynamic origin_address reference and a minor formatting difference for the destination_address."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent completed two of the three requested tasks (updating price and searching Dallas) but failed to check the walking time to the grocery store. Per the evaluation criteria, partial delivery of multi-step tasks is incorrect."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 27.86,
+        "audio_agent_speech_start": 32.05,
+        "agent_response_latency_s": 4.19,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "housing_25",
+      "domain": "housing_location",
+      "difficulty": "hard",
+      "title": "Full Chain: Filters + Search + Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "pets_allowed",
+                "value": true
+              },
+              "actual_args": {
+                "value": true,
+                "filter_name": "pets_allowed"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            },
+            {
+              "function": "update_search_filter",
+              "score": 1.0,
+              "expected_args": {
+                "filter_name": "max_price",
+                "value": 3500
+              },
+              "actual_args": {
+                "filter_name": "max_price",
+                "value": 3500
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "search_apartments",
+              "score": 1.0,
+              "expected_args": {
+                "city": "San Francisco"
+              },
+              "actual_args": {
+                "pets_allowed": true,
+                "max_price": 3500,
+                "city": "San Francisco"
+              },
+              "explanation": "All arguments match"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent did not complete the requested multi-step task; it only provided a status update indicating it was still working."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.75,
+        "audio_agent_speech_start": 23.95,
+        "agent_response_latency_s": 4.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "travel_01",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Simple Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Tokyo",
+                "date": "July 15"
+              },
+              "actual_args": {
+                "destination": "Tokyo",
+                "date": "July 15"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested search for flights to Tokyo on July 15th and provided a specific result, which fulfills the task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 5.98,
+        "audio_agent_speech_start": 11.18,
+        "agent_response_latency_s": 5.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_02",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Update Passport Number",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "expected_args": {
+                "doc_type": "passport",
+                "doc_number": "P9-9-9-90011"
+              },
+              "actual_args": {
+                "doc_number": "P88990011",
+                "doc_type": "passport"
+              },
+              "explanation": "The doc_number digits '8899' do not match the expected '9999'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent confirmed that the passport number was updated, successfully fulfilling the requested task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.78,
+        "audio_agent_speech_start": 17.1,
+        "agent_response_latency_s": 4.32,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_03",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "London",
+                "date": "August 20"
+              },
+              "actual_args": {
+                "date": "August 20",
+                "destination": "London"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested search for flights to London on August 20th and provided a specific result, which includes helpful additional detail."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.44,
+        "audio_agent_speech_start": 16.59,
+        "agent_response_latency_s": 4.15,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_03",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "London",
+                "date": "August 20"
+              },
+              "actual_args": {
+                "destination": "London",
+                "date": "August 20"
+              },
+              "explanation": "The arguments match the expected values exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested task by finding a flight to London on the specified date and provided helpful additional information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 12.1,
+        "audio_agent_speech_start": 16.21,
+        "agent_response_latency_s": 4.11,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_05",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Flight Search with Hesitation",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Chicago",
+                "date": "December 12"
+              },
+              "actual_args": {
+                "destination": "Chicago",
+                "date": "December 12"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully fulfilled the request by finding a flight to the correct destination on the specified date and provided helpful additional information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.65,
+        "audio_agent_speech_start": 14.99,
+        "agent_response_latency_s": 5.34,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_07",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Driver License Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "expected_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL555"
+              },
+              "actual_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DPL555"
+              },
+              "explanation": "The doc_number 'DPL555' does not match the expected 'DL555'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent updated the driver's license number to 'DPL -555' instead of the requested 'DL555', which is an incorrect parameter."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 14.11,
+        "audio_agent_speech_start": 18.38,
+        "agent_response_latency_s": 4.27,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_07",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "Driver License Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "expected_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL555"
+              },
+              "actual_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL55555"
+              },
+              "explanation": "The doc_number 'DL55555' does not match the expected 'DL555'."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent confirmed that the driver's license number was updated on file, successfully fulfilling the requested task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 11.55,
+        "audio_agent_speech_start": 15.79,
+        "agent_response_latency_s": 4.24,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_08",
+      "domain": "travel_identity",
+      "difficulty": "easy",
+      "title": "False Start Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Seattle",
+                "date": "November 1"
+              },
+              "actual_args": {
+                "date": "November 1",
+                "destination": "Seattle"
+              },
+              "explanation": "The arguments are identical; the order of keys in a JSON object does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested task by finding a flight to Seattle on November 1st and provided helpful additional information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 9.98,
+        "audio_agent_speech_start": 14.29,
+        "agent_response_latency_s": 4.31,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_10",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Date Correction with Fillers",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Miami",
+                "date": "October 7"
+              },
+              "actual_args": {
+                "destination": "Miami",
+                "date": "October 7"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested search for flights to Miami on October 7th and provided the result, including helpful additional detail (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 7.22,
+        "audio_agent_speech_start": 12.11,
+        "agent_response_latency_s": 4.89,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_11",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Search and Book with Name",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Austin",
+                "date": "February 2"
+              },
+              "actual_args": {
+                "destination": "Austin",
+                "date": "February 2"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "book_flight",
+              "score": 1.0,
+              "expected_args": {
+                "passenger_name": "Morgan Smith"
+              },
+              "actual_args": {
+                "passenger_name": "Morgan Smith"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all parts of the request: searching for and booking the flight to Austin on February 2nd for Morgan Smith, and even provided a booking reference."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.0,
+        "audio_agent_speech_start": 14.48,
+        "agent_response_latency_s": 4.48,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "travel_14",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Hesitation with Date",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Seoul",
+                "date": "March 22"
+              },
+              "actual_args": {
+                "date": "March 22",
+                "destination": "Seoul"
+              },
+              "explanation": "The arguments are identical; the order of keys does not matter."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested task by finding a flight to Seoul on the specified date and provided helpful additional information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 10.8,
+        "audio_agent_speech_start": 15.09,
+        "agent_response_latency_s": 4.29,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_16",
+      "domain": "travel_identity",
+      "difficulty": "medium",
+      "title": "Filler-Heavy Flight Search",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Las Vegas",
+                "date": "August 8"
+              },
+              "actual_args": {
+                "destination": "Vegas",
+                "date": "August 8"
+              },
+              "explanation": "'Vegas' is an acceptable alias for 'Las Vegas' per Rule 3."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully searched for the flight to the correct destination on the correct date and provided a specific result, which fulfills the requested task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 13.81,
+        "audio_agent_speech_start": 18.1,
+        "agent_response_latency_s": 4.29,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_18",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Search + Book + Passport Update",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Dubai",
+                "date": "April 10"
+              },
+              "actual_args": {
+                "date": "April 10",
+                "destination": "Dubai"
+              },
+              "explanation": "The arguments are identical; the order of keys does not matter."
+            },
+            {
+              "function": "book_flight",
+              "score": 1.0,
+              "expected_args": {
+                "passenger_name": "Casey Lee"
+              },
+              "actual_args": {
+                "passenger_name": "Casey Lee"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "passport",
+                "doc_number": "E772211"
+              },
+              "actual_args": {
+                "doc_number": "E772211",
+                "doc_type": "passport"
+              },
+              "explanation": "The arguments match the expected values; the order of keys in a JSON object does not affect equality."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully completed all parts of the multi-step request: searching for and booking the cheapest flight for Casey Lee and updating the passport."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 20.73,
+        "audio_agent_speech_start": 25.07,
+        "agent_response_latency_s": 4.34,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "travel_19",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Double Destination + Date Correction",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 1,
+          "total_expected": 1,
+          "total_actual": 1,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Milan",
+                "date": "June 3"
+              },
+              "actual_args": {
+                "destination": "Milan",
+                "date": "June 3"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully performed the requested task by finding a flight to Milan on the specified date and provided helpful additional information (the price)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 16.93,
+        "audio_agent_speech_start": 21.23,
+        "agent_response_latency_s": 4.3,
+        "is_interruption": false
+      },
+      "expected_calls_count": 1,
+      "actual_calls_count": 1
+    },
+    {
+      "scenario_id": "travel_20",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Conditional Booking Under Budget",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.8,
+          "recall": 0.667,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 3,
+          "total_actual": 2,
+          "unmatched_expected": [
+            "book_flight"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.667,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Toronto",
+                "date": "July 20"
+              },
+              "actual_args": {
+                "date": "July 20",
+                "destination": "Toronto"
+              },
+              "explanation": "The arguments are identical; the order of keys does not matter."
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL88"
+              },
+              "actual_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL88"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response is incomplete and cut off, failing to confirm if the second part of the conditional task (updating the license) was performed."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 15.8,
+        "audio_agent_speech_start": 20.11,
+        "agent_response_latency_s": 4.31,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "travel_21",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Hesitant Booking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent provided a transitional phrase but did not perform or demonstrate any of the requested actions (searching, booking, or updating the visa)."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 19.24,
+        "audio_agent_speech_start": 24.02,
+        "agent_response_latency_s": 4.78,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    },
+    {
+      "scenario_id": "travel_21",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Hesitant Booking Chain",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 3,
+          "total_expected": 3,
+          "total_actual": 3,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 1.0,
+              "expected_args": {
+                "destination": "Las Vegas",
+                "date": "August 8"
+              },
+              "actual_args": {
+                "date": "August 8",
+                "destination": "Vegas"
+              },
+              "explanation": "The destination 'Vegas' is an acceptable alias for 'Las Vegas' per rule 3, and the date matches exactly."
+            },
+            {
+              "function": "book_flight",
+              "score": 1.0,
+              "expected_args": {
+                "passenger_name": "Quinn Davis"
+              },
+              "actual_args": {
+                "passenger_name": "Quinn Davis"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "visa",
+                "doc_number": "V77"
+              },
+              "actual_args": {
+                "doc_type": "visa",
+                "doc_number": "V77"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent failed to perform any of the requested actions and instead provided a repetitive stalling response without completing the task."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 22.42,
+        "audio_agent_speech_start": 27.06,
+        "agent_response_latency_s": 4.64,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 3
+    },
+    {
+      "scenario_id": "travel_23",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Document Updates",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "passport",
+                "doc_number": "P1122"
+              },
+              "actual_args": {
+                "doc_type": "passport",
+                "doc_number": "P1122"
+              },
+              "explanation": "The actual arguments match the expected arguments exactly."
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL9090"
+              },
+              "actual_args": {
+                "doc_number": "DL9090",
+                "doc_type": "driver_license"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully updated both requested documents (passport and driver's license) and confirmed completion with specific details, which is permitted."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 21.93,
+        "audio_agent_speech_start": 26.13,
+        "agent_response_latency_s": 4.2,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "travel_23",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Heavy Fillers + Document Updates",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 1.0,
+          "recall": 1.0,
+          "precision": 1.0,
+          "matched": 2,
+          "total_expected": 2,
+          "total_actual": 2,
+          "unmatched_expected": [],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 1.0,
+          "details": [
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "passport",
+                "doc_number": "P1122"
+              },
+              "actual_args": {
+                "doc_number": "P1122",
+                "doc_type": "passport"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect correctness."
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 1.0,
+              "expected_args": {
+                "doc_type": "driver_license",
+                "doc_number": "DL9090"
+              },
+              "actual_args": {
+                "doc_number": "DL9090",
+                "doc_type": "driver_license"
+              },
+              "explanation": "The arguments match the expected values exactly; the order of keys in a JSON object does not affect correctness."
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 1.0,
+          "explanation": "The agent successfully updated both requested documents (passport and driver's license) and confirmed completion with specific details, which is permitted."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 1.25,
+        "audio_agent_speech_start": 28.05,
+        "agent_response_latency_s": 26.8,
+        "is_interruption": false
+      },
+      "expected_calls_count": 2,
+      "actual_calls_count": 2
+    },
+    {
+      "scenario_id": "travel_24",
+      "domain": "travel_identity",
+      "difficulty": "hard",
+      "title": "Unsupported Tool Request (Hotel)",
+      "turn_take_success": true,
+      "metrics": {
+        "tool_selection_acc": {
+          "score": 0.0,
+          "recall": 0.0,
+          "precision": 1.0,
+          "matched": 0,
+          "total_expected": 3,
+          "total_actual": 0,
+          "unmatched_expected": [
+            "search_flights",
+            "book_flight",
+            "update_identity_doc"
+          ],
+          "unexpected_calls": []
+        },
+        "argument_acc": {
+          "score": 0.0,
+          "details": [
+            {
+              "function": "search_flights",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "book_flight",
+              "score": 0.0,
+              "reason": "Function not called"
+            },
+            {
+              "function": "update_identity_doc",
+              "score": 0.0,
+              "reason": "Function not called"
+            }
+          ]
+        },
+        "response_qual": {
+          "score": 0.0,
+          "explanation": "The agent's response 'One moment' does not fulfill the multi-step task of confirming the flight booking, the visa update, and the inability to search for hotels as specified in the expected response."
+        }
+      },
+      "latency": {
+        "available": true,
+        "user_speech_end_rel": 25.63,
+        "audio_agent_speech_start": 30.0,
+        "agent_response_latency_s": 4.37,
+        "is_interruption": false
+      },
+      "expected_calls_count": 3,
+      "actual_calls_count": 0
+    }
+  ]
+}

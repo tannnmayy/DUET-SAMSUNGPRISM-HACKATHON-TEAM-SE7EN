@@ -1,0 +1,70 @@
+{"t": 1790759880.9121249, "kind": "session_start", "room": "eval-f1da36d3", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759880.9920838, "kind": "agent_state", "state": "listening"}
+{"t": 1790759882.9894783, "kind": "user_state", "state": "speaking"}
+{"t": 1790759884.3933558, "kind": "user_state", "state": "listening"}
+{"t": 1790759884.7514098, "kind": "user_state", "state": "speaking"}
+{"t": 1790759884.866611, "kind": "metrics", "type": "stt_metrics", "duration": 0.47194839999974647, "audio_duration": 2.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759884.8671212, "kind": "heard", "text": "Um..."}
+{"t": 1790759886.5497885, "kind": "user_state", "state": "listening"}
+{"t": 1790759886.877395, "kind": "metrics", "type": "stt_metrics", "duration": 0.3261795999987953, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759886.8788388, "kind": "heard", "text": "So, well, um..."}
+{"t": 1790759887.45317, "kind": "user_state", "state": "speaking"}
+{"t": 1790759893.0418234, "kind": "user_state", "state": "listening"}
+{"t": 1790759893.4025881, "kind": "user_state", "state": "speaking"}
+{"t": 1790759893.698398, "kind": "metrics", "type": "stt_metrics", "duration": 0.6539714999998978, "audio_duration": 6.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759893.699882, "kind": "heard", "text": "Well, first, could you add an, could you add item K2?"}
+{"t": 1790759899.952197, "kind": "user_state", "state": "listening"}
+{"t": 1790759900.140863, "kind": "user_state", "state": "speaking"}
+{"t": 1790759900.5293508, "kind": "metrics", "type": "stt_metrics", "duration": 0.5753641999999672, "audio_duration": 7.156, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759900.5303178, "kind": "heard", "text": "Um, to my card, just one of them. And then can you check on my last order too?"}
+{"t": 1790759904.7534556, "kind": "user_state", "state": "listening"}
+{"t": 1790759904.9903913, "kind": "user_state", "state": "speaking"}
+{"t": 1790759905.2802303, "kind": "metrics", "type": "stt_metrics", "duration": 0.5250593000000663, "audio_duration": 5.172, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759905.2811275, "kind": "heard", "text": "The order is, the order ID is D."}
+{"t": 1790759905.8431153, "kind": "user_state", "state": "listening"}
+{"t": 1790759906.140387, "kind": "metrics", "type": "stt_metrics", "duration": 0.2954798999999184, "audio_duration": 1.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759906.1413255, "kind": "heard", "text": "E."}
+{"t": 1790759906.3892312, "kind": "user_state", "state": "speaking"}
+{"t": 1790759907.2457001, "kind": "user_state", "state": "listening"}
+{"t": 1790759907.4474273, "kind": "user_state", "state": "speaking"}
+{"t": 1790759907.5516539, "kind": "metrics", "type": "stt_metrics", "duration": 0.3042083000000275, "audio_duration": 1.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759907.5531049, "kind": "heard", "text": "L."}
+{"t": 1790759908.3993812, "kind": "user_state", "state": "listening"}
+{"t": 1790759908.6496754, "kind": "user_state", "state": "speaking"}
+{"t": 1790759908.6981156, "kind": "metrics", "type": "stt_metrics", "duration": 0.29677319999973406, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759908.7003264, "kind": "heard", "text": "Bye."}
+{"t": 1790759909.6005588, "kind": "user_state", "state": "listening"}
+{"t": 1790759909.8986647, "kind": "metrics", "type": "stt_metrics", "duration": 0.29798510000000533, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759909.9007561, "kind": "heard", "text": "V."}
+{"t": 1790759911.7515314, "kind": "user_turn", "text": "Um... So, well, um... Well, first, could you add an, could you add item K2? Um, to my card, just one of them. And then can you check on my last order too? The order is, the order ID is D. E. L. Bye. V."}
+{"t": 1790759911.7525315, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.5029726028442383, "transcription_delay": 0.6527016162872314, "on_user_turn_completed_delay": 0.0004456000006030081, "speech_id": "speech_ba2ad6f4641a"}
+{"t": 1790759911.7535315, "kind": "think_start", "text": "Um... So, well, um... Well, first, could you add an, could you add item K2? Um, to my card, just one of them. And then can you check on my last order too? The order is, the order ID is D. E. L. Bye. V.", "audio": false}
+{"t": 1790759911.7773066, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759912.0496774, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759912.19374, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759912.2073593, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14143609999882756, "duration": 0.15541209999901184, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ba2ad6f4641a"}
+{"t": 1790759918.4682772, "kind": "thinker_decided", "tools": true, "after_s": 6.71}
+{"t": 1790759918.4682772, "kind": "tool_start", "name": "add_to_cart", "args": {"product_id": "K2", "quantity": 1}}
+{"t": 1790759918.4694164, "kind": "tool_done", "name": "add_to_cart", "args": {"product_id": "K2", "quantity": 1}, "outcome": "success"}
+{"t": 1790759918.4704185, "kind": "tool_start", "name": "track_order", "args": {"order_id": "DELBV"}}
+{"t": 1790759918.4940214, "kind": "tool_done", "name": "track_order", "args": {"order_id": "DELBV"}, "outcome": "success"}
+{"t": 1790759918.9942014, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3892576000016561, "duration": 0.40209320000030857, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ba2ad6f4641a"}
+{"t": 1790759920.3611386, "kind": "thinker_say", "text": "OK. I've added item K2 to your cart, and your order DELBV is currently out for delivery.", "after_s": 8.61, "usage": {"input": 5108, "input_audio": 0, "output": 68, "thinking": 132, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759920.5601723, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.19487929999922926, "duration": 0.1970521999992343, "audio_duration": 6.785000000000004, "cancelled": false, "characters_count": 88, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ba2ad6f4641a"}
+{"t": 1790759927.5867648, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've added item K2 to your cart, and your order DELBV is currently out for delivery."}
+{"t": 1790759927.5878146, "kind": "agent_state", "state": "listening"}
+{"t": 1790759932.8433015, "kind": "user_state", "state": "speaking"}
+{"t": 1790759933.548388, "kind": "user_state", "state": "listening"}
+{"t": 1790759934.064895, "kind": "metrics", "type": "stt_metrics", "duration": 0.5164592999990418, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759934.0666726, "kind": "heard", "text": "Mm-hmm."}
+{"t": 1790759934.070017, "kind": "user_turn", "text": "Mm-hmm."}
+{"t": 1790759934.0705223, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8724651336669922, "transcription_delay": 0.8707928657531738, "on_user_turn_completed_delay": 0.00039930000093590934, "speech_id": "speech_37c0cf12dad0"}
+{"t": 1790759934.0725825, "kind": "think_start", "text": "Mm-hmm.", "audio": false}
+{"t": 1790759934.0778997, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759935.1691692, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759935.2635145, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759935.2823565, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.09230030000071565, "duration": 0.11097440000048664, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_37c0cf12dad0"}
+{"t": 1790759940.264967, "kind": "thinker_decided", "tools": false, "after_s": 6.19}
+{"t": 1790759940.266207, "kind": "thinker_say", "text": "<silent>", "after_s": 6.19, "usage": {"input": 2717, "input_audio": 0, "output": 2, "thinking": 233, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759940.266207, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790759940.2672157, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,51 @@
+{"t": 1790760768.5726879, "kind": "session_start", "room": "eval-2ccb7baa", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760768.679691, "kind": "agent_state", "state": "listening"}
+{"t": 1790760773.7131479, "kind": "user_state", "state": "speaking"}
+{"t": 1790760778.1408234, "kind": "user_state", "state": "listening"}
+{"t": 1790760778.69769, "kind": "metrics", "type": "stt_metrics", "duration": 0.5551094000002195, "audio_duration": 5.076, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760778.698801, "kind": "heard", "text": "So you like first, could you track order GG5?"}
+{"t": 1790760778.7018142, "kind": "user_turn", "text": "So you like first, could you track order GG5?"}
+{"t": 1790760778.7023191, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9121088981628418, "transcription_delay": 0.9099776744842529, "on_user_turn_completed_delay": 0.0004026000005978858, "speech_id": "speech_29cc035a9453"}
+{"t": 1790760778.7044713, "kind": "think_start", "text": "So you like first, could you track order GG5?", "audio": false}
+{"t": 1790760778.727619, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760778.7482636, "kind": "user_state", "state": "speaking"}
+{"t": 1790760779.188876, "kind": "agent_state", "state": "listening"}
+{"t": 1790760782.2329814, "kind": "user_state", "state": "listening"}
+{"t": 1790760782.695616, "kind": "user_state", "state": "speaking"}
+{"t": 1790760782.8365338, "kind": "metrics", "type": "stt_metrics", "duration": 0.6031523000001471, "audio_duration": 4.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760782.8380687, "kind": "heard", "text": "Then I'd like to process a refund for it if possible."}
+{"t": 1790760785.0908048, "kind": "user_state", "state": "listening"}
+{"t": 1790760785.3420558, "kind": "user_state", "state": "speaking"}
+{"t": 1790760785.619859, "kind": "metrics", "type": "stt_metrics", "duration": 0.5277387000005547, "audio_duration": 2.996, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760785.6213572, "kind": "heard", "text": "And also while we're at it."}
+{"t": 1790760788.00216, "kind": "user_state", "state": "listening"}
+{"t": 1790760788.2973764, "kind": "user_state", "state": "speaking"}
+{"t": 1790760788.5564516, "kind": "metrics", "type": "stt_metrics", "duration": 0.5533056000003853, "audio_duration": 3.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760788.5574994, "kind": "heard", "text": "Add item X1 to my cart."}
+{"t": 1790760791.5494225, "kind": "user_state", "state": "listening"}
+{"t": 1790760791.9906871, "kind": "user_turn", "text": "Then I'd like to process a refund for it if possible. And also while we're at it. Add item X1 to my cart."}
+{"t": 1790760791.991687, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.793264627456665, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000514600000315113, "speech_id": "speech_c841c98d9c65"}
+{"t": 1790760791.99275, "kind": "think_start", "text": "So you like first, could you track order GG5? Then I'd like to process a refund for it if possible. And also while we're at it. Add item X1 to my cart.", "audio": false}
+{"t": 1790760791.993807, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760792.1760654, "kind": "metrics", "type": "stt_metrics", "duration": 0.6255495999994309, "audio_duration": 3.892, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760792.1760654, "kind": "heard", "text": "So I can order a replacement."}
+{"t": 1790760792.1770668, "kind": "agent_state", "state": "listening"}
+{"t": 1790760792.1823242, "kind": "superseded"}
+{"t": 1790760792.9791915, "kind": "user_turn", "text": "So I can order a replacement."}
+{"t": 1790760792.9802437, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00042050000047311187, "speech_id": "speech_747fe288b7cf"}
+{"t": 1790760792.9812424, "kind": "think_start", "text": "So you like first, could you track order GG5? Then I'd like to process a refund for it if possible. And also while we're at it. Add item X1 to my cart. So I can order a replacement.", "audio": false}
+{"t": 1790760792.9842975, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760793.2803354, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760793.413784, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760793.428107, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13159140000061598, "duration": 0.14657249999982014, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_747fe288b7cf"}
+{"t": 1790760802.7631967, "kind": "thinker_decided", "tools": true, "after_s": 9.78}
+{"t": 1790760802.7642283, "kind": "tool_start", "name": "track_order", "args": {"order_id": "GG5"}}
+{"t": 1790760802.7652252, "kind": "tool_done", "name": "track_order", "args": {"order_id": "GG5"}, "outcome": "success"}
+{"t": 1790760802.7652252, "kind": "tool_start", "name": "add_to_cart", "args": {"product_id": "X1", "quantity": 1}}
+{"t": 1790760802.7682247, "kind": "tool_done", "name": "add_to_cart", "args": {"product_id": "X1", "quantity": 1}, "outcome": "success"}
+{"t": 1790760803.1437044, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.25755389999903855, "duration": 0.2719128000007913, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_747fe288b7cf"}
+{"t": 1790760806.59367, "kind": "thinker_say", "text": "Order GG5 is out for delivery, and I've added item X1 to your cart. I'm unable to process refunds, but I can help with other tasks.", "after_s": 13.61, "usage": {"input": 5544, "input_audio": 0, "output": 80, "thinking": 442, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760807.0603294, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.37300020000111545, "duration": 0.45241900000110036, "audio_duration": 5.485000000000002, "cancelled": false, "characters_count": 67, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_747fe288b7cf"}
+{"t": 1790760807.2915423, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16227810000054887, "duration": 0.22971789999974135, "audio_duration": 4.310000000000001, "cancelled": false, "characters_count": 63, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_747fe288b7cf"}
+{"t": 1790760816.775763, "kind": "agent_said", "text": "One moment. Still working on it. Order GG5 is out for delivery, and I've added item X1 to your cart. I'm unable to process refunds, but I can help with other tasks."}
+{"t": 1790760816.775763, "kind": "agent_state", "state": "listening"}

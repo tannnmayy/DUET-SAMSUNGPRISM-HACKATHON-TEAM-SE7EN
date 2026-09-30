@@ -1,0 +1,25 @@
+{"t": 1790763165.7094772, "kind": "session_start", "room": "eval-2ec08480", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763165.7504492, "kind": "agent_state", "state": "listening"}
+{"t": 1790763168.3993146, "kind": "user_state", "state": "speaking"}
+{"t": 1790763174.4529312, "kind": "user_state", "state": "listening"}
+{"t": 1790763174.9033098, "kind": "user_state", "state": "speaking"}
+{"t": 1790763175.009995, "kind": "metrics", "type": "stt_metrics", "duration": 0.5556559000015113, "audio_duration": 6.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763175.0121667, "kind": "heard", "text": "Okay, so I want to check the listings in. Actually, before I do that."}
+{"t": 1790763180.9056275, "kind": "user_state", "state": "listening"}
+{"t": 1790763181.6099067, "kind": "metrics", "type": "stt_metrics", "duration": 0.7024326999999175, "audio_duration": 6.58, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763181.6109066, "kind": "heard", "text": "Could you just update my search filter so that it only shows me places that allow pets? I have a cat."}
+{"t": 1790763183.042467, "kind": "user_turn", "text": "Okay, so I want to check the listings in. Actually, before I do that. Could you just update my search filter so that it only shows me places that allow pets? I have a cat."}
+{"t": 1790763183.043677, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.488839626312256, "transcription_delay": 1.057279109954834, "on_user_turn_completed_delay": 0.0004610999985743547, "speech_id": "speech_65c57061e940"}
+{"t": 1790763183.0456963, "kind": "think_start", "text": "Okay, so I want to check the listings in. Actually, before I do that. Could you just update my search filter so that it only shows me places that allow pets? I have a cat.", "audio": false}
+{"t": 1790763183.0701573, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763183.3522403, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763183.4841418, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763183.501001, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12985330000083195, "duration": 0.14727049999964947, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_65c57061e940"}
+{"t": 1790763188.5729616, "kind": "thinker_decided", "tools": true, "after_s": 5.53}
+{"t": 1790763188.5729616, "kind": "tool_start", "name": "update_search_filter", "args": {"value": true, "filter_name": "pets_allowed"}}
+{"t": 1790763188.6478305, "kind": "tool_done", "name": "update_search_filter", "args": {"value": true, "filter_name": "pets_allowed"}, "outcome": "success"}
+{"t": 1790763189.6950858, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23608550000062678, "duration": 0.2500593000004301, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_65c57061e940"}
+{"t": 1790763190.4303937, "kind": "thinker_say", "text": "OK. I've updated your search filter to only show pet-friendly listings.", "after_s": 7.39, "usage": {"input": 4922, "input_audio": 0, "output": 43, "thinking": 91, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763190.6109471, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17782739999893238, "duration": 0.17924849999872094, "audio_duration": 4.835000000000002, "cancelled": false, "characters_count": 71, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_65c57061e940"}
+{"t": 1790763196.3222907, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your search filter to only show pet-friendly listings."}
+{"t": 1790763196.3222907, "kind": "agent_state", "state": "listening"}

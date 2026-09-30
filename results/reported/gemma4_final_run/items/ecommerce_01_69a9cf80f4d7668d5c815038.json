@@ -1,0 +1,317 @@
+{
+  "pid": "69a9cf80f4d7668d5c815038",
+  "example_id": "ecommerce_01",
+  "category": "ecommerce_support",
+  "title": "Simple Order Tracking",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:03:17.306596",
+  "inference_time_s": 53.23,
+  "room_name": "eval-1c1d8e48",
+  "stream_start_time": 1790759000.1686962,
+  "input_transcript": "Like, you know, well I ordered something last week and I haven't received it yet. Could you track it for me? The order ID is ABC123.",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.69,
+        1.57
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        2.03,
+        2.59
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        2.59,
+        2.81
+      ]
+    },
+    {
+      "text": "well",
+      "timestamp": [
+        3.97,
+        4.37
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.37,
+        4.63
+      ]
+    },
+    {
+      "text": "ordered",
+      "timestamp": [
+        4.63,
+        4.97
+      ]
+    },
+    {
+      "text": "something",
+      "timestamp": [
+        4.97,
+        5.25
+      ]
+    },
+    {
+      "text": "last",
+      "timestamp": [
+        5.25,
+        5.55
+      ]
+    },
+    {
+      "text": "week",
+      "timestamp": [
+        5.55,
+        5.91
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.91,
+        6.27
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        6.27,
+        8.33
+      ]
+    },
+    {
+      "text": "haven't",
+      "timestamp": [
+        8.33,
+        8.65
+      ]
+    },
+    {
+      "text": "received",
+      "timestamp": [
+        8.65,
+        8.93
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        8.93,
+        9.13
+      ]
+    },
+    {
+      "text": "yet.",
+      "timestamp": [
+        9.13,
+        9.35
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        10.07,
+        10.75
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.75,
+        10.87
+      ]
+    },
+    {
+      "text": "track",
+      "timestamp": [
+        10.87,
+        11.11
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        11.11,
+        11.23
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.23,
+        11.41
+      ]
+    },
+    {
+      "text": "me?",
+      "timestamp": [
+        11.41,
+        11.61
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        12.69,
+        13.37
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        13.37,
+        13.69
+      ]
+    },
+    {
+      "text": "ID",
+      "timestamp": [
+        13.69,
+        14.03
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        14.03,
+        14.53
+      ]
+    },
+    {
+      "text": "ABC123.",
+      "timestamp": [
+        14.53,
+        18.27
+      ]
+    }
+  ],
+  "user_speech_end_rel": 18.27,
+  "latency": {
+    "input_duration_s": 49.62,
+    "output_duration_s": 49.62,
+    "first_speech_s": 22.7
+  },
+  "user_done_unix": 1790759018.4386961,
+  "transcript": "One moment. Still working on it. Your order ABC 123 is out for delivery.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        22.42,
+        22.96
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        22.96,
+        23.32
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        30.11,
+        30.69
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        30.69,
+        31.01
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        31.01,
+        31.23
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        31.23,
+        31.39
+      ]
+    },
+    {
+      "text": "Your",
+      "timestamp": [
+        33.65,
+        34.21
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        34.21,
+        34.45
+      ]
+    },
+    {
+      "text": "ABC",
+      "timestamp": [
+        34.45,
+        34.95
+      ]
+    },
+    {
+      "text": "123",
+      "timestamp": [
+        34.95,
+        35.57
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        35.57,
+        36.49
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        36.49,
+        36.69
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        36.69,
+        36.87
+      ]
+    },
+    {
+      "text": "delivery.",
+      "timestamp": [
+        36.87,
+        37.17
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.15,
+  "audio_agent_speech_start": 22.42,
+  "actual_tool_calls": [
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "ABC123"
+      },
+      "timestamp_start": 28.03,
+      "timestamp_end": 28.03
+    }
+  ],
+  "status": "completed"
+}

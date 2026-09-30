@@ -1,0 +1,37 @@
+{"t": 1790759609.0923717, "kind": "session_start", "room": "eval-7d500023", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759609.1773834, "kind": "agent_state", "state": "listening"}
+{"t": 1790759611.4297998, "kind": "user_state", "state": "speaking"}
+{"t": 1790759613.9298496, "kind": "user_state", "state": "listening"}
+{"t": 1790759614.1790838, "kind": "user_state", "state": "speaking"}
+{"t": 1790759614.5498495, "kind": "metrics", "type": "stt_metrics", "duration": 0.6191737999997713, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759614.5646873, "kind": "heard", "text": "Hmm, like I like me."}
+{"t": 1790759620.0299428, "kind": "user_state", "state": "listening"}
+{"t": 1790759620.4299111, "kind": "user_state", "state": "speaking"}
+{"t": 1790759620.5812383, "kind": "metrics", "type": "stt_metrics", "duration": 0.5497961999990366, "audio_duration": 6.452, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759620.582236, "kind": "heard", "text": "First, can you track my order? The ID is 123ABC."}
+{"t": 1790759631.62926, "kind": "user_state", "state": "listening"}
+{"t": 1790759632.071694, "kind": "user_turn", "text": "Hmm, like I like me. First, can you track my order? The ID is 123ABC."}
+{"t": 1790759632.071694, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7932276725769043, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00035879999995813705, "speech_id": "speech_2dedc9f7d36c"}
+{"t": 1790759632.0741975, "kind": "think_start", "text": "Hmm, like I like me. First, can you track my order? The ID is 123ABC.", "audio": false}
+{"t": 1790759632.0748508, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759632.2091382, "kind": "metrics", "type": "stt_metrics", "duration": 0.5776941000003717, "audio_duration": 11.764, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759632.2101731, "kind": "heard", "text": "And then while we're at it, could you also search for winter jackets under $150? I need one for my trip."}
+{"t": 1790759632.210771, "kind": "agent_state", "state": "listening"}
+{"t": 1790759632.2140918, "kind": "superseded"}
+{"t": 1790759632.997763, "kind": "user_turn", "text": "And then while we're at it, could you also search for winter jackets under $150? I need one for my trip."}
+{"t": 1790759632.9987652, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004039999985252507, "speech_id": "speech_6eb52bb8dac2"}
+{"t": 1790759632.9997642, "kind": "think_start", "text": "Hmm, like I like me. First, can you track my order? The ID is 123ABC. And then while we're at it, could you also search for winter jackets under $150? I need one for my trip.", "audio": false}
+{"t": 1790759633.021591, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759633.300604, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759633.477583, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759633.5088868, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17479629999979807, "duration": 0.20702189999974507, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6eb52bb8dac2"}
+{"t": 1790759637.2966478, "kind": "thinker_decided", "tools": true, "after_s": 4.3}
+{"t": 1790759637.297653, "kind": "tool_start", "name": "track_order", "args": {"order_id": "123ABC"}}
+{"t": 1790759637.297653, "kind": "tool_done", "name": "track_order", "args": {"order_id": "123ABC"}, "outcome": "success"}
+{"t": 1790759637.297653, "kind": "tool_start", "name": "search_products", "args": {"query": "winter jackets", "max_price": 150}}
+{"t": 1790759637.319403, "kind": "tool_done", "name": "search_products", "args": {"query": "winter jackets", "max_price": 150}, "outcome": "success"}
+{"t": 1790759639.407687, "kind": "thinker_say", "text": "OK. Your order 123ABC is out for delivery, and I found a winter jackets Premium for 140 dollars.", "after_s": 6.41, "usage": {"input": 5010, "input_audio": 0, "output": 74, "thinking": 91, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759639.6693857, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.28185140000096, "duration": 0.2953190000007453, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6eb52bb8dac2"}
+{"t": 1790759639.9049757, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.228315800000928, "duration": 0.23078390000046056, "audio_duration": 9.010000000000002, "cancelled": false, "characters_count": 96, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6eb52bb8dac2"}
+{"t": 1790759650.529542, "kind": "agent_said", "text": "One moment. Still working on it. OK. Your order 123ABC is out for delivery, and I found a winter jackets Premium for 140 dollars."}
+{"t": 1790759650.530063, "kind": "agent_state", "state": "listening"}

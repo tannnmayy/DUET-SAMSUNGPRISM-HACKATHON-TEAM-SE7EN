@@ -1,0 +1,324 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "ecommerce_04",
+  "category": "ecommerce_support",
+  "title": "Order Tracking with Pause",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:05:34.738608",
+  "inference_time_s": 44.39,
+  "room_name": "eval-2e0c5840",
+  "stream_start_time": 1790759137.5297399,
+  "input_transcript": "You know, where is my package? Let me find the order number here. The order number is XYZ88. Could you check what's going on with it?",
+  "input_asr_chunks": [
+    {
+      "text": "You",
+      "timestamp": [
+        0.21,
+        0.99
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        0.99,
+        1.23
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        1.47,
+        1.95
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        1.95,
+        2.09
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        2.09,
+        2.27
+      ]
+    },
+    {
+      "text": "package?",
+      "timestamp": [
+        2.27,
+        2.83
+      ]
+    },
+    {
+      "text": "Let",
+      "timestamp": [
+        3.09,
+        3.09
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        3.09,
+        3.25
+      ]
+    },
+    {
+      "text": "find",
+      "timestamp": [
+        3.25,
+        3.53
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        3.53,
+        4.31
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        4.31,
+        4.65
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        4.65,
+        5.03
+      ]
+    },
+    {
+      "text": "here.",
+      "timestamp": [
+        5.03,
+        5.33
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        5.61,
+        5.71
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        5.71,
+        5.79
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        5.79,
+        6.05
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        6.05,
+        6.29
+      ]
+    },
+    {
+      "text": "XYZ88.",
+      "timestamp": [
+        6.29,
+        7.75
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.43,
+        8.93
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.93,
+        9.01
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        9.01,
+        9.15
+      ]
+    },
+    {
+      "text": "what's",
+      "timestamp": [
+        9.15,
+        9.41
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        9.41,
+        9.61
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        9.61,
+        9.83
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        9.83,
+        10.03
+      ]
+    },
+    {
+      "text": "it?",
+      "timestamp": [
+        10.03,
+        10.21
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.21,
+  "latency": {
+    "input_duration_s": 40.773,
+    "output_duration_s": 40.773,
+    "first_speech_s": 15.2
+  },
+  "user_done_unix": 1790759147.73974,
+  "transcript": "One moment. Still working on it. Your order XYZ 88 is currently out for delivery.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        14.9,
+        15.44
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        15.44,
+        15.78
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        20.99,
+        21.57
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        21.57,
+        21.87
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        21.87,
+        22.11
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        22.11,
+        22.27
+      ]
+    },
+    {
+      "text": "Your",
+      "timestamp": [
+        22.71,
+        23.25
+      ]
+    },
+    {
+      "text": "order",
+      "timestamp": [
+        23.25,
+        23.49
+      ]
+    },
+    {
+      "text": "XYZ",
+      "timestamp": [
+        23.49,
+        24.17
+      ]
+    },
+    {
+      "text": "88",
+      "timestamp": [
+        24.17,
+        24.45
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        24.45,
+        25.13
+      ]
+    },
+    {
+      "text": "currently",
+      "timestamp": [
+        25.13,
+        25.51
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        25.51,
+        25.75
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        25.75,
+        25.93
+      ]
+    },
+    {
+      "text": "delivery.",
+      "timestamp": [
+        25.93,
+        26.25
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.69,
+  "audio_agent_speech_start": 14.9,
+  "actual_tool_calls": [
+    {
+      "function": "track_order",
+      "args": {
+        "order_id": "XYZ88"
+      },
+      "timestamp_start": 17.18,
+      "timestamp_end": 17.18
+    }
+  ],
+  "status": "completed"
+}

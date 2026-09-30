@@ -1,0 +1,68 @@
+{"t": 1790765600.1635408, "kind": "session_start", "room": "eval-e46405f7", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765600.2086532, "kind": "agent_state", "state": "listening"}
+{"t": 1790765603.492129, "kind": "user_state", "state": "speaking"}
+{"t": 1790765604.5423934, "kind": "user_state", "state": "listening"}
+{"t": 1790765605.0441003, "kind": "user_state", "state": "speaking"}
+{"t": 1790765605.07375, "kind": "metrics", "type": "stt_metrics", "duration": 0.530251699998189, "audio_duration": 1.62, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765605.0750282, "kind": "heard", "text": "You know..."}
+{"t": 1790765606.85485, "kind": "user_state", "state": "listening"}
+{"t": 1790765607.1829562, "kind": "metrics", "type": "stt_metrics", "duration": 0.32630210000206716, "audio_duration": 2.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765607.1840112, "kind": "heard", "text": "Okay, so, um..."}
+{"t": 1790765607.395174, "kind": "user_state", "state": "speaking"}
+{"t": 1790765609.4505575, "kind": "user_state", "state": "listening"}
+{"t": 1790765609.8874135, "kind": "user_turn", "text": "You know... Okay, so, um..."}
+{"t": 1790765609.888413, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.788856029510498, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004398000019136816, "speech_id": "speech_a6862b45dd0d"}
+{"t": 1790765609.8894126, "kind": "think_start", "text": "You know... Okay, so, um...", "audio": false}
+{"t": 1790765609.8894126, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765610.0250392, "kind": "metrics", "type": "stt_metrics", "duration": 0.571927400000277, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765610.0264845, "kind": "heard", "text": "I need to find flights to..."}
+{"t": 1790765610.027232, "kind": "agent_state", "state": "listening"}
+{"t": 1790765610.1530762, "kind": "user_state", "state": "speaking"}
+{"t": 1790765611.0908709, "kind": "user_state", "state": "listening"}
+{"t": 1790765611.3926919, "kind": "metrics", "type": "stt_metrics", "duration": 0.30066380000062054, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765611.3936934, "kind": "heard", "text": "Vegas"}
+{"t": 1790765611.4891608, "kind": "user_state", "state": "speaking"}
+{"t": 1790765613.45268, "kind": "user_state", "state": "listening"}
+{"t": 1790765613.8886592, "kind": "user_turn", "text": "I need to find flights to... Vegas"}
+{"t": 1790765613.8886592, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.784991979598999, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0006506999998237006, "speech_id": "speech_746860206356"}
+{"t": 1790765613.8912294, "kind": "think_start", "text": "You know... Okay, so, um... I need to find flights to... Vegas", "audio": false}
+{"t": 1790765613.8912294, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765613.9986842, "kind": "user_state", "state": "speaking"}
+{"t": 1790765614.030005, "kind": "metrics", "type": "stt_metrics", "duration": 0.574905099998432, "audio_duration": 2.516, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765614.030993, "kind": "heard", "text": "I was thinking around August 8th."}
+{"t": 1790765614.0314972, "kind": "agent_state", "state": "listening"}
+{"t": 1790765619.5475106, "kind": "user_state", "state": "listening"}
+{"t": 1790765620.106158, "kind": "metrics", "type": "stt_metrics", "duration": 0.5651658000024327, "audio_duration": 6.164, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765620.1070738, "kind": "heard", "text": "And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790765620.1461911, "kind": "user_state", "state": "speaking"}
+{"t": 1790765625.239907, "kind": "user_state", "state": "listening"}
+{"t": 1790765625.6843364, "kind": "user_turn", "text": "I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis."}
+{"t": 1790765625.6853478, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7964293956756592, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00040240000089397654, "speech_id": "speech_630ebbbff941"}
+{"t": 1790765625.6863475, "kind": "think_start", "text": "You know... Okay, so, um... I need to find flights to... Vegas I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis.", "audio": false}
+{"t": 1790765625.6873503, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765625.8978436, "kind": "metrics", "type": "stt_metrics", "duration": 0.6564948000013828, "audio_duration": 5.684, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765625.8988693, "kind": "heard", "text": "Oh, and while you're at it, could you please update my visa number to V77?"}
+{"t": 1790765625.8996449, "kind": "agent_state", "state": "listening"}
+{"t": 1790765625.9031634, "kind": "superseded"}
+{"t": 1790765626.7086966, "kind": "user_turn", "text": "Oh, and while you're at it, could you please update my visa number to V77?"}
+{"t": 1790765626.7086966, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00042830000165849924, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765626.7107048, "kind": "think_start", "text": "You know... Okay, so, um... I need to find flights to... Vegas I was thinking around August 8th. And then once you find something, book it under the name Quinn Davis. Oh, and while you're at it, could you please update my visa number to V77?", "audio": false}
+{"t": 1790765626.7333484, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765627.0015912, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765627.1461923, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765627.160386, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14236499999969965, "duration": 0.1574901999993017, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765639.5660124, "kind": "thinker_decided", "tools": true, "after_s": 12.86}
+{"t": 1790765639.5660124, "kind": "tool_start", "name": "search_flights", "args": {"date": "August 8", "destination": "Vegas"}}
+{"t": 1790765639.9931972, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3291830000016489, "duration": 0.34306629999991856, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765640.009831, "kind": "tool_done", "name": "search_flights", "args": {"date": "August 8", "destination": "Vegas"}, "outcome": "success"}
+{"t": 1790765640.009831, "kind": "tool_start", "name": "book_flight", "args": {"passenger_name": "Quinn Davis"}}
+{"t": 1790765640.0109332, "kind": "tool_done", "name": "book_flight", "args": {"passenger_name": "Quinn Davis"}, "outcome": "success"}
+{"t": 1790765640.0109332, "kind": "tool_start", "name": "update_identity_doc", "args": {"doc_type": "visa", "doc_number": "V77"}}
+{"t": 1790765640.014098, "kind": "tool_done", "name": "update_identity_doc", "args": {"doc_type": "visa", "doc_number": "V77"}, "outcome": "success"}
+{"t": 1790765645.9942114, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23203060000014375, "duration": 0.24591940000027535, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765652.193053, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3262604999981704, "duration": 0.3402730999987398, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765652.3023064, "kind": "thinker_say", "text": "OK. I've booked your flight to Vegas on August 8th for 450 dollars under the name Quinn Davis, and your visa number has been updated to V77. Your booking reference is B789.", "after_s": 25.59, "usage": {"input": 5841, "input_audio": 0, "output": 123, "thinking": 462, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765652.5648766, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2569279999988794, "duration": 0.25974959999803104, "audio_duration": 10.734999999999996, "cancelled": false, "characters_count": 140, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765652.712259, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14522329999817885, "duration": 0.1462928999972064, "audio_duration": 3.3100000000000005, "cancelled": false, "characters_count": 31, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebd14b723c15"}
+{"t": 1790765656.689361, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. Still working on it. OK. I've booked your flight to"}
+{"t": 1790765656.6903598, "kind": "agent_state", "state": "listening"}

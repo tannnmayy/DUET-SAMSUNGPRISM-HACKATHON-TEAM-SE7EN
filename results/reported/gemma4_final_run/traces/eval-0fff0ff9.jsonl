@@ -1,0 +1,28 @@
+{"t": 1790759069.46043, "kind": "session_start", "room": "eval-0fff0ff9", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759069.508808, "kind": "agent_state", "state": "listening"}
+{"t": 1790759074.409509, "kind": "user_state", "state": "speaking"}
+{"t": 1790759077.1101654, "kind": "user_state", "state": "listening"}
+{"t": 1790759077.209711, "kind": "user_state", "state": "speaking"}
+{"t": 1790759077.70471, "kind": "metrics", "type": "stt_metrics", "duration": 0.5945664000009856, "audio_duration": 3.284, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759077.7064762, "kind": "heard", "text": "I'm looking for a pair of wireless headphones."}
+{"t": 1790759082.6088939, "kind": "user_state", "state": "listening"}
+{"t": 1790759082.909285, "kind": "user_state", "state": "speaking"}
+{"t": 1790759083.1100929, "kind": "metrics", "type": "stt_metrics", "duration": 0.4991036000010354, "audio_duration": 5.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759083.1100929, "kind": "heard", "text": "And I'd like to track it under $100 if possible."}
+{"t": 1790759084.0104055, "kind": "user_state", "state": "listening"}
+{"t": 1790759084.3183308, "kind": "metrics", "type": "stt_metrics", "duration": 0.3070716000001994, "audio_duration": 1.716, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759084.3192692, "kind": "heard", "text": "What do you have?"}
+{"t": 1790759084.4525943, "kind": "user_turn", "text": "I'm looking for a pair of wireless headphones. And I'd like to track it under $100 if possible. What do you have?"}
+{"t": 1790759084.4525943, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7936830520629883, "transcription_delay": 0.6608636379241943, "on_user_turn_completed_delay": 0.00044410000009520445, "speech_id": "speech_050bd9679324"}
+{"t": 1790759084.453598, "kind": "think_start", "text": "I'm looking for a pair of wireless headphones. And I'd like to track it under $100 if possible. What do you have?", "audio": false}
+{"t": 1790759084.4789615, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759085.6494954, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759085.77894, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759085.7939897, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1273691999995208, "duration": 0.14310889999978826, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_050bd9679324"}
+{"t": 1790759088.117493, "kind": "thinker_decided", "tools": true, "after_s": 3.66}
+{"t": 1790759088.117493, "kind": "tool_start", "name": "search_products", "args": {"max_price": 100, "query": "wireless headphones"}}
+{"t": 1790759088.1391456, "kind": "tool_done", "name": "search_products", "args": {"max_price": 100, "query": "wireless headphones"}, "outcome": "success"}
+{"t": 1790759090.9170105, "kind": "thinker_say", "text": "I found one pair of wireless headphones for you: the Premium wireless headphones for $90.", "after_s": 6.46, "usage": {"input": 4883, "input_audio": 0, "output": 44, "thinking": 118, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759091.3692892, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.35702649999984715, "duration": 0.4482074999996257, "audio_duration": 6.510000000000003, "cancelled": false, "characters_count": 89, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_050bd9679324"}
+{"t": 1790759097.8014853, "kind": "agent_said", "text": "One moment. I found one pair of wireless headphones for you: the Premium wireless headphones for $90."}
+{"t": 1790759097.8014853, "kind": "agent_state", "state": "listening"}

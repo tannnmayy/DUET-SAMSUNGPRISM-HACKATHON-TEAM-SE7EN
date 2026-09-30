@@ -1,0 +1,45 @@
+{"t": 1790760461.6618648, "kind": "session_start", "room": "eval-f1192336", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760461.7016294, "kind": "agent_state", "state": "listening"}
+{"t": 1790760464.6585152, "kind": "user_state", "state": "speaking"}
+{"t": 1790760472.1591692, "kind": "user_state", "state": "listening"}
+{"t": 1790760472.321675, "kind": "user_state", "state": "speaking"}
+{"t": 1790760472.7594037, "kind": "metrics", "type": "stt_metrics", "duration": 0.5990146999993158, "audio_duration": 8.116, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760472.7608008, "kind": "heard", "text": "Okay, so search for a laptop. Wait, no, no, actually, I need a tablet."}
+{"t": 1790760474.6121783, "kind": "user_state", "state": "listening"}
+{"t": 1790760475.0983222, "kind": "metrics", "type": "stt_metrics", "duration": 0.4836916000003839, "audio_duration": 2.868, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760475.099007, "kind": "heard", "text": "Not a laptop, a tablet."}
+{"t": 1790760475.109472, "kind": "user_state", "state": "speaking"}
+{"t": 1790760478.8022237, "kind": "user_state", "state": "listening"}
+{"t": 1790760478.9108417, "kind": "user_state", "state": "speaking"}
+{"t": 1790760479.3398826, "kind": "metrics", "type": "stt_metrics", "duration": 0.5368372000011732, "audio_duration": 4.308, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760479.3416047, "kind": "heard", "text": "And add two of them to the card. Actually, no, no, just one."}
+{"t": 1790760479.599364, "kind": "user_state", "state": "listening"}
+{"t": 1790760479.7501774, "kind": "user_state", "state": "speaking"}
+{"t": 1790760479.9035292, "kind": "metrics", "type": "stt_metrics", "duration": 0.30172049999964656, "audio_duration": 1.3, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760479.904321, "kind": "heard", "text": "Just one."}
+{"t": 1790760482.7996612, "kind": "user_state", "state": "listening"}
+{"t": 1790760483.231223, "kind": "user_turn", "text": "Okay, so search for a laptop. Wait, no, no, actually, I need a tablet. Not a laptop, a tablet. And add two of them to the card. Actually, no, no, just one. Just one."}
+{"t": 1790760483.2322674, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7835619449615479, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004589000000123633, "speech_id": "speech_9a6cd3d304ec"}
+{"t": 1790760483.233302, "kind": "think_start", "text": "Okay, so search for a laptop. Wait, no, no, actually, I need a tablet. Not a laptop, a tablet. And add two of them to the card. Actually, no, no, just one. Just one.", "audio": false}
+{"t": 1790760483.2343612, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760483.304965, "kind": "metrics", "type": "stt_metrics", "duration": 0.5046077000006335, "audio_duration": 3.636, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760483.306571, "kind": "heard", "text": "I only have the budget for one right now."}
+{"t": 1790760483.306571, "kind": "agent_state", "state": "listening"}
+{"t": 1790760483.3070748, "kind": "superseded"}
+{"t": 1790760484.115875, "kind": "user_turn", "text": "I only have the budget for one right now."}
+{"t": 1790760484.115875, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00043310000000928994, "speech_id": "speech_0eb5119643b9"}
+{"t": 1790760484.1168778, "kind": "think_start", "text": "Okay, so search for a laptop. Wait, no, no, actually, I need a tablet. Not a laptop, a tablet. And add two of them to the card. Actually, no, no, just one. Just one. I only have the budget for one right now.", "audio": false}
+{"t": 1790760484.13977, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760484.4096582, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760484.5765748, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760484.5918543, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16342839999924763, "duration": 0.18035199999940232, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0eb5119643b9"}
+{"t": 1790760492.3561249, "kind": "thinker_decided", "tools": true, "after_s": 8.24}
+{"t": 1790760492.3561249, "kind": "tool_start", "name": "search_products", "args": {"query": "tablet"}}
+{"t": 1790760492.3615568, "kind": "tool_done", "name": "search_products", "args": {"query": "tablet"}, "outcome": "success"}
+{"t": 1790760492.8380709, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3757533999996667, "duration": 0.38941609999892535, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0eb5119643b9"}
+{"t": 1790760495.4758751, "kind": "tool_start", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "PROD1"}}
+{"t": 1790760495.4803846, "kind": "tool_done", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "PROD1"}, "outcome": "success"}
+{"t": 1790760497.5178688, "kind": "thinker_say", "text": "OK. I've searched for a tablet and added one tablet Premium to your cart for 99.99.", "after_s": 13.4, "usage": {"input": 7966, "input_audio": 0, "output": 67, "thinking": 227, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760497.9967673, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.36650190000000293, "duration": 0.47648800000024494, "audio_duration": 6.9600000000000035, "cancelled": false, "characters_count": 83, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_0eb5119643b9"}
+{"t": 1790760504.866751, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've searched for a tablet and added one tablet Premium to your cart for 99.99."}
+{"t": 1790760504.866751, "kind": "agent_state", "state": "listening"}

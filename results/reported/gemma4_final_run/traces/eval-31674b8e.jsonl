@@ -1,0 +1,39 @@
+{"t": 1790765240.7574253, "kind": "session_start", "room": "eval-31674b8e", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765240.7987077, "kind": "agent_state", "state": "listening"}
+{"t": 1790765243.5335705, "kind": "user_state", "state": "speaking"}
+{"t": 1790765244.42234, "kind": "user_state", "state": "listening"}
+{"t": 1790765244.5288727, "kind": "user_state", "state": "speaking"}
+{"t": 1790765244.9623287, "kind": "metrics", "type": "stt_metrics", "duration": 0.5394124999984342, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765244.9766395, "kind": "heard", "text": "Hmm."}
+{"t": 1790765248.1195493, "kind": "user_state", "state": "listening"}
+{"t": 1790765248.4723167, "kind": "user_state", "state": "speaking"}
+{"t": 1790765248.5938976, "kind": "metrics", "type": "stt_metrics", "duration": 0.5124486000022443, "audio_duration": 4.148, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765248.5948975, "kind": "heard", "text": "Like I've been thinking about it and"}
+{"t": 1790765251.6825726, "kind": "user_state", "state": "listening"}
+{"t": 1790765251.9744685, "kind": "user_state", "state": "speaking"}
+{"t": 1790765252.1730182, "kind": "metrics", "type": "stt_metrics", "duration": 0.48971049999818206, "audio_duration": 3.796, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765252.174484, "kind": "heard", "text": "I need to book flights to Vegas."}
+{"t": 1790765257.0412219, "kind": "user_state", "state": "listening"}
+{"t": 1790765257.480938, "kind": "user_turn", "text": "Hmm. Like I've been thinking about it and I need to book flights to Vegas."}
+{"t": 1790765257.4819374, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7902400493621826, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003699000008055009, "speech_id": "speech_069de8a67583"}
+{"t": 1790765257.482937, "kind": "think_start", "text": "Hmm. Like I've been thinking about it and I need to book flights to Vegas.", "audio": false}
+{"t": 1790765257.482937, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765257.603947, "kind": "metrics", "type": "stt_metrics", "duration": 0.5599284999989322, "audio_duration": 5.684, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765257.6047664, "kind": "heard", "text": "I'm looking at going around August 8th if there's anything available."}
+{"t": 1790765257.6052706, "kind": "agent_state", "state": "listening"}
+{"t": 1790765258.399744, "kind": "user_turn", "text": "I'm looking at going around August 8th if there's anything available."}
+{"t": 1790765258.4007459, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0005086000019218773, "speech_id": "speech_cddef36dbed4"}
+{"t": 1790765258.4017448, "kind": "think_start", "text": "Hmm. Like I've been thinking about it and I need to book flights to Vegas. I'm looking at going around August 8th if there's anything available.", "audio": false}
+{"t": 1790765258.4261043, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765258.7151847, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765258.8503087, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765258.866861, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13274359999923036, "duration": 0.15000270000018645, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cddef36dbed4"}
+{"t": 1790765260.8715694, "kind": "thinker_decided", "tools": true, "after_s": 2.47}
+{"t": 1790765260.8715694, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Vegas", "date": "August 8"}}
+{"t": 1790765261.3650203, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Vegas", "date": "August 8"}, "outcome": "success"}
+{"t": 1790765265.1003263, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2854920999998285, "duration": 0.2999692999983381, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cddef36dbed4"}
+{"t": 1790765268.6606038, "kind": "thinker_say", "text": "I found a flight to Vegas on August 8th for 450 dollars. Would you like me to book that for you?", "after_s": 10.26, "usage": {"input": 4810, "input_audio": 0, "output": 53, "thinking": 266, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765268.983124, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.25621070000124746, "duration": 0.32146949999878416, "audio_duration": 4.760000000000002, "cancelled": false, "characters_count": 56, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cddef36dbed4"}
+{"t": 1790765269.1719005, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15295590000096126, "duration": 0.1867802999986452, "audio_duration": 2.3099999999999996, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_cddef36dbed4"}
+{"t": 1790765276.0039914, "kind": "agent_said", "text": "One moment. Still working on it. I found a flight to Vegas on August 8th for 450 dollars. Would you like me to book that for you?"}
+{"t": 1790765276.0039914, "kind": "agent_state", "state": "listening"}

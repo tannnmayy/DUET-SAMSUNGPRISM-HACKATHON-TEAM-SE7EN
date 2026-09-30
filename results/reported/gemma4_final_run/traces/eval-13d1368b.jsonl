@@ -1,0 +1,25 @@
+{"t": 1790765175.8362226, "kind": "session_start", "room": "eval-13d1368b", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765175.945118, "kind": "agent_state", "state": "listening"}
+{"t": 1790765178.3478215, "kind": "user_state", "state": "speaking"}
+{"t": 1790765187.3543828, "kind": "user_state", "state": "listening"}
+{"t": 1790765187.5411172, "kind": "user_state", "state": "speaking"}
+{"t": 1790765188.084628, "kind": "metrics", "type": "stt_metrics", "duration": 0.7275130999987596, "audio_duration": 9.588, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765188.0987725, "kind": "heard", "text": "Hmm, so I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay."}
+{"t": 1790765189.1969998, "kind": "user_state", "state": "listening"}
+{"t": 1790765189.522136, "kind": "metrics", "type": "stt_metrics", "duration": 0.3240362999968056, "audio_duration": 2.26, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765189.5229285, "kind": "heard", "text": "Yeah, could you search for that?"}
+{"t": 1790765189.6360338, "kind": "user_turn", "text": "Hmm, so I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay. Yeah, could you search for that?"}
+{"t": 1790765189.6360338, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7905304431915283, "transcription_delay": 0.6779286861419678, "on_user_turn_completed_delay": 0.000370699999621138, "speech_id": "speech_d4df9ff9ef5c"}
+{"t": 1790765189.638496, "kind": "think_start", "text": "Hmm, so I want to look at flights to Seoul and the date, I was thinking of it as, let me think, I'm pretty sure it's March 22nd, yay. Yeah, could you search for that?", "audio": false}
+{"t": 1790765189.6622372, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765190.809643, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765190.9493542, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765190.9645872, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13751530000081402, "duration": 0.15341239999906975, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d4df9ff9ef5c"}
+{"t": 1790765198.1270492, "kind": "thinker_decided", "tools": true, "after_s": 8.49}
+{"t": 1790765198.1270492, "kind": "tool_start", "name": "search_flights", "args": {"date": "March 22", "destination": "Seoul"}}
+{"t": 1790765198.3846583, "kind": "tool_done", "name": "search_flights", "args": {"date": "March 22", "destination": "Seoul"}, "outcome": "success"}
+{"t": 1790765198.5188231, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2714768000005279, "duration": 0.28508030000011786, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d4df9ff9ef5c"}
+{"t": 1790765200.1051586, "kind": "thinker_say", "text": "OK. I found a flight to Seoul on March 22nd for 450.", "after_s": 10.47, "usage": {"input": 4864, "input_audio": 0, "output": 45, "thinking": 45, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765200.3529253, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17396309999821824, "duration": 0.24522569999680854, "audio_duration": 5.1350000000000025, "cancelled": false, "characters_count": 52, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d4df9ff9ef5c"}
+{"t": 1790765205.4169025, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a flight to Seoul on March 22nd for 450."}
+{"t": 1790765205.4169025, "kind": "agent_state", "state": "listening"}

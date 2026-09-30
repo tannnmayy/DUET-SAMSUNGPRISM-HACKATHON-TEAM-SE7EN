@@ -1,0 +1,269 @@
+{
+  "pid": "5e3c1fbece3a7b000a6fd95a",
+  "example_id": "travel_02",
+  "category": "travel_identity",
+  "title": "Update Passport Number",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:36:24.264002",
+  "inference_time_s": 48.07,
+  "room_name": "eval-aea65970",
+  "stream_start_time": 1790764587.0296016,
+  "input_transcript": "Uh, yeah. So my new passport number is P -889 -90011. Could you update that in the system for me, please?",
+  "input_asr_chunks": [
+    {
+      "text": "Uh,",
+      "timestamp": [
+        1.14,
+        1.7
+      ]
+    },
+    {
+      "text": "yeah.",
+      "timestamp": [
+        1.92,
+        2.1
+      ]
+    },
+    {
+      "text": "So",
+      "timestamp": [
+        2.34,
+        2.42
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        2.42,
+        2.6
+      ]
+    },
+    {
+      "text": "new",
+      "timestamp": [
+        2.6,
+        2.74
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        2.74,
+        3.2
+      ]
+    },
+    {
+      "text": "number",
+      "timestamp": [
+        3.2,
+        3.64
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        3.64,
+        4.12
+      ]
+    },
+    {
+      "text": "P",
+      "timestamp": [
+        4.12,
+        4.44
+      ]
+    },
+    {
+      "text": "-889",
+      "timestamp": [
+        4.44,
+        5.9
+      ]
+    },
+    {
+      "text": "-90011.",
+      "timestamp": [
+        5.9,
+        8.2
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        9.06,
+        9.7
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        9.7,
+        9.84
+      ]
+    },
+    {
+      "text": "update",
+      "timestamp": [
+        9.84,
+        10.2
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        10.2,
+        10.58
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        10.58,
+        10.84
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.84,
+        10.98
+      ]
+    },
+    {
+      "text": "system",
+      "timestamp": [
+        10.98,
+        11.46
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.46,
+        12.32
+      ]
+    },
+    {
+      "text": "me,",
+      "timestamp": [
+        12.32,
+        12.54
+      ]
+    },
+    {
+      "text": "please?",
+      "timestamp": [
+        12.6,
+        12.78
+      ]
+    }
+  ],
+  "user_speech_end_rel": 12.78,
+  "latency": {
+    "input_duration_s": 44.52,
+    "output_duration_s": 44.52,
+    "first_speech_s": 17.4
+  },
+  "user_done_unix": 1790764599.8096015,
+  "transcript": "One moment. Still working on it. Okay, I've updated your passport number.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        17.1,
+        17.64
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        17.64,
+        18.0
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        26.7,
+        27.28
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        27.28,
+        27.58
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        27.58,
+        27.82
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        27.82,
+        28.0
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        28.44,
+        29.1
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        29.44,
+        29.64
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        29.64,
+        30.0
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        30.0,
+        30.18
+      ]
+    },
+    {
+      "text": "passport",
+      "timestamp": [
+        30.18,
+        30.58
+      ]
+    },
+    {
+      "text": "number.",
+      "timestamp": [
+        30.58,
+        30.86
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.32,
+  "audio_agent_speech_start": 17.1,
+  "actual_tool_calls": [
+    {
+      "function": "update_identity_doc",
+      "args": {
+        "doc_number": "P88990011",
+        "doc_type": "passport"
+      },
+      "timestamp_start": 24.67,
+      "timestamp_end": 24.68
+    }
+  ],
+  "status": "completed"
+}

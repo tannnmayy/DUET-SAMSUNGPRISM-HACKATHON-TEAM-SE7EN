@@ -1,0 +1,445 @@
+{
+  "pid": "66c4f3cb14cbfc4db836bd4e",
+  "example_id": "travel_11",
+  "category": "travel_identity",
+  "title": "Search and Book with Name",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:45:11.485240",
+  "inference_time_s": 44.59,
+  "room_name": "eval-1b4b5c64",
+  "stream_start_time": 1790765114.2480118,
+  "input_transcript": "So we need a flight to Austin on February 2nd and go ahead and book it under the same Morgan Smith. That's the person who will be traveling.",
+  "input_asr_chunks": [
+    {
+      "text": "So",
+      "timestamp": [
+        1.14,
+        1.58
+      ]
+    },
+    {
+      "text": "we",
+      "timestamp": [
+        1.58,
+        1.72
+      ]
+    },
+    {
+      "text": "need",
+      "timestamp": [
+        1.72,
+        1.88
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        1.88,
+        2.0
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        2.0,
+        2.34
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.34,
+        2.76
+      ]
+    },
+    {
+      "text": "Austin",
+      "timestamp": [
+        2.76,
+        3.16
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        3.16,
+        3.38
+      ]
+    },
+    {
+      "text": "February",
+      "timestamp": [
+        3.38,
+        3.74
+      ]
+    },
+    {
+      "text": "2nd",
+      "timestamp": [
+        3.74,
+        4.32
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        4.32,
+        4.56
+      ]
+    },
+    {
+      "text": "go",
+      "timestamp": [
+        4.56,
+        5.04
+      ]
+    },
+    {
+      "text": "ahead",
+      "timestamp": [
+        5.04,
+        5.24
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        5.24,
+        5.4
+      ]
+    },
+    {
+      "text": "book",
+      "timestamp": [
+        5.4,
+        5.64
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        5.64,
+        5.76
+      ]
+    },
+    {
+      "text": "under",
+      "timestamp": [
+        5.76,
+        6.0
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        6.0,
+        6.24
+      ]
+    },
+    {
+      "text": "same",
+      "timestamp": [
+        6.24,
+        6.52
+      ]
+    },
+    {
+      "text": "Morgan",
+      "timestamp": [
+        6.52,
+        6.9
+      ]
+    },
+    {
+      "text": "Smith.",
+      "timestamp": [
+        6.9,
+        7.32
+      ]
+    },
+    {
+      "text": "That's",
+      "timestamp": [
+        7.52,
+        8.0
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        8.0,
+        8.76
+      ]
+    },
+    {
+      "text": "person",
+      "timestamp": [
+        8.76,
+        9.02
+      ]
+    },
+    {
+      "text": "who",
+      "timestamp": [
+        9.02,
+        9.24
+      ]
+    },
+    {
+      "text": "will",
+      "timestamp": [
+        9.24,
+        9.42
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        9.42,
+        9.58
+      ]
+    },
+    {
+      "text": "traveling.",
+      "timestamp": [
+        9.58,
+        10.0
+      ]
+    }
+  ],
+  "user_speech_end_rel": 10.0,
+  "latency": {
+    "input_duration_s": 40.971,
+    "output_duration_s": 40.971,
+    "first_speech_s": 14.8
+  },
+  "user_done_unix": 1790765124.2480118,
+  "transcript": "One moment. Still working on it. Still working on it. Okay, I've booked your flight to Austin on February 2nd for Morgan Smith. The booking reference is B -789.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        14.48,
+        15.0
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        15.0,
+        15.36
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        21.58,
+        22.18
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        22.18,
+        22.5
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        22.5,
+        22.7
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        22.7,
+        22.9
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        27.52,
+        28.12
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        28.12,
+        28.46
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        28.46,
+        28.68
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        28.68,
+        28.88
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        29.44,
+        30.06
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        30.38,
+        30.68
+      ]
+    },
+    {
+      "text": "booked",
+      "timestamp": [
+        30.68,
+        30.86
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        30.86,
+        30.98
+      ]
+    },
+    {
+      "text": "flight",
+      "timestamp": [
+        30.98,
+        31.22
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        31.22,
+        31.38
+      ]
+    },
+    {
+      "text": "Austin",
+      "timestamp": [
+        31.38,
+        31.72
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        31.72,
+        31.92
+      ]
+    },
+    {
+      "text": "February",
+      "timestamp": [
+        31.92,
+        32.22
+      ]
+    },
+    {
+      "text": "2nd",
+      "timestamp": [
+        32.22,
+        32.84
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        32.84,
+        33.0
+      ]
+    },
+    {
+      "text": "Morgan",
+      "timestamp": [
+        33.0,
+        33.28
+      ]
+    },
+    {
+      "text": "Smith.",
+      "timestamp": [
+        33.28,
+        33.72
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        34.16,
+        34.66
+      ]
+    },
+    {
+      "text": "booking",
+      "timestamp": [
+        34.66,
+        34.88
+      ]
+    },
+    {
+      "text": "reference",
+      "timestamp": [
+        34.88,
+        35.3
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        35.3,
+        35.66
+      ]
+    },
+    {
+      "text": "B",
+      "timestamp": [
+        35.66,
+        35.84
+      ]
+    },
+    {
+      "text": "-789.",
+      "timestamp": [
+        35.84,
+        36.66
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.48,
+  "audio_agent_speech_start": 14.48,
+  "actual_tool_calls": [
+    {
+      "function": "search_flights",
+      "args": {
+        "destination": "Austin",
+        "date": "February 2"
+      },
+      "timestamp_start": 19.55,
+      "timestamp_end": 20.07
+    },
+    {
+      "function": "book_flight",
+      "args": {
+        "passenger_name": "Morgan Smith"
+      },
+      "timestamp_start": 24.71,
+      "timestamp_end": 24.71
+    }
+  ],
+  "status": "completed"
+}

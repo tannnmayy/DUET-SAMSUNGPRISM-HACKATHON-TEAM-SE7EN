@@ -1,0 +1,42 @@
+{"t": 1790759542.3570938, "kind": "session_start", "room": "eval-38a2f5c5", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759542.473761, "kind": "agent_state", "state": "listening"}
+{"t": 1790759544.828793, "kind": "user_state", "state": "speaking"}
+{"t": 1790759546.1793373, "kind": "user_state", "state": "listening"}
+{"t": 1790759546.6792538, "kind": "user_state", "state": "speaking"}
+{"t": 1790759546.7641983, "kind": "metrics", "type": "stt_metrics", "duration": 0.5836297999994713, "audio_duration": 1.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759546.778155, "kind": "heard", "text": "Like, well, um..."}
+{"t": 1790759549.1809301, "kind": "user_state", "state": "listening"}
+{"t": 1790759549.4288502, "kind": "user_state", "state": "speaking"}
+{"t": 1790759549.7378724, "kind": "metrics", "type": "stt_metrics", "duration": 0.5553449999988516, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759549.7394414, "kind": "heard", "text": "Could you search for running shoes?"}
+{"t": 1790759550.4804566, "kind": "user_state", "state": "listening"}
+{"t": 1790759550.579154, "kind": "user_state", "state": "speaking"}
+{"t": 1790759550.7891803, "kind": "metrics", "type": "stt_metrics", "duration": 0.3086251999993692, "audio_duration": 1.652, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759550.7910402, "kind": "heard", "text": "Actually, no."}
+{"t": 1790759555.4281583, "kind": "user_state", "state": "listening"}
+{"t": 1790759555.6797125, "kind": "user_state", "state": "speaking"}
+{"t": 1790759555.9974647, "kind": "metrics", "type": "stt_metrics", "duration": 0.5671971000010672, "audio_duration": 5.428, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759555.998439, "kind": "heard", "text": "Um, I just remembered I already have running shoes. Search for hiking boots instead."}
+{"t": 1790759558.2283866, "kind": "user_state", "state": "listening"}
+{"t": 1790759558.6704755, "kind": "user_turn", "text": "Like, well, um... Could you search for running shoes? Actually, no. Um, I just remembered I already have running shoes. Search for hiking boots instead."}
+{"t": 1790759558.6714752, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7940888404846191, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00041449999844189733, "speech_id": "speech_fe15d8eb090d"}
+{"t": 1790759558.6725428, "kind": "think_start", "text": "Like, well, um... Could you search for running shoes? Actually, no. Um, I just remembered I already have running shoes. Search for hiking boots instead.", "audio": false}
+{"t": 1790759558.6725428, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759558.7354794, "kind": "metrics", "type": "stt_metrics", "duration": 0.5061740000001009, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759558.7369394, "kind": "heard", "text": "That's what I actually need."}
+{"t": 1790759558.7369394, "kind": "agent_state", "state": "listening"}
+{"t": 1790759558.7435713, "kind": "superseded"}
+{"t": 1790759559.5295286, "kind": "user_turn", "text": "That's what I actually need."}
+{"t": 1790759559.5295286, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000506800000948715, "speech_id": "speech_d958a3e63de3"}
+{"t": 1790759559.5449553, "kind": "think_start", "text": "Like, well, um... Could you search for running shoes? Actually, no. Um, I just remembered I already have running shoes. Search for hiking boots instead. That's what I actually need.", "audio": false}
+{"t": 1790759559.5680153, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759559.872714, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759560.024466, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759560.042976, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15018830000008165, "duration": 0.16900709999936225, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d958a3e63de3"}
+{"t": 1790759562.0712361, "kind": "thinker_decided", "tools": true, "after_s": 2.54}
+{"t": 1790759562.0712361, "kind": "tool_start", "name": "search_products", "args": {"query": "hiking boots"}}
+{"t": 1790759562.0976484, "kind": "tool_done", "name": "search_products", "args": {"query": "hiking boots"}, "outcome": "success"}
+{"t": 1790759564.7486835, "kind": "thinker_say", "text": "I found one pair of hiking boots Premium for 99.99.", "after_s": 5.22, "usage": {"input": 4822, "input_audio": 0, "output": 33, "thinking": 85, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759565.186515, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3687755000009929, "duration": 0.43397060000097554, "audio_duration": 4.860000000000002, "cancelled": false, "characters_count": 51, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d958a3e63de3"}
+{"t": 1790759569.9795408, "kind": "agent_said", "text": "One moment. I found one pair of hiking boots Premium for 99.99."}
+{"t": 1790759569.9795408, "kind": "agent_state", "state": "listening"}

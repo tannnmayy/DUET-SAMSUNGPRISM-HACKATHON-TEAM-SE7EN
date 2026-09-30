@@ -1,0 +1,345 @@
+{
+  "pid": "6998abd731d2ec50d067d5bd",
+  "example_id": "finance_02",
+  "category": "finance_billing",
+  "title": "Check Card Benefits",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:38:36.273745",
+  "inference_time_s": 42.97,
+  "room_name": "eval-94bf4903",
+  "stream_start_time": 1790761119.0466385,
+  "input_transcript": "Um, so could you tell me what kind of benefits come with the platinum card? Um, I want to know if it's worth switching to.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.43,
+        0.99
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        1.35,
+        1.53
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        1.53,
+        1.75
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        1.75,
+        1.85
+      ]
+    },
+    {
+      "text": "tell",
+      "timestamp": [
+        1.85,
+        2.11
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        2.11,
+        2.31
+      ]
+    },
+    {
+      "text": "what",
+      "timestamp": [
+        2.31,
+        2.55
+      ]
+    },
+    {
+      "text": "kind",
+      "timestamp": [
+        2.55,
+        2.83
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        2.83,
+        3.03
+      ]
+    },
+    {
+      "text": "benefits",
+      "timestamp": [
+        3.03,
+        3.59
+      ]
+    },
+    {
+      "text": "come",
+      "timestamp": [
+        3.59,
+        4.05
+      ]
+    },
+    {
+      "text": "with",
+      "timestamp": [
+        4.05,
+        5.13
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.13,
+        5.35
+      ]
+    },
+    {
+      "text": "platinum",
+      "timestamp": [
+        5.35,
+        5.69
+      ]
+    },
+    {
+      "text": "card?",
+      "timestamp": [
+        5.69,
+        6.09
+      ]
+    },
+    {
+      "text": "Um,",
+      "timestamp": [
+        6.33,
+        6.43
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        6.71,
+        6.85
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        6.85,
+        7.07
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        7.07,
+        7.21
+      ]
+    },
+    {
+      "text": "know",
+      "timestamp": [
+        7.21,
+        7.43
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        7.43,
+        7.79
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        7.79,
+        8.01
+      ]
+    },
+    {
+      "text": "worth",
+      "timestamp": [
+        8.01,
+        8.25
+      ]
+    },
+    {
+      "text": "switching",
+      "timestamp": [
+        8.25,
+        8.77
+      ]
+    },
+    {
+      "text": "to.",
+      "timestamp": [
+        8.77,
+        8.99
+      ]
+    }
+  ],
+  "user_speech_end_rel": 8.99,
+  "latency": {
+    "input_duration_s": 39.429,
+    "output_duration_s": 39.429,
+    "first_speech_s": 13.85
+  },
+  "user_done_unix": 1790761128.0366385,
+  "transcript": "One moment. Still working on it. The Platinum card offers 2 % cashback and has no foreign transaction fees.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        13.55,
+        14.09
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        14.09,
+        14.47
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        19.61,
+        20.27
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        20.27,
+        20.59
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        20.59,
+        20.81
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        20.81,
+        20.99
+      ]
+    },
+    {
+      "text": "The",
+      "timestamp": [
+        21.39,
+        21.91
+      ]
+    },
+    {
+      "text": "Platinum",
+      "timestamp": [
+        21.91,
+        22.29
+      ]
+    },
+    {
+      "text": "card",
+      "timestamp": [
+        22.29,
+        22.57
+      ]
+    },
+    {
+      "text": "offers",
+      "timestamp": [
+        22.57,
+        23.03
+      ]
+    },
+    {
+      "text": "2",
+      "timestamp": [
+        23.03,
+        23.29
+      ]
+    },
+    {
+      "text": "%",
+      "timestamp": [
+        23.29,
+        23.59
+      ]
+    },
+    {
+      "text": "cashback",
+      "timestamp": [
+        23.59,
+        24.19
+      ]
+    },
+    {
+      "text": "and",
+      "timestamp": [
+        24.19,
+        24.71
+      ]
+    },
+    {
+      "text": "has",
+      "timestamp": [
+        24.71,
+        24.91
+      ]
+    },
+    {
+      "text": "no",
+      "timestamp": [
+        24.91,
+        25.15
+      ]
+    },
+    {
+      "text": "foreign",
+      "timestamp": [
+        25.15,
+        25.47
+      ]
+    },
+    {
+      "text": "transaction",
+      "timestamp": [
+        25.47,
+        25.93
+      ]
+    },
+    {
+      "text": "fees.",
+      "timestamp": [
+        25.93,
+        26.45
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.56,
+  "audio_agent_speech_start": 13.55,
+  "actual_tool_calls": [
+    {
+      "function": "get_card_benefits",
+      "args": {
+        "card_type": "platinum"
+      },
+      "timestamp_start": 14.14,
+      "timestamp_end": 14.14
+    }
+  ],
+  "status": "completed"
+}

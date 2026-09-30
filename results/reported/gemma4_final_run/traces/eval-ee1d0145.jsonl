@@ -1,0 +1,23 @@
+{"t": 1790763374.4273045, "kind": "session_start", "room": "eval-ee1d0145", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763374.4989033, "kind": "agent_state", "state": "listening"}
+{"t": 1790763376.6597135, "kind": "user_state", "state": "speaking"}
+{"t": 1790763387.2591958, "kind": "user_state", "state": "listening"}
+{"t": 1790763388.0030043, "kind": "metrics", "type": "stt_metrics", "duration": 0.7411507000015263, "audio_duration": 11.156, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763388.0179596, "kind": "heard", "text": "Well, I was thinking of one bedroom under 12. Well, actually, no, wait, my partner is moving in with me. So we need a two bedroom and we can go up, up to 1600 a month."}
+{"t": 1790763388.0203326, "kind": "user_turn", "text": "Well, I was thinking of one bedroom under 12. Well, actually, no, wait, my partner is moving in with me. So we need a two bedroom and we can go up, up to 1600 a month."}
+{"t": 1790763388.0203326, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.1111834049224854, "transcription_delay": 1.109898567199707, "on_user_turn_completed_delay": 0.00032699999974283855, "speech_id": "speech_aa478fabd09e"}
+{"t": 1790763388.022607, "kind": "think_start", "text": "Well, I was thinking of one bedroom under 12. Well, actually, no, wait, my partner is moving in with me. So we need a two bedroom and we can go up, up to 1600 a month.", "audio": false}
+{"t": 1790763388.0442705, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763388.8941805, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763389.0260406, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763389.0410933, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12903360000018438, "duration": 0.14455640000051062, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aa478fabd09e"}
+{"t": 1790763409.681255, "kind": "thinker_decided", "tools": true, "after_s": 21.66}
+{"t": 1790763409.681255, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "min_bedrooms", "value": 2}}
+{"t": 1790763409.7576897, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "min_bedrooms", "value": 2}, "outcome": "success"}
+{"t": 1790763409.7576897, "kind": "tool_start", "name": "update_search_filter", "args": {"value": 1600, "filter_name": "max_price"}}
+{"t": 1790763409.9564362, "kind": "tool_done", "name": "update_search_filter", "args": {"value": 1600, "filter_name": "max_price"}, "outcome": "success"}
+{"t": 1790763410.227932, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3632363000015175, "duration": 0.37630390000049374, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aa478fabd09e"}
+{"t": 1790763414.3529422, "kind": "thinker_say", "text": "OK. I've updated your search filters to two bedrooms and a maximum price of 1600.", "after_s": 26.33, "usage": {"input": 6490, "input_audio": 0, "output": 78, "thinking": 833, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763414.7676125, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3041150999997626, "duration": 0.4137632999991183, "audio_duration": 6.3350000000000035, "cancelled": false, "characters_count": 81, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_aa478fabd09e"}
+{"t": 1790763418.4146464, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your search filters to two bedrooms"}
+{"t": 1790763418.415647, "kind": "agent_state", "state": "listening"}

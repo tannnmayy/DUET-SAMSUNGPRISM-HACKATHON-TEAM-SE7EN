@@ -1,0 +1,66 @@
+{"t": 1790765831.2023315, "kind": "session_start", "room": "eval-7b946124", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765831.2831066, "kind": "agent_state", "state": "listening"}
+{"t": 1790765834.1281283, "kind": "user_state", "state": "speaking"}
+{"t": 1790765838.9340093, "kind": "user_state", "state": "listening"}
+{"t": 1790765839.3384306, "kind": "user_state", "state": "speaking"}
+{"t": 1790765839.6313286, "kind": "metrics", "type": "stt_metrics", "duration": 0.6959740999991482, "audio_duration": 5.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765839.6329625, "kind": "heard", "text": "Well, great. So first, I need to find a flight to Vancouver."}
+{"t": 1790765840.7724802, "kind": "user_state", "state": "listening"}
+{"t": 1790765841.0881674, "kind": "metrics", "type": "stt_metrics", "duration": 0.31441389999963576, "audio_duration": 2.036, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765841.0890393, "kind": "heard", "text": "On November 5th,"}
+{"t": 1790765841.2122004, "kind": "user_turn", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th,"}
+{"t": 1790765841.213229, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7917201519012451, "transcription_delay": 0.6685590744018555, "on_user_turn_completed_delay": 0.0004245000018272549, "speech_id": "speech_d6764175e500"}
+{"t": 1790765841.2142296, "kind": "think_start", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th,", "audio": false}
+{"t": 1790765841.2384555, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765841.2731915, "kind": "user_state", "state": "speaking"}
+{"t": 1790765841.7276044, "kind": "agent_state", "state": "listening"}
+{"t": 1790765843.5200088, "kind": "user_state", "state": "listening"}
+{"t": 1790765844.0120692, "kind": "metrics", "type": "stt_metrics", "duration": 0.4915005000002566, "audio_duration": 2.836, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765844.0135455, "kind": "heard", "text": "And book it under the name Schuyler."}
+{"t": 1790765844.0208268, "kind": "user_turn", "text": "And book it under the name Schuyler."}
+{"t": 1790765844.0208268, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8471782207489014, "transcription_delay": 0.8455367088317871, "on_user_turn_completed_delay": 0.0004470000021683518, "speech_id": "speech_ebe4dcc1bda8"}
+{"t": 1790765844.0233662, "kind": "think_start", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th, And book it under the name Schuyler.", "audio": false}
+{"t": 1790765844.026814, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765845.084667, "kind": "user_state", "state": "speaking"}
+{"t": 1790765845.4726489, "kind": "agent_state", "state": "listening"}
+{"t": 1790765849.2578583, "kind": "thinker_decided", "tools": true, "after_s": 5.23}
+{"t": 1790765849.2588608, "kind": "talker", "text": "One moment.", "reason": "tools", "fallback": true}
+{"t": 1790765849.2594295, "kind": "tool_start", "name": "search_flights", "args": {"date": "November 5", "destination": "Vancouver"}}
+{"t": 1790765849.535478, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.26654879999841796, "duration": 0.2752053000003798, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_ebe4dcc1bda8"}
+{"t": 1790765850.4758935, "kind": "user_state", "state": "listening"}
+{"t": 1790765850.8709679, "kind": "metrics", "type": "stt_metrics", "duration": 0.39419530000304803, "audio_duration": 6.004, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765850.8725502, "kind": "heard", "text": "Then I was also hoping you could find a hotel near the airport for a couple of nights."}
+{"t": 1790765850.9230368, "kind": "user_turn", "text": "Then I was also hoping you could find a hotel near the airport for a couple of nights."}
+{"t": 1790765850.9230368, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7972970008850098, "transcription_delay": 0.7486567497253418, "on_user_turn_completed_delay": 0.000478300000395393, "speech_id": "speech_a5e8ed9b8c86"}
+{"t": 1790765850.925809, "kind": "think_start", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th, And book it under the name Schuyler. Then I was also hoping you could find a hotel near the airport for a couple of nights.", "audio": false}
+{"t": 1790765850.9487388, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765851.1735482, "kind": "user_state", "state": "speaking"}
+{"t": 1790765851.5695078, "kind": "agent_state", "state": "listening"}
+{"t": 1790765854.2241704, "kind": "user_state", "state": "listening"}
+{"t": 1790765854.4266217, "kind": "user_state", "state": "speaking"}
+{"t": 1790765854.8141887, "kind": "metrics", "type": "stt_metrics", "duration": 0.5888464999989083, "audio_duration": 3.636, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765854.815754, "kind": "heard", "text": "And then finally, I need to update my visa number."}
+{"t": 1790765856.7305312, "kind": "user_state", "state": "listening"}
+{"t": 1790765856.885362, "kind": "user_state", "state": "speaking"}
+{"t": 1790765857.2641118, "kind": "metrics", "type": "stt_metrics", "duration": 0.5324843999987934, "audio_duration": 2.9, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765857.2652287, "kind": "heard", "text": "To V as in Victor."}
+{"t": 1790765859.3797033, "kind": "user_state", "state": "listening"}
+{"t": 1790765859.8300965, "kind": "user_turn", "text": "And then finally, I need to update my visa number. To V as in Victor."}
+{"t": 1790765859.8300965, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8013951778411865, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000432699998782482, "speech_id": "speech_a7c34bb5975e"}
+{"t": 1790765859.8320947, "kind": "think_start", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th, And book it under the name Schuyler. Then I was also hoping you could find a hotel near the airport for a couple of nights. And then finally, I need to update my visa number. To V as in Victor.", "audio": false}
+{"t": 1790765859.8330967, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765859.9513302, "kind": "metrics", "type": "stt_metrics", "duration": 0.5713571999986016, "audio_duration": 3.124, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765859.9530144, "kind": "heard", "text": "Dash four, dash four."}
+{"t": 1790765859.9535215, "kind": "agent_state", "state": "listening"}
+{"t": 1790765860.7515316, "kind": "user_turn", "text": "Dash four, dash four."}
+{"t": 1790765860.7528505, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000429300001997035, "speech_id": "speech_6b4c8d1d9662"}
+{"t": 1790765860.7538478, "kind": "think_start", "text": "Well, great. So first, I need to find a flight to Vancouver. On November 5th, And book it under the name Schuyler. Then I was also hoping you could find a hotel near the airport for a couple of nights. And then finally, I need to update my visa number. To V as in Victor. Dash four, dash four.", "audio": false}
+{"t": 1790765860.7761168, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765861.0471668, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765861.1907742, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765861.2079854, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14189089999854332, "duration": 0.15933399999994435, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6b4c8d1d9662"}
+{"t": 1790765888.7491744, "kind": "thinker_error", "text": "no answer from gemma-4-26b-a4b-it within 28 s (4 request(s) unanswered); last error: 504 DEADLINE_EXCEEDED. {'error': {'code': 504, 'message': 'Deadline expired before operation could complete.', 'status': 'DEADLINE_EXCEEDED'}}"}
+{"t": 1790765889.1629972, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.37444789999790373, "duration": 0.4118471999972826, "audio_duration": 2.6599999999999997, "cancelled": false, "characters_count": 39, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6b4c8d1d9662"}
+{"t": 1790765889.3481424, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15265359999830252, "duration": 0.18365750000157277, "audio_duration": 2.0349999999999993, "cancelled": false, "characters_count": 29, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6b4c8d1d9662"}
+{"t": 1790765890.4625676, "kind": "agent_said", "text": "One moment. Sorry, something went"}
+{"t": 1790765890.4625676, "kind": "agent_state", "state": "listening"}

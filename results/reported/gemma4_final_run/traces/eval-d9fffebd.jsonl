@@ -1,0 +1,36 @@
+{"t": 1790759477.4818828, "kind": "session_start", "room": "eval-d9fffebd", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759477.5695508, "kind": "agent_state", "state": "listening"}
+{"t": 1790759480.5299375, "kind": "user_state", "state": "speaking"}
+{"t": 1790759481.5798204, "kind": "user_state", "state": "listening"}
+{"t": 1790759481.8289013, "kind": "user_state", "state": "speaking"}
+{"t": 1790759482.1761727, "kind": "metrics", "type": "stt_metrics", "duration": 0.5947935999993206, "audio_duration": 1.652, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759482.1771746, "kind": "heard", "text": "So, um,"}
+{"t": 1790759483.6285708, "kind": "user_state", "state": "listening"}
+{"t": 1790759483.9441319, "kind": "metrics", "type": "stt_metrics", "duration": 0.31412920000002487, "audio_duration": 2.388, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759483.9451144, "kind": "heard", "text": "Yeah, you know..."}
+{"t": 1790759484.080159, "kind": "user_state", "state": "speaking"}
+{"t": 1790759487.4293401, "kind": "user_state", "state": "listening"}
+{"t": 1790759487.5786314, "kind": "user_state", "state": "speaking"}
+{"t": 1790759487.9841487, "kind": "metrics", "type": "stt_metrics", "duration": 0.5531850000006671, "audio_duration": 3.924, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759487.9851484, "kind": "heard", "text": "I want a mechanical keyboard and I'm trying to."}
+{"t": 1790759490.1795065, "kind": "user_state", "state": "listening"}
+{"t": 1790759490.4791634, "kind": "user_state", "state": "speaking"}
+{"t": 1790759490.7399647, "kind": "metrics", "type": "stt_metrics", "duration": 0.5589660000005097, "audio_duration": 3.22, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759490.7410166, "kind": "heard", "text": "Keep my budget under $200."}
+{"t": 1790759492.281056, "kind": "user_state", "state": "listening"}
+{"t": 1790759492.5915465, "kind": "metrics", "type": "stt_metrics", "duration": 0.31001690000084636, "audio_duration": 2.42, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759492.592698, "kind": "heard", "text": "Do you have anything like that?"}
+{"t": 1790759492.7214036, "kind": "user_turn", "text": "So, um, Yeah, you know... I want a mechanical keyboard and I'm trying to. Keep my budget under $200. Do you have anything like that?"}
+{"t": 1790759492.7214036, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7918431758880615, "transcription_delay": 0.663642168045044, "on_user_turn_completed_delay": 0.00037850000080652535, "speech_id": "speech_58c6e9afc0b3"}
+{"t": 1790759492.7228317, "kind": "think_start", "text": "So, um, Yeah, you know... I want a mechanical keyboard and I'm trying to. Keep my budget under $200. Do you have anything like that?", "audio": false}
+{"t": 1790759492.7439857, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759493.9209385, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759494.0602, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759494.0726593, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13739210000130697, "duration": 0.1507688000001508, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_58c6e9afc0b3"}
+{"t": 1790759496.1843848, "kind": "thinker_decided", "tools": true, "after_s": 3.46}
+{"t": 1790759496.1843848, "kind": "tool_start", "name": "search_products", "args": {"max_price": 200, "query": "mechanical keyboard"}}
+{"t": 1790759496.208186, "kind": "tool_done", "name": "search_products", "args": {"max_price": 200, "query": "mechanical keyboard"}, "outcome": "success"}
+{"t": 1790759498.7304435, "kind": "thinker_say", "text": "I found a Premium mechanical keyboard for $190.", "after_s": 6.01, "usage": {"input": 4860, "input_audio": 0, "output": 37, "thinking": 104, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759499.1975415, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4034517000000051, "duration": 0.4655304999996588, "audio_duration": 4.635000000000002, "cancelled": false, "characters_count": 47, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_58c6e9afc0b3"}
+{"t": 1790759503.778819, "kind": "agent_said", "text": "One moment. I found a Premium mechanical keyboard for $190."}
+{"t": 1790759503.778819, "kind": "agent_state", "state": "listening"}

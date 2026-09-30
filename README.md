@@ -24,16 +24,16 @@ calls the tools, with a **coordinator** that decides *when acting is allowed*.
 
 Full-Duplex-Bench v3, all 100 recordings, streamed in real time through the
 benchmark's own runner and scored by its own scripts. The complete record of the run,
-with every trace and log, is in [`results/reported/{{run_name}}`](results/reported/{{run_name}}).
+with every trace and log, is in [`results/reported/gemma4_final_run`](results/reported/gemma4_final_run).
 
 | System | Pass@1 | Tool selection | Argument accuracy | Response quality | Turn-take | Task latency | Interruptions |
 |---|---|---|---|---|---|---|---|
-| **DUET, Gemma 4 26B-A4B (ours)** | **{{pass_at_1}}** | **{{tool_f1}}** | **{{arg_acc}}** | **{{resp_qual}}** | **{{turn_take}}** | **{{task_latency}}** | **{{interruptions}}** |
+| **DUET, Gemma 4 26B-A4B (ours)** | **0.81** | **0.915** | **0.850** | **0.730** | **100%** | **14.44 s** | **0%** |
 | GPT-Realtime (paper) | 0.600 | 0.876 | 0.680 | 0.792 | 96.0% | 6.89 s | 13.5% |
 | Gemini Live 3.1 (paper) | 0.540 | 0.817 | 0.588 | 0.718 | 78.0% | 4.25 s | 19.2% |
 | Cascaded Whisper → GPT-4o → TTS (paper) | 0.450 | 0.803 | 0.562 | 0.600 | 100% | 10.12 s | 33.0% |
 
-{{results_note}}
+Scored by the benchmark's own scripts on our laptop (RTX 3060, Windows) with two disclosed stand-ins: the LLM judge is Gemma 4 26B-A4B answering the official gpt-4o prompts unchanged, and faster-whisper transcribes DUET's own speech in place of the Linux-only Parakeet (this affects response quality and latency, not the tool metrics). With no judge at all, by exact match, DUET passes 75 of 100. Samsung's re-run uses the official gpt-4o judge and Parakeet.
 
 How we measured, what the remaining misses are, and how DUET behaves on each kind of
 disfluency: [docs/RESULTS.md](docs/RESULTS.md).

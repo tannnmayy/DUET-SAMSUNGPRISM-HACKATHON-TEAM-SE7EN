@@ -1,0 +1,49 @@
+{"t": 1790759960.6963315, "kind": "session_start", "room": "eval-2458443b", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759960.7776918, "kind": "agent_state", "state": "listening"}
+{"t": 1790759962.70118, "kind": "user_state", "state": "speaking"}
+{"t": 1790759963.463349, "kind": "user_state", "state": "listening"}
+{"t": 1790759963.8381336, "kind": "user_state", "state": "speaking"}
+{"t": 1790759964.040115, "kind": "metrics", "type": "stt_metrics", "duration": 0.575799600001119, "audio_duration": 1.332, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759964.0411406, "kind": "heard", "text": "Hmm."}
+{"t": 1790759964.992073, "kind": "user_state", "state": "listening"}
+{"t": 1790759965.2907634, "kind": "metrics", "type": "stt_metrics", "duration": 0.2979404000016075, "audio_duration": 1.78, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759965.2923563, "kind": "heard", "text": "Well..."}
+{"t": 1790759965.492806, "kind": "user_state", "state": "speaking"}
+{"t": 1790759968.404576, "kind": "user_state", "state": "listening"}
+{"t": 1790759968.5897796, "kind": "user_state", "state": "speaking"}
+{"t": 1790759969.0172012, "kind": "metrics", "type": "stt_metrics", "duration": 0.6117227000013372, "audio_duration": 3.508, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759969.0189242, "kind": "heard", "text": "So, yeah."}
+{"t": 1790759972.5947144, "kind": "user_state", "state": "listening"}
+{"t": 1790759972.7979329, "kind": "user_state", "state": "speaking"}
+{"t": 1790759973.2243412, "kind": "metrics", "type": "stt_metrics", "duration": 0.6284154999993916, "audio_duration": 4.596, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759973.2258294, "kind": "heard", "text": "So I already found what I want."}
+{"t": 1790759975.3891575, "kind": "user_state", "state": "listening"}
+{"t": 1790759975.5892344, "kind": "user_state", "state": "speaking"}
+{"t": 1790759975.9118276, "kind": "metrics", "type": "stt_metrics", "duration": 0.5212780999991082, "audio_duration": 3.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759975.9128263, "kind": "heard", "text": "Can you add like two of them?"}
+{"t": 1790759978.5896144, "kind": "user_state", "state": "listening"}
+{"t": 1790759978.8396337, "kind": "user_state", "state": "speaking"}
+{"t": 1790759979.190376, "kind": "metrics", "type": "stt_metrics", "duration": 0.5991954000000987, "audio_duration": 3.636, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759979.191342, "kind": "heard", "text": "P-5-2 to my cart."}
+{"t": 1790759982.1391218, "kind": "user_state", "state": "listening"}
+{"t": 1790759982.5806139, "kind": "user_turn", "text": "Hmm. Well... So, yeah. So I already found what I want. Can you add like two of them? P-5-2 to my cart."}
+{"t": 1790759982.5816138, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7934920787811279, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00039959999958227854, "speech_id": "speech_05ca504cd7c3"}
+{"t": 1790759982.582614, "kind": "think_start", "text": "Hmm. Well... So, yeah. So I already found what I want. Can you add like two of them? P-5-2 to my cart.", "audio": false}
+{"t": 1790759982.5836139, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759982.6555724, "kind": "metrics", "type": "stt_metrics", "duration": 0.5145501999995759, "audio_duration": 3.892, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759982.6565719, "kind": "heard", "text": "I want to get one for myself and one as a gift."}
+{"t": 1790759982.657241, "kind": "agent_state", "state": "listening"}
+{"t": 1790759983.4564435, "kind": "user_turn", "text": "I want to get one for myself and one as a gift."}
+{"t": 1790759983.4574568, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003386999997019302, "speech_id": "speech_704dfb16bc34"}
+{"t": 1790759983.4585216, "kind": "think_start", "text": "Hmm. Well... So, yeah. So I already found what I want. Can you add like two of them? P-5-2 to my cart. I want to get one for myself and one as a gift.", "audio": false}
+{"t": 1790759983.4813812, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759983.760857, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759983.9895666, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759984.0095558, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.22278869999900053, "duration": 0.24487020000015036, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_704dfb16bc34"}
+{"t": 1790759987.2261658, "kind": "thinker_decided", "tools": true, "after_s": 3.77}
+{"t": 1790759987.227245, "kind": "tool_start", "name": "add_to_cart", "args": {"product_id": "P52", "quantity": 2}}
+{"t": 1790759987.2297566, "kind": "tool_done", "name": "add_to_cart", "args": {"product_id": "P52", "quantity": 2}, "outcome": "success"}
+{"t": 1790759988.7473133, "kind": "thinker_say", "text": "OK. I've added two of those to your cart, and your total is $199.98.", "after_s": 5.29, "usage": {"input": 4951, "input_audio": 0, "output": 51, "thinking": 96, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759989.1608288, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3032473999992362, "duration": 0.4114659999995638, "audio_duration": 7.260000000000004, "cancelled": false, "characters_count": 68, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_704dfb16bc34"}
+{"t": 1790759996.323878, "kind": "agent_said", "text": "One moment. OK. I've added two of those to your cart, and your total is $199.98."}
+{"t": 1790759996.3243861, "kind": "agent_state", "state": "listening"}

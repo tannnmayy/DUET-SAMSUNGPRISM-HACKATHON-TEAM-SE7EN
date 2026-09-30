@@ -1,0 +1,48 @@
+{"t": 1790763868.7406702, "kind": "session_start", "room": "eval-d93fda35", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763868.820155, "kind": "agent_state", "state": "listening"}
+{"t": 1790763872.3697467, "kind": "user_state", "state": "speaking"}
+{"t": 1790763874.579513, "kind": "user_state", "state": "listening"}
+{"t": 1790763874.8768246, "kind": "user_state", "state": "speaking"}
+{"t": 1790763875.1580503, "kind": "metrics", "type": "stt_metrics", "duration": 0.5766880999981367, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763875.1593893, "kind": "heard", "text": "Like, like, um..."}
+{"t": 1790763877.9809916, "kind": "user_state", "state": "listening"}
+{"t": 1790763878.4314227, "kind": "user_turn", "text": "Like, like, um..."}
+{"t": 1790763878.4321716, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8021245002746582, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000446999998530373, "speech_id": "speech_a40a81389fb9"}
+{"t": 1790763878.4336915, "kind": "think_start", "text": "Like, like, um...", "audio": false}
+{"t": 1790763878.4336915, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763878.4502912, "kind": "user_state", "state": "speaking"}
+{"t": 1790763878.5430255, "kind": "metrics", "type": "stt_metrics", "duration": 0.560361699997884, "audio_duration": 3.7, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763878.5440392, "kind": "heard", "text": "So calculate the transit time to the office from there."}
+{"t": 1790763878.5446186, "kind": "agent_state", "state": "listening"}
+{"t": 1790763880.8849533, "kind": "user_state", "state": "listening"}
+{"t": 1790763881.3835852, "kind": "user_state", "state": "speaking"}
+{"t": 1790763881.4246871, "kind": "metrics", "type": "stt_metrics", "duration": 0.5373660000004747, "audio_duration": 3.028, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763881.4256854, "kind": "heard", "text": "Wait, no, actually, um..."}
+{"t": 1790763883.3689055, "kind": "user_state", "state": "listening"}
+{"t": 1790763883.620149, "kind": "user_state", "state": "speaking"}
+{"t": 1790763883.9110363, "kind": "metrics", "type": "stt_metrics", "duration": 0.5412366999989899, "audio_duration": 2.58, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763883.9123628, "kind": "heard", "text": "I just remembered I'd be driving."}
+{"t": 1790763886.7787604, "kind": "user_state", "state": "listening"}
+{"t": 1790763887.2217896, "kind": "user_turn", "text": "So calculate the transit time to the office from there. Wait, no, actually, um... I just remembered I'd be driving."}
+{"t": 1790763887.2227912, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7950291633605957, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00045900000259280205, "speech_id": "speech_bd93b64547c8"}
+{"t": 1790763887.2237914, "kind": "think_start", "text": "Like, like, um... So calculate the transit time to the office from there. Wait, no, actually, um... I just remembered I'd be driving.", "audio": false}
+{"t": 1790763887.2237914, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763887.3501036, "kind": "metrics", "type": "stt_metrics", "duration": 0.5705902000008791, "audio_duration": 3.732, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763887.3522422, "kind": "heard", "text": "So make it driving time to the office from my house instead."}
+{"t": 1790763887.3527865, "kind": "agent_state", "state": "listening"}
+{"t": 1790763887.3564112, "kind": "superseded"}
+{"t": 1790763888.1577551, "kind": "user_turn", "text": "So make it driving time to the office from my house instead."}
+{"t": 1790763888.1588218, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00045590000081574544, "speech_id": "speech_d60a6669ddef"}
+{"t": 1790763888.1598353, "kind": "think_start", "text": "Like, like, um... So calculate the transit time to the office from there. Wait, no, actually, um... I just remembered I'd be driving. So make it driving time to the office from my house instead.", "audio": false}
+{"t": 1790763888.1833935, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763888.4535456, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763888.5886235, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763888.6034393, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1331261999985145, "duration": 0.14839569999821833, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d60a6669ddef"}
+{"t": 1790763895.4736645, "kind": "thinker_decided", "tools": true, "after_s": 7.31}
+{"t": 1790763895.47417, "kind": "tool_start", "name": "calculate_commute", "args": {"destination_address": "the office", "origin_address": "my house", "mode": "driving"}}
+{"t": 1790763895.889344, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.29541590000008, "duration": 0.31147320000309264, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d60a6669ddef"}
+{"t": 1790763896.2634716, "kind": "tool_done", "name": "calculate_commute", "args": {"destination_address": "the office", "origin_address": "my house", "mode": "driving"}, "outcome": "success"}
+{"t": 1790763899.0482578, "kind": "thinker_say", "text": "It will take you about 25 minutes to drive to the office from your house.", "after_s": 10.89, "usage": {"input": 5065, "input_audio": 0, "output": 53, "thinking": 209, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763899.3990827, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.28502389999994193, "duration": 0.3490027000007103, "audio_duration": 4.760000000000002, "cancelled": false, "characters_count": 73, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_d60a6669ddef"}
+{"t": 1790763904.1017756, "kind": "agent_said", "text": "One moment. Still working on it. It will take you about 25 minutes to drive to the office from your house."}
+{"t": 1790763904.1017756, "kind": "agent_state", "state": "listening"}

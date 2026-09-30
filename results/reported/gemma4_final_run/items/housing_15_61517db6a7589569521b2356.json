@@ -1,0 +1,410 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "housing_15",
+  "category": "housing_location",
+  "title": "False Start then Search",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T18:22:06.293033",
+  "inference_time_s": 54.06,
+  "room_name": "eval-63356390",
+  "stream_start_time": 1790763729.0808046,
+  "input_transcript": "Um, so, um, uh, I wanted to, I wanted to check the commute from that one listing. Actually, let me skip that for now. Could you just search for a three bedroom in Atlanta that's pet friendly? I, um, I've got two cats too.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.05,
+        0.69
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        1.25,
+        1.57
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        2.05,
+        2.43
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        2.89,
+        3.15
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        3.65,
+        3.83
+      ]
+    },
+    {
+      "text": "wanted",
+      "timestamp": [
+        3.83,
+        4.05
+      ]
+    },
+    {
+      "text": "to,",
+      "timestamp": [
+        4.05,
+        4.25
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        4.25,
+        5.01
+      ]
+    },
+    {
+      "text": "wanted",
+      "timestamp": [
+        5.01,
+        5.19
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.19,
+        5.39
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        5.39,
+        5.73
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        5.73,
+        5.99
+      ]
+    },
+    {
+      "text": "commute",
+      "timestamp": [
+        5.99,
+        6.57
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        6.57,
+        7.01
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        7.01,
+        7.35
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        7.35,
+        7.61
+      ]
+    },
+    {
+      "text": "listing.",
+      "timestamp": [
+        7.61,
+        8.13
+      ]
+    },
+    {
+      "text": "Actually,",
+      "timestamp": [
+        8.93,
+        9.49
+      ]
+    },
+    {
+      "text": "let",
+      "timestamp": [
+        9.71,
+        10.23
+      ]
+    },
+    {
+      "text": "me",
+      "timestamp": [
+        10.23,
+        10.33
+      ]
+    },
+    {
+      "text": "skip",
+      "timestamp": [
+        10.33,
+        10.55
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        10.55,
+        10.73
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        10.73,
+        10.89
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        10.89,
+        11.03
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        11.15,
+        11.23
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        11.23,
+        11.35
+      ]
+    },
+    {
+      "text": "just",
+      "timestamp": [
+        11.35,
+        11.55
+      ]
+    },
+    {
+      "text": "search",
+      "timestamp": [
+        11.55,
+        11.83
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        11.83,
+        12.07
+      ]
+    },
+    {
+      "text": "a",
+      "timestamp": [
+        12.07,
+        12.21
+      ]
+    },
+    {
+      "text": "three",
+      "timestamp": [
+        12.21,
+        12.57
+      ]
+    },
+    {
+      "text": "bedroom",
+      "timestamp": [
+        12.57,
+        13.01
+      ]
+    },
+    {
+      "text": "in",
+      "timestamp": [
+        13.01,
+        13.65
+      ]
+    },
+    {
+      "text": "Atlanta",
+      "timestamp": [
+        13.65,
+        14.21
+      ]
+    },
+    {
+      "text": "that's",
+      "timestamp": [
+        14.21,
+        15.47
+      ]
+    },
+    {
+      "text": "pet",
+      "timestamp": [
+        15.47,
+        15.71
+      ]
+    },
+    {
+      "text": "friendly?",
+      "timestamp": [
+        15.71,
+        16.29
+      ]
+    },
+    {
+      "text": "I,",
+      "timestamp": [
+        16.67,
+        16.77
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        16.81,
+        17.11
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        17.37,
+        17.73
+      ]
+    },
+    {
+      "text": "got",
+      "timestamp": [
+        17.73,
+        17.95
+      ]
+    },
+    {
+      "text": "two",
+      "timestamp": [
+        17.95,
+        18.21
+      ]
+    },
+    {
+      "text": "cats",
+      "timestamp": [
+        18.21,
+        18.77
+      ]
+    },
+    {
+      "text": "too.",
+      "timestamp": [
+        18.77,
+        19.05
+      ]
+    }
+  ],
+  "user_speech_end_rel": 19.05,
+  "latency": {
+    "input_duration_s": 50.52,
+    "output_duration_s": 50.52,
+    "first_speech_s": 25.2
+  },
+  "user_done_unix": 1790763748.1308045,
+  "transcript": "One moment still working on one moment still work",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        24.91,
+        25.45
+      ]
+    },
+    {
+      "text": "moment",
+      "timestamp": [
+        25.45,
+        25.85
+      ]
+    },
+    {
+      "text": "still",
+      "timestamp": [
+        25.85,
+        26.89
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        31.5,
+        31.88
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        31.88,
+        32.0
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        33.76,
+        34.72
+      ]
+    },
+    {
+      "text": "moment",
+      "timestamp": [
+        34.72,
+        35.16
+      ]
+    },
+    {
+      "text": "still",
+      "timestamp": [
+        35.16,
+        36.2
+      ]
+    },
+    {
+      "text": "work",
+      "timestamp": [
+        50.31,
+        50.49
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.86,
+  "audio_agent_speech_start": 24.91,
+  "actual_tool_calls": [
+    {
+      "function": "search_apartments",
+      "args": {
+        "city": "Atlanta",
+        "pets_allowed": true,
+        "bedrooms": 3
+      },
+      "timestamp_start": 28.26,
+      "timestamp_end": 28.68
+    }
+  ],
+  "status": "completed"
+}

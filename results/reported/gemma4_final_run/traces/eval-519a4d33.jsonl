@@ -1,0 +1,37 @@
+{"t": 1790762745.8154082, "kind": "session_start", "room": "eval-519a4d33", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762745.9274163, "kind": "agent_state", "state": "listening"}
+{"t": 1790762750.801099, "kind": "user_state", "state": "speaking"}
+{"t": 1790762752.989649, "kind": "user_state", "state": "listening"}
+{"t": 1790762753.2513902, "kind": "user_state", "state": "speaking"}
+{"t": 1790762753.4935493, "kind": "metrics", "type": "stt_metrics", "duration": 0.5030227999995986, "audio_duration": 2.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762753.494752, "kind": "heard", "text": "Tell me how long it would take to drive."}
+{"t": 1790762756.8699973, "kind": "user_state", "state": "listening"}
+{"t": 1790762757.118894, "kind": "user_state", "state": "speaking"}
+{"t": 1790762757.4566114, "kind": "metrics", "type": "stt_metrics", "duration": 0.5852426000001287, "audio_duration": 4.212, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762757.4578056, "kind": "heard", "text": "From 101 Main Street to downtown office."}
+{"t": 1790762758.595927, "kind": "user_state", "state": "listening"}
+{"t": 1790762758.9065826, "kind": "metrics", "type": "stt_metrics", "duration": 0.3091173000011622, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762758.9075818, "kind": "heard", "text": "During a normal day,"}
+{"t": 1790762758.9388616, "kind": "user_state", "state": "speaking"}
+{"t": 1790762759.8887224, "kind": "user_state", "state": "listening"}
+{"t": 1790762760.0386455, "kind": "user_state", "state": "speaking"}
+{"t": 1790762760.1901667, "kind": "metrics", "type": "stt_metrics", "duration": 0.2998551000000589, "audio_duration": 1.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762760.1911647, "kind": "heard", "text": "Um..."}
+{"t": 1790762762.0894146, "kind": "user_state", "state": "listening"}
+{"t": 1790762762.6258366, "kind": "metrics", "type": "stt_metrics", "duration": 0.5354207000000315, "audio_duration": 2.644, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762762.6273756, "kind": "heard", "text": "I want to make sure it's reasonable."}
+{"t": 1790762764.221187, "kind": "user_turn", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office. During a normal day, Um... I want to make sure it's reasonable."}
+{"t": 1790762764.222369, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4837725162506104, "transcription_delay": 0.8904702663421631, "on_user_turn_completed_delay": 0.0004239999998389976, "speech_id": "speech_e8cef84d41ec"}
+{"t": 1790762764.2234516, "kind": "think_start", "text": "Tell me how long it would take to drive. From 101 Main Street to downtown office. During a normal day, Um... I want to make sure it's reasonable.", "audio": false}
+{"t": 1790762764.2465968, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762764.514316, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762764.6573093, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762764.6738598, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14044519999879412, "duration": 0.15787950000049022, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e8cef84d41ec"}
+{"t": 1790762768.142728, "kind": "thinker_decided", "tools": true, "after_s": 3.92}
+{"t": 1790762768.1437278, "kind": "tool_start", "name": "calculate_commute", "args": {"mode": "driving", "destination_address": "downtown office", "origin_address": "101 Main Street"}}
+{"t": 1790762768.6934788, "kind": "tool_done", "name": "calculate_commute", "args": {"mode": "driving", "destination_address": "downtown office", "origin_address": "101 Main Street"}, "outcome": "success"}
+{"t": 1790762771.0058534, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3762310999991314, "duration": 0.3912344000000303, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e8cef84d41ec"}
+{"t": 1790762771.4693878, "kind": "thinker_say", "text": "It would take about 25 minutes to drive from 101 Main Street to the downtown office.", "after_s": 7.24, "usage": {"input": 4901, "input_audio": 0, "output": 61, "thinking": 113, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762771.678277, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2056470999996236, "duration": 0.20787030000064988, "audio_duration": 6.110000000000003, "cancelled": false, "characters_count": 84, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e8cef84d41ec"}
+{"t": 1790762778.913155, "kind": "agent_said", "text": "One moment. Still working on it. It would take about 25 minutes to drive from 101 Main Street to the downtown office."}
+{"t": 1790762778.913155, "kind": "agent_state", "state": "listening"}

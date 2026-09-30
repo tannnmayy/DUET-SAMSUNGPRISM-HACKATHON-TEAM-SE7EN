@@ -1,0 +1,69 @@
+{"t": 1790760690.2496889, "kind": "session_start", "room": "eval-0d5831c5", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760690.3018427, "kind": "agent_state", "state": "listening"}
+{"t": 1790760693.15999, "kind": "user_state", "state": "speaking"}
+{"t": 1790760695.5096703, "kind": "user_state", "state": "listening"}
+{"t": 1790760696.0440905, "kind": "metrics", "type": "stt_metrics", "duration": 0.5346091999999771, "audio_duration": 2.932, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760696.0486188, "kind": "heard", "text": "So, hmm."}
+{"t": 1790760696.563197, "kind": "user_state", "state": "speaking"}
+{"t": 1790760697.6103902, "kind": "user_state", "state": "listening"}
+{"t": 1790760697.7646177, "kind": "user_state", "state": "speaking"}
+{"t": 1790760697.9114122, "kind": "metrics", "type": "stt_metrics", "duration": 0.2996661999986827, "audio_duration": 1.652, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760697.912946, "kind": "heard", "text": "Hmm..."}
+{"t": 1790760701.7105906, "kind": "user_state", "state": "listening"}
+{"t": 1790760702.2584863, "kind": "user_state", "state": "speaking"}
+{"t": 1790760702.27265, "kind": "metrics", "type": "stt_metrics", "duration": 0.5616952999989735, "audio_duration": 4.564, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760702.2744417, "kind": "heard", "text": "Well, could you track order B.O.B. for me first?"}
+{"t": 1790760704.5823233, "kind": "user_state", "state": "listening"}
+{"t": 1790760704.9160943, "kind": "user_state", "state": "speaking"}
+{"t": 1790760705.1606984, "kind": "metrics", "type": "stt_metrics", "duration": 0.5776380000006611, "audio_duration": 2.932, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760705.1622045, "kind": "heard", "text": "Then, um..."}
+{"t": 1790760705.508744, "kind": "user_state", "state": "listening"}
+{"t": 1790760705.8059485, "kind": "metrics", "type": "stt_metrics", "duration": 0.29579889999877196, "audio_duration": 1.204, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760705.8070216, "kind": "heard", "text": "Hmm."}
+{"t": 1790760705.953749, "kind": "user_turn", "text": "So, hmm. Hmm... Well, could you track order B.O.B. for me first? Then, um... Hmm."}
+{"t": 1790760705.9548728, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7970049381256104, "transcription_delay": 0.6502776145935059, "on_user_turn_completed_delay": 0.00045679999857384246, "speech_id": "speech_692bc976fb70"}
+{"t": 1790760705.9558828, "kind": "think_start", "text": "So, hmm. Hmm... Well, could you track order B.O.B. for me first? Then, um... Hmm.", "audio": false}
+{"t": 1790760705.980188, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760706.410318, "kind": "user_state", "state": "speaking"}
+{"t": 1790760706.8600223, "kind": "agent_state", "state": "listening"}
+{"t": 1790760710.508663, "kind": "user_state", "state": "listening"}
+{"t": 1790760711.0632346, "kind": "metrics", "type": "stt_metrics", "duration": 0.5532026000000769, "audio_duration": 4.66, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760711.064227, "kind": "heard", "text": "I also want to search for a nice watch under $200."}
+{"t": 1790760711.0690053, "kind": "user_turn", "text": "I also want to search for a nice watch under $200."}
+{"t": 1790760711.0690053, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9091789722442627, "transcription_delay": 0.9075641632080078, "on_user_turn_completed_delay": 0.0006307999992714031, "speech_id": "speech_a84ecb7dd78c"}
+{"t": 1790760711.0710263, "kind": "think_start", "text": "So, hmm. Hmm... Well, could you track order B.O.B. for me first? Then, um... Hmm. I also want to search for a nice watch under $200.", "audio": false}
+{"t": 1790760711.095023, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760711.3608868, "kind": "user_state", "state": "speaking"}
+{"t": 1790760711.7602432, "kind": "agent_state", "state": "listening"}
+{"t": 1790760715.262761, "kind": "thinker_decided", "tools": true, "after_s": 4.19}
+{"t": 1790760715.262761, "kind": "talker", "text": "One moment.", "reason": "tools", "fallback": true}
+{"t": 1790760715.26376, "kind": "tool_start", "name": "track_order", "args": {"order_id": "BOB"}}
+{"t": 1790760715.3085911, "kind": "user_state", "state": "listening"}
+{"t": 1790760715.6095781, "kind": "user_state", "state": "speaking"}
+{"t": 1790760715.940673, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.6669287999993685, "duration": 0.676668799998879, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_a84ecb7dd78c"}
+{"t": 1790760715.9447293, "kind": "metrics", "type": "stt_metrics", "duration": 0.6345775999998295, "audio_duration": 4.532, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760715.9462855, "kind": "heard", "text": "And, um, once you can find something good, uh..."}
+{"t": 1790760717.36087, "kind": "user_state", "state": "listening"}
+{"t": 1790760717.6829133, "kind": "metrics", "type": "stt_metrics", "duration": 0.32150580000052287, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760717.6845093, "kind": "heard", "text": "Go ahead and add it to my cart."}
+{"t": 1790760717.8027103, "kind": "user_turn", "text": "And, um, once you can find something good, uh... Go ahead and add it to my cart."}
+{"t": 1790760717.8027103, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7928400039672852, "transcription_delay": 0.6756393909454346, "on_user_turn_completed_delay": 0.0004695000006904593, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760717.803711, "kind": "think_start", "text": "So, hmm. Hmm... Well, could you track order B.O.B. for me first? Then, um... Hmm. I also want to search for a nice watch under $200. And, um, once you can find something good, uh... Go ahead and add it to my cart.", "audio": false}
+{"t": 1790760717.8072157, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760719.00086, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760719.1050146, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760719.1217692, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.102080599999681, "duration": 0.1198236000000179, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760731.9599442, "kind": "thinker_decided", "tools": true, "after_s": 14.16}
+{"t": 1790760731.9609468, "kind": "tool_start", "name": "track_order", "args": {"order_id": "BOB"}}
+{"t": 1790760731.9619455, "kind": "tool_done", "name": "track_order", "args": {"order_id": "BOB"}, "outcome": "success"}
+{"t": 1790760731.96295, "kind": "tool_start", "name": "search_products", "args": {"max_price": 200, "query": "watch"}}
+{"t": 1790760731.9659295, "kind": "tool_done", "name": "search_products", "args": {"max_price": 200, "query": "watch"}, "outcome": "success"}
+{"t": 1790760732.3754203, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.30194510000001173, "duration": 0.3160106999985146, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760736.7789834, "kind": "tool_start", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "PROD1"}}
+{"t": 1790760736.7820342, "kind": "tool_done", "name": "add_to_cart", "args": {"quantity": 1, "product_id": "PROD1"}, "outcome": "success"}
+{"t": 1790760738.387477, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23624000000017986, "duration": 0.24987099999998463, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760744.5634422, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.31662499999947613, "duration": 0.3309374000000389, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760747.27098, "kind": "thinker_say", "text": "Your order BOB is out for delivery, and I've added the Premium watch for 190 dollars to your cart.", "after_s": 29.47, "usage": {"input": 9732, "input_audio": 0, "output": 95, "thinking": 711, "calls": 3}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760747.692235, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3174402000004193, "duration": 0.41952280000077735, "audio_duration": 6.610000000000003, "cancelled": false, "characters_count": 98, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_89bad92a2fd2"}
+{"t": 1790760748.9867804, "kind": "agent_said", "text": "One moment. Still working on it. Still working on it. Still working on it. Your order BOB is out for"}
+{"t": 1790760748.98778, "kind": "agent_state", "state": "listening"}

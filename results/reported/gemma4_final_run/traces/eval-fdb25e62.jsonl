@@ -1,0 +1,21 @@
+{"t": 1790762683.478528, "kind": "session_start", "room": "eval-fdb25e62", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790762683.5756168, "kind": "agent_state", "state": "listening"}
+{"t": 1790762685.7339628, "kind": "user_state", "state": "speaking"}
+{"t": 1790762695.6298683, "kind": "user_state", "state": "listening"}
+{"t": 1790762696.3854413, "kind": "metrics", "type": "stt_metrics", "duration": 0.7536486999997578, "audio_duration": 10.484, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790762696.3990679, "kind": "heard", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?"}
+{"t": 1790762696.5286064, "kind": "user_turn", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?"}
+{"t": 1790762696.5286064, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7950634956359863, "transcription_delay": 0.6671717166900635, "on_user_turn_completed_delay": 0.0004382999995868886, "speech_id": "speech_7634e6fcd3f7"}
+{"t": 1790762696.5306063, "kind": "think_start", "text": "You know, I'm trying to find a two-bedroom apartment in Seattle and I'd like to keep the rent under $2,500 a month if possible. Could you see what's available?", "audio": false}
+{"t": 1790762696.5541363, "kind": "agent_state", "state": "thinking"}
+{"t": 1790762697.251214, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790762697.3854845, "kind": "agent_state", "state": "speaking"}
+{"t": 1790762697.4004686, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1321901000010257, "duration": 0.14751890000115964, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7634e6fcd3f7"}
+{"t": 1790762702.603522, "kind": "thinker_decided", "tools": true, "after_s": 6.07}
+{"t": 1790762702.6045215, "kind": "tool_start", "name": "search_apartments", "args": {"max_price": 2500, "city": "Seattle", "bedrooms": 2}}
+{"t": 1790762702.9627419, "kind": "tool_done", "name": "search_apartments", "args": {"max_price": 2500, "city": "Seattle", "bedrooms": 2}, "outcome": "success"}
+{"t": 1790762703.6208394, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3480598000005557, "duration": 0.3611501000013959, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7634e6fcd3f7"}
+{"t": 1790762704.9012315, "kind": "thinker_say", "text": "OK. I found a two-bedroom apartment in Seattle for $2,400 a month.", "after_s": 8.37, "usage": {"input": 5026, "input_audio": 0, "output": 51, "thinking": 132, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790762705.1002188, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1956004000003304, "duration": 0.1973390000002837, "audio_duration": 6.0100000000000025, "cancelled": false, "characters_count": 66, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_7634e6fcd3f7"}
+{"t": 1790762711.4346235, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a two-bedroom apartment in Seattle for $2,400 a month."}
+{"t": 1790762711.4359264, "kind": "agent_state", "state": "listening"}

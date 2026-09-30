@@ -1,0 +1,270 @@
+{
+  "pid": "69a9cf80f4d7668d5c815038",
+  "example_id": "finance_01",
+  "category": "finance_billing",
+  "title": "Simple Currency Exchange",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:37:33.619383",
+  "inference_time_s": 44.53,
+  "room_name": "eval-4281dbe6",
+  "stream_start_time": 1790761056.4089863,
+  "input_transcript": "Like, I'm trying to figure out how much 500 US dollars would be if I converted it to Euros. Could you check that for me?",
+  "input_asr_chunks": [
+    {
+      "text": "Like,",
+      "timestamp": [
+        0.69,
+        1.37
+      ]
+    },
+    {
+      "text": "I'm",
+      "timestamp": [
+        1.83,
+        2.27
+      ]
+    },
+    {
+      "text": "trying",
+      "timestamp": [
+        2.27,
+        2.51
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.51,
+        2.65
+      ]
+    },
+    {
+      "text": "figure",
+      "timestamp": [
+        2.65,
+        2.89
+      ]
+    },
+    {
+      "text": "out",
+      "timestamp": [
+        2.89,
+        3.15
+      ]
+    },
+    {
+      "text": "how",
+      "timestamp": [
+        3.15,
+        3.33
+      ]
+    },
+    {
+      "text": "much",
+      "timestamp": [
+        3.33,
+        3.61
+      ]
+    },
+    {
+      "text": "500",
+      "timestamp": [
+        3.61,
+        4.09
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        4.09,
+        4.47
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        4.47,
+        4.77
+      ]
+    },
+    {
+      "text": "would",
+      "timestamp": [
+        4.77,
+        5.05
+      ]
+    },
+    {
+      "text": "be",
+      "timestamp": [
+        5.05,
+        5.33
+      ]
+    },
+    {
+      "text": "if",
+      "timestamp": [
+        5.33,
+        5.85
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.85,
+        6.03
+      ]
+    },
+    {
+      "text": "converted",
+      "timestamp": [
+        6.03,
+        6.47
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        6.47,
+        6.65
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        6.65,
+        6.89
+      ]
+    },
+    {
+      "text": "Euros.",
+      "timestamp": [
+        6.89,
+        7.39
+      ]
+    },
+    {
+      "text": "Could",
+      "timestamp": [
+        8.07,
+        8.55
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        8.55,
+        8.67
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        8.67,
+        8.85
+      ]
+    },
+    {
+      "text": "that",
+      "timestamp": [
+        8.85,
+        9.01
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.01,
+        9.19
+      ]
+    },
+    {
+      "text": "me?",
+      "timestamp": [
+        9.19,
+        9.37
+      ]
+    }
+  ],
+  "user_speech_end_rel": 9.37,
+  "latency": {
+    "input_duration_s": 40.98,
+    "output_duration_s": 40.98,
+    "first_speech_s": 13.8
+  },
+  "user_done_unix": 1790761065.7789862,
+  "transcript": "One moment. 500 US dollars is 450 euros.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        13.49,
+        14.03
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        14.03,
+        14.39
+      ]
+    },
+    {
+      "text": "500",
+      "timestamp": [
+        17.92,
+        18.82
+      ]
+    },
+    {
+      "text": "US",
+      "timestamp": [
+        18.82,
+        19.14
+      ]
+    },
+    {
+      "text": "dollars",
+      "timestamp": [
+        19.14,
+        19.48
+      ]
+    },
+    {
+      "text": "is",
+      "timestamp": [
+        19.48,
+        20.04
+      ]
+    },
+    {
+      "text": "450",
+      "timestamp": [
+        20.04,
+        20.72
+      ]
+    },
+    {
+      "text": "euros.",
+      "timestamp": [
+        20.72,
+        21.1
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.12,
+  "audio_agent_speech_start": 13.49,
+  "actual_tool_calls": [
+    {
+      "function": "get_exchange_rate",
+      "args": {
+        "to_currency": "EUR",
+        "amount": 500,
+        "from_currency": "USD"
+      },
+      "timestamp_start": 14.16,
+      "timestamp_end": 14.16
+    }
+  ],
+  "status": "completed"
+}

@@ -1,0 +1,64 @@
+{"t": 1790763026.6592746, "kind": "session_start", "room": "eval-e98e6040", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763026.7155194, "kind": "agent_state", "state": "listening"}
+{"t": 1790763030.6180327, "kind": "user_state", "state": "speaking"}
+{"t": 1790763032.1724458, "kind": "user_state", "state": "listening"}
+{"t": 1790763032.4686801, "kind": "user_state", "state": "speaking"}
+{"t": 1790763032.786535, "kind": "metrics", "type": "stt_metrics", "duration": 0.612490000001344, "audio_duration": 2.132, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763032.7879934, "kind": "heard", "text": "You know, um..."}
+{"t": 1790763033.2166808, "kind": "user_state", "state": "listening"}
+{"t": 1790763033.3724234, "kind": "user_state", "state": "speaking"}
+{"t": 1790763033.5212474, "kind": "metrics", "type": "stt_metrics", "duration": 0.3040228999998362, "audio_duration": 1.364, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763033.522491, "kind": "heard", "text": "You know."}
+{"t": 1790763034.2623262, "kind": "user_state", "state": "listening"}
+{"t": 1790763034.4658654, "kind": "user_state", "state": "speaking"}
+{"t": 1790763034.5802956, "kind": "metrics", "type": "stt_metrics", "duration": 0.31734590000087337, "audio_duration": 1.492, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763034.5818954, "kind": "heard", "text": "Well,"}
+{"t": 1790763037.8595886, "kind": "user_state", "state": "listening"}
+{"t": 1790763038.1091597, "kind": "user_state", "state": "speaking"}
+{"t": 1790763038.384594, "kind": "metrics", "type": "stt_metrics", "duration": 0.524075700001049, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763038.3863451, "kind": "heard", "text": "I need a pet friendly apartment in Miami."}
+{"t": 1790763040.8127413, "kind": "user_state", "state": "listening"}
+{"t": 1790763040.9587321, "kind": "user_state", "state": "speaking"}
+{"t": 1790763041.375824, "kind": "metrics", "type": "stt_metrics", "duration": 0.5622274999986985, "audio_duration": 3.316, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763041.377199, "kind": "heard", "text": "And my budget is about..."}
+{"t": 1790763042.9635499, "kind": "user_state", "state": "listening"}
+{"t": 1790763043.3056178, "kind": "metrics", "type": "stt_metrics", "duration": 0.34011479999935545, "audio_duration": 2.612, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763043.3066244, "kind": "heard", "text": "Let me check, it's..."}
+{"t": 1790763043.709325, "kind": "user_state", "state": "speaking"}
+{"t": 1790763046.2226384, "kind": "user_state", "state": "listening"}
+{"t": 1790763046.3624647, "kind": "user_state", "state": "speaking"}
+{"t": 1790763046.7853854, "kind": "metrics", "type": "stt_metrics", "duration": 0.5616592000005767, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763046.7867386, "kind": "heard", "text": "It's about 1,500 a month."}
+{"t": 1790763048.859324, "kind": "user_state", "state": "listening"}
+{"t": 1790763049.349202, "kind": "metrics", "type": "stt_metrics", "duration": 0.4874510999998165, "audio_duration": 3.092, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763049.3502862, "kind": "heard", "text": "Is there anything in that range?"}
+{"t": 1790763050.9932952, "kind": "user_turn", "text": "You know, um... You know. Well, I need a pet friendly apartment in Miami. And my budget is about... Let me check, it's... It's about 1,500 a month. Is there anything in that range?"}
+{"t": 1790763050.9942951, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.485971212387085, "transcription_delay": 0.8429622650146484, "on_user_turn_completed_delay": 0.0004332999997131992, "speech_id": "speech_e099f46d16e4"}
+{"t": 1790763050.9952967, "kind": "think_start", "text": "You know, um... You know. Well, I need a pet friendly apartment in Miami. And my budget is about... Let me check, it's... It's about 1,500 a month. Is there anything in that range?", "audio": false}
+{"t": 1790763051.0179152, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763051.2902837, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763051.4290895, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763051.4456162, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13715439999941736, "duration": 0.15387449999980163, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e099f46d16e4"}
+{"t": 1790763054.3430383, "kind": "thinker_decided", "tools": true, "after_s": 3.35}
+{"t": 1790763054.3430383, "kind": "tool_start", "name": "search_apartments", "args": {"city": "Miami", "pets_allowed": true, "max_price": 1500}}
+{"t": 1790763054.706575, "kind": "tool_done", "name": "search_apartments", "args": {"city": "Miami", "pets_allowed": true, "max_price": 1500}, "outcome": "success"}
+{"t": 1790763057.5394711, "kind": "thinker_say", "text": "I found one pet-friendly apartment in Miami for 1,400 dollars a month.", "after_s": 6.54, "usage": {"input": 4900, "input_audio": 0, "output": 52, "thinking": 113, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763057.7228537, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.32862740000018675, "duration": 0.3432455999991362, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e099f46d16e4"}
+{"t": 1790763057.9020612, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.17349409999951604, "duration": 0.1753540999998222, "audio_duration": 5.835000000000003, "cancelled": false, "characters_count": 70, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_e099f46d16e4"}
+{"t": 1790763065.355066, "kind": "agent_said", "text": "One moment. Still working on it. I found one pet-friendly apartment in Miami for 1,400 dollars a month."}
+{"t": 1790763065.3565013, "kind": "agent_state", "state": "listening"}
+{"t": 1790763067.1104968, "kind": "user_state", "state": "speaking"}
+{"t": 1790763067.716959, "kind": "user_state", "state": "listening"}
+{"t": 1790763068.3617737, "kind": "metrics", "type": "stt_metrics", "duration": 0.6431828999993741, "audio_duration": 1.172, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763068.3626797, "kind": "heard", "text": "Hmm."}
+{"t": 1790763068.3650281, "kind": "user_turn", "text": "Hmm."}
+{"t": 1790763068.3660386, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9994168281555176, "transcription_delay": 0.9977207183837891, "on_user_turn_completed_delay": 0.0003544999999576248, "speech_id": "speech_8878f7b504f2"}
+{"t": 1790763068.3660386, "kind": "think_start", "text": "Hmm.", "audio": false}
+{"t": 1790763068.3927324, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763069.35264, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763069.442063, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763069.456932, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.08695159999842872, "duration": 0.10253789999842411, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_8878f7b504f2"}
+{"t": 1790763074.9570818, "kind": "thinker_decided", "tools": false, "after_s": 6.59}
+{"t": 1790763074.958082, "kind": "thinker_say", "text": "<silent>", "after_s": 6.59, "usage": {"input": 2639, "input_audio": 0, "output": 3, "thinking": 225, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763074.958082, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790763074.9590816, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,71 @@
+{"t": 1790759197.7061782, "kind": "session_start", "room": "eval-5b75f0ee", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759197.7580702, "kind": "agent_state", "state": "listening"}
+{"t": 1790759200.409129, "kind": "user_state", "state": "speaking"}
+{"t": 1790759202.408767, "kind": "user_state", "state": "listening"}
+{"t": 1790759202.5096757, "kind": "user_state", "state": "speaking"}
+{"t": 1790759203.0570722, "kind": "metrics", "type": "stt_metrics", "duration": 0.6468079000005673, "audio_duration": 2.58, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759203.071351, "kind": "heard", "text": "Um, so like,"}
+{"t": 1790759203.3595388, "kind": "user_state", "state": "listening"}
+{"t": 1790759203.6593428, "kind": "user_state", "state": "speaking"}
+{"t": 1790759203.6778507, "kind": "metrics", "type": "stt_metrics", "duration": 0.3169106000004831, "audio_duration": 1.46, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759203.678396, "kind": "heard", "text": "I think, uh..."}
+{"t": 1790759205.5090785, "kind": "user_state", "state": "listening"}
+{"t": 1790759205.9063551, "kind": "metrics", "type": "stt_metrics", "duration": 0.39558949999991455, "audio_duration": 2.452, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759205.907994, "kind": "heard", "text": "I'm looking for"}
+{"t": 1790759206.1087692, "kind": "user_state", "state": "speaking"}
+{"t": 1790759207.459179, "kind": "user_state", "state": "listening"}
+{"t": 1790759207.764054, "kind": "metrics", "type": "stt_metrics", "duration": 0.3032158999994863, "audio_duration": 1.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759207.7650592, "kind": "heard", "text": "For a new..."}
+{"t": 1790759207.9023416, "kind": "user_turn", "text": "Um, so like, I think, uh... I'm looking for For a new..."}
+{"t": 1790759207.9033413, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7941596508026123, "transcription_delay": 0.6568772792816162, "on_user_turn_completed_delay": 0.0004400000016175909, "speech_id": "speech_3d826c8a9313"}
+{"t": 1790759207.904343, "kind": "think_start", "text": "Um, so like, I think, uh... I'm looking for For a new...", "audio": false}
+{"t": 1790759207.9274082, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759209.1027224, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759209.2329736, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759209.2468529, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12874100000044564, "duration": 0.14292870000099356, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_3d826c8a9313"}
+{"t": 1790759209.5105195, "kind": "user_state", "state": "speaking"}
+{"t": 1790759210.6589863, "kind": "user_state", "state": "listening"}
+{"t": 1790759210.9928184, "kind": "thinker_listen", "reason": "The user's request is incomplete.", "after_s": 3.09, "usage": {"input": 2392, "input_audio": 0, "output": 23, "thinking": 65, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759211.2102437, "kind": "user_state", "state": "speaking"}
+{"t": 1790759212.2590337, "kind": "agent_state", "state": "listening"}
+{"t": 1790759212.3096597, "kind": "user_state", "state": "listening"}
+{"t": 1790759212.9596493, "kind": "user_state", "state": "speaking"}
+{"t": 1790759213.759186, "kind": "user_state", "state": "listening"}
+{"t": 1790759214.2099187, "kind": "user_state", "state": "speaking"}
+{"t": 1790759214.2522993, "kind": "metrics", "type": "stt_metrics", "duration": 0.4919178000000102, "audio_duration": 1.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759214.2533214, "kind": "heard", "text": "Yes."}
+{"t": 1790759214.2564027, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790759217.0088706, "kind": "user_state", "state": "listening"}
+{"t": 1790759217.4519792, "kind": "user_turn", "text": "Yes."}
+{"t": 1790759217.452979, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7939817905426025, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00044410000009520445, "speech_id": "speech_3673455a82eb"}
+{"t": 1790759217.4562483, "kind": "think_start", "text": "Um, so like, I think, uh... I'm looking for For a new... Yes.", "audio": false}
+{"t": 1790759217.4562483, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759217.6271124, "kind": "metrics", "type": "stt_metrics", "duration": 0.5670884000010119, "audio_duration": 3.412, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759217.6292577, "kind": "heard", "text": "Something under $300."}
+{"t": 1790759217.6297626, "kind": "agent_state", "state": "listening"}
+{"t": 1790759217.635085, "kind": "superseded"}
+{"t": 1790759217.8097599, "kind": "user_state", "state": "speaking"}
+{"t": 1790759221.260172, "kind": "user_state", "state": "listening"}
+{"t": 1790759221.7016878, "kind": "user_turn", "text": "Something under $300."}
+{"t": 1790759221.7026913, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7935159206390381, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.000417500001276494, "speech_id": "speech_4a5c857a91b5"}
+{"t": 1790759221.703761, "kind": "think_start", "text": "Um, so like, I think, uh... I'm looking for For a new... Yes. Something under $300.", "audio": false}
+{"t": 1790759221.7047634, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759221.8582208, "kind": "metrics", "type": "stt_metrics", "duration": 0.597050999998828, "audio_duration": 3.988, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759221.8599734, "kind": "heard", "text": "If you have an option like that, that would be great."}
+{"t": 1790759221.8604789, "kind": "agent_state", "state": "listening"}
+{"t": 1790759221.8688166, "kind": "superseded"}
+{"t": 1790759222.6532512, "kind": "user_turn", "text": "If you have an option like that, that would be great."}
+{"t": 1790759222.6532512, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004346999994595535, "speech_id": "speech_6e495c491a7b"}
+{"t": 1790759222.6542509, "kind": "think_start", "text": "Um, so like, I think, uh... I'm looking for For a new... Yes. Something under $300. If you have an option like that, that would be great.", "audio": false}
+{"t": 1790759222.6778336, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759222.9510565, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759223.088764, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759223.1025336, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1353871999999683, "duration": 0.15034079999895766, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6e495c491a7b"}
+{"t": 1790759230.7064805, "kind": "thinker_listen", "reason": "The user hasn't specified what they are looking for (a product, an apartment, etc.).", "after_s": 8.05, "usage": {"input": 2414, "input_audio": 0, "output": 35, "thinking": 276, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759230.7080133, "kind": "listen_done", "quiet_s": 9.44}
+{"t": 1790759241.6993065, "kind": "thinker_decided", "tools": false, "after_s": 19.05}
+{"t": 1790759241.6993065, "kind": "thinker_say", "text": "What are you looking for? Please let me know if you're searching for a product or an apartment.", "after_s": 19.05, "usage": {"input": 2293, "input_audio": 0, "output": 22, "thinking": 420, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759241.9781015, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.25080630000047677, "duration": 0.2636815000005299, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 25, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6e495c491a7b"}
+{"t": 1790759242.2156749, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.16906220000055328, "duration": 0.2367714000010892, "audio_duration": 4.085000000000001, "cancelled": false, "characters_count": 69, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_6e495c491a7b"}
+{"t": 1790759247.8016424, "kind": "agent_said", "text": "One moment. What are you looking for? Please let me know if you're searching for a product or an apartment."}
+{"t": 1790759247.8016424, "kind": "agent_state", "state": "listening"}

@@ -1,0 +1,32 @@
+{"t": 1790763302.6360881, "kind": "session_start", "room": "eval-80e3199f", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790763302.6755912, "kind": "agent_state", "state": "listening"}
+{"t": 1790763305.3648908, "kind": "user_state", "state": "speaking"}
+{"t": 1790763315.5614066, "kind": "user_state", "state": "listening"}
+{"t": 1790763316.1099489, "kind": "user_state", "state": "speaking"}
+{"t": 1790763316.1738262, "kind": "metrics", "type": "stt_metrics", "duration": 0.61189849999937, "audio_duration": 10.804, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763316.17579, "kind": "heard", "text": "So, well, like first, could you check how long the transit commute would be from 500 Central Ave to the university?"}
+{"t": 1790763321.5212483, "kind": "user_state", "state": "listening"}
+{"t": 1790763321.9730175, "kind": "user_turn", "text": "So, well, like first, could you check how long the transit commute would be from 500 Central Ave to the university?"}
+{"t": 1790763321.9738111, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8017063140869141, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00039030000152706634, "speech_id": "speech_13e0d68ab091"}
+{"t": 1790763321.97532, "kind": "think_start", "text": "So, well, like first, could you check how long the transit commute would be from 500 Central Ave to the university?", "audio": false}
+{"t": 1790763321.9763265, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763322.1527507, "kind": "metrics", "type": "stt_metrics", "duration": 0.6294545000000653, "audio_duration": 5.972, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790763322.1537497, "kind": "heard", "text": "And also, while you're at it, update my preferred neighborhood in the search to Northside."}
+{"t": 1790763322.154302, "kind": "agent_state", "state": "listening"}
+{"t": 1790763322.9521117, "kind": "user_turn", "text": "And also, while you're at it, update my preferred neighborhood in the search to Northside."}
+{"t": 1790763322.9531116, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004279000004316913, "speech_id": "speech_4045059b6509"}
+{"t": 1790763322.9542036, "kind": "think_start", "text": "So, well, like first, could you check how long the transit commute would be from 500 Central Ave to the university? And also, while you're at it, update my preferred neighborhood in the search to Northside.", "audio": false}
+{"t": 1790763322.977639, "kind": "agent_state", "state": "thinking"}
+{"t": 1790763323.261811, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790763323.4038591, "kind": "agent_state", "state": "speaking"}
+{"t": 1790763323.4217875, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13778829999864683, "duration": 0.15606779999870923, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4045059b6509"}
+{"t": 1790763329.2264323, "kind": "thinker_decided", "tools": true, "after_s": 6.27}
+{"t": 1790763329.2264323, "kind": "tool_start", "name": "calculate_commute", "args": {"origin_address": "500 Central Ave", "mode": "transit", "destination_address": "the university"}}
+{"t": 1790763329.643932, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.32118399999853864, "duration": 0.33617099999901257, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4045059b6509"}
+{"t": 1790763330.0247653, "kind": "tool_done", "name": "calculate_commute", "args": {"origin_address": "500 Central Ave", "mode": "transit", "destination_address": "the university"}, "outcome": "success"}
+{"t": 1790763330.0247653, "kind": "tool_start", "name": "update_search_filter", "args": {"filter_name": "neighborhood", "value": "Northside"}}
+{"t": 1790763330.1662757, "kind": "tool_done", "name": "update_search_filter", "args": {"filter_name": "neighborhood", "value": "Northside"}, "outcome": "success"}
+{"t": 1790763333.2340877, "kind": "thinker_say", "text": "The transit commute from 500 Central Ave to the university will take about 25 minutes, and I've updated your preferred neighborhood to Northside.", "after_s": 10.28, "usage": {"input": 5132, "input_audio": 0, "output": 98, "thinking": 204, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790763333.9033542, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.4947059000005538, "duration": 0.6673243000004732, "audio_duration": 9.809999999999999, "cancelled": false, "characters_count": 145, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_4045059b6509"}
+{"t": 1790763343.5437236, "kind": "agent_said", "text": "One moment. Still working on it. The transit commute from 500 Central Ave to the university will take about 25 minutes, and I've updated your preferred neighborhood to Northside."}
+{"t": 1790763343.5437236, "kind": "agent_state", "state": "listening"}

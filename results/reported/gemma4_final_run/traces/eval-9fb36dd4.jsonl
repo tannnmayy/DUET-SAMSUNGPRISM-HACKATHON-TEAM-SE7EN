@@ -1,0 +1,37 @@
+{"t": 1790760317.919545, "kind": "session_start", "room": "eval-9fb36dd4", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790760318.0161676, "kind": "agent_state", "state": "listening"}
+{"t": 1790760322.620082, "kind": "user_state", "state": "speaking"}
+{"t": 1790760324.2735126, "kind": "user_state", "state": "listening"}
+{"t": 1790760324.5220423, "kind": "user_state", "state": "speaking"}
+{"t": 1790760324.9469233, "kind": "metrics", "type": "stt_metrics", "duration": 0.6718779999991966, "audio_duration": 2.26, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760324.9481003, "kind": "heard", "text": "Can you cancel my."}
+{"t": 1790760327.4197972, "kind": "user_state", "state": "listening"}
+{"t": 1790760327.5767424, "kind": "user_state", "state": "speaking"}
+{"t": 1790760327.9217625, "kind": "metrics", "type": "stt_metrics", "duration": 0.5005199999995966, "audio_duration": 3.508, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760327.9227633, "kind": "heard", "text": "Actually, never mind the cancellation."}
+{"t": 1790760329.3295376, "kind": "user_state", "state": "listening"}
+{"t": 1790760329.4809785, "kind": "user_state", "state": "speaking"}
+{"t": 1790760329.6420596, "kind": "metrics", "type": "stt_metrics", "duration": 0.31203909999931057, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760329.6432338, "kind": "heard", "text": "I changed my mind about that."}
+{"t": 1790760333.1685286, "kind": "user_state", "state": "listening"}
+{"t": 1790760333.4197965, "kind": "user_state", "state": "speaking"}
+{"t": 1790760333.7489212, "kind": "metrics", "type": "stt_metrics", "duration": 0.5789067999994586, "audio_duration": 4.308, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760333.749886, "kind": "heard", "text": "Can you just track order GG5 for me instead?"}
+{"t": 1790760335.1694403, "kind": "user_state", "state": "listening"}
+{"t": 1790760335.493792, "kind": "metrics", "type": "stt_metrics", "duration": 0.32284939999954076, "audio_duration": 2.356, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790760335.4946146, "kind": "heard", "text": "I want to see where it is."}
+{"t": 1790760335.6123254, "kind": "user_turn", "text": "Can you cancel my. Actually, never mind the cancellation. I changed my mind about that. Can you just track order GG5 for me instead? I want to see where it is."}
+{"t": 1790760335.6133227, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7948851585388184, "transcription_delay": 0.6771743297576904, "on_user_turn_completed_delay": 0.00039229999856615905, "speech_id": "speech_1600a319af4b"}
+{"t": 1790760335.6143277, "kind": "think_start", "text": "Can you cancel my. Actually, never mind the cancellation. I changed my mind about that. Can you just track order GG5 for me instead? I want to see where it is.", "audio": false}
+{"t": 1790760335.635621, "kind": "agent_state", "state": "thinking"}
+{"t": 1790760336.7885773, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790760336.9168882, "kind": "agent_state", "state": "speaking"}
+{"t": 1790760336.931474, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1268121000011888, "duration": 0.1413007999999536, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1600a319af4b"}
+{"t": 1790760344.9322407, "kind": "thinker_decided", "tools": true, "after_s": 9.32}
+{"t": 1790760344.9322407, "kind": "tool_start", "name": "track_order", "args": {"order_id": "GG5"}}
+{"t": 1790760344.935242, "kind": "tool_done", "name": "track_order", "args": {"order_id": "GG5"}, "outcome": "success"}
+{"t": 1790760345.2736857, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23399270000118122, "duration": 0.24773860000095738, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1600a319af4b"}
+{"t": 1790760347.4328494, "kind": "thinker_say", "text": "Your order GG5 is out for delivery.", "after_s": 11.82, "usage": {"input": 4938, "input_audio": 0, "output": 28, "thinking": 154, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790760347.7053325, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.23338630000034755, "duration": 0.27146410000023025, "audio_duration": 3.085, "cancelled": false, "characters_count": 35, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_1600a319af4b"}
+{"t": 1790760350.7688863, "kind": "agent_said", "text": "One moment. Still working on it. Your order GG5 is out for delivery."}
+{"t": 1790760350.7688863, "kind": "agent_state", "state": "listening"}

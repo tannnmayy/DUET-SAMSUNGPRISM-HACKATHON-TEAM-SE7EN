@@ -1,0 +1,388 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "finance_03",
+  "category": "finance_billing",
+  "title": "Modify Autopay with Fillers",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:40:43.138084",
+  "inference_time_s": 50.39,
+  "room_name": "eval-951ba3b6",
+  "stream_start_time": 1790761245.8993492,
+  "input_transcript": "Um, so, uh, I want to change, um, I want to change my mortgage auto pay to pull from like my savings account, you know, instead of where it's pulling from now.",
+  "input_asr_chunks": [
+    {
+      "text": "Um,",
+      "timestamp": [
+        0.37,
+        1.05
+      ]
+    },
+    {
+      "text": "so,",
+      "timestamp": [
+        1.43,
+        3.69
+      ]
+    },
+    {
+      "text": "uh,",
+      "timestamp": [
+        3.71,
+        4.33
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        5.11,
+        5.65
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        5.65,
+        5.95
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        5.95,
+        6.05
+      ]
+    },
+    {
+      "text": "change,",
+      "timestamp": [
+        6.05,
+        6.73
+      ]
+    },
+    {
+      "text": "um,",
+      "timestamp": [
+        6.77,
+        7.93
+      ]
+    },
+    {
+      "text": "I",
+      "timestamp": [
+        8.45,
+        8.57
+      ]
+    },
+    {
+      "text": "want",
+      "timestamp": [
+        8.57,
+        8.73
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        8.73,
+        8.79
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        8.79,
+        9.01
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        9.01,
+        9.21
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        9.21,
+        9.71
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        9.71,
+        9.99
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        9.99,
+        10.25
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        10.25,
+        10.37
+      ]
+    },
+    {
+      "text": "pull",
+      "timestamp": [
+        10.37,
+        10.65
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        10.65,
+        10.99
+      ]
+    },
+    {
+      "text": "like",
+      "timestamp": [
+        10.99,
+        11.29
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        11.29,
+        11.93
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        11.93,
+        12.41
+      ]
+    },
+    {
+      "text": "account,",
+      "timestamp": [
+        12.41,
+        12.91
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        12.93,
+        13.83
+      ]
+    },
+    {
+      "text": "know,",
+      "timestamp": [
+        13.83,
+        13.91
+      ]
+    },
+    {
+      "text": "instead",
+      "timestamp": [
+        14.01,
+        14.25
+      ]
+    },
+    {
+      "text": "of",
+      "timestamp": [
+        14.25,
+        14.45
+      ]
+    },
+    {
+      "text": "where",
+      "timestamp": [
+        14.45,
+        14.67
+      ]
+    },
+    {
+      "text": "it's",
+      "timestamp": [
+        14.67,
+        14.87
+      ]
+    },
+    {
+      "text": "pulling",
+      "timestamp": [
+        14.87,
+        15.13
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        15.13,
+        15.43
+      ]
+    },
+    {
+      "text": "now.",
+      "timestamp": [
+        15.43,
+        15.79
+      ]
+    }
+  ],
+  "user_speech_end_rel": 15.79,
+  "latency": {
+    "input_duration_s": 46.86,
+    "output_duration_s": 46.86,
+    "first_speech_s": 21.9
+  },
+  "user_done_unix": 1790761261.6893492,
+  "transcript": "One moment. Still working on it. Okay, I've updated your mortgage autopay to pull from your savings account.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        21.62,
+        22.14
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        22.14,
+        22.48
+      ]
+    },
+    {
+      "text": "Still",
+      "timestamp": [
+        27.8,
+        28.34
+      ]
+    },
+    {
+      "text": "working",
+      "timestamp": [
+        28.34,
+        28.66
+      ]
+    },
+    {
+      "text": "on",
+      "timestamp": [
+        28.66,
+        28.88
+      ]
+    },
+    {
+      "text": "it.",
+      "timestamp": [
+        28.88,
+        29.08
+      ]
+    },
+    {
+      "text": "Okay,",
+      "timestamp": [
+        30.1,
+        30.78
+      ]
+    },
+    {
+      "text": "I've",
+      "timestamp": [
+        31.12,
+        31.38
+      ]
+    },
+    {
+      "text": "updated",
+      "timestamp": [
+        31.38,
+        31.78
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        31.78,
+        31.98
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        31.98,
+        32.28
+      ]
+    },
+    {
+      "text": "autopay",
+      "timestamp": [
+        32.28,
+        32.84
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        32.84,
+        33.2
+      ]
+    },
+    {
+      "text": "pull",
+      "timestamp": [
+        33.2,
+        33.42
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        33.42,
+        33.6
+      ]
+    },
+    {
+      "text": "your",
+      "timestamp": [
+        33.6,
+        33.72
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        33.72,
+        34.02
+      ]
+    },
+    {
+      "text": "account.",
+      "timestamp": [
+        34.02,
+        34.4
+      ]
+    }
+  ],
+  "perceived_total_latency": 5.83,
+  "audio_agent_speech_start": 21.62,
+  "actual_tool_calls": [
+    {
+      "function": "modify_autopay",
+      "args": {
+        "bill_type": "mortgage",
+        "source_account": "savings"
+      },
+      "timestamp_start": 23.59,
+      "timestamp_end": 23.59
+    }
+  ],
+  "status": "completed"
+}

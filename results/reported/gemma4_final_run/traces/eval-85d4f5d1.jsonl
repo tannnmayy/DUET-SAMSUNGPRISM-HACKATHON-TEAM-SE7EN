@@ -1,0 +1,44 @@
+{"t": 1790765042.6585093, "kind": "session_start", "room": "eval-85d4f5d1", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790765042.775494, "kind": "agent_state", "state": "listening"}
+{"t": 1790765047.3444376, "kind": "user_state", "state": "speaking"}
+{"t": 1790765050.3430502, "kind": "user_state", "state": "listening"}
+{"t": 1790765050.8576357, "kind": "metrics", "type": "stt_metrics", "duration": 0.5137981999978365, "audio_duration": 3.572, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765050.8706326, "kind": "heard", "text": "Looking at flights to Miami on October 5th."}
+{"t": 1790765050.8730893, "kind": "user_turn", "text": "Looking at flights to Miami on October 5th."}
+{"t": 1790765050.8738258, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8815054893493652, "transcription_delay": 0.879582405090332, "on_user_turn_completed_delay": 0.00036099999852012843, "speech_id": "speech_597ad861954f"}
+{"t": 1790765050.8753328, "kind": "think_start", "text": "Looking at flights to Miami on October 5th.", "audio": false}
+{"t": 1790765050.8990204, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765051.229833, "kind": "user_state", "state": "speaking"}
+{"t": 1790765051.6790934, "kind": "agent_state", "state": "listening"}
+{"t": 1790765052.2394795, "kind": "user_state", "state": "listening"}
+{"t": 1790765052.5456243, "kind": "metrics", "type": "stt_metrics", "duration": 0.30540450000262354, "audio_duration": 1.588, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765052.5465033, "kind": "heard", "text": "Uh, wait."}
+{"t": 1790765054.3845282, "kind": "user_turn", "text": "Uh, wait."}
+{"t": 1790765054.3858204, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.4970486164093018, "transcription_delay": 0.6590237617492676, "on_user_turn_completed_delay": 0.0004417000018293038, "speech_id": "speech_2c7310e87abb"}
+{"t": 1790765054.3868217, "kind": "think_start", "text": "Looking at flights to Miami on October 5th. Uh, wait.", "audio": false}
+{"t": 1790765054.410379, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765054.6820228, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765054.8351154, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765054.8542573, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.15096379999886267, "duration": 0.17064620000019204, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_2c7310e87abb"}
+{"t": 1790765055.351525, "kind": "user_state", "state": "speaking"}
+{"t": 1790765057.833246, "kind": "agent_state", "state": "listening"}
+{"t": 1790765059.4407587, "kind": "thinker_listen", "reason": "The user said \"Uh, wait\" at the end of their request, implying they are not finished or want to change something.", "after_s": 5.05, "usage": {"input": 2388, "input_audio": 0, "output": 41, "thinking": 60, "calls": 1}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765061.8354926, "kind": "user_state", "state": "listening"}
+{"t": 1790765062.4447744, "kind": "metrics", "type": "stt_metrics", "duration": 0.6073789000001852, "audio_duration": 4.468, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790765062.445819, "kind": "heard", "text": "I moved, so actually make it October 7th instead."}
+{"t": 1790765062.4492877, "kind": "agent_said", "text": "One moment. "}
+{"t": 1790765063.9810438, "kind": "user_turn", "text": "I moved, so actually make it October 7th instead."}
+{"t": 1790765063.9821815, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 2.496187448501587, "transcription_delay": 0.9609625339508057, "on_user_turn_completed_delay": 0.0005328000006556977, "speech_id": "speech_bc19268f89f2"}
+{"t": 1790765063.9832292, "kind": "think_start", "text": "Looking at flights to Miami on October 5th. Uh, wait. I moved, so actually make it October 7th instead.", "audio": false}
+{"t": 1790765064.0065293, "kind": "agent_state", "state": "thinking"}
+{"t": 1790765064.2767162, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790765064.409891, "kind": "agent_state", "state": "speaking"}
+{"t": 1790765064.423462, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1317254999994475, "duration": 0.14587849999952596, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_bc19268f89f2"}
+{"t": 1790765068.3732018, "kind": "thinker_decided", "tools": true, "after_s": 4.39}
+{"t": 1790765068.3732018, "kind": "tool_start", "name": "search_flights", "args": {"destination": "Miami", "date": "October 7"}}
+{"t": 1790765068.6731014, "kind": "tool_done", "name": "search_flights", "args": {"destination": "Miami", "date": "October 7"}, "outcome": "success"}
+{"t": 1790765070.4095676, "kind": "thinker_say", "text": "OK. I found a flight to Miami on October 7th for 450 dollars.", "after_s": 6.43, "usage": {"input": 4846, "input_audio": 0, "output": 44, "thinking": 59, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790765070.7606657, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3754298999992898, "duration": 0.3881541999980982, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_bc19268f89f2"}
+{"t": 1790765070.9352913, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1693487999982608, "duration": 0.17093739999836544, "audio_duration": 5.6350000000000025, "cancelled": false, "characters_count": 61, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_bc19268f89f2"}
+{"t": 1790765078.1853225, "kind": "agent_said", "text": "One moment. Still working on it. OK. I found a flight to Miami on October 7th for 450 dollars."}
+{"t": 1790765078.1859386, "kind": "agent_state", "state": "listening"}

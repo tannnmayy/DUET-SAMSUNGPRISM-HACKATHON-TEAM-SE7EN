@@ -1,0 +1,30 @@
+{"t": 1790761313.139321, "kind": "session_start", "room": "eval-ac21d5a3", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761313.2448993, "kind": "agent_state", "state": "listening"}
+{"t": 1790761315.3000271, "kind": "user_state", "state": "speaking"}
+{"t": 1790761320.1000164, "kind": "user_state", "state": "listening"}
+{"t": 1790761320.6976705, "kind": "metrics", "type": "stt_metrics", "duration": 0.5960824000012508, "audio_duration": 5.396, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761320.7108085, "kind": "heard", "text": "I need to figure out how much 1,000 US dollars would be in."}
+{"t": 1790761321.706054, "kind": "user_state", "state": "speaking"}
+{"t": 1790761324.309355, "kind": "user_state", "state": "listening"}
+{"t": 1790761324.7642963, "kind": "user_turn", "text": "I need to figure out how much 1,000 US dollars would be in."}
+{"t": 1790761324.7642963, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.8059349060058594, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.00035790000038105063, "speech_id": "speech_7d50bdd90658"}
+{"t": 1790761324.7664168, "kind": "think_start", "text": "I need to figure out how much 1,000 US dollars would be in.", "audio": false}
+{"t": 1790761324.7675745, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761324.8698783, "kind": "metrics", "type": "stt_metrics", "duration": 0.558442899999136, "audio_duration": 3.188, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761324.8708787, "kind": "heard", "text": "British pounds, do you know the current rate?"}
+{"t": 1790761324.8714638, "kind": "agent_state", "state": "listening"}
+{"t": 1790761325.6682959, "kind": "user_turn", "text": "British pounds, do you know the current rate?"}
+{"t": 1790761325.6682959, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004826000003959052, "speech_id": "speech_dc1cf0713869"}
+{"t": 1790761325.6692955, "kind": "think_start", "text": "I need to figure out how much 1,000 US dollars would be in. British pounds, do you know the current rate?", "audio": false}
+{"t": 1790761325.6912935, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761325.980611, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761326.112484, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761326.1256902, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1301086999992549, "duration": 0.14429199999904085, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_dc1cf0713869"}
+{"t": 1790761330.800971, "kind": "thinker_decided", "tools": true, "after_s": 5.13}
+{"t": 1790761330.8019686, "kind": "tool_start", "name": "get_exchange_rate", "args": {"from_currency": "USD", "amount": 1000, "to_currency": "GBP"}}
+{"t": 1790761330.8049715, "kind": "tool_done", "name": "get_exchange_rate", "args": {"from_currency": "USD", "amount": 1000, "to_currency": "GBP"}, "outcome": "success"}
+{"t": 1790761332.3962922, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.31961969999974826, "duration": 0.3328188000014052, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_dc1cf0713869"}
+{"t": 1790761335.6885204, "kind": "thinker_say", "text": "1,000 US dollars is currently 900 British pounds at an exchange rate of 0.9.", "after_s": 10.02, "usage": {"input": 4861, "input_audio": 0, "output": 60, "thinking": 69, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761336.140139, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3334923999991588, "duration": 0.43632760000036797, "audio_duration": 7.110000000000004, "cancelled": false, "characters_count": 76, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_dc1cf0713869"}
+{"t": 1790761343.1423829, "kind": "agent_said", "text": "One moment. Still working on it. 1,000 US dollars is currently 900 British pounds at an exchange rate of 0.9."}
+{"t": 1790761343.1423829, "kind": "agent_state", "state": "listening"}

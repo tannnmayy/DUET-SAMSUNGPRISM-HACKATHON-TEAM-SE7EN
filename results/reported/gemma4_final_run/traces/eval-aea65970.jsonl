@@ -1,0 +1,31 @@
+{"t": 1790764585.225009, "kind": "session_start", "room": "eval-aea65970", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790764585.3353167, "kind": "agent_state", "state": "listening"}
+{"t": 1790764588.7443058, "kind": "user_state", "state": "speaking"}
+{"t": 1790764596.1820805, "kind": "user_state", "state": "listening"}
+{"t": 1790764596.7898839, "kind": "metrics", "type": "stt_metrics", "duration": 0.6061598000014783, "audio_duration": 8.02, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764596.7912054, "kind": "heard", "text": "Uh, yeah, so my new passport number is P889-90011."}
+{"t": 1790764596.82547, "kind": "user_state", "state": "speaking"}
+{"t": 1790764600.5755475, "kind": "user_state", "state": "listening"}
+{"t": 1790764601.0157351, "kind": "user_turn", "text": "Uh, yeah, so my new passport number is P889-90011."}
+{"t": 1790764601.016769, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7921876907348633, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004501000003074296, "speech_id": "speech_5e9d3a26d747"}
+{"t": 1790764601.0178447, "kind": "think_start", "text": "Uh, yeah, so my new passport number is P889-90011.", "audio": false}
+{"t": 1790764601.0178447, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764601.1556, "kind": "metrics", "type": "stt_metrics", "duration": 0.5799350000015693, "audio_duration": 4.34, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790764601.1579268, "kind": "heard", "text": "Could you update that in the system for me, please?"}
+{"t": 1790764601.1584315, "kind": "agent_state", "state": "listening"}
+{"t": 1790764601.1658473, "kind": "superseded"}
+{"t": 1790764601.9571214, "kind": "user_turn", "text": "Could you update that in the system for me, please?"}
+{"t": 1790764601.9571214, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004837000014958903, "speech_id": "speech_88e6ce26789f"}
+{"t": 1790764601.9581156, "kind": "think_start", "text": "Uh, yeah, so my new passport number is P889-90011. Could you update that in the system for me, please?", "audio": false}
+{"t": 1790764601.98232, "kind": "agent_state", "state": "thinking"}
+{"t": 1790764602.2470853, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790764602.3899918, "kind": "agent_state", "state": "speaking"}
+{"t": 1790764602.4038112, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.1411004999972647, "duration": 0.15554429999974673, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88e6ce26789f"}
+{"t": 1790764611.7036264, "kind": "thinker_decided", "tools": true, "after_s": 9.75}
+{"t": 1790764611.7046762, "kind": "tool_start", "name": "update_identity_doc", "args": {"doc_number": "P88990011", "doc_type": "passport"}}
+{"t": 1790764611.7077477, "kind": "tool_done", "name": "update_identity_doc", "args": {"doc_number": "P88990011", "doc_type": "passport"}, "outcome": "success"}
+{"t": 1790764612.0763073, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.2599239999981364, "duration": 0.27380840000114404, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88e6ce26789f"}
+{"t": 1790764613.3637664, "kind": "thinker_say", "text": "OK. I've updated your passport number.", "after_s": 11.41, "usage": {"input": 4907, "input_audio": 0, "output": 46, "thinking": 85, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790764613.512549, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.14603300000089803, "duration": 0.14736210000046412, "audio_duration": 2.9850000000000003, "cancelled": false, "characters_count": 38, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_88e6ce26789f"}
+{"t": 1790764616.8274455, "kind": "agent_said", "text": "One moment. Still working on it. OK. I've updated your passport number."}
+{"t": 1790764616.8274455, "kind": "agent_state", "state": "listening"}

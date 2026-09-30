@@ -1,0 +1,311 @@
+{
+  "pid": "61517db6a7589569521b2356",
+  "example_id": "finance_07",
+  "category": "finance_billing",
+  "title": "False Start then Autopay",
+  "provider": "duet",
+  "evaluated_at": "2026-09-30T17:45:10.071575",
+  "inference_time_s": 48.22,
+  "room_name": "eval-19bc94bc",
+  "stream_start_time": 1790761512.8442085,
+  "input_transcript": "I was going to ask about my account balance, but never mind, I'll check online later, but for now, could you change the mortgage auto pay so it pulls from my savings account?",
+  "input_asr_chunks": [
+    {
+      "text": "I",
+      "timestamp": [
+        0.97,
+        1.51
+      ]
+    },
+    {
+      "text": "was",
+      "timestamp": [
+        1.51,
+        1.97
+      ]
+    },
+    {
+      "text": "going",
+      "timestamp": [
+        1.97,
+        2.07
+      ]
+    },
+    {
+      "text": "to",
+      "timestamp": [
+        2.07,
+        2.17
+      ]
+    },
+    {
+      "text": "ask",
+      "timestamp": [
+        2.17,
+        2.51
+      ]
+    },
+    {
+      "text": "about",
+      "timestamp": [
+        2.51,
+        3.51
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        3.51,
+        3.75
+      ]
+    },
+    {
+      "text": "account",
+      "timestamp": [
+        3.75,
+        4.11
+      ]
+    },
+    {
+      "text": "balance,",
+      "timestamp": [
+        4.11,
+        4.71
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        5.01,
+        5.13
+      ]
+    },
+    {
+      "text": "never",
+      "timestamp": [
+        5.13,
+        6.57
+      ]
+    },
+    {
+      "text": "mind,",
+      "timestamp": [
+        6.57,
+        6.77
+      ]
+    },
+    {
+      "text": "I'll",
+      "timestamp": [
+        6.91,
+        7.03
+      ]
+    },
+    {
+      "text": "check",
+      "timestamp": [
+        7.03,
+        7.53
+      ]
+    },
+    {
+      "text": "online",
+      "timestamp": [
+        7.53,
+        7.89
+      ]
+    },
+    {
+      "text": "later,",
+      "timestamp": [
+        7.89,
+        8.31
+      ]
+    },
+    {
+      "text": "but",
+      "timestamp": [
+        8.45,
+        9.43
+      ]
+    },
+    {
+      "text": "for",
+      "timestamp": [
+        9.43,
+        9.61
+      ]
+    },
+    {
+      "text": "now,",
+      "timestamp": [
+        9.61,
+        9.79
+      ]
+    },
+    {
+      "text": "could",
+      "timestamp": [
+        9.93,
+        10.01
+      ]
+    },
+    {
+      "text": "you",
+      "timestamp": [
+        10.01,
+        10.15
+      ]
+    },
+    {
+      "text": "change",
+      "timestamp": [
+        10.15,
+        10.57
+      ]
+    },
+    {
+      "text": "the",
+      "timestamp": [
+        10.57,
+        10.81
+      ]
+    },
+    {
+      "text": "mortgage",
+      "timestamp": [
+        10.81,
+        11.23
+      ]
+    },
+    {
+      "text": "auto",
+      "timestamp": [
+        11.23,
+        11.51
+      ]
+    },
+    {
+      "text": "pay",
+      "timestamp": [
+        11.51,
+        11.81
+      ]
+    },
+    {
+      "text": "so",
+      "timestamp": [
+        11.81,
+        12.05
+      ]
+    },
+    {
+      "text": "it",
+      "timestamp": [
+        12.05,
+        12.19
+      ]
+    },
+    {
+      "text": "pulls",
+      "timestamp": [
+        12.19,
+        12.47
+      ]
+    },
+    {
+      "text": "from",
+      "timestamp": [
+        12.47,
+        12.69
+      ]
+    },
+    {
+      "text": "my",
+      "timestamp": [
+        12.69,
+        12.87
+      ]
+    },
+    {
+      "text": "savings",
+      "timestamp": [
+        12.87,
+        13.31
+      ]
+    },
+    {
+      "text": "account?",
+      "timestamp": [
+        13.31,
+        13.73
+      ]
+    }
+  ],
+  "user_speech_end_rel": 13.73,
+  "latency": {
+    "input_duration_s": 44.7,
+    "output_duration_s": 44.7,
+    "first_speech_s": 18.25
+  },
+  "user_done_unix": 1790761526.5742085,
+  "transcript": "One moment, one moment, one moment.",
+  "asr_chunks": [
+    {
+      "text": "One",
+      "timestamp": [
+        17.94,
+        18.5
+      ]
+    },
+    {
+      "text": "moment,",
+      "timestamp": [
+        18.5,
+        18.88
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        26.38,
+        27.16
+      ]
+    },
+    {
+      "text": "moment,",
+      "timestamp": [
+        27.16,
+        27.54
+      ]
+    },
+    {
+      "text": "one",
+      "timestamp": [
+        31.39,
+        32.11
+      ]
+    },
+    {
+      "text": "moment.",
+      "timestamp": [
+        32.11,
+        32.41
+      ]
+    }
+  ],
+  "perceived_total_latency": 4.21,
+  "audio_agent_speech_start": 17.94,
+  "actual_tool_calls": [
+    {
+      "function": "modify_autopay",
+      "args": {
+        "bill_type": "mortgage",
+        "source_account": "savings"
+      },
+      "timestamp_start": 44.22,
+      "timestamp_end": 44.23
+    }
+  ],
+  "status": "completed"
+}

@@ -7,8 +7,8 @@ mapped to where this submission meets it.
 
 | Requirement | How DUET meets it | Evidence |
 |---|---|---|
-| **Stay responsive:** spoken feedback fast, no dead air | "One moment." as soon as the user has clearly finished and the thinker is still working; "Still working on it." on long chains; a spoken reply even when the model is unreachable (`duet_voice/agent.py`) | {{turn_take}} of conversations answered; first response {{first_response}} as the benchmark measures it ([RESULTS.md](RESULTS.md)) |
-| **No false "done!" claims** | The fast voice never states a result or names a value; the thinker speaks only after the tool results, and only what they say (`duet_voice/prompts.py`) | Response quality {{resp_qual}} |
+| **Stay responsive:** spoken feedback fast, no dead air | "One moment." as soon as the user has clearly finished and the thinker is still working; "Still working on it." on long chains; a spoken reply even when the model is unreachable (`duet_voice/agent.py`) | 100% of conversations answered; first response 4.80 s as the benchmark measures it ([RESULTS.md](RESULTS.md)) |
+| **No false "done!" claims** | The fast voice never states a result or names a value; the thinker speaks only after the tool results, and only what they say (`duet_voice/prompts.py`) | Response quality 0.730 |
 | **Work asynchronously** | Speech recognition, synthesis, model calls and tools all run off the audio loop; the backend runs in a worker thread | Architecture, section 2 |
 | **Recover cleanly: discard stale intent** | Epochs: a plan made on words the user has since changed is never carried out; the commit gate waits for a closed turn and a quiet hold; `keep_listening` for unfinished sentences (`duet_voice/coordinator.py`) | 75 unit tests; self-correction items in [RESULTS.md](RESULTS.md) |
 | **Update tool arguments after a change of mind** | The open request is re-read whole on every turn, and the thinker acts only on the final value | The preflight itself checks a correction ("K 7, no wait, K 4 Q 2" must give `K4Q2`) |
@@ -30,7 +30,7 @@ mapped to where this submission meets it.
 | README: architecture with a diagram, exact setup and run steps, the extension clearly marked | [README.md](../README.md), [ARCHITECTURE.md](ARCHITECTURE.md) |
 | One-command reproduction: install, configure, evaluate | `reproduce.sh`: environments from lock files (uv, Python 3.11); pinned benchmark, data, LiveKit and speech-model revisions; a preflight of every key and of tool calling before anything runs. Verified on a fresh Linux clone |
 | Declaration of model provider / custom agent | README, "Models and providers": a custom LiveKit agent; Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's API |
-| Results and run logs (scores, seeds, configuration) from our best run | [`results/reported/{{run_name}}`](../results/reported/{{run_name}}): `run_config.json`, `summary.json`, the official reports, per-recording results, traces and logs; analysed in [RESULTS.md](RESULTS.md) |
+| Results and run logs (scores, seeds, configuration) from our best run | [`results/reported/gemma4_final_run`](../results/reported/gemma4_final_run): `run_config.json`, `summary.json`, the official reports, per-recording results, traces and logs; analysed in [RESULTS.md](RESULTS.md) |
 | API keys documented, not included | README, "API keys": `GOOGLE_API_KEY` or `GOOGLE_API_KEYS`; optional OpenAI and LiveKit keys. `.env.local` is git-ignored |
 | Demo video, 3-5 minutes | The team's video; the extension's live demo is recorded from real runs |
 | Slides, at most 8 | The team's deck |

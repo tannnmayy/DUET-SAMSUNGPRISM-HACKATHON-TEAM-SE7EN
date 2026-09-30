@@ -1,0 +1,21 @@
+{"t": 1790759135.724436, "kind": "session_start", "room": "eval-2e0c5840", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790759135.7638218, "kind": "agent_state", "state": "listening"}
+{"t": 1790759138.6087172, "kind": "user_state", "state": "speaking"}
+{"t": 1790759148.8590963, "kind": "user_state", "state": "listening"}
+{"t": 1790759149.566277, "kind": "metrics", "type": "stt_metrics", "duration": 0.704909599999155, "audio_duration": 10.836, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790759149.5672479, "kind": "heard", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?"}
+{"t": 1790759149.5694203, "kind": "user_turn", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?"}
+{"t": 1790759149.5694203, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 1.0618045330047607, "transcription_delay": 1.0601515769958496, "on_user_turn_completed_delay": 0.00033599999915168155, "speech_id": "speech_38e3c17a8c79"}
+{"t": 1790759149.571313, "kind": "think_start", "text": "You know, where is my package? Let me find the order number here. Door number is XYZ88. Could you check what's going on with it?", "audio": false}
+{"t": 1790759149.5929718, "kind": "agent_state", "state": "thinking"}
+{"t": 1790759150.4797528, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790759150.6091456, "kind": "agent_state", "state": "speaking"}
+{"t": 1790759150.6234894, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.12727369999993243, "duration": 0.1422746999996889, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_38e3c17a8c79"}
+{"t": 1790759154.7098296, "kind": "thinker_decided", "tools": true, "after_s": 5.14}
+{"t": 1790759154.7098296, "kind": "tool_start", "name": "track_order", "args": {"order_id": "XYZ88"}}
+{"t": 1790759154.746118, "kind": "tool_done", "name": "track_order", "args": {"order_id": "XYZ88"}, "outcome": "success"}
+{"t": 1790759156.8012037, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.3065877000008186, "duration": 0.3188220000010915, "audio_duration": 1.7349999999999999, "cancelled": false, "characters_count": 20, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_38e3c17a8c79"}
+{"t": 1790759156.9600372, "kind": "thinker_say", "text": "Your order XYZ88 is currently out for delivery.", "after_s": 7.39, "usage": {"input": 4808, "input_audio": 0, "output": 31, "thinking": 74, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790759157.1444585, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.18069369999830087, "duration": 0.18262659999891184, "audio_duration": 4.135000000000002, "cancelled": false, "characters_count": 47, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_38e3c17a8c79"}
+{"t": 1790759162.7038064, "kind": "agent_said", "text": "One moment. Still working on it. Your order XYZ88 is currently out for delivery."}
+{"t": 1790759162.70434, "kind": "agent_state", "state": "listening"}

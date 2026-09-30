@@ -1,0 +1,39 @@
+{"t": 1790761904.1554601, "kind": "session_start", "room": "eval-0b8dc00e", "dry_run": false, "backend": "gemma", "thinker": "gemma-4-26b-a4b-it", "thinking": "", "talker": "fixed acknowledgement (no model)", "asr": "large-v3-turbo", "tts": "kokoro", "thinker_audio": false}
+{"t": 1790761904.2472463, "kind": "agent_state", "state": "listening"}
+{"t": 1790761907.163502, "kind": "user_state", "state": "speaking"}
+{"t": 1790761912.1101296, "kind": "user_state", "state": "listening"}
+{"t": 1790761912.7396872, "kind": "metrics", "type": "stt_metrics", "duration": 0.6289951999988261, "audio_duration": 5.556, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761912.7538524, "kind": "heard", "text": "Well, I want to calculate how much 100 euros would be in US dollars."}
+{"t": 1790761912.7561572, "kind": "user_turn", "text": "Well, I want to calculate how much 100 euros would be in US dollars."}
+{"t": 1790761912.7561572, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.9975128173828125, "transcription_delay": 0.9962284564971924, "on_user_turn_completed_delay": 0.0003531000002112705, "speech_id": "speech_9ec6e161534e"}
+{"t": 1790761912.7583823, "kind": "think_start", "text": "Well, I want to calculate how much 100 euros would be in US dollars.", "audio": false}
+{"t": 1790761912.7831125, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761913.0601707, "kind": "user_state", "state": "speaking"}
+{"t": 1790761913.4593954, "kind": "agent_state", "state": "listening"}
+{"t": 1790761918.2093487, "kind": "user_state", "state": "listening"}
+{"t": 1790761918.5093067, "kind": "user_state", "state": "speaking"}
+{"t": 1790761918.7402713, "kind": "metrics", "type": "stt_metrics", "duration": 0.5293554999989283, "audio_duration": 5.748, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761918.7402713, "kind": "heard", "text": "Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100."}
+{"t": 1790761920.7646062, "kind": "user_state", "state": "listening"}
+{"t": 1790761921.2026763, "kind": "user_turn", "text": "Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100."}
+{"t": 1790761921.2039728, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.7900700569152832, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0003668000008474337, "speech_id": "speech_16d524f224f7"}
+{"t": 1790761921.2050204, "kind": "think_start", "text": "Well, I want to calculate how much 100 euros would be in US dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100.", "audio": false}
+{"t": 1790761921.2050204, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761921.2661917, "kind": "metrics", "type": "stt_metrics", "duration": 0.5009731999998621, "audio_duration": 2.868, "streamed": false, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "input_audio_tokens": 0, "acquire_time": 0.0, "connection_reused": false}
+{"t": 1790761921.2682862, "kind": "heard", "text": "So 150 euros to US dollars."}
+{"t": 1790761921.2687912, "kind": "agent_state", "state": "listening"}
+{"t": 1790761921.2751634, "kind": "superseded"}
+{"t": 1790761922.0578868, "kind": "user_turn", "text": "So 150 euros to US dollars."}
+{"t": 1790761922.0588923, "kind": "metrics", "type": "eou_metrics", "end_of_utterance_delay": 0.0, "transcription_delay": 0.0, "on_user_turn_completed_delay": 0.0004324000001361128, "speech_id": "speech_756002201413"}
+{"t": 1790761922.0598893, "kind": "think_start", "text": "Well, I want to calculate how much 100 euros would be in US dollars. Oh wait, I was looking at the wrong invoice. It's actually 150 euros, not 100. So 150 euros to US dollars.", "audio": false}
+{"t": 1790761922.0828986, "kind": "agent_state", "state": "thinking"}
+{"t": 1790761922.4050603, "kind": "talker", "text": "One moment.", "reason": "grace", "fallback": true}
+{"t": 1790761922.5427997, "kind": "agent_state", "state": "speaking"}
+{"t": 1790761922.557895, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.13593890000083775, "duration": 0.15138850000039383, "audio_duration": 1.585, "cancelled": false, "characters_count": 11, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_756002201413"}
+{"t": 1790761925.590763, "kind": "thinker_decided", "tools": true, "after_s": 3.53}
+{"t": 1790761925.590763, "kind": "tool_start", "name": "get_exchange_rate", "args": {"from_currency": "EUR", "to_currency": "USD", "amount": 150}}
+{"t": 1790761925.5939968, "kind": "tool_done", "name": "get_exchange_rate", "args": {"from_currency": "EUR", "to_currency": "USD", "amount": 150}, "outcome": "success"}
+{"t": 1790761927.4059591, "kind": "thinker_say", "text": "150 euros is 165 US dollars.", "after_s": 5.35, "usage": {"input": 4882, "input_audio": 0, "output": 46, "thinking": 53, "calls": 2}, "model": "gemma-4-26b-a4b-it"}
+{"t": 1790761927.743911, "kind": "metrics", "type": "tts_metrics", "ttfb": 0.27349210000102175, "duration": 0.33617380000032426, "audio_duration": 4.685000000000001, "cancelled": false, "characters_count": 28, "input_tokens": 0, "output_tokens": 0, "streamed": false, "acquire_time": 0.0, "connection_reused": false, "speech_id": "speech_756002201413"}
+{"t": 1790761932.38972, "kind": "agent_said", "text": "One moment. 150 euros is 165 US dollars."}
+{"t": 1790761932.38972, "kind": "agent_state", "state": "listening"}
