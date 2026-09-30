@@ -18,6 +18,8 @@ calls the tools, with a **coordinator** that decides *when acting is allowed*.
 | **Language model** | Gemma 4 26B-A4B-it (open weights, Apache 2.0) through Google's API |
 | **Speech** | faster-whisper large-v3-turbo, Silero VAD, LiveKit end-of-turn model, Kokoro-82M, all local |
 | **Use-case extension** | DUET for Galaxy: the same agent on a Samsung phone, in three modes ([`app/`](app/README.md)) |
+| **Demo video** | [Google Drive folder](https://drive.google.com/drive/folders/1VA8tbpwyIQrz-USTfc_LUibM5IOoRX3O) |
+| **AI disclosure** | [`AI disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf`](AI%20disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf) |
 | **Reproduction** | One command, `bash reproduce.sh` ([below](#reproduce-the-benchmark)) |
 
 ## Results
@@ -341,7 +343,8 @@ each step live: **Planned**, **Never ran** (a plan the user's correction overtoo
 **Done**, **Not repeated**. Real Android interfaces handle alarms, battery and screen
 readings, installed apps, brightness, settings screens, Maps navigation, calls and
 messages; the smart home, the medicine schedule and the car are simulated inside the
-app. Build, run and demo instructions: [app/README.md](app/README.md).
+app. Build, run and demo instructions: [app/README.md](app/README.md). The submission
+demo video is in this [Google Drive folder](https://drive.google.com/drive/folders/1VA8tbpwyIQrz-USTfc_LUibM5IOoRX3O).
 
 ## Engineering quality
 
@@ -380,6 +383,7 @@ scripts/                 machine check, offline evaluation, the extension's demo
 app/                     DUET for Galaxy: Android app, web build, demo recorder
 tests/                   75 unit tests
 docs/                    architecture, results, engineering notes, requirements, research
+AI disclosure/           LangAI 3.0 AI disclosure form (PDF)
 results/reported/        the reported run: reports, traces and logs
 reproduce.sh             one-command reproduction
 legacy/                  DUET v1 on the original Theme 05 kit (research record, not used)
@@ -395,6 +399,8 @@ legacy/                  DUET v1 on the original Theme 05 kit (research record, 
 | [docs/SAMSUNG_REQUIREMENTS.md](docs/SAMSUNG_REQUIREMENTS.md) | Each line of the Theme 05 guide and where it is met |
 | [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md) | The research behind the extension |
 | [app/README.md](app/README.md) | DUET for Galaxy: build, run, demo |
+| [Demo video](https://drive.google.com/drive/folders/1VA8tbpwyIQrz-USTfc_LUibM5IOoRX3O) | Submission video (Google Drive) |
+| [`AI disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf`](AI%20disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf) | LangAI 3.0 AI disclosure form |
 
 ## References
 
