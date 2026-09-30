@@ -57,8 +57,24 @@ def test_list_and_select_mum():
 
     listed, status = run(go())
     assert listed["count"] == 1 and listed["members"][0]["name"] == "Mum"
+    assert listed["home"]["anyone_home"] is True
     assert status["inactivity_alert"] is True and status["member_id"] == "member-mum"
+    assert status["watch_on_wrist"] is False
     assert box.state.selected_member_id == "member-mum"
+
+
+def test_mum_watch_off_wrist_does_not_invent_heart_rate():
+    box, *_ = make_box()
+
+    async def go():
+        await call(box, "get_member_status", member_id="member-mum")
+        await call(box, "request_health_consent", member_id="member-mum")
+        return await call(box, "get_watch_vitals", member_id="member-mum")
+
+    vitals = run(go())
+    assert vitals["status"] == "ok"
+    assert vitals["band"] == "off_wrist"
+    assert vitals.get("heart_rate_bpm") in (None, "")
 
 
 def test_switching_member_starts_a_new_workflow():
@@ -308,6 +324,79 @@ def test_http_sms_url_falls_back_to_mock(monkeypatch):
     monkeypatch.setenv("DUET_FAMILY_SMS_URL", "http://127.0.0.1/secret")
     box = default_messenger()
     assert isinstance(box, MockCareMessenger)
+
+
+def test_list_without_query_returns_the_whole_home():
+    listed = run(call(make_box()[0], "list_household"))
+    names = {m["name"] for m in listed["members"]}
+    assert names == {"Mum", "Dad"}
+    assert listed["count"] == 2
+    assert listed["home"]["anyone_home"] is True
+    assert "Kitchen" in listed["home"]["rooms"]
+
+
+def test_mom_alias_selects_mum():
+    box, *_ = make_box()
+    listed = run(call(box, "list_household", query="mom"))
+    assert listed["count"] == 1 and listed["members"][0]["member_id"] == "member-mum"
+    status = run(call(box, "get_member_status", member_id="Mum"))
+    assert status["member_id"] == "member-mum" and status["status"] == "ok"
+
+
+def test_unknown_member_is_not_invented():
+    result = run(call(make_box()[0], "get_member_status", member_id="member-ghost"))
+    assert result["status"] == "error"
+    assert result["error"] == "not_found"
+
+
+def test_knox_consent_does_not_cover_the_other_member():
+    box, *_ = make_box()
+
+    async def go():
+        await call(box, "get_member_status", member_id="member-dad")
+        await call(box, "request_health_consent", member_id="member-dad")
+        dad = await call(box, "get_watch_vitals", member_id="member-dad")
+        mum = await call(box, "get_watch_vitals", member_id="member-mum")
+        return dad, mum
+
+    dad, mum = run(go())
+    assert dad["status"] == "ok" and dad["band"] == "elevated"
+    assert mum["status"] == "consent_required"
+    assert mum.get("heart_rate_bpm") in (None, "")
+
+
+def test_knox_grant_is_exactly_once_per_member():
+    box, *_ = make_box()
+    first = run(call(box, "request_health_consent", member_id="member-dad"))
+    second = run(call(box, "request_health_consent", member_id="member-dad"))
+    assert first["status"] == "ok"
+    assert second["status"] == "already_done"
+
+
+def test_text_to_ambulance_is_refused():
+    box, *_ = make_box()
+    messenger = box.messenger
+    result = run(call(box, "send_care_text", contact_id="ambulance", purpose="vitals_alert",
+                      body="help"))
+    assert result["status"] == "error"
+    assert result["error"] == "refused"
+    assert messenger.texts == []
+
+
+def test_caregiver_call_is_exactly_once():
+    box, *_ = make_box()
+    messenger = box.messenger
+    first = run(call(box, "place_care_call", target_id="Priya", reason="check on dad"))
+    second = run(call(box, "place_care_call", target_id="Priya", reason="check on dad again"))
+    assert first["status"] == "ok" and first["record_id"].startswith("CALL-")
+    assert second["status"] == "already_done"
+    assert len(messenger.calls) == 1
+
+
+def test_explicit_emergency_string_false_is_refused():
+    result = run(call(make_box()[0], "place_care_call", target_id="ambulance",
+                      reason="maybe", explicit_emergency="false"))
+    assert result["status"] == "refused"
 
 
 def test_session_note_mentions_an_existing_text():

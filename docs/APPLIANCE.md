@@ -117,8 +117,9 @@ observations. The customer should not have to repeat the problem.
 # Scripted demo (no GPU, no language model, mock household and mock service)
 python -m duet_voice.appliance.demo
 
-# Typed chat with the real thinker (same tools). Without --use-case appliance
-# the process loads FDB-v3 and a washer UE line becomes flight_search.
+# Typed chat with the real thinker. Unset DUET_USE_CASE auto-routes a washer
+# UE line to appliance tools. --use-case appliance pins that toolset.
+python -m duet_voice.chat
 python -m duet_voice.chat --use-case appliance
 python -m duet_voice.chat --use-case appliance --once "My Samsung washing machine is showing a UE error"
 
@@ -129,15 +130,16 @@ $env:DUET_USE_CASE="appliance"          # Windows PowerShell
 python -m duet_voice.agent console
 ```
 
-The process prints `use_case=appliance` and `list_appliances` at start. If you
-see `flight_search`, the appliance flag was not set.
+Unset, a washer/UE line prints `switching to appliance` and `list_appliances`.
+`DUET_USE_CASE=benchmark` pins FDB and will treat that line as a trip.
 
 Optional:
 
 | Variable | Effect |
 |---|---|
-| `DUET_USE_CASE=benchmark` | Default. FDB-v3 tools. |
-| `DUET_USE_CASE=appliance` | This use case. |
+| `DUET_USE_CASE` unset or `auto` | Live routing. Washer/UE → this use case. |
+| `DUET_USE_CASE=benchmark` | Pin FDB-v3 tools. |
+| `DUET_USE_CASE=appliance` | Pin this use case. |
 | `DUET_SMARTTHINGS=mock` | Default household. |
 | `DUET_SMARTTHINGS=real` plus `SMARTTHINGS_TOKEN` | Public SmartThings API. |
 | `SAMSUNG_SERVICE_API_URL` | Authorized **https** service backend. `http://` and empty values are refused. |

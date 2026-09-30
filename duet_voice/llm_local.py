@@ -197,12 +197,13 @@ class LocalThinker:
         yield ThinkEvent("say", text=final_text, usage=usage)
 
 
-async def acknowledge(user_text: str, usage: Optional[dict] = None) -> Optional[str]:
+async def acknowledge(user_text: str, usage: Optional[dict] = None,
+                      instructions: Optional[str] = None) -> Optional[str]:
     """The talker on the local model: one short sentence, or None (<silent>)."""
     from .use_case import talker_instructions
     resp = await client().chat.completions.create(
         model=CONFIG.talker_model, max_tokens=40,
-        messages=[{"role": "system", "content": talker_instructions()},
+        messages=[{"role": "system", "content": instructions or talker_instructions()},
                   {"role": "user", "content": "User: " + user_text}],
         **sampling())
     u = getattr(resp, "usage", None)

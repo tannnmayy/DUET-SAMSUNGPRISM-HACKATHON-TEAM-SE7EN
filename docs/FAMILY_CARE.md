@@ -49,13 +49,14 @@ Check member → (optional) Knox consent → Watch vitals → text or call → h
 
 `python -m duet_voice.family.demo`:
 
-1. “Check on Mum” — inactivity alert.
-2. “Wait, actually Dad” — new workflow, recent presence.
+1. “Check on Mum” — inactivity, Watch **off-wrist**, someone is home.
+2. “Wait, actually Dad” — new workflow, recent presence, Watch on-wrist.
 3. Heart rate without consent → `consent_required`.
 4. Knox grant, then Watch band **elevated**.
-5. Ambulance without an explicit emergency → `refused`. Text Priya **once**.
-6. “Did you text her?” → `already_done`.
-7. Caregiver handoff.
+5. “Just text Priya” — the text is in flight; the user cuts in. The committed text still lands **once**.
+6. “Call an ambulance. No wait, don't.” → `refused`. A second text is `already_done`.
+7. “Did you text her?” → `already_done`.
+8. Caregiver handoff.
 
 ## Simulated vs real
 
@@ -63,7 +64,7 @@ Check member → (optional) Knox consent → Watch vitals → text or call → h
 |---|---|
 | Dual-mind agent, coordinator, epochs, gate, ledger | Existing DUET |
 | Speech | Existing faster-whisper (live agent) |
-| SmartThings Family Care | Mock household. Public SmartThings does not expose inactivity alerts |
+| SmartThings Family Care | Mock household (Mum off-wrist inactivity, Dad on-wrist, Priya caregiver-only, shared home presence). Public SmartThings does not expose inactivity alerts |
 | Galaxy Watch heart rate | Mock. Served only after Knox consent |
 | Knox | Mock vault by default. `RealKnoxVault` refuses unless `DUET_KNOX_TOKEN` is set; URL must be https |
 | Texts / calls | Mock messenger. `DUET_FAMILY_SMS_URL` must be https or it is refused |
@@ -74,8 +75,9 @@ Tokens, phones and vitals are redacted in traces. Member ids stay visible.
 
 ```bash
 python -m duet_voice.family.demo     # no GPU; mock household, Knox, Watch, texts
-python -m duet_voice.chat --use-case family
-export DUET_USE_CASE=family          # live voice, same tools, faster-whisper
+python -m duet_voice.chat            # auto-routes “check on Mum” to family tools
+python -m duet_voice.chat --use-case family   # pin family for the process
+export DUET_USE_CASE=family          # pin live voice
 python -m duet_voice.agent console
 ```
 

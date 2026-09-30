@@ -17,6 +17,13 @@ class HouseholdError(Exception):
         self.code = code
 
 
+DEMO_HOME: Dict[str, Any] = {
+    "home_id": "home-family",
+    "name": "Family home",
+    "rooms": ["Bedroom", "Living room", "Kitchen"],
+    "source": "smartthings_family_care",
+}
+
 DEMO_MEMBERS: Dict[str, Dict[str, Any]] = {
     "member-mum": {
         "member_id": "member-mum",
@@ -27,6 +34,7 @@ DEMO_MEMBERS: Dict[str, Dict[str, Any]] = {
         "last_motion_minutes": 240,
         "inactivity_alert": True,
         "watch_paired": True,
+        "watch_on_wrist": False,
         "watch_id": "watch-mum",
         "online": True,
         "source": "smartthings_family_care",
@@ -40,6 +48,7 @@ DEMO_MEMBERS: Dict[str, Dict[str, Any]] = {
         "last_motion_minutes": 8,
         "inactivity_alert": False,
         "watch_paired": True,
+        "watch_on_wrist": True,
         "watch_id": "watch-dad",
         "online": True,
         "source": "smartthings_family_care",
@@ -74,6 +83,9 @@ class FamilyHousehold:
     def list_contacts(self) -> List[Dict[str, Any]]:
         raise NotImplementedError
 
+    def home(self) -> Dict[str, Any]:
+        return {}
+
 
 class MockFamilyHousehold(FamilyHousehold):
     def __init__(
@@ -83,8 +95,13 @@ class MockFamilyHousehold(FamilyHousehold):
     ) -> None:
         self.members = copy.deepcopy(members or DEMO_MEMBERS)
         self.contacts = copy.deepcopy(contacts or DEMO_CONTACTS)
+        self.home_meta = copy.deepcopy(DEMO_HOME)
         self.fail_next: Optional[str] = None
         self.simulated = True
+
+    def home(self) -> Dict[str, Any]:
+        anyone = any(m.get("presence") == "home" for m in self.members.values())
+        return dict(self.home_meta, anyone_home=anyone, simulated=True)
 
     def _maybe_fail(self) -> None:
         mode = self.fail_next
@@ -106,7 +123,12 @@ class MockFamilyHousehold(FamilyHousehold):
         payload = dict(rec)
         payload["status"] = "ok"
         payload["simulated"] = True
-        if payload.get("inactivity_alert"):
+        if payload.get("watch_on_wrist") is False:
+            payload["instruction"] = (
+                "This member is home but the Galaxy Watch is off-wrist. "
+                "Do not invent a heart rate. Offer inactivity context or a caregiver text."
+            )
+        elif payload.get("inactivity_alert"):
             payload["instruction"] = (
                 "SmartThings Family Care reports unusual inactivity. "
                 "Do not invent a medical diagnosis. Offer to check the Watch after Knox consent, "

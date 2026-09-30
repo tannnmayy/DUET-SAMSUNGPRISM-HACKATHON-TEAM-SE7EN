@@ -129,17 +129,22 @@ def test_scripted_thinker_stops_when_the_user_barges_in():
 def test_full_demo_flow():
     result = asyncio.run(run_demo())
     assert result["mum"]["inactivity_alert"] is True
+    assert result["mum"]["watch_on_wrist"] is False
+    assert result["home"]["anyone_home"] is True
     assert result["dad"]["member_id"] == "member-dad"
     assert result["dad"]["workflow_id"] >= 1
+    assert result["dad"]["watch_on_wrist"] is True
     assert result["vitals_without_consent"] == "consent_required"
     assert result["vitals"]["band"] == "elevated"
     assert result["ambulance"]["status"] == "refused"
     assert result["text"]["status"] == "ok"
     assert result["second_text"]["status"] == "already_done"
+    assert result["third_text"]["status"] == "already_done"
     assert result["texts_created"] == 1
     assert result["calls_created"] == 0
     handoff = result["handoff"]
     assert handoff["member"]["name"] == "Dad"
+    assert handoff["member"]["watch_on_wrist"] is True
     assert handoff["knox_health_consent"] is True
     assert handoff["vitals"]["band"] == "elevated"
     assert result["simulated"]["knox"] and result["simulated"]["messaging"]

@@ -266,9 +266,14 @@ DUET_LLM_BASE_URL=http://127.0.0.1:8766/v1 python bench/run_live.py --only trave
 
 ## Use-case extension
 
+Live chat and the voice console **route on what you say** when `DUET_USE_CASE`
+is unset: a washer/UE line loads Appliance Care, Mum/Watch/Priya loads Family
+Care, anything else stays on the FDB tools. Pin with `DUET_USE_CASE=appliance`
+or `family` if you want one toolset only. `reproduce.sh` and offline eval still
+construct `FdbToolbox` themselves.
+
 **DUET Smart Appliance Care** — Samsung appliance support on the same dual-mind
-agent. Opt-in (`DUET_USE_CASE=appliance`). The FDB-v3 path stays the default:
-`reproduce.sh` and offline eval still construct `FdbToolbox` themselves.
+agent. Opt-in (`DUET_USE_CASE=appliance`) or auto-routed from washer/dryer talk.
 
 A customer says “my Samsung washing machine isn't working.” DUET identifies the
 appliance on SmartThings, reads status and diagnostics, explains a *documented*
@@ -280,8 +285,9 @@ idempotency ledger as the benchmark.
 
 ```bash
 python -m duet_voice.appliance.demo    # no GPU; mock household + mock service
-python -m duet_voice.chat --use-case appliance   # typed; real thinker + appliance tools
-export DUET_USE_CASE=appliance         # live voice, same tools (same shell)
+python -m duet_voice.chat              # auto-routes washer/UE to appliance tools
+python -m duet_voice.chat --use-case appliance   # pin appliance for the process
+export DUET_USE_CASE=appliance         # pin live voice
 python -m duet_voice.agent console
 ```
 
@@ -311,6 +317,7 @@ Watch, Knox and SMS are mocked unless an authorized https backend is configured.
 
 ```bash
 python -m duet_voice.family.demo     # no GPU
+python -m duet_voice.chat            # auto-routes Mum/Watch/Priya to family tools
 python -m duet_voice.chat --use-case family
 export DUET_USE_CASE=family
 python -m duet_voice.agent console

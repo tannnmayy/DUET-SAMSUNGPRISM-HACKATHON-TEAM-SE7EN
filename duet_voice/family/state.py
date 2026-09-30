@@ -50,6 +50,8 @@ class FamilySessionState:
             "presence": selected.get("presence"),
             "inactivity_alert": selected.get("inactivity_alert"),
             "watch_paired": selected.get("watch_paired"),
+            "watch_on_wrist": selected.get("watch_on_wrist"),
+            "anyone_home": any(m.get("presence") == "home" for m in self.members.values()),
             "consent_health": bool(self.consent.get(self.selected_member_id or "")),
             "vitals_band": (self.vitals.get(self.selected_member_id or "") or {}).get("band"),
             "last_text": None if last_text is None else last_text.__dict__,
@@ -99,10 +101,12 @@ class FamilySessionState:
             lines.append(
                 "Selected member: {name} id={member_id} presence={presence} "
                 "inactivity_alert={inactivity_alert} watch_paired={watch_paired} "
+                "watch_on_wrist={watch_on_wrist} anyone_home={anyone_home} "
                 "knox_health_consent={consent_health} vitals_band={vitals_band}".format(**{
                     k: s.get(k) for k in (
                         "name", "member_id", "presence", "inactivity_alert",
-                        "watch_paired", "consent_health", "vitals_band")
+                        "watch_paired", "watch_on_wrist", "anyone_home",
+                        "consent_health", "vitals_band")
                 })
             )
         if s.get("last_text"):

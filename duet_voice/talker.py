@@ -25,15 +25,19 @@ def _gemini():
     return client()
 
 
-async def acknowledgement(user_text: str, context: str = "", usage: Optional[dict] = None) -> Optional[str]:
+async def acknowledgement(user_text: str, context: str = "", usage: Optional[dict] = None,
+                          use_case: Optional[str] = None) -> Optional[str]:
     """One sentence, or None when the talker has nothing useful to say in time.
     `usage`, if given, receives the call's token counts (for the cost analysis)."""
     if not CONFIG.talker_enabled or not user_text.strip():
         return None
+    instructions = talker_instructions(use_case)
     if CONFIG.llm_backend == "local":
         from . import llm_local
         try:
-            text = await asyncio.wait_for(llm_local.acknowledge(user_text, usage), timeout=CONFIG.talker_timeout_s)
+            text = await asyncio.wait_for(
+                llm_local.acknowledge(user_text, usage, instructions=instructions),
+                timeout=CONFIG.talker_timeout_s)
         except asyncio.TimeoutError:
             log.info("talker timed out after %.1f s", CONFIG.talker_timeout_s)
             return None
@@ -47,7 +51,7 @@ async def acknowledgement(user_text: str, context: str = "", usage: Optional[dic
     from .gemini import resolved, sampling, thinking_config
     model = resolved("talker", CONFIG.talker_model)
     config = types.GenerateContentConfig(
-        system_instruction=talker_instructions(),
+        system_instruction=instructions,
         **sampling(model),
         max_output_tokens=48,
         thinking_config=thinking_config(model, "minimal"),

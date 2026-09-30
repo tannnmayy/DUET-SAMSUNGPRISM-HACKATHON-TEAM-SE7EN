@@ -114,8 +114,10 @@ drafted during a pause and then discarded leaves the request open.
 (`duet_voice/appliance/`, [APPLIANCE.md](APPLIANCE.md)).
 `DUET_USE_CASE=family` loads DUET SmartThings Family Care
 (`duet_voice/family/`, [FAMILY_CARE.md](FAMILY_CARE.md)).
-Offline eval and `reproduce.sh` construct `FdbToolbox` themselves, so a leftover
-use-case setting cannot change the benchmark.
+If the env var is unset, live chat and the voice console route on the user's
+words (washer/UE → appliance, Mum/Watch → family) without changing
+`reproduce.sh`. Offline eval and `reproduce.sh` construct `FdbToolbox`
+themselves, so a leftover use-case setting cannot change the benchmark.
 
 ## Tools
 

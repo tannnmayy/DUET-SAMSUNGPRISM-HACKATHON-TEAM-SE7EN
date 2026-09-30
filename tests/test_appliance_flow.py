@@ -179,14 +179,17 @@ def test_reload_picks_up_appliance_use_case(monkeypatch):
     assert use_case.is_appliance() is False
 
 
-def test_chat_banner_warns_when_benchmark_tools_are_loaded():
+def test_chat_banner_warns_when_benchmark_tools_are_loaded(monkeypatch):
     from duet_voice.chat import banner
-    text = banner("benchmark", ["flight_search", "book_flight"], "local")
-    assert "flight_search" in text
-    assert "--use-case appliance" in text
+    monkeypatch.delenv("DUET_USE_CASE", raising=False)
+    auto = banner("benchmark", ["flight_search", "book_flight"], "local")
+    assert "Auto-route" in auto
+    monkeypatch.setenv("DUET_USE_CASE", "benchmark")
+    pinned = banner("benchmark", ["flight_search", "book_flight"], "local")
+    assert "trip" in pinned or "pinned" in pinned.lower()
     appliance = banner("appliance", ["list_appliances", "get_appliance_status"], "gemini")
     assert "list_appliances" in appliance
-    assert "flight_search" not in appliance
+    assert "Auto-route" not in appliance
 
 
 def test_chat_turn_uses_appliance_tools_not_flights():

@@ -4,9 +4,9 @@
     python -m duet_voice.agent dev        # same, with auto-reload
     python -m duet_voice.agent console    # talk to it with your own mic and speakers
 
-Default tools are FDB-v3 (flights, restaurants, …). Appliance care needs
-`DUET_USE_CASE=appliance` in the same shell, before this process starts.
-Typed testing: `python -m duet_voice.chat --use-case appliance`.
+Default live tools are FDB-v3 until the user talks about a washer or a
+family member; then this session switches toolsets. Pin with `DUET_USE_CASE`.
+Typed testing: `python -m duet_voice.chat`.
 
 LiveKit is the ears and the mouth: audio transport, Silero VAD, speech
 recognition, end-of-turn detection, text-to-speech, and barge-in. The brain is
@@ -53,7 +53,10 @@ from .config import CONFIG  # noqa: E402
 from .coordinator import Coordinator, Superseded  # noqa: E402
 from .plugins import KokoroTTS, WhisperSTT  # noqa: E402
 from .thinker import RESPOND_NOW_NOTE, encode_audio, make_thinker  # noqa: E402
-from .use_case import make_toolbox, thinker_instructions  # noqa: E402
+from .use_case import (  # noqa: E402
+    allow_long_tool_chains, auto_route_enabled, make_toolbox, resolve_live_use_case,
+    thinker_instructions,
+)
 
 log = logging.getLogger("duet.agent")
 logging.getLogger("duet").setLevel(logging.INFO)
@@ -150,6 +153,8 @@ class DuetAgent(Agent):
         self._trace = trace
         self._coord = coord
         self._toolbox = toolbox
+        self._room = getattr(toolbox, "room_name", "live")
+        self._live_case = CONFIG.use_case
         specs = getattr(toolbox, "specs", None) if toolbox is not None else None
         self._thinker = make_thinker(tool_specs=specs, instructions=instructions)
         self._tape = AudioTape()
@@ -202,11 +207,26 @@ class DuetAgent(Agent):
             return 0.0
         return self._coord.clock() - self._coord.last_speech_end
 
+    def _bind_live_use_case(self, text: str) -> None:
+        chosen = resolve_live_use_case(text, self._live_case)
+        if chosen == self._live_case:
+            return
+        self._live_case = chosen
+        self._toolbox = make_toolbox(self._room, self._coord, use_case=chosen)
+        if hasattr(self._toolbox, "_trace"):
+            self._toolbox._trace = self._trace
+        self._thinker = make_thinker(
+            tool_specs=self._toolbox.specs, instructions=thinker_instructions(chosen))
+        names = [s["name"] for s in self._toolbox.specs]
+        self._trace("use_case", use_case=chosen, tools=",".join(names[:8]))
+        log.info("switched use_case=%s tools=%s", chosen, ",".join(names[:8]))
+
     async def llm_node(self, chat_ctx: llm.ChatContext, tools: List[llm.Tool],
                        model_settings: ModelSettings) -> AsyncIterable[Any]:
         text = self._open_request(chat_ctx)
         if not text:
             return
+        self._bind_live_use_case(text)
         answered_upto = len(self._user_messages(chat_ctx))
         started = time.time()
         if DRY_RUN:
@@ -233,7 +253,8 @@ class DuetAgent(Agent):
             note = (note + "\n" if note else "") + already
 
         ack_usage: Dict[str, int] = {}
-        ack_task = asyncio.ensure_future(talker.acknowledgement(text, usage=ack_usage))
+        ack_task = asyncio.ensure_future(
+            talker.acknowledgement(text, usage=ack_usage, use_case=self._live_case))
         events: asyncio.Queue = asyncio.Queue()
         epoch = self._coord.epoch
 
@@ -422,12 +443,14 @@ async def entrypoint(ctx: JobContext) -> None:
     toolbox = make_toolbox(room, coord)
     if hasattr(toolbox, "_trace"):
         toolbox._trace = trace
+    if auto_route_enabled():
+        allow_long_tool_chains()
     names = [s["name"] for s in getattr(toolbox, "specs", [])]
     log.info("DUET use_case=%s tools=%s", CONFIG.use_case, ",".join(names))
     print("DUET ready  use_case=%s  tools=%s" % (
         CONFIG.use_case, ", ".join(names[:8]) + ("…" if len(names) > 8 else "")), flush=True)
-    if CONFIG.use_case == "benchmark":
-        print("FDB-v3 tools (flight_search, …). Washer/UE needs DUET_USE_CASE=appliance.", flush=True)
+    if auto_route_enabled():
+        print("Auto-route on: washer/UE → appliance, Mum/Watch → family. Pin with DUET_USE_CASE.", flush=True)
     agent = DuetAgent(trace, coord, toolbox)
 
     session = AgentSession(

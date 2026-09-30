@@ -36,7 +36,8 @@ async def _call(box: FamilyToolbox, name: str, args: Dict[str, Any], epoch: int)
 
 
 async def run_demo() -> Dict[str, Any]:
-    """Check Mum → correct to Dad → Knox consent → Watch HR → refuse ambulance → text Priya once."""
+    """Check Mum (inactivity, Watch off-wrist) → Dad → Knox → elevated HR →
+    in-flight text survives barge-in → ambulance correction refused → text once."""
     coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
     household = MockFamilyHousehold()
     knox = MockKnoxVault()
@@ -46,6 +47,11 @@ async def run_demo() -> Dict[str, Any]:
     transcript: List[Dict[str, Any]] = []
     calls: List[Tuple[str, Dict[str, Any]]] = []
 
+    def _record(text: str, epoch: int, results: List[Dict[str, Any]]) -> None:
+        transcript.append({"user": text, "epoch": epoch, "tools": results,
+                           "member": box.state.selected_member_id,
+                           "workflow": box.state.workflow_id})
+
     async def user(text: str, tools: List[Tuple[str, Dict[str, Any]]]) -> List[Dict[str, Any]]:
         epoch = _open_turn(coord, text)
         results = []
@@ -53,9 +59,7 @@ async def run_demo() -> Dict[str, Any]:
             result = await _call(box, name, args, epoch)
             calls.append((name, result))
             results.append({"tool": name, "args": args, "result": result})
-        transcript.append({"user": text, "epoch": epoch, "tools": results,
-                           "member": box.state.selected_member_id,
-                           "workflow": box.state.workflow_id})
+        _record(text, epoch, results)
         return results
 
     mum_turn = await user("Check on Mum.", [
@@ -77,14 +81,37 @@ async def run_demo() -> Dict[str, Any]:
         ("get_watch_vitals", {"member_id": "member-dad"}),
     ])
 
-    refused = await user("Call an ambulance. No wait, don't. Just text Priya.", [
-        ("place_care_call", {"target_id": "ambulance", "reason": "heart rate", "explicit_emergency": False}),
-        ("send_care_text", {
-            "contact_id": "Priya",
-            "purpose": "vitals_alert",
-            "body": "Dad's Watch band is elevated. Please check on him.",
-        }),
+    # Committed text is in flight; the user cuts in. The write still lands once.
+    messenger.delay_s = 0.2
+    text_args = {
+        "contact_id": "Priya",
+        "purpose": "vitals_alert",
+        "body": "Dad's Watch band is elevated. Please check on him.",
+    }
+    epoch_text = _open_turn(coord, "Just text Priya.")
+    send_task = asyncio.ensure_future(_call(box, "send_care_text", text_args, epoch_text))
+    await asyncio.sleep(0.05)
+    coord.user_started_speaking()
+    text_result = await send_task
+    calls.append(("send_care_text", text_result))
+    _record("Just text Priya.", epoch_text, [
+        {"tool": "send_care_text", "args": text_args, "result": text_result},
     ])
+    coord.user_stopped_speaking()
+    coord.heard("Call an ambulance. No wait, don't.")
+    coord.turn_committed()
+    epoch_fix = coord.epoch
+    ambulance = await _call(box, "place_care_call", {
+        "target_id": "ambulance", "reason": "heart rate", "explicit_emergency": False,
+    }, epoch_fix)
+    second_text = await _call(box, "send_care_text", text_args, epoch_fix)
+    calls.append(("place_care_call", ambulance))
+    calls.append(("send_care_text", second_text))
+    _record("Call an ambulance. No wait, don't.", epoch_fix, [
+        {"tool": "place_care_call", "args": {"target_id": "ambulance"}, "result": ambulance},
+        {"tool": "send_care_text", "args": text_args, "result": second_text},
+    ])
+    messenger.delay_s = 0.0
 
     again = await user("Did you text her?", [
         ("get_outbound_status", {"contact_id": "Priya", "purpose": "vitals_alert"}),
@@ -97,20 +124,25 @@ async def run_demo() -> Dict[str, Any]:
                                   "extra_note": "I am on the road, cannot go over myself."}),
     ])
 
+    home = mum_turn[0]["result"].get("home") or {}
     return {
         "transcript": transcript,
         "calls": [(n, r.get("status")) for n, r in calls],
         "mum": {"member_id": mum_turn[1]["result"].get("member_id"),
-                "inactivity_alert": mum_turn[1]["result"].get("inactivity_alert")},
+                "inactivity_alert": mum_turn[1]["result"].get("inactivity_alert"),
+                "watch_on_wrist": mum_turn[1]["result"].get("watch_on_wrist")},
         "dad": {"member_id": box.state.selected_member_id,
                 "workflow_id": box.state.workflow_id,
-                "inactivity_alert": dad_turn[1]["result"].get("inactivity_alert")},
+                "inactivity_alert": dad_turn[1]["result"].get("inactivity_alert"),
+                "watch_on_wrist": dad_turn[1]["result"].get("watch_on_wrist")},
+        "home": home,
         "vitals_without_consent": denied[0]["result"].get("status"),
         "vitals": vitals_turn[1]["result"],
-        "ambulance": refused[0]["result"],
-        "text": refused[1]["result"],
-        "second_text": again[1]["result"],
+        "ambulance": ambulance,
+        "text": text_result,
+        "second_text": second_text,
         "lookup": again[0]["result"],
+        "third_text": again[1]["result"],
         "handoff": handoff_turn[0]["result"].get("handoff"),
         "state": box.state.snapshot(),
         "texts_created": len(messenger.texts),
@@ -136,8 +168,11 @@ def render(result: Dict[str, Any]) -> str:
             extra = item["result"].get("record_id") or item["result"].get("reason") or item["result"].get("band") or ""
             lines.append("  %s -> %s %s" % (item["tool"], status, extra))
         lines.append("")
-    lines.append("Mum inactivity: %s" % result["mum"]["inactivity_alert"])
-    lines.append("Dad selected, workflow=%s" % result["dad"]["workflow_id"])
+    lines.append("Home anyone_home: %s" % (result.get("home") or {}).get("anyone_home"))
+    lines.append("Mum inactivity: %s watch_on_wrist: %s" % (
+        result["mum"]["inactivity_alert"], result["mum"].get("watch_on_wrist")))
+    lines.append("Dad selected, workflow=%s watch_on_wrist: %s" % (
+        result["dad"]["workflow_id"], result["dad"].get("watch_on_wrist")))
     lines.append("Vitals without consent: %s" % result["vitals_without_consent"])
     lines.append("Watch band: %s HR=%s" % (
         result["vitals"].get("band"), result["vitals"].get("heart_rate_bpm")))

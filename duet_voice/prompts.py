@@ -114,6 +114,10 @@ unknown_outcome, use that result; do not retry a write.
 high-voltage, or safety-bypass instructions.
 - If the words are not a request to you, call no tool.
 
+BEFORE YOU SPEAK
+Call tools for this request first. Do not greet, ask a question, or invent lint, \
+filters, or error meanings. If status or diagnostics are missing, get them. Then speak.
+
 HOW TO SPEAK
 - After the tools finish, answer in one or two short spoken sentences. Name the appliance, \
 the documented problem, and the next safe step or the booking facts the tools returned.
@@ -159,6 +163,10 @@ get_outbound_status.
 unknown_outcome, use that result; do not retry a write.
 - If a tool reports not_executed, the user is still talking: stop and wait.
 - If the words are not a request to you, call no tool.
+
+BEFORE YOU SPEAK
+Call tools for this request first. Do not greet, ask a question, or invent a heart rate. \
+If get_watch_vitals returns consent_required or off_wrist, say that and stop. Then speak.
 
 HOW TO SPEAK
 - After the tools finish, answer in one or two short spoken sentences. Name the member, \

@@ -7,17 +7,16 @@ toolbox over stdin, so a washer UE line cannot silently become flight_search.
     python -m duet_voice.chat --use-case appliance --once "My Samsung washing machine is showing a UE error"
     python -m duet_voice.chat --use-case family
 
-Leave `--use-case` unset to honour `DUET_USE_CASE` (default: benchmark).
+Leave `--use-case` unset to auto-route: washer/UE loads appliance tools,
+Mum/Watch loads family tools. Pin with `--use-case` or `DUET_USE_CASE`.
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
-import json
 import os
-import sys
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 try:
     from dotenv import load_dotenv
@@ -28,20 +27,21 @@ except ImportError:
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env.local"))
 
 
-def _repo_root() -> str:
-    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
 def banner(use_case: str, tools: List[str], backend: str) -> str:
     shown = ", ".join(tools[:8]) + ("…" if len(tools) > 8 else "")
     lines = [
         "DUET text chat",
         "use_case=%s  backend=%s  tools=%s" % (use_case, backend, shown),
     ]
-    if use_case == "benchmark":
+    from .use_case import auto_route_enabled
+    if auto_route_enabled():
         lines.append(
-            "FDB-v3 tools are loaded. A washer UE error will be treated as a trip "
-            "(flight_search). For appliance care: python -m duet_voice.chat --use-case appliance"
+            "Auto-route on. Washer/UE uses appliance tools; Mum/Watch/Priya uses family tools."
+        )
+    elif use_case == "benchmark":
+        lines.append(
+            "FDB-v3 tools are pinned. Washer/UE would be treated as a trip. "
+            "Unset DUET_USE_CASE to auto-route, or pass --use-case appliance."
         )
     lines.append("Type a request and press Enter. /quit to exit.")
     return "\n".join(lines)
@@ -81,6 +81,38 @@ async def run_turn(text: str, *, coord, toolbox, thinker) -> List[str]:
     return lines
 
 
+class ChatSession:
+    def __init__(self) -> None:
+        from .config import CONFIG
+        from .coordinator import Coordinator
+        from .thinker import make_thinker
+        from .use_case import (
+            allow_long_tool_chains, auto_route_enabled, make_toolbox, thinker_instructions,
+        )
+
+        self.coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+        self.live_case = CONFIG.use_case if not auto_route_enabled() else "benchmark"
+        if auto_route_enabled() or self.live_case != "benchmark":
+            allow_long_tool_chains()
+        self.toolbox = make_toolbox("chat", self.coord, use_case=self.live_case)
+        self.thinker = make_thinker(
+            tool_specs=self.toolbox.specs, instructions=thinker_instructions(self.live_case))
+
+    def bind(self, text: str) -> None:
+        from .thinker import make_thinker
+        from .use_case import make_toolbox, resolve_live_use_case, thinker_instructions
+
+        chosen = resolve_live_use_case(text, self.live_case)
+        if chosen == self.live_case:
+            return
+        self.live_case = chosen
+        self.toolbox = make_toolbox("chat", self.coord, use_case=chosen)
+        self.thinker = make_thinker(
+            tool_specs=self.toolbox.specs, instructions=thinker_instructions(chosen))
+        tools = [s["name"] for s in self.toolbox.specs]
+        print("switching to %s  tools=%s" % (chosen, ", ".join(tools[:6])), flush=True)
+
+
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -100,14 +132,9 @@ def _apply_use_case(name: Optional[str]) -> None:
 
 async def _session(args: argparse.Namespace) -> int:
     from .config import CONFIG
-    from .coordinator import Coordinator
-    from .thinker import make_thinker
-    from .use_case import make_toolbox, thinker_instructions
 
-    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
-    toolbox = make_toolbox("chat", coord)
-    tools = [s["name"] for s in toolbox.specs]
-    thinker = make_thinker(tool_specs=toolbox.specs, instructions=thinker_instructions())
+    session = ChatSession()
+    tools = [s["name"] for s in session.toolbox.specs]
     print(banner(CONFIG.use_case, tools, CONFIG.llm_backend), flush=True)
 
     if args.once is not None:
@@ -115,7 +142,8 @@ async def _session(args: argparse.Namespace) -> int:
         if not text:
             return 2
         print("You: %s" % text, flush=True)
-        for line in await run_turn(text, coord=coord, toolbox=toolbox, thinker=thinker):
+        session.bind(text)
+        for line in await run_turn(text, coord=session.coord, toolbox=session.toolbox, thinker=session.thinker):
             print(line, flush=True)
         return 0
 
@@ -131,7 +159,8 @@ async def _session(args: argparse.Namespace) -> int:
         if text.lower() in ("/quit", "/exit", "quit", "exit"):
             return 0
         try:
-            lines = await run_turn(text, coord=coord, toolbox=toolbox, thinker=thinker)
+            session.bind(text)
+            lines = await run_turn(text, coord=session.coord, toolbox=session.toolbox, thinker=session.thinker)
         except Exception as exc:
             print("error: %s" % exc, flush=True)
             continue

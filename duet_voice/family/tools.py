@@ -196,6 +196,14 @@ class FamilyToolbox:
         for mid, rec in self.state.members.items():
             if _match_name(rec, raw):
                 return mid
+        try:
+            for member in self.household.list_members():
+                mid = str(member.get("member_id") or "")
+                if mid == raw or _match_name(member, raw):
+                    self.state.remember_member(mid, member)
+                    return mid
+        except HouseholdError:
+            pass
         return raw
 
     def _contact_id(self, raw: str) -> str:
@@ -237,8 +245,14 @@ class FamilyToolbox:
         matched = [m for m in members if _match_name(m, query)]
         for m in matched:
             self.state.remember_member(m["member_id"], m)
+        home = {}
+        if hasattr(self.household, "home"):
+            try:
+                home = self.household.home() or {}
+            except HouseholdError:
+                home = {}
         return {"status": "ok", "members": matched, "query": query or None, "count": len(matched),
-                "simulated": True}
+                "home": home, "simulated": True}
 
     def _status(self, args: Dict[str, Any], *, epoch: int) -> Dict[str, Any]:
         self.state.intent = "check"
@@ -487,7 +501,9 @@ class FamilyToolbox:
         if note:
             self.state.user_observations.append(note)
         packet = {
-            "member": {k: member.get(k) for k in ("member_id", "name", "room", "presence", "inactivity_alert", "watch_id")},
+            "member": {k: member.get(k) for k in (
+                "member_id", "name", "room", "presence", "inactivity_alert",
+                "watch_id", "watch_on_wrist")},
             "knox_health_consent": bool(self.state.consent.get(member_id or "")),
             "vitals": {
                 "band": vitals.get("band"),

@@ -21,17 +21,17 @@ DEMO_VITALS: Dict[str, Dict[str, Any]] = {
         "watch_id": "watch-mum",
         "member_id": "member-mum",
         "online": True,
-        "heart_rate_bpm": 74,
+        "on_wrist": False,
+        "heart_rate_bpm": None,
         "baseline_bpm": 70,
-        "hrv_ms": 42,
-        "spo2": 98,
-        "band": "normal",
+        "band": "off_wrist",
         "source": "galaxy_watch",
     },
     "watch-dad": {
         "watch_id": "watch-dad",
         "member_id": "member-dad",
         "online": True,
+        "on_wrist": True,
         "heart_rate_bpm": 118,
         "baseline_bpm": 72,
         "hrv_ms": 18,
@@ -72,6 +72,16 @@ class MockGalaxyWatchAdapter(GalaxyWatchAdapter):
         payload["status"] = "ok"
         payload["simulated"] = True
         payload["knox_protected"] = True
+        if rec.get("on_wrist") is False:
+            payload["heart_rate_bpm"] = None
+            payload["hrv_ms"] = None
+            payload["spo2"] = None
+            payload["band"] = "off_wrist"
+            payload["instruction"] = (
+                "The Galaxy Watch is off-wrist. Do not invent a heart rate. "
+                "Say that plainly and offer a caregiver text or inactivity context."
+            )
+            return payload
         payload["instruction"] = (
             "Report the band (normal or elevated) and the heart rate the Watch returned. "
             "Do not invent a diagnosis. Do not call emergency services unless the user asked."
