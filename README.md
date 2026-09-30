@@ -280,7 +280,8 @@ idempotency ledger as the benchmark.
 
 ```bash
 python -m duet_voice.appliance.demo    # no GPU; mock household + mock service
-export DUET_USE_CASE=appliance         # live voice, same tools
+python -m duet_voice.chat --use-case appliance   # typed; real thinker + appliance tools
+export DUET_USE_CASE=appliance         # live voice, same tools (same shell)
 python -m duet_voice.agent console
 ```
 
@@ -310,6 +311,7 @@ Watch, Knox and SMS are mocked unless an authorized https backend is configured.
 
 ```bash
 python -m duet_voice.family.demo     # no GPU
+python -m duet_voice.chat --use-case family
 export DUET_USE_CASE=family
 python -m duet_voice.agent console
 ```

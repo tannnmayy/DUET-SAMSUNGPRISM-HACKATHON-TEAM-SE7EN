@@ -7,7 +7,7 @@ benchmark run as its default, so a re-run with no environment set reproduces it.
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 
 
 def _env(name: str, default: str) -> str:
@@ -128,3 +128,16 @@ class Config:
 
 
 CONFIG = Config()
+
+
+def reload() -> Config:
+    """Re-read the environment into the process-wide CONFIG singleton.
+
+    `from duet_voice.config import CONFIG` keeps the same object, so callers
+    that already imported it see the new values. Used by the text chat when
+    `--use-case` is passed after import.
+    """
+    fresh = Config()
+    for item in fields(fresh):
+        object.__setattr__(CONFIG, item.name, getattr(fresh, item.name))
+    return CONFIG

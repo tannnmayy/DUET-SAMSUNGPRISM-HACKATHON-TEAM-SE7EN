@@ -114,13 +114,23 @@ observations. The customer should not have to repeat the problem.
 ## Setup
 
 ```bash
-# Scripted demo (no GPU, mock household and mock service)
+# Scripted demo (no GPU, no language model, mock household and mock service)
 python -m duet_voice.appliance.demo
 
+# Typed chat with the real thinker (same tools). Without --use-case appliance
+# the process loads FDB-v3 and a washer UE line becomes flight_search.
+python -m duet_voice.chat --use-case appliance
+python -m duet_voice.chat --use-case appliance --once "My Samsung washing machine is showing a UE error"
+
 # Live voice, same tools (needs the usual local model server)
-export DUET_USE_CASE=appliance
+export DUET_USE_CASE=appliance          # bash / zsh, same shell
+set DUET_USE_CASE=appliance             # Windows cmd
+$env:DUET_USE_CASE="appliance"          # Windows PowerShell
 python -m duet_voice.agent console
 ```
+
+The process prints `use_case=appliance` and `list_appliances` at start. If you
+see `flight_search`, the appliance flag was not set.
 
 Optional:
 

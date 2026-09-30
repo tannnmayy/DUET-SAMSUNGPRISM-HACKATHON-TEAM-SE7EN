@@ -4,6 +4,10 @@
     python -m duet_voice.agent dev        # same, with auto-reload
     python -m duet_voice.agent console    # talk to it with your own mic and speakers
 
+Default tools are FDB-v3 (flights, restaurants, …). Appliance care needs
+`DUET_USE_CASE=appliance` in the same shell, before this process starts.
+Typed testing: `python -m duet_voice.chat --use-case appliance`.
+
 LiveKit is the ears and the mouth: audio transport, Silero VAD, speech
 recognition, end-of-turn detection, text-to-speech, and barge-in. The brain is
 DUET's own, and it has two minds:
@@ -418,6 +422,12 @@ async def entrypoint(ctx: JobContext) -> None:
     toolbox = make_toolbox(room, coord)
     if hasattr(toolbox, "_trace"):
         toolbox._trace = trace
+    names = [s["name"] for s in getattr(toolbox, "specs", [])]
+    log.info("DUET use_case=%s tools=%s", CONFIG.use_case, ",".join(names))
+    print("DUET ready  use_case=%s  tools=%s" % (
+        CONFIG.use_case, ", ".join(names[:8]) + ("…" if len(names) > 8 else "")), flush=True)
+    if CONFIG.use_case == "benchmark":
+        print("FDB-v3 tools (flight_search, …). Washer/UE needs DUET_USE_CASE=appliance.", flush=True)
     agent = DuetAgent(trace, coord, toolbox)
 
     session = AgentSession(

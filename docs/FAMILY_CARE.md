@@ -74,6 +74,7 @@ Tokens, phones and vitals are redacted in traces. Member ids stay visible.
 
 ```bash
 python -m duet_voice.family.demo     # no GPU; mock household, Knox, Watch, texts
+python -m duet_voice.chat --use-case family
 export DUET_USE_CASE=family          # live voice, same tools, faster-whisper
 python -m duet_voice.agent console
 ```

@@ -161,3 +161,59 @@ def test_error_code_change_replans_from_new_diagnostics():
     assert status["error_code"] == "5E"
     assert steps["status"] == "ok" and steps["error_code"] == "5E"
     assert "drain" in steps["problem"].lower()
+
+
+def test_reload_picks_up_appliance_use_case(monkeypatch):
+    monkeypatch.setenv("DUET_USE_CASE", "appliance")
+    config.reload()
+    try:
+        assert config.CONFIG.use_case == "appliance"
+        assert use_case.is_appliance() is True
+        assert use_case.tool_specs() is APPLIANCE_SPECS
+        box = use_case.make_toolbox("care", Coordinator(commit_hold_s=0.0))
+        assert box.specs[0]["name"] == "list_appliances"
+    finally:
+        monkeypatch.delenv("DUET_USE_CASE", raising=False)
+        config.reload()
+    assert config.CONFIG.use_case == "benchmark"
+    assert use_case.is_appliance() is False
+
+
+def test_chat_banner_warns_when_benchmark_tools_are_loaded():
+    from duet_voice.chat import banner
+    text = banner("benchmark", ["flight_search", "book_flight"], "local")
+    assert "flight_search" in text
+    assert "--use-case appliance" in text
+    appliance = banner("appliance", ["list_appliances", "get_appliance_status"], "gemini")
+    assert "list_appliances" in appliance
+    assert "flight_search" not in appliance
+
+
+def test_chat_turn_uses_appliance_tools_not_flights():
+    from duet_voice.chat import run_turn
+    from duet_voice.prompts import APPLIANCE_THINKER_INSTRUCTIONS
+
+    box, coord, *_ = make_box()
+    th = LocalThinker(model="qwen-test", tool_specs=APPLIANCE_SPECS,
+                      instructions=APPLIANCE_THINKER_INSTRUCTIONS)
+    script = [
+        reply(calls=[("list_appliances", {"query": "washer"}),
+                     ("get_appliance_status", {"device_id": "st-washer-laundry"})]),
+        reply("The washer is reporting an unbalanced load, error UE."),
+    ]
+
+    async def fake_create(messages, tools):
+        names = [t["function"]["name"] for t in tools]
+        assert "list_appliances" in names
+        assert "flight_search" not in names
+        return script.pop(0)
+
+    th._create = fake_create
+    lines = asyncio.run(run_turn(
+        "My Samsung washing machine is showing a UE error",
+        coord=coord, toolbox=box, thinker=th))
+    joined = "\n".join(lines)
+    assert "list_appliances" in joined
+    assert "flight_search" not in joined
+    assert "unbalanced" in joined.lower() or "UE" in joined
+    assert box.state.selected_device_id == "st-washer-laundry"
