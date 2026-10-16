@@ -100,9 +100,12 @@ def test_sampling_is_googles_recommendation_for_gemma_with_a_fixed_seed(monkeypa
     assert gemma_api.sampling("gemma-4-26b-a4b-it")["temperature"] == 0.3
 
 
-def test_gemma_gets_no_thinking_setting_because_the_api_refuses_one():
+def test_gemma_gets_only_the_thinking_setting_the_api_accepts():
     from duet_voice.gemma_api import thinking_config
-    assert thinking_config("gemma-4-26b-a4b-it", "low") is None
+    assert thinking_config("gemma-4-26b-a4b-it", "") is None          # the benchmark sends nothing
+    assert thinking_config("gemma-4-26b-a4b-it", "low") is None       # the API refuses it
+    tc = thinking_config("gemma-4-26b-a4b-it", "minimal")
+    assert tc is not None and str(tc.thinking_level).lower().endswith("minimal")
 
 
 def test_a_model_not_served_falls_back_to_the_other_gemma_but_a_rate_limit_does_not(monkeypatch):

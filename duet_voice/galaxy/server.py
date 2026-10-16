@@ -39,7 +39,7 @@ def token(query) -> dict:
     mode = query.get("mode", "assistant")
     mode = mode if mode in MODES else "assistant"
     room = "duet-%s-%s" % (mode, secrets.token_hex(3))
-    meta = {"mode": mode, "user_name": _clip(query.get("name"), 40),
+    meta = {"mode": mode, "user_name": _clip(query.get("name"), 40), "city": _clip(query.get("city"), 60),
             "device": _clip(query.get("device"), 80), "contacts": _clip(query.get("contacts"), 300)}
     identity = "galaxy-" + secrets.token_hex(3)
     jwt = (api.AccessToken(key, secret)

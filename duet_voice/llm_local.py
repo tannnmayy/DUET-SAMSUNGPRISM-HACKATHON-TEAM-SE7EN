@@ -34,13 +34,14 @@ _clients: Dict[int, Any] = {}
 _clients_lock = threading.Lock()
 
 
-def client():
+def client(base_url: Optional[str] = None):
     from openai import AsyncOpenAI
-    key = id(asyncio.get_running_loop())
+    url = base_url or CONFIG.llm_base_url
+    key = (id(asyncio.get_running_loop()), url)
     with _clients_lock:
         if key not in _clients:
             _clients[key] = AsyncOpenAI(
-                base_url=CONFIG.llm_base_url,
+                base_url=url,
                 api_key=os.environ.get("DUET_LLM_API_KEY", "local"),
                 timeout=float(os.environ.get("DUET_LLM_TIMEOUT_S", "60")),
                 max_retries=2)
@@ -123,7 +124,9 @@ class LocalThinker:
 
     def __init__(self, model: Optional[str] = None, thinking: Optional[str] = None,
                  specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None,
-                 review: Optional[str] = None) -> None:
+                 review: Optional[str] = None, base_url: Optional[str] = None,
+                 sampler: Optional[Dict[str, Any]] = None, escalate: Optional[set] = None,
+                 note_role: str = "user", vet=None, one_step: bool = False) -> None:
         self.model = model or CONFIG.thinker_model
         self.thinking = "none (non-thinking model)"
         # the benchmark's twelve tools and instructions unless a use case brings its own
@@ -134,20 +137,38 @@ class LocalThinker:
         # the model checks its draft against the tool results and calls what is missing.
         # Safe because the ledger never runs an action twice.
         self.review = review
+        # the phone app's fast mind: its own server and sampling, and tools that hand the request
+        # to the cloud mind (calling one runs nothing: the run ends with an "escalate" event)
+        self.base_url = base_url
+        self.sampler = sampler
+        self.escalate = escalate or set()
+        # where the turn's note (the time, what was already done) goes. "user" appends it to the
+        # user's words (the default); "system" keeps it out of them: a small model read
+        # "Now: Friday 23:50" in the user turn as a request for a 23:50 alarm (16 Oct 2026)
+        self.note_role = note_role
+        # vet(tool, args) -> a reason to hand the request on, or "": checks the first step's
+        # calls before any of them runs; one_step: act once, then stop (no second model call)
+        self.vet = vet
+        self.one_step = one_step
         # completed exchanges only, as chat messages; an interrupted turn never lands here
         self.history: List[Dict[str, Any]] = []
 
     async def _create(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]):
-        return await client().chat.completions.create(
+        return await client(self.base_url).chat.completions.create(
             model=self.model, messages=messages, tools=tools, tool_choice="auto",
-            max_tokens=1024, **sampling())
+            max_tokens=1024, **(self.sampler or sampling()))
 
     async def run(self, text: str, toolbox, audio=None, note: str = "",
                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         # (audio is ignored: this model reads text only)
         start_epoch = toolbox.coord.epoch
-        user = {"role": "user", "content": text + ("\n\n" + note if note else "")}
-        prefix = [{"role": "system", "content": self.instructions}] + list(self.history) + [user]
+        if self.note_role == "system":
+            user = {"role": "user", "content": text}
+            system = self.instructions + ("\n\nCONTEXT FROM THE PHONE (not the user's words)\n" + note if note else "")
+        else:
+            user = {"role": "user", "content": text + ("\n\n" + note if note else "")}
+            system = self.instructions
+        prefix = [{"role": "system", "content": system}] + list(self.history) + [user]
         messages = list(prefix)
         final_text = ""
         draft, review_at = "", None
@@ -180,6 +201,30 @@ class LocalThinker:
                 if calls or content or attempt == 2:
                     break
                 log.warning("thinker step %d: empty reply, asking again", step)
+            handoff = [c for c in calls if c["name"] in self.escalate]
+            if handoff:
+                # Hand the request on before anything else in this step runs: whatever the fast
+                # mind planned next to the hand-off is the cloud mind's to decide.
+                try:
+                    why = json.loads(handoff[0]["arguments"] or "{}").get("reason", "")
+                except (ValueError, AttributeError):
+                    why = ""
+                yield ThinkEvent("escalate", text=str(why), usage=usage)
+                return
+            if self.vet is not None and step == 1:
+                # the fast mind's plan is checked before anything runs; a call that fails the
+                # check hands the whole request on (the cloud mind can still do it)
+                for c in calls:
+                    if c["name"] == KEEP_LISTENING:
+                        continue
+                    try:
+                        a = json.loads(c["arguments"] or "{}")
+                    except ValueError:
+                        a = {}
+                    why = self.vet(c["name"], a if isinstance(a, dict) else {})
+                    if why:
+                        yield ThinkEvent("escalate", text=why, usage=usage)
+                        return
             listens = [c for c in calls if c["name"] == KEEP_LISTENING]
             real = [c for c in calls if c["name"] != KEEP_LISTENING]
             if listens and not real and step == 1:
@@ -217,6 +262,7 @@ class LocalThinker:
                 else:
                     final_text = _OK_TAIL.sub("", content).strip() if review_at is not None else content
                 break
+            outcomes: List[str] = []
             for c in calls:  # every call gets a response, in order
                 if c["name"] == KEEP_LISTENING:
                     messages.append({"role": "tool", "tool_call_id": c["id"], "content": json.dumps(
@@ -235,9 +281,20 @@ class LocalThinker:
                 if toolbox.coord.overtaken(start_epoch):
                     raise Superseded()  # the user's words changed: this plan is void
                 parsed = json.loads(out)
-                yield ThinkEvent("tool_done", name=c["name"], args=args,
-                                 outcome=str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok")
+                outcome = str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok"
+                yield ThinkEvent("tool_done", name=c["name"], args=args, outcome=outcome)
                 messages.append({"role": "tool", "tool_call_id": c["id"], "content": out})
+                outcomes.append(outcome)
+            if self.one_step:
+                # The fast mind acts in one step: its actions were confirmed aloud from the phone's
+                # replies, so there is nothing left to say. Anything that did not simply succeed
+                # (held back, refused, failed) is handed on to be explained.
+                if all(o == "ok" for o in outcomes):
+                    final_text = "<silent>"
+                    break
+                yield ThinkEvent("escalate", text="the phone did not simply do it (%s)" % ", ".join(outcomes),
+                                 usage=usage)
+                return
         # A reply planned during a pause only counts once the turn really closed.
         await toolbox.coord.wait_committed(start_epoch)
         self.history = list(self.history) + [user] + messages[len(prefix):]

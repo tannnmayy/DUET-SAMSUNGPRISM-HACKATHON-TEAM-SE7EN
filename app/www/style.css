@@ -141,6 +141,7 @@ input:focus, textarea:focus { border-color: var(--accent); outline: none; }
 .moment.t-drop { background: var(--warn-soft); color: var(--warn); }
 .moment.t-cached { background: var(--hold-soft); color: var(--hold); }
 .moment.t-fail { background: var(--bad-soft); color: var(--bad); }
+.moment.t-undo { background: var(--hold-soft); color: var(--hold); }
 .moment.t-plan, .moment.t-listen { background: var(--accent-soft); color: var(--accent); }
 
 .chat { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 46vh; overflow-y: auto; }
@@ -170,6 +171,10 @@ input:focus, textarea:focus { border-color: var(--accent); outline: none; }
 .timeline .t-cached { background: var(--hold-soft); }
 .timeline .t-cached i { background: var(--hold); color: #fff; }
 .timeline .t-fail { background: var(--bad-soft); }
+.timeline .t-undo { background: var(--hold-soft); }
+.timeline .t-undo i { background: var(--hold); color: #fff; }
+.timeline .t-route { background: var(--surface-2); }
+.timeline .t-route i { background: var(--accent); color: var(--accent-ink, #fff); }
 .timeline .t-fail i { background: var(--bad); color: #fff; }
 .timeline .t-listen i { background: var(--accent); color: #fff; }
 .timeline .t-say i { background: var(--surface); color: var(--ink); }
@@ -230,3 +235,10 @@ body.embed .card { padding: 14px; }
 body.embed .bar { padding: 2px 0 8px; }
 body.embed .icon-btn { width: 42px; height: 42px; }
 body.embed::-webkit-scrollbar { display: none; }
+
+/* the phone self-test (Settings) */
+.selftest { list-style: none; padding: 0; margin: 8px 0 14px; font-size: 13.5px; }
+.selftest li { padding: 6px 10px; border-radius: 10px; margin-bottom: 4px; background: var(--surface-2); }
+.selftest li.ok { color: var(--ok); }
+.selftest li.bad { color: var(--bad); background: var(--bad-soft); }
+.selftest small { color: var(--muted); display: block; word-break: break-word; }

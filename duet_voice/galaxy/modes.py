@@ -107,6 +107,44 @@ MESSAGE = {
                         "text": {**S, "description": "The message, in the user's words, first person."}},
                        ["to", "text"])}
 
+TORCH = {
+    "name": "set_torch", "kind": "write", "repeatable": True,
+    "description": "Switch the phone's torch (flashlight) on or off.",
+    "parameters": _obj({"on": {**B, "description": "true to switch it on, false to switch it off."}}, ["on"])}
+MEDIA = {
+    "name": "control_media", "kind": "write", "repeatable": True,
+    "description": "Play, pause or skip whatever is playing on the phone (music, podcasts, videos).",
+    "parameters": _obj({"action": {**S, "enum": ["play", "pause", "next", "previous"]}}, ["action"])}
+VOLUME = {
+    "name": "set_volume", "kind": "write", "repeatable": True,
+    "description": "Set the phone's media volume.",
+    "parameters": _obj({"percent": {**I, "description": "The new media volume as a percentage."}}, ["percent"])}
+EVENT = {
+    "name": "create_event", "kind": "write", "group": "event", "target": ["title", "date", "time"],
+    "description": "Add an event to the phone's calendar.",
+    "parameters": _obj({
+        "title": {**S, "description": "What the event is, in the user's words, e.g. 'dentist'."},
+        "date": {**S, "description": "YYYY-MM-DD, worked out from the current date in the note."},
+        "time": TIME,
+        "minutes": {**I, "description": "How long it lasts; 60 when the user does not say."}},
+        ["title", "date", "time"])}
+
+# --- run by DUET itself, not the phone (duet_voice/galaxy/server_tools.py) ---------------------
+
+WEATHER = {
+    "name": "get_weather", "kind": "read", "runs": "server",
+    "description": "The weather now and the forecast for a day in the next week, for a town or city.",
+    "parameters": _obj({
+        "place": {**S, "description": "The town or city. The user's own city (in the note) when they do not say."},
+        "day": {**S, "description": "'today', 'tomorrow', a weekday or YYYY-MM-DD; 'today' when not said."}},
+        ["place"])}
+WEB = {
+    "name": "web_search", "kind": "read", "runs": "server", "timeout": 25,
+    "description": "Look something up on the web: news, facts, sports results, opening hours, prices, anything "
+                   "the phone and the other tools cannot tell you. Returns a short answer and its sources.",
+    "parameters": _obj({"question": {**S, "description": "The question, complete and self-contained."}},
+                       ["question"])}
+
 # --- the home (simulated SmartThings-style devices in the app) ------------------------------
 
 HOME_STATUS = {
@@ -206,10 +244,17 @@ it, undo it with the matching tool first, then do what they want now: every acti
 tool call, and your answer names only what the tool results confirm.
 - Never say something is done unless its tool result says so. If a result says needs_permission, \
 tell the user in one sentence what to allow on the screen (the app shows the button).
+- The moment an action that changes something is done (an alarm, a setting, a call, a message, a \
+device, the route), the phone has already said so in a few words ("Alarm set for 7 in the \
+morning."). Do not repeat that: say only what is still worth saying, or reply exactly <silent> if \
+nothing is.
 - If a step fails, say so plainly and what they can do next; do not retry something that changes \
 things.
 - If a tool reports not_executed, the user is still talking: stop and wait.
 - If the words are not meant for you (background talk, noise), reply exactly <silent>.
+- For anything about the world (weather, news, facts, places, opening hours), use get_weather or \
+web_search; never answer it from memory. Say only what the result says, and name the source if the user \
+asks where it came from.
 """
 
 SPEAKING = """\
@@ -318,7 +363,8 @@ MODES: Dict[str, Dict[str, Any]] = {
     "assistant": {
         "title": "Assistant",
         "tools": [SET_ALARM, CANCEL_ALARM, LIST_ALARMS, SET_TIMER, BATTERY, APP_USAGE, APPS, BRIGHTNESS,
-                  TIMEOUT, OPEN_SETTINGS, OPEN_APP, NAVIGATE, CALL, MESSAGE, HOME_STATUS, HOME_CONTROL],
+                  TIMEOUT, OPEN_SETTINGS, OPEN_APP, NAVIGATE, CALL, MESSAGE, HOME_STATUS, HOME_CONTROL,
+                  TORCH, MEDIA, VOLUME, EVENT, WEATHER, WEB],
         "thinker": ASSISTANT,
         "talker": TALKER_BASE.format(tone="Friendly and natural."),
         "greeting": "Hi, I'm DUET. What can I do on your phone?",
@@ -326,14 +372,15 @@ MODES: Dict[str, Dict[str, Any]] = {
     "care": {
         "title": "Care",
         "tools": [MEDS, LOG_MED, REMINDER, LIST_ALARMS, CALL, MESSAGE, ALERT, CHECKIN,
-                  HOME_STATUS, HOME_CONTROL],
+                  HOME_STATUS, HOME_CONTROL, EVENT, WEATHER],
         "thinker": CARE,
         "talker": TALKER_BASE.format(tone="Warm and gentle, like a kind neighbour."),
         "greeting": "Hello {name}, it's DUET. How are you feeling today?",
     },
     "drive": {
         "title": "Drive",
-        "tools": [TRIP, DESTINATION, STOP, HANDOFF, CLIMATE, MESSAGE, CALL, HOME_STATUS, HOME_CONTROL],
+        "tools": [TRIP, DESTINATION, STOP, HANDOFF, CLIMATE, MESSAGE, CALL, HOME_STATUS, HOME_CONTROL,
+                  MEDIA, VOLUME, WEATHER, WEB],
         "thinker": DRIVE,
         "talker": TALKER_BASE.format(tone="Calm and brief: the user is driving."),
         "greeting": "DUET here. Where are we heading?",

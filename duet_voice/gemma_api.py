@@ -319,6 +319,11 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
                              retry_delay(exc))
                 elif _transient(exc):
                     last = exc
+                    # A request the server answered with an error frees its booking: on a bad night
+                    # (16 Oct 2026) bursts of 500s kept every retry booked, and the budget this pool
+                    # keeps for itself ran dry while Google had refused nothing.
+                    if error_code(exc) is not None:
+                        p.settle(model, booking, 0)
                     log.info("gemma: %s on key %d failed (%s); asking again", model, i + 1, str(exc)[:80])
                     pause_until = time.monotonic() + 0.3 + random.random() * 0.4
                 else:
@@ -371,7 +376,13 @@ def sampling(model: str) -> dict:
 
 
 def thinking_config(model: str, level: str):
-    """Gemma 4 thinks on its own; the API refuses a thinking budget or level for it."""
+    """Gemma 4 reasons before it answers unless told otherwise. Google's API accepts one setting
+    for it, "minimal" (answer without the reasoning step: a simple phone action in about 1.6 s
+    instead of about 5 s, measured 16 Oct 2026). It refuses "low" and token budgets. Unset (the
+    benchmark's default), nothing is sent."""
+    if (level or "").strip().lower() == "minimal":
+        from google.genai import types
+        return types.ThinkingConfig(thinking_level="minimal")
     return None
 
 

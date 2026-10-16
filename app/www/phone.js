@@ -14,8 +14,8 @@
   "use strict";
 
   const cap = window.Capacitor;
-  const NATIVE = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
-  const Native = NATIVE ? cap.Plugins.DuetPhone : null;
+  const NATIVE_APP = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
+  const Native = NATIVE_APP ? cap.Plugins.DuetPhone : null;
   const listeners = new Set();
   const changed = (what) => listeners.forEach((fn) => { try { fn(what); } catch (e) { console.error(e); } });
 
@@ -47,6 +47,8 @@
         { name: "Atorvastatin 10 mg", for: "cholesterol", time: "22:00", taken: null },
       ],
       checkins: [],
+      events: [],               // calendar events added through DUET (the browser build)
+      volume: 60,
       alerts: [],
       trip: null,               // {destination, stops, totalKm, leftKm, startedAt, speedKmh}
       car: { ac: false, temp: 26, rangeKm: 212 },
@@ -75,6 +77,9 @@
     try { s = JSON.parse(localStorage.getItem("duet.settings") || "{}"); } catch (e) { s = {}; }
     return s;
   }
+  // Settings, "Simulate phone actions": the app's own simulation even on a phone (a failsafe for a
+  // demo: one tap turns off any real action that misbehaves on a particular device)
+  function isNative() { return NATIVE_APP && !settings().simulate; }
   function contacts() {
     return (settings().contacts || "").split("\n").map((line) => {
       const i = line.lastIndexOf(",");
@@ -98,6 +103,23 @@
     const list = contacts();
     if (!list.length) return null;
     return bestMatch(list, name, (c) => c.name) || null;
+  }
+  // The contacts typed in DUET's settings first (they say who is "my daughter"), then the phone's
+  // own address book when the user has allowed Contacts.
+  async function lookUpContact(name) {
+    const typed = findContact(name);
+    if (typed) return typed;
+    if (!isNative()) return null;
+    // the whole name first, then its words ("my sister Anita" finds "Anita Rao")
+    const tries = [name].concat(words(name).filter((w) => w.length >= 3 && !["the", "my", "please", "call", "text"].includes(w)));
+    for (const q of tries) {
+      try {
+        const r = await Native.findContacts({ query: q });
+        if (r.granted && r.contacts && r.contacts.length) return bestMatch(r.contacts, name, (c) => c.name) || r.contacts[0];
+        if (!r.granted) return null;
+      } catch (e) { return null; /* no address book: the typed list was the answer */ }
+    }
+    return null;
   }
 
   // ---------------------------------------------------------------- helpers
@@ -145,11 +167,11 @@
   T.set_alarm = async ({ time, label }) => {
     const p = parseTime(time);
     if (!p) return fail("not a time: " + time);
-    if (NATIVE) await Native.setAlarm({ hour: p.hour, minute: p.minute, label: label || "" });
+    if (isNative()) await Native.setAlarm({ hour: p.hour, minute: p.minute, label: label || "" });
     state.alarms = state.alarms.filter((a) => a.time !== p.text);
     state.alarms.push({ time: p.text, label: label || "", at: hhmm(new Date()) });
     save(); changed("alarms");
-    return ok({ alarm: spoken(p.text), where: NATIVE ? "Samsung Clock" : "Clock (simulated)" });
+    return ok({ alarm: spoken(p.text), where: isNative() ? "Samsung Clock" : "Clock (simulated)" });
   };
 
   T.cancel_alarm = async ({ time }) => {
@@ -157,38 +179,38 @@
     if (!p) return fail("not a time: " + time);
     const had = state.alarms.some((a) => a.time === p.text);
     let requested = false;
-    if (NATIVE) { try { requested = !!(await Native.dismissAlarm({ hour: p.hour, minute: p.minute })).requested; } catch (e) { requested = false; } }
+    if (isNative()) { try { requested = !!(await Native.dismissAlarm({ hour: p.hour, minute: p.minute })).requested; } catch (e) { requested = false; } }
     state.alarms = state.alarms.filter((a) => a.time !== p.text);
     save(); changed("alarms");
-    if (!had && !NATIVE) return ok({ cancelled: false, note: "there was no " + spoken(p.text) + " alarm, so nothing needed cancelling" });
-    return ok({ cancelled: spoken(p.text), note: NATIVE && !requested
+    if (!had && !isNative()) return ok({ cancelled: false, note: "there was no " + spoken(p.text) + " alarm, so nothing needed cancelling" });
+    return ok({ cancelled: spoken(p.text), note: isNative() && !requested
       ? "the Clock app did not confirm it; ask the user to check Clock" : undefined });
   };
 
   T.list_alarms = async () => {
     let next = null;
-    if (NATIVE) { try { next = (await Native.nextAlarm()).time || null; } catch (e) { next = null; } }
+    if (isNative()) { try { next = (await Native.nextAlarm()).time || null; } catch (e) { next = null; } }
     return ok({ set_by_duet: state.alarms.map((a) => spoken(a.time) + (a.label ? " (" + a.label + ")" : "")),
       phone_next_alarm: next });
   };
 
   T.set_timer = async ({ minutes: m, label }) => {
     const seconds = Math.max(1, Math.round(Number(m) * 60));
-    if (NATIVE) await Native.setTimer({ seconds, label: label || "" });
+    if (isNative()) await Native.setTimer({ seconds, label: label || "" });
     return ok({ timer_minutes: +(seconds / 60).toFixed(1), rings_at: hhmm(new Date(Date.now() + seconds * 1000)) });
   };
 
   async function usage(hours) {
-    if (!NATIVE) return { granted: true, apps: SIM.usage };
+    if (!isNative()) return { granted: true, apps: SIM.usage };
     return await Native.appUsage({ hours: hours || 24 });
   }
 
   T.get_battery_report = async () => {
-    const b = NATIVE ? await Native.batteryReport() : { ...SIM.battery };
+    const b = isNative() ? await Native.batteryReport() : { ...SIM.battery };
     const u = await usage(24);
     b.top_apps_today = u.granted ? (u.apps || []).slice(0, 5).map((a) => a.app + " " + a.minutes + " min" + (a.category ? " (" + a.category + ")" : ""))
       : "unknown: the user has not allowed usage access (open_settings usage_access)";
-    b.source = NATIVE ? "this phone" : "simulated phone (browser demo)";
+    b.source = isNative() ? "this phone" : "simulated phone (browser demo)";
     changed({ battery: b });
     return ok(b);
   };
@@ -200,13 +222,13 @@
   };
 
   T.list_installed_apps = async () => {
-    const apps = NATIVE ? (await Native.installedApps()).apps : SIM.apps;
+    const apps = isNative() ? (await Native.installedApps()).apps : SIM.apps;
     return ok({ count: apps.length, apps: apps.map((a) => a.name + (a.category ? " [" + a.category + "]" : "")) });
   };
 
   T.set_brightness = async ({ percent, adaptive }) => {
     if (percent == null && adaptive == null) return fail("give a percent or adaptive on/off");
-    if (NATIVE) {
+    if (isNative()) {
       const r = await Native.setBrightness({ percent: percent == null ? -1 : percent, adaptive: adaptive == null ? null : !!adaptive });
       if (!r.granted) return needs("modify_system_settings", "Ask the user to allow 'Modify system settings' for DUET; DUET's settings has the button.");
     } else {
@@ -217,7 +239,7 @@
   };
 
   T.set_screen_timeout = async ({ seconds }) => {
-    if (NATIVE) {
+    if (isNative()) {
       const r = await Native.setScreenTimeout({ seconds });
       if (!r.granted) return needs("modify_system_settings", "Ask the user to allow 'Modify system settings' for DUET.");
     } else SIM.battery.screen_timeout_s = seconds;
@@ -225,13 +247,13 @@
   };
 
   T.open_settings = async ({ page }) => {
-    if (NATIVE) await Native.openSettings({ page });
+    if (isNative()) await Native.openSettings({ page });
     else toast("Opening " + page.replace(/_/g, " ") + " settings (simulated)");
     return ok({ opened: page });
   };
 
   T.open_app = async ({ name }) => {
-    if (NATIVE) {
+    if (isNative()) {
       const r = await Native.openApp({ name });
       return r.opened ? ok({ opened: r.opened }) : fail("no app called " + name + " on this phone");
     }
@@ -242,17 +264,17 @@
   };
 
   T.navigate_to = async ({ destination, mode }) => {
-    if (NATIVE) await Native.navigate({ destination, mode: mode || "driving" });
+    if (isNative()) await Native.navigate({ destination, mode: mode || "driving" });
     else window.open("https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination), "_blank");
     return ok({ navigating_to: destination, app: "Google Maps",
       note: "DUET stops listening while Google Maps is on screen; the user comes back to DUET to talk again" });
   };
 
   T.call_contact = async ({ name }) => {
-    const c = findContact(name);
+    const c = await lookUpContact(name);
     if (!c) return fail("no saved contact matches '" + name + "'", { saved: contacts().map((x) => x.name) });
     const direct = !!settings().direct;
-    if (NATIVE) {
+    if (isNative()) {
       const r = await Native.call({ number: c.number, direct });
       return ok({ calling: c.name, state: r.direct ? "ringing" : "the dialer is open; the user taps call",
         note: "nothing is known yet about the conversation itself" });
@@ -262,16 +284,103 @@
   };
 
   T.send_message = async ({ to, text }) => {
-    const c = findContact(to);
+    const c = await lookUpContact(to);
     if (!c) return fail("no saved contact matches '" + to + "'", { saved: contacts().map((x) => x.name) });
     const direct = !!settings().direct;
-    if (NATIVE) {
+    if (isNative()) {
       const r = await Native.sms({ number: c.number, text, direct });
       return ok({ to: c.name, text, how: r.sent ? "sent" : "Messages is open with the text; the user taps send" });
     }
     toast("Message to " + c.name + ": " + text);
     return ok({ to: c.name, text, how: "sent (simulated)" });
   };
+
+  // ------------------------------------------------ torch, media, volume, calendar
+  T.set_torch = async ({ on }) => {
+    const want = on === true || on === "true";
+    if (isNative()) {
+      const r = await Native.torch({ on: want });
+      if (!r.ok) return fail(r.error || "this phone has no torch");
+    } else toast("Torch " + (want ? "on" : "off") + " (simulated)");
+    return ok({ torch: want ? "on" : "off" });
+  };
+
+  T.control_media = async ({ action }) => {
+    if (!["play", "pause", "next", "previous"].includes(action)) return fail("unknown media action " + action);
+    if (isNative()) await Native.mediaKey({ action });
+    else toast("Media: " + action + " (simulated)");
+    return ok({ media: action });
+  };
+
+  T.set_volume = async ({ percent }) => {
+    const p = Math.round(Number(percent));
+    if (!isFinite(p)) return fail("give the volume as a percent");
+    const want = Math.max(0, Math.min(100, p));
+    if (isNative()) {
+      const r = await Native.setVolume({ percent: want });
+      if (r.percent < 0) return fail(r.error || "the phone did not allow the volume change");
+      return ok({ volume_percent: r.percent });
+    }
+    state.volume = want; save();
+    return ok({ volume_percent: want });
+  };
+
+  T.create_event = async ({ title, date, time, minutes }) => {
+    const p = parseTime(time);
+    if (!p) return fail("not a time: " + time);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ""))) return fail("not a date (YYYY-MM-DD): " + date);
+    const start = new Date(date + "T" + p.text + ":00");
+    if (isNaN(start.getTime())) return fail("not a date: " + date);
+    const end = new Date(start.getTime() + (Number(minutes) > 0 ? Number(minutes) : 60) * 60000);
+    if (isNative()) {
+      const r = await Native.addEvent({ title: String(title || "Event"), start: start.getTime(), end: end.getTime() });
+      if (!r.granted) return needs("calendar", "Ask the user to allow Calendar for DUET; the button is in DUET's settings.");
+      if (!r.added) return fail(r.error || "the calendar did not accept the event");
+    }
+    state.events = (state.events || []).concat([{ title: String(title || "Event"), date, time: p.text }]);
+    save(); changed("events");
+    return ok({ event: title, date, time: spoken(p.text), where: isNative() ? "the phone's calendar" : "Calendar (simulated)" });
+  };
+
+  // ------------------------------------------------ the self-test (Settings, or from a laptop)
+  // Every real action the phone can take, tried safely: what it changes, it puts back. On a new
+  // device, one tap shows which actions work before anyone talks to DUET.
+  async function selfTest() {
+    const out = [];
+    async function step(name, fn) {
+      const t0 = Date.now();
+      try {
+        const r = await fn();
+        const okay = r && r.status !== "error" && r.status !== "needs_permission";
+        out.push({ name, ok: !!okay, ms: Date.now() - t0, detail: JSON.stringify(r).slice(0, 160) });
+      } catch (e) {
+        out.push({ name, ok: false, ms: Date.now() - t0, detail: String((e && e.message) || e).slice(0, 160) });
+      }
+    }
+    await step("battery and screen readings", () => T.get_battery_report({}));
+    await step("installed apps", () => T.list_installed_apps({}));
+    await step("screen time per app", () => T.get_app_usage({ hours: 24 }));
+    const b = isNative() ? await Native.batteryReport().catch(() => ({})) : SIM.battery;
+    if (b.brightness_percent != null) {
+      await step("brightness (set to its current value)", () => T.set_brightness({ percent: b.brightness_percent }));
+    }
+    await step("alarm: set 23:58", () => T.set_alarm({ time: "23:58", label: "DUET self-test" }));
+    await step("alarm: cancel 23:58", () => T.cancel_alarm({ time: "23:58" }));
+    await step("next alarm", () => T.list_alarms({}));
+    await step("torch on", () => T.set_torch({ on: true }));
+    await new Promise((r) => setTimeout(r, 600));
+    await step("torch off", () => T.set_torch({ on: false }));
+    if (isNative()) {
+      await step("media volume (read)", async () => ({ status: "ok", ...(await Native.volume()) }));
+      await step("contacts", async () => {
+        const r = await Native.findContacts({ query: "a" });
+        return r.granted ? { status: "ok", found: (r.contacts || []).length } : { status: "needs_permission" };
+      });
+      await step("permissions", async () => ({ status: "ok", ...(await Native.permissions()) }));
+    }
+    return { device: isNative() ? "this phone" : "simulated phone", results: out,
+      passed: out.filter((x) => x.ok).length, total: out.length };
+  }
 
   // ------------------------------------------------ home (simulated SmartThings)
   function describe(d) {
@@ -359,7 +468,7 @@
     const fam = contacts();
     state.alerts.push({ at: hhmm(new Date()), reason });
     save(); changed("alerts");
-    if (settings().direct && NATIVE && fam.length) {
+    if (settings().direct && isNative() && fam.length) {
       for (const c of fam) {
         try { await Native.sms({ number: c.number, text: "DUET alert from " + (settings().name || "your family member") + ": " + reason, direct: true }); } catch (e) { /* next */ }
       }
@@ -452,7 +561,7 @@
   function toast(text) { if (window.DuetUI) window.DuetUI.toast(text); }
 
   window.DuetPhone = {
-    NATIVE, run, reset, settings, contacts, skipAhead, tripView, describe, spoken,
+    NATIVE: NATIVE_APP, get acting() { return isNative(); }, selfTest, run, reset, settings, contacts, skipAhead, tripView, describe, spoken,
     get state() { return state; },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     native: Native,

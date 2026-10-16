@@ -9,7 +9,16 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
+import android.provider.CalendarContract;
+import android.provider.ContactsContract;
+import android.view.KeyEvent;
+import androidx.core.content.ContextCompat;
+import java.util.TimeZone;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
@@ -61,6 +70,9 @@ import java.util.Set;
     permissions = {
         @Permission(alias = "call", strings = { Manifest.permission.CALL_PHONE }),
         @Permission(alias = "sms", strings = { Manifest.permission.SEND_SMS }),
+        @Permission(alias = "contacts", strings = { Manifest.permission.READ_CONTACTS }),
+        @Permission(alias = "calendar", strings = { Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR }),
+        @Permission(alias = "notifications", strings = { Manifest.permission.POST_NOTIFICATIONS }),
     }
 )
 public class DuetPhonePlugin extends Plugin {
@@ -439,6 +451,164 @@ public class DuetPhonePlugin extends Plugin {
         call.resolve(new JSObject().put("sent", false));
     }
 
+    // ------------------------------------------------------------------ torch, media, volume
+
+    @PluginMethod
+    public void torch(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", false));
+        try {
+            CameraManager cm = (CameraManager) ctx().getSystemService(Context.CAMERA_SERVICE);
+            String id = null;
+            for (String cid : cm.getCameraIdList()) {
+                CameraCharacteristics c = cm.getCameraCharacteristics(cid);
+                Boolean flash = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+                Integer facing = c.get(CameraCharacteristics.LENS_FACING);
+                if (Boolean.TRUE.equals(flash) && (id == null || (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK))) {
+                    id = cid;
+                }
+            }
+            if (id == null) {
+                call.resolve(new JSObject().put("ok", false).put("error", "this phone has no torch"));
+                return;
+            }
+            cm.setTorchMode(id, on);
+            call.resolve(new JSObject().put("ok", true).put("on", on));
+        } catch (Exception e) {   // the camera is busy, or the phone refuses: reported, never thrown
+            call.resolve(new JSObject().put("ok", false).put("error", "the torch is not available: " + e.getMessage()));
+        }
+    }
+
+    @PluginMethod
+    public void mediaKey(PluginCall call) {
+        String action = call.getString("action", "pause");
+        int code;
+        switch (action == null ? "" : action) {
+            case "play": code = KeyEvent.KEYCODE_MEDIA_PLAY; break;
+            case "next": code = KeyEvent.KEYCODE_MEDIA_NEXT; break;
+            case "previous": code = KeyEvent.KEYCODE_MEDIA_PREVIOUS; break;
+            default: code = KeyEvent.KEYCODE_MEDIA_PAUSE;
+        }
+        AudioManager am = (AudioManager) ctx().getSystemService(Context.AUDIO_SERVICE);
+        am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
+        am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
+        call.resolve(new JSObject().put("sent", action));
+    }
+
+    private int musicPercent(AudioManager am) {
+        int max = Math.max(1, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+        return Math.round(am.getStreamVolume(AudioManager.STREAM_MUSIC) * 100f / max);
+    }
+
+    @PluginMethod
+    public void volume(PluginCall call) {
+        AudioManager am = (AudioManager) ctx().getSystemService(Context.AUDIO_SERVICE);
+        call.resolve(new JSObject().put("percent", musicPercent(am)));
+    }
+
+    @PluginMethod
+    public void setVolume(PluginCall call) {
+        AudioManager am = (AudioManager) ctx().getSystemService(Context.AUDIO_SERVICE);
+        int max = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int p = Math.max(0, Math.min(100, call.getInt("percent", 50)));
+        try {
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, Math.round(max * p / 100f), AudioManager.FLAG_SHOW_UI);
+        } catch (SecurityException e) {   // Do Not Disturb can refuse volume changes
+            call.resolve(new JSObject().put("percent", -1).put("error", "the phone did not allow the volume change"));
+            return;
+        }
+        call.resolve(new JSObject().put("percent", musicPercent(am)));
+    }
+
+    // ------------------------------------------------------------------ calendar and contacts
+
+    @PluginMethod
+    public void addEvent(PluginCall call) {
+        if (getPermissionState("calendar") != PermissionState.GRANTED) {
+            call.resolve(new JSObject().put("granted", false));
+            return;
+        }
+        Long start = call.getLong("start");
+        Long end = call.getLong("end");
+        String title = call.getString("title", "Event");
+        if (start == null || end == null) {
+            call.resolve(new JSObject().put("granted", true).put("added", false).put("error", "no start or end time"));
+            return;
+        }
+        ContentResolver cr = ctx().getContentResolver();
+        long calendarId = -1;
+        String[] cols = { CalendarContract.Calendars._ID, CalendarContract.Calendars.IS_PRIMARY,
+                          CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL };
+        try (Cursor c = cr.query(CalendarContract.Calendars.CONTENT_URI, cols,
+                                 CalendarContract.Calendars.VISIBLE + "=1", null, null)) {
+            while (c != null && c.moveToNext()) {
+                if (c.getInt(2) < CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR) continue;
+                boolean primary = c.getInt(1) == 1;
+                if (calendarId < 0 || primary) calendarId = c.getLong(0);
+                if (primary) break;
+            }
+        } catch (Exception e) {
+            call.resolve(new JSObject().put("granted", true).put("added", false).put("error", "calendar: " + e.getMessage()));
+            return;
+        }
+        if (calendarId < 0) {
+            call.resolve(new JSObject().put("granted", true).put("added", false)
+                .put("error", "no calendar on this phone accepts new events"));
+            return;
+        }
+        ContentValues v = new ContentValues();
+        v.put(CalendarContract.Events.CALENDAR_ID, calendarId);
+        v.put(CalendarContract.Events.TITLE, title);
+        v.put(CalendarContract.Events.DTSTART, start);
+        v.put(CalendarContract.Events.DTEND, end);
+        v.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, v);
+        call.resolve(new JSObject().put("granted", true).put("added", uri != null)
+            .put("id", uri == null ? "" : uri.getLastPathSegment()));
+    }
+
+    @PluginMethod
+    public void findContacts(PluginCall call) {
+        if (getPermissionState("contacts") != PermissionState.GRANTED) {
+            call.resolve(new JSObject().put("granted", false));
+            return;
+        }
+        String q = call.getString("query", "");
+        q = q == null ? "" : q.trim();
+        JSArray out = new JSArray();
+        String[] cols = { ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER };
+        try (Cursor c = ctx().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, cols,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE ?", new String[] { "%" + q + "%" },
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC")) {
+            Set<String> seen = new HashSet<>();
+            while (c != null && c.moveToNext() && out.length() < 10) {
+                String name = c.getString(0), number = c.getString(1);
+                if (name == null || number == null || !seen.add(name)) continue;
+                out.put(new JSObject().put("name", name).put("number", number));
+            }
+        } catch (Exception e) {
+            call.resolve(new JSObject().put("granted", true).put("contacts", out).put("error", e.getMessage()));
+            return;
+        }
+        call.resolve(new JSObject().put("granted", true).put("contacts", out));
+    }
+
+    // ------------------------------------------------------------------ listening in the background
+
+    /** Keeps the microphone (and DUET) alive while another app, such as Google Maps, is in front.
+     *  Android allows this only as a visible foreground service started while DUET is open. */
+    @PluginMethod
+    public void listenInBackground(PluginCall call) {
+        boolean on = Boolean.TRUE.equals(call.getBoolean("on", true));
+        Intent i = new Intent(ctx(), DuetListenService.class);
+        try {
+            if (on) ContextCompat.startForegroundService(ctx(), i);
+            else ctx().stopService(i);
+            call.resolve(new JSObject().put("on", on));
+        } catch (Exception e) {
+            call.reject("background listening is not available: " + e.getMessage());
+        }
+    }
+
     // ------------------------------------------------------------------ permissions, audio, device
 
     @PluginMethod
@@ -448,6 +618,9 @@ public class DuetPhonePlugin extends Plugin {
         out.put("modify_system_settings", Settings.System.canWrite(ctx()));
         out.put("call_phone", getPermissionState("call") == PermissionState.GRANTED);
         out.put("send_sms", getPermissionState("sms") == PermissionState.GRANTED);
+        out.put("contacts", getPermissionState("contacts") == PermissionState.GRANTED);
+        out.put("calendar", getPermissionState("calendar") == PermissionState.GRANTED);
+        out.put("notifications", Build.VERSION.SDK_INT < 33 || getPermissionState("notifications") == PermissionState.GRANTED);
         call.resolve(out);
     }
 
@@ -462,6 +635,9 @@ public class DuetPhonePlugin extends Plugin {
                 break;
             case "call_phone": requestPermissionForAlias("call", call, "permissionDone"); break;
             case "send_sms": requestPermissionForAlias("sms", call, "permissionDone"); break;
+            case "contacts": requestPermissionForAlias("contacts", call, "permissionDone"); break;
+            case "calendar": requestPermissionForAlias("calendar", call, "permissionDone"); break;
+            case "notifications": requestPermissionForAlias("notifications", call, "permissionDone"); break;
             default: call.reject("unknown permission " + name);
         }
     }

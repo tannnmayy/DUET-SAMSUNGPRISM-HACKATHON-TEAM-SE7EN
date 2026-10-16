@@ -17,14 +17,28 @@
   $("set-name").value = S.name || "";
   $("set-contacts").value = S.contacts;
   $("set-direct").checked = !!S.direct;
+  $("set-city").value = S.city || "";
+  $("set-simulate").checked = !!S.simulate;
   writeSettings(S);
   for (const [id, key, prop] of [["set-server", "server", "value"], ["set-name", "name", "value"],
-    ["set-contacts", "contacts", "value"], ["set-direct", "direct", "checked"]]) {
+    ["set-contacts", "contacts", "value"], ["set-direct", "direct", "checked"], ["set-city", "city", "value"],
+    ["set-simulate", "simulate", "checked"]]) {
     $(id).addEventListener("change", () => { S[key] = $(id)[prop]; writeSettings(S); });
   }
   const servedHere = !P.NATIVE && /^https?:$/.test(location.protocol);
   if (servedHere) $("server-field").hidden = true;
   $("reset-demo").addEventListener("click", () => { P.reset(); toast("Demo data reset"); });
+
+  // the phone self-test: every real action, tried safely (phone.js selfTest)
+  $("self-test").addEventListener("click", async () => {
+    const list = $("selftest-results");
+    list.hidden = false;
+    list.innerHTML = "<li>Running…</li>";
+    const r = await P.selfTest();
+    list.innerHTML = "<li><b>" + r.passed + " of " + r.total + " work on " + esc(r.device) + "</b></li>" +
+      r.results.map((x) => "<li class='" + (x.ok ? "ok" : "bad") + "'>" + (x.ok ? "✓ " : "✕ ") + esc(x.name) +
+        " <small>" + x.ms + " ms · " + esc(x.detail) + "</small></li>").join("");
+  });
 
   // ---------------------------------------------------------------- phone permissions (Android app)
   async function refreshPerms() {
@@ -82,13 +96,22 @@
     add_stop: (a) => "Add a stop: " + a.place,
     set_car_climate: (a) => "Car AC " + (a.on === false ? "off" : "on") + (a.temperature ? " at " + a.temperature + "°C" : ""),
     open_navigation: () => "Hand the route to Google Maps",
+    set_torch: (a) => "Torch " + (a.on ? "on" : "off"),
+    control_media: (a) => ({ play: "Play", pause: "Pause", next: "Next track", previous: "Previous track" }[a.action] || "Media"),
+    set_volume: (a) => "Volume to " + a.percent + "%",
+    create_event: (a) => "Calendar: " + a.title + " on " + a.date + " at " + P.spoken(a.time),
+    get_weather: (a) => "Weather in " + a.place + (a.day && a.day !== "today" ? " (" + a.day + ")" : ""),
+    web_search: (a) => "Search the web: “" + a.question + "”",
   };
+  // where each step ran: on the phone, or on DUET's side (its own tools)
+  const SERVER_SIDE = new Set(["get_weather", "web_search"]);
   const toolText = (t, a) => { try { return (TOOL_TEXT[t] || (() => t))(a || {}); } catch (e) { return t; } };
   const key = (t, a) => t + ":" + JSON.stringify(a || {});
 
   // ---------------------------------------------------------------- the conversation view
   const chat = $("chat"), timeline = $("timeline");
   let lastUser = null, duetOpen = null, toolRows = new Map();
+  const setAlarms = new Set();   // alarms DUET set in this conversation (a later cancel is an undo)
 
   function addChat(cls, text) {
     const li = document.createElement("li");
@@ -164,7 +187,18 @@
       case "talker":
         if (ev.text) {
           duetOpen = addChat("duet ack", ev.text); lastUser = null;
-          addStep("t-say", "⚡", "Fast mind: “" + esc(ev.text) + "”", "spoken while the slow mind works");
+          addStep("t-say", "💬", "Quick voice: “" + esc(ev.text) + "”", "said at once while DUET thinks");
+        }
+        break;
+      case "route":
+        addStep("t-route", ev.where === "edge" ? "⚡" : "☁",
+          ev.where === "edge" ? "Fast mind: Gemma 4 E2B on our own GPU" : "Cloud mind: Gemma 4 26B",
+          esc(ev.why || ""));
+        break;
+      case "confirmed":
+        if (ev.text) {
+          duetOpen = addChat("duet", ev.text); lastUser = null;
+          addStep("t-say", "✓", "Confirmed: “" + esc(ev.text) + "”", "from the phone's reply, no model call");
         }
         break;
       case "thinker_say":
@@ -200,9 +234,16 @@
         const li = toolRows.get(k) || addStep("", "", "");
         toolRows.delete(k);
         const what = esc(toolText(ev.tool, ev.args));
+        const where = SERVER_SIDE.has(ev.tool) ? "looked up by DUET" : "on the phone";
+        if (ev.kind === "tool_done" && ev.tool === "set_alarm") setAlarms.add(String(ev.args.time));
         if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && ev.result && ev.result.cancelled === false) {
           setStep(li, "t-cached", "=", "Nothing to cancel: " + esc(P.spoken(ev.args.time)) + " was never set", "DUET had held it back");
-        } else if (ev.kind === "tool_done") setStep(li, "t-done", "✓", "Done: " + what, esc(summary(ev.result)));
+        } else if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && setAlarms.has(String(ev.args.time))) {
+          setAlarms.delete(String(ev.args.time));
+          setStep(li, "t-undo", "↶", "Undone: the " + esc(P.spoken(ev.args.time)) + " alarm", "you took it back after it was set, so DUET reversed it");
+        } else if (ev.kind === "tool_done") {
+          setStep(li, "t-done", "✓", "Done: " + what, [where, esc(summary(ev.result))].filter(Boolean).join(" · "));
+        }
         if (ev.kind === "tool_dropped") setStep(li, "t-drop", "✕", "Never ran: " + what, "you corrected yourself before it committed");
         if (ev.kind === "tool_cached") setStep(li, "t-cached", "=", "Not repeated: " + what, "it already ran for this request");
         if (ev.kind === "tool_asked") setStep(li, "t-cached", "?", "Asked first: " + what, "you hadn't asked for this, so DUET offers it instead");
@@ -317,17 +358,17 @@
     $("home").hidden = true; $("session").hidden = false;
     $("mode-title").textContent = { assistant: "Assistant", care: "Care", drive: "Drive" }[m];
     $("conn").textContent = "Connecting…";
-    chat.innerHTML = ""; timeline.innerHTML = ""; toolRows = new Map(); lastUser = duetOpen = null;
+    chat.innerHTML = ""; timeline.innerHTML = ""; toolRows = new Map(); lastUser = duetOpen = null; setAlarms.clear();
     $("moment").hidden = true;
     orb("connecting");
     renderPanel("all");
-    if (m === "assistant" && P.NATIVE) P.run("get_battery_report", {});
+    if (m === "assistant" && P.acting) P.run("get_battery_report", {});
     try {
       let url, token;
       if (creds) ({ url, token } = creds);
       else {
         const names = P.contacts().map((c) => c.name).join("; ");
-        const q = new URLSearchParams({ mode: m, name: S.name || "", device: await deviceLine(), contacts: names });
+        const q = new URLSearchParams({ mode: m, name: S.name || "", city: S.city || "", device: await deviceLine(), contacts: names });
         const resp = await fetch(base + "/api/token?" + q.toString());
         if (!resp.ok) throw new Error("server said " + resp.status + ": " + (await resp.text()).slice(0, 120));
         ({ url, token } = await resp.json());
@@ -359,7 +400,10 @@
       if (hooks.mic) await hooks.mic(room);
       else await room.localParticipant.setMicrophoneEnabled(true);
       if (P.NATIVE) {  // after the microphone: WebRTC has switched the phone to call audio by now
-        try { await P.native.audioRoute({}); await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
+        try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
+        try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
+        // keep listening while another app (Google Maps) is in front; a failure here never stops the talk
+        try { await P.native.listenInBackground({ on: true }); } catch (e) { console.warn("background listening:", e); }
       }
       $("conn").textContent = "Connected · waiting for DUET…";
       orb("initializing");
@@ -373,7 +417,10 @@
 
   async function end() {
     if (room) { try { await room.disconnect(); } catch (e) { /* already gone */ } room = null; }
-    if (P.NATIVE) { try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ } }
+    if (P.NATIVE) {
+      try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ }
+      try { await P.native.listenInBackground({ on: false }); } catch (e) { /* ignore */ }
+    }
     document.querySelectorAll("body > audio").forEach((a) => a.remove());
     $("session").hidden = true; $("home").hidden = false;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");

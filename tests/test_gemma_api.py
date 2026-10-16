@@ -85,6 +85,15 @@ def test_transient_server_errors_are_retried(monkeypatch):
     assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
 
 
+def test_server_errors_do_not_use_up_the_budget(monkeypatch):
+    # room for two calls a minute: a burst of four 500s must not leave the pool "full" (16 Oct 2026)
+    with_keys(monkeypatch, 1, tpm=6000)
+    fake_clients(monkeypatch, {0: [ApiError(500, "INTERNAL")] * 4 + [2300]})
+    start = time.monotonic()
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
+    assert time.monotonic() - start < 6.0
+
+
 def test_a_request_that_hangs_gets_a_backup_on_another_key(monkeypatch):
     with_keys(monkeypatch, 2)
     monkeypatch.setenv("DUET_GEMMA_HEDGE_S", "0.5")

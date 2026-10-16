@@ -31,18 +31,37 @@ from dotenv import load_dotenv
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 load_dotenv(os.path.join(_ROOT, ".env.livekit"))
 
+# Phone-mode timing. The benchmark's values are tuned to its rule that a silence over 2 s ends
+# the user's turn. On a phone, close a turn sooner and say "One moment." after 0.4 s of quiet
+# instead of 1.6 s. The thinker's keep_listening still holds back an answer to an unfinished
+# sentence, and the commit gate still holds every action. Set before the config is read.
+for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"),
+                      ("DUET_PROGRESS_AFTER", "4")):
+    os.environ.setdefault(_name, _value)
+
 from livekit import agents, rtc  # noqa: E402
 from livekit.agents import AgentServer, AgentSession, JobContext, JobExecutorType  # noqa: E402
 
 from .. import agent as base  # noqa: E402  (the benchmark agent's building blocks)
+from .. import speech_models  # noqa: E402
 from ..config import CONFIG  # noqa: E402
 from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
+from . import fast  # noqa: E402
+from .confirm import adds_nothing  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
+from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, rpc_sender  # noqa: E402
 
 log = logging.getLogger("duet.galaxy")
+
+# The recogniser's vocabulary hint: the phone's words, not the benchmark's flights and passports.
+# This process serves only the phone app, so the benchmark's own hint is untouched.
+speech_models.ASR_PROMPT = (
+    "Alarms, timers and reminders, battery, brightness, screen timeout, Wi-Fi, Bluetooth, settings, "
+    "apps, Google Maps navigation, calls and text messages, SmartThings, air conditioner, lights, "
+    "medicines and tablets, check-in, destination, arrival time.")
 
 AGENT_NAME = os.environ.get("DUET_GALAXY_AGENT", "duet-galaxy")
 
@@ -58,18 +77,30 @@ CONSENT = ("You check one action a phone assistant is about to take. First, is t
            "words ask for this action or accept the assistant's offer of it. Answer with one word: yes or no.")
 
 
+def consent_model() -> Optional[tuple]:
+    """(server, model) answering the consent question: the laptop's local model, or the phone
+    app's fast mind. None: no local model (the cloud mind's instructions carry the rule alone)."""
+    if CONFIG.llm_backend == "local":
+        return None, CONFIG.talker_model
+    if fast.enabled() and os.environ.get("DUET_FAST_CONSENT", "1") == "1":
+        return (os.environ.get("DUET_FAST_BASE_URL", "http://127.0.0.1:18002/v1"),
+                os.environ.get("DUET_FAST_MODEL", "gemma-4-e2b"))
+    return None
+
+
 async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str) -> bool:
     """The consent gate: one short model call, only for actions that change the user's
     settings, call or text someone, or control the home."""
-    if CONFIG.llm_backend != "local":
+    where = consent_model()
+    if where is None:
         return True
     from ..llm_local import client
     prompt = ('The assistant last said: "%s"\nThe user then said: "%s"\nAction: %s(%s)\n'
               "Did the user ask for this action or agree to it?"
               % (offered or "(nothing yet)", asked, tool, json.dumps(args)))
-    resp = await client().chat.completions.create(
-        model=CONFIG.talker_model, max_tokens=3, temperature=0, seed=CONFIG.seed,
-        messages=[{"role": "system", "content": CONSENT}, {"role": "user", "content": prompt}])
+    resp = await asyncio.wait_for(client(where[0]).chat.completions.create(
+        model=where[1], max_tokens=3, temperature=0, seed=CONFIG.seed,
+        messages=[{"role": "system", "content": CONSENT}, {"role": "user", "content": prompt}]), 3.0)
     answer = (resp.choices[0].message.content or "").strip().lower()
     return answer.startswith("yes")
 
@@ -81,7 +112,7 @@ SHOWN = {
     "user_state": ("state",), "heard": ("text",), "think_start": ("text",),
     "thinker_listen": ("reason",), "listen_done": (), "thinker_decided": ("tools", "after_s"),
     "talker": ("text", "reason"), "thinker_say": ("text", "after_s"), "thinker_error": ("text",),
-    "thinker_review": ("text",),
+    "thinker_review": ("text",), "confirmed": ("text",), "route": ("where", "why"),
     "superseded": (), "agent_said": ("text", "interrupted"), "agent_state": ("state",),
 }
 
@@ -104,9 +135,13 @@ class RoomTrace(base.Trace):
 class GalaxyAgent(base.DuetAgent):
     def __init__(self, trace, coord, toolbox: PhoneToolbox, mode: Dict[str, Any], context: str) -> None:
         instructions = mode["thinker"] + ("\nTHE USER AND THEIR PHONE\n" + context if context else "")
-        super().__init__(trace, coord, toolbox,
-                         thinker=make_thinker(specs=llm_specs(mode["tools"]), instructions=instructions,
-                                              review=REVIEW if os.environ.get("DUET_REVIEW", "1") == "1" else None),
+        thinker = make_thinker(specs=llm_specs(mode["tools"]), instructions=instructions,
+                               review=REVIEW if os.environ.get("DUET_REVIEW", "1") == "1" else None)
+        if fast.enabled():
+            # two speeds: the small Gemma on our GPU looks first (duet_voice/galaxy/fast.py)
+            thinker = fast.HybridThinker(fast.make_fast_thinker(mode["tools"], mode["title"]), thinker,
+                                         on_route=lambda where, why: trace("route", where=where, why=why))
+        super().__init__(trace, coord, toolbox, thinker=thinker,
                          instructions=instructions, talker_instructions=mode["talker"])
         self.cut_off: Optional[str] = None
         self._seen = 0  # coordinator history already covered by an answered request
@@ -122,13 +157,37 @@ class GalaxyAgent(base.DuetAgent):
                 "the matching tool first, then do what they want now: " + "; ".join(
                     "%s(%s)" % (r.tool, json.dumps(r.args)) for r in fresh))
 
+    def confirm(self, ev) -> str:
+        """The action that just ran, confirmed at once from the phone's own reply
+        (duet_voice/galaxy/confirm.py); the slow mind's answer adds the rest."""
+        done = self._toolbox.last_done
+        if not done or done[0] != getattr(ev, "name", None):
+            return ""
+        return done[3] or ""
+
+    def progress_allowed(self, lines_so_far: int, confirmed) -> bool:
+        """One "Still working on it." at most, and none once an action has been confirmed: the
+        rest of the wait is only the wording of the answer."""
+        return lines_so_far < 1 and not confirmed
+
+    def error_line(self, confirmed) -> str:
+        if confirmed:
+            return ""   # what was asked is done and was said; nothing is missing
+        return "Sorry, I couldn't get that done just now. Could you say it again?"
+
     def polish(self, words: str) -> str:
-        """Spoken, not read: drop a closing filler sentence ("Let me know if you need anything
-        else."), which a small model adds however often it is told not to."""
-        parts = re.split(r"(?<=[.!?])\s+", " ".join((words or "").split()))
+        """Spoken, not read:
+        - drop a leading "OK." and a closing filler sentence ("Let me know if you need anything
+          else."), which models add however often they are told not to;
+        - drop an answer that only repeats what was already confirmed aloud in this reply."""
+        text = re.sub(r"^\s*(ok(ay)?|alright)[.,!]\s*", "", " ".join((words or "").split()), flags=re.I)
+        parts = [p for p in re.split(r"(?<=[.!?])\s+", text) if p]
         while len(parts) > 1 and FILLER.match(parts[-1]):
             parts.pop()
-        return " ".join(parts)
+        text = " ".join(parts)
+        if adds_nothing(text, self._confirmed_now):
+            return ""
+        return text
 
     def turn_note(self) -> str:
         now = dt.datetime.now()
@@ -198,10 +257,13 @@ async def entrypoint(ctx: JobContext) -> None:
         trace("consent", tool=tool, args=args, allowed=ok)
         return ok
 
+    names = {t["name"] for t in mode["tools"]}
     toolbox = PhoneToolbox(coord, mode["tools"], rpc_sender(ctx.room, lambda: phone.identity), emit=publish,
-                           consent=consent if os.environ.get("DUET_CONSENT", "1") == "1" else None)
+                           consent=consent if os.environ.get("DUET_CONSENT", "1") == "1" else None,
+                           server={k: fn for k, fn in SERVER_TOOLS.items() if k in names})
     context = "; ".join(x for x in (
         ("Their name is %s." % name) if name else "",
+        ("They live in %s." % meta["city"]) if meta.get("city") else "",
         ("Phone: %s." % meta["device"]) if meta.get("device") else "",
         ("Their contacts: %s." % meta["contacts"]) if meta.get("contacts") else "",
     ) if x)

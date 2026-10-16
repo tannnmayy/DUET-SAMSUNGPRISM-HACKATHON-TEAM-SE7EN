@@ -162,6 +162,7 @@ class DuetAgent(Agent):
         # must not mark the request answered.
         self._consumed = 0
         self._pending_consumed: Optional[int] = None
+        self._confirmed_now: List[str] = []   # confirmations spoken in the reply being made
 
     # ears: keep a copy of the audio for the thinker, pass it on to STT unchanged
     async def stt_node(self, audio: AsyncIterable[rtc.AudioFrame], model_settings: ModelSettings):
@@ -204,6 +205,20 @@ class DuetAgent(Agent):
         """Extra context for the thinker on this turn; none for the benchmark. The phone
         app adds the time and what the user heard of an answer they interrupted."""
         return ""
+
+    def confirm(self, ev: Any) -> str:
+        """Words to speak the moment an action is done; none for the benchmark (its answer
+        comes from the thinker). The phone app confirms phone actions from the phone's reply."""
+        return ""
+
+    def progress_allowed(self, lines_so_far: int, confirmed: List[str]) -> bool:
+        """May another "Still working on it." be said? The benchmark: every few seconds."""
+        return True
+
+    def error_line(self, confirmed: List[str]) -> str:
+        """What to say when the thinker fails. `confirmed`: what was already confirmed in this
+        reply (always empty for the benchmark)."""
+        return "Sorry, something went wrong on my side. Could you say that once more?"
 
     def _user_messages(self, chat_ctx: llm.ChatContext) -> List[str]:
         return [item.text_content.strip() for item in chat_ctx.items
@@ -293,6 +308,9 @@ class DuetAgent(Agent):
         listening = False
         decided_tools: Optional[bool] = None
         last_speech = started
+        progress_lines = 0
+        confirmed: List[str] = []   # actions confirmed aloud in this reply (the phone app)
+        self._confirmed_now = confirmed
 
         async def speak_ack(wait_s: float) -> Optional[str]:
             try:
@@ -340,10 +358,12 @@ class DuetAgent(Agent):
                                 yield ack + " "
                                 yield FlushSentinel()
                                 spoke, last_speech = True, time.time()
-                    elif spoke and decided_tools and time.time() - last_speech >= PROGRESS_AFTER_S:
+                    elif spoke and decided_tools and time.time() - last_speech >= PROGRESS_AFTER_S \
+                            and self.progress_allowed(progress_lines, confirmed):
                         yield "Still working on it. "
                         yield FlushSentinel()
                         last_speech = time.time()
+                        progress_lines += 1
                     continue
                 if ev is None:
                     break
@@ -365,10 +385,23 @@ class DuetAgent(Agent):
                     self._trace("tool_start", name=ev.name, args=ev.args)
                 elif kind == "tool_done":
                     self._trace("tool_done", name=ev.name, args=ev.args, outcome=ev.outcome)
+                    done = self.confirm(ev)
+                    if done:
+                        self._trace("confirmed", text=done)
+                        confirmed.append(done)
+                        yield done + " "
+                        yield FlushSentinel()
+                        spoke, last_speech = True, time.time()
                 elif kind == "error":
                     self._trace("thinker_error", text=ev.text)
-                    yield "Sorry, something went wrong on my side. Could you say that once more?"
-                    spoke = True
+                    if confirmed:
+                        # The action ran and was confirmed aloud; only the wording of the answer
+                        # failed. The request is answered: asking for it again would invite a repeat.
+                        self._pending_consumed = answered_upto
+                    line = self.error_line(confirmed)
+                    if line:
+                        yield line
+                        spoke = True
                 elif kind == "say":
                     # spoken, not displayed: markdown symbols would be read aloud
                     words = self.polish(re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip())

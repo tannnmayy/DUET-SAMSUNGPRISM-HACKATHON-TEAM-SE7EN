@@ -14,8 +14,10 @@ correcting themselves, what ran, and what was refused as a repeat.
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
 import json
 import logging
+import re
 import time
 from typing import Any, Callable, Dict, List, Optional
 
@@ -23,6 +25,7 @@ from livekit import rtc
 
 from ..coordinator import CallRecord, Coordinator, Superseded
 from ..fdb_tools import coerce_props
+from .confirm import confirmation
 
 log = logging.getLogger("duet.galaxy.tools")
 
@@ -31,6 +34,57 @@ TIMEOUTS = {"read": 8.0, "write": 10.0, "ui": 6.0}
 
 class PhoneError(Exception):
     """The phone carried out the call and reported a failure (payload: its JSON)."""
+
+
+# The user's latest words leave a choice open: two options ("6:30 or maybe 7"), or they say they
+# have not decided. Not "I'm not sure why...", which is a question, not an undecided request.
+_UNSURE = re.compile(
+    r"\bor maybe\b"
+    r"|\beither\b.{0,40}\bor\b"
+    r"|\b(not sure|unsure|don'?t know|can'?t decide|haven'?t decided)\b(?!\s+(why|how|what|where|when))"
+    r"|\b(hmm+|umm*)\W*$", re.I)
+
+
+def undecided(text: str) -> bool:
+    """Does the last sentence of what the user has said leave the choice open? Only the last one:
+    "...or maybe 7, hmm. Seven." has been decided."""
+    sentences = [s for s in re.split(r"(?<=[.?!])\s+", (text or "").strip()) if s.strip()]
+    return bool(sentences) and bool(_UNSURE.search(sentences[-1]))
+
+
+# The user's words stop mid-phrase ("Call my", "Set an alarm for"): whatever the model guessed,
+# nothing is done; DUET asks for the rest. ("on", "in", "off" are left out: "turn the lights on".)
+_CUT_OFF = re.compile(r"\b(my|the|a|an|to|for|and|or|with|his|her|their|our|your|some|from|about|at)\W*$", re.I)
+
+
+def cut_off(text: str) -> bool:
+    return bool(_CUT_OFF.search((text or "").strip()))
+
+
+# A clock time said without the half of the day ("set an alarm for 6:30") means the next one
+# from now, whichever mind wrote the time down. Measured 16 Oct 2026, 23:50: the fast mind wrote
+# 18:30 for "6:30"; the next 6:30 was 06:30.
+_DAYPART = re.compile(r"\b(a\.?\s?m\.?|p\.?\s?m\.?|morning|evening|night|tonight|afternoon|noon|midnight)\b", re.I)
+_HOUR_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+               "ten": 10, "eleven": 11, "twelve": 12}
+
+
+def next_occurrence(hhmm: str, words: str, now) -> str:
+    m = re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(hhmm or ""))
+    if not m:
+        return hhmm
+    hour, minute = int(m.group(1)), int(m.group(2))
+    if not (words or "").strip() or hour > 23 or minute > 59 or _DAYPART.search(words):
+        return hhmm                    # no words to go by, or the user said which half of the day
+    said = {int(n) for n in re.findall(r"\d+", words)} | {
+        v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words, re.I)}
+    if hour >= 13 and hour in said:
+        return hhmm                    # a 24-hour time, said as such
+    if not ({hour % 12, hour % 12 + 12, 12 if hour % 12 == 0 else -1} & said):
+        return hhmm                    # this time is not from these words: leave it as it is
+    now_min = now.hour * 60 + now.minute
+    best = min(((h * 60 + minute - now_min - 1) % (24 * 60), h) for h in (hour % 12, hour % 12 + 12))
+    return "%02d:%02d" % (best[1], minute)
 
 
 def _norm(v: Any) -> Any:
@@ -44,10 +98,13 @@ class PhoneToolbox:
     def __init__(self, coord: Coordinator, tools: List[Dict[str, Any]],
                  send: Callable[[str, Dict[str, Any], float], Any],
                  emit: Callable[[Dict[str, Any]], None] = lambda msg: None,
-                 consent: Optional[Callable[[str, Dict[str, Any]], Any]] = None) -> None:
+                 consent: Optional[Callable[[str, Dict[str, Any]], Any]] = None,
+                 server: Optional[Dict[str, Callable[[Dict[str, Any]], Any]]] = None) -> None:
         self.coord = coord
         self.specs = {t["name"]: t for t in tools}
         self.send = send
+        # tools DUET runs itself rather than on the phone (the weather, web answers)
+        self.server = server or {}
         self.emit = emit
         # consent(tool, args) -> bool: did the user ask for this action or agree to it?
         # Asked only for tools marked "consent" (settings, calls, texts, the home).
@@ -56,6 +113,8 @@ class PhoneToolbox:
         self.last_tool_end = 0.0
         # calls of this request that the gate held back (the user kept talking): they never ran
         self.held_back: List[Dict[str, Any]] = []
+        # the last call that ran: (tool, args, the phone's reply, its spoken confirmation or None)
+        self.last_done: Optional[tuple] = None
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -92,8 +151,23 @@ class PhoneToolbox:
                                "instruction": "use only the tools you were given"})
         args = coerce_props(spec["parameters"]["properties"], raw_args)
         kind = spec.get("kind", "read")
-        timeout = TIMEOUTS.get(kind, 8.0)
+        self.last_done = None
+        if tool in ("set_alarm", "set_reminder") and args.get("time"):
+            args["time"] = next_occurrence(args["time"], self.coord.open_utterance, dt.datetime.now())
+        timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
+        if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
+            self.emit({"kind": "tool_asked", "tool": tool, "args": args})
+            return json.dumps({"status": "not_executed", "reason":
+                               "the user's words stop mid-phrase; ask them, in a few words, for the rest"})
+        if kind in ("write", "ui") and undecided(self.coord.open_utterance):
+            # "Call Rahul, or maybe Priya, I'm not sure": the user has not chosen, so nothing is
+            # done whatever the model decided; it asks instead (measured 16 Oct: the cloud model
+            # with minimal thinking called both)
+            self.emit({"kind": "tool_asked", "tool": tool, "args": args})
+            return json.dumps({"status": "not_executed", "reason":
+                               "the user has not decided yet. Ask which one, in one short question that names "
+                               "the options; act only on their answer"})
         if spec.get("consent") and self.consent is not None:
             try:
                 allowed = await self.consent(tool, args)
@@ -107,12 +181,15 @@ class PhoneToolbox:
                                    "question; if they say yes, call this tool again"})
 
         async def run() -> Any:
-            try:
-                out = await self.send(tool, args, timeout)
-            except rtc.RpcError as exc:
-                if exc.code == rtc.RpcError.ErrorCode.RESPONSE_TIMEOUT:
-                    raise asyncio.TimeoutError() from exc
-                raise
+            if tool in self.server:
+                out = await self.server[tool](args)
+            else:
+                try:
+                    out = await self.send(tool, args, timeout)
+                except rtc.RpcError as exc:
+                    if exc.code == rtc.RpcError.ErrorCode.RESPONSE_TIMEOUT:
+                        raise asyncio.TimeoutError() from exc
+                    raise
             result = json.loads(out) if isinstance(out, str) and out else (out or {})
             if isinstance(result, dict) and result.get("status") in ("error", "needs_permission"):
                 raise PhoneError(json.dumps(result))
@@ -132,8 +209,13 @@ class PhoneToolbox:
                                "the user started speaking again; wait for their full request"})
         self.last_tool_start, self.last_tool_end = record.started, record.finished
         if record.outcome == "ok":
+            said = confirmation(tool, args, record.result)
+            self.last_done = (tool, args, record.result, said)
             self.emit({"kind": "tool_done", "tool": tool, "args": args, "result": record.result,
                        "after_s": round(time.time() - started, 2)})
+            if said and isinstance(record.result, dict):
+                # the thinker sees exactly what the user has already been told
+                return json.dumps({**record.result, "already_said_to_user": said}, default=str)
             return json.dumps(record.result, default=str)
         if record.outcome == "cached":
             self.emit({"kind": "tool_cached", "tool": tool, "args": args})
