@@ -103,6 +103,17 @@ HELD_OUT = [
     ("assistant", "Turn on the", NOTHING, []),
 ]
 
+# As the recogniser writes them: "430" and "3.30" for clock times (seen live on 16 Oct 2026)
+RECOGNISER = [
+    ("assistant", "Set an alarm for 3.30. No, no, cancel that. Could you set it for 430 instead?", ACT,
+     [("set_alarm", {"time": "@4:30"})]),
+    ("assistant", "Wake me up at 630.", ACT, [("set_alarm", {"time": "@6:30"})]),
+    ("assistant", "Set an alarm for 7.15, no, 7.45.", ACT, [("set_alarm", {"time": "@7:45"})]),
+    ("assistant", "Set the volume to 30%.", ACT, [("set_volume", {"percent": "^30$"})]),
+    ("assistant", "What alarms do I have now?", HAND, []),
+    ("assistant", "Is the AC on at home?", HAND, []),
+]
+
 
 def match_value(pattern, value):
     v = str(value).lower() if value is not None else ""
@@ -135,7 +146,7 @@ class Box:
 
 async def judge(mode, words, expected, wanted):
     thinker = fast.make_fast_thinker(MODES[mode]["tools"], MODES[mode]["title"])
-    thinker.vet = lambda tool, args: fast.vet(tool, args, words)   # as the phone app does
+    thinker.vet = lambda calls: fast.vet_plan(calls, words)   # as the phone app does
     box = Box(mode, words)
     t0 = time.time()
     first = None
@@ -169,7 +180,7 @@ async def main() -> int:
     args = ap.parse_args()
     rows = []
     for _ in range(args.repeat):
-        for held, case in [(False, c) for c in CASES] + [(True, c) for c in HELD_OUT]:
+        for held, case in [(False, c) for c in CASES + RECOGNISER] + [(True, c) for c in HELD_OUT]:
             r = await judge(*case)
             r["held_out"] = held
             rows.append(r)

@@ -146,8 +146,8 @@ class LocalThinker:
         # user's words (the default); "system" keeps it out of them: a small model read
         # "Now: Friday 23:50" in the user turn as a request for a 23:50 alarm (16 Oct 2026)
         self.note_role = note_role
-        # vet(tool, args) -> a reason to hand the request on, or "": checks the first step's
-        # calls before any of them runs; one_step: act once, then stop (no second model call)
+        # vet([(tool, args), ...]) -> a reason to hand the request on, or "": checks the first
+        # step's plan before any of it runs; one_step: act once, then stop (no second model call)
         self.vet = vet
         self.one_step = one_step
         # completed exchanges only, as chat messages; an interrupted turn never lands here
@@ -212,8 +212,9 @@ class LocalThinker:
                 yield ThinkEvent("escalate", text=str(why), usage=usage)
                 return
             if self.vet is not None and step == 1:
-                # the fast mind's plan is checked before anything runs; a call that fails the
-                # check hands the whole request on (the cloud mind can still do it)
+                # the fast mind's whole plan is checked before anything runs; a plan that fails
+                # hands the request on (the cloud mind can still do it)
+                plan = []
                 for c in calls:
                     if c["name"] == KEEP_LISTENING:
                         continue
@@ -221,10 +222,11 @@ class LocalThinker:
                         a = json.loads(c["arguments"] or "{}")
                     except ValueError:
                         a = {}
-                    why = self.vet(c["name"], a if isinstance(a, dict) else {})
-                    if why:
-                        yield ThinkEvent("escalate", text=why, usage=usage)
-                        return
+                    plan.append((c["name"], a if isinstance(a, dict) else {}))
+                why = self.vet(plan) if plan else ""
+                if why:
+                    yield ThinkEvent("escalate", text=why, usage=usage)
+                    return
             listens = [c for c in calls if c["name"] == KEEP_LISTENING]
             real = [c for c in calls if c["name"] != KEEP_LISTENING]
             if listens and not real and step == 1:

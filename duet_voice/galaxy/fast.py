@@ -45,9 +45,11 @@ ASK_EXPERT_SPEC = {
 # Simple, clear phone actions the fast mind may carry out itself. Everything else (readings that
 # need explaining, medicines, family alerts, the trip, the weather, the web, calendar dates) is
 # the cloud mind's.
-FAST_TOOLS = {"set_alarm", "cancel_alarm", "list_alarms", "set_timer", "set_reminder", "set_brightness",
+# Readings (the alarms, the home's state) are not among them: the fast mind acts in one step and says
+# nothing but the confirmations, so a reading would never be spoken (measured 16 Oct 2026).
+FAST_TOOLS = {"set_alarm", "cancel_alarm", "set_timer", "set_reminder", "set_brightness",
               "set_screen_timeout", "open_settings", "open_app", "navigate_to", "call_contact", "send_message",
-              "control_home_device", "get_home_status", "set_destination", "add_stop", "set_car_climate",
+              "control_home_device", "set_destination", "add_stop", "set_car_climate",
               "open_navigation", "set_torch", "control_media", "set_volume"}
 
 FAST_INSTRUCTIONS = """\
@@ -112,9 +114,93 @@ RELATIONS = {"mom", "mum", "mother", "dad", "father", "daughter", "son", "wife",
 
 
 def _numbers(words: str) -> set:
-    out = {int(n) for n in re.findall(r"\d+", words)}
+    """Every number the words contain, with the parts of a spoken clock time: the recogniser
+    writes 4:30 as "4:30", "4.30" or "430"."""
+    out = set()
+    for tok in re.findall(r"\d{1,2}[:.]\d{2}|\d+", words):
+        if re.match(r"\d{1,2}[:.]\d{2}$", tok):
+            h, m = re.split(r"[:.]", tok)
+            out |= {int(h), int(m)}
+        else:
+            out.add(int(tok))
+            if len(tok) in (3, 4) and int(tok[-2:]) < 60:      # "430" is 4:30, "1015" is 10:15
+                out |= {int(tok[:-2]), int(tok[-2:])}
     out |= {v for w, v in NUMBER_WORDS.items() if re.search(r"\b%s\b" % w, words)}
     return out
+
+
+_VALUE = r"\d{1,2}[:.]\d{2}|\d+|\b(?:%s)\b" % "|".join(NUMBER_WORDS)
+
+
+def _keys(token: str) -> set:
+    """What one spoken number can stand for. A clock time with its minutes ("4:30", "4.30", "430")
+    is that time, hour and minute together; a plain number (20, "six") is that number, or that
+    hour of the clock ("quarter past six")."""
+    if re.match(r"\d{1,2}[:.]\d{2}$", token):
+        h, m = (int(x) for x in re.split(r"[:.]", token))
+        return {("t", h % 12, m)}
+    v = int(token) if token.isdigit() else NUMBER_WORDS[token]
+    keys = {("n", v), ("h", v % 12)}
+    if token.isdigit() and len(token) in (3, 4) and int(token[-2:]) < 60:
+        keys.add(("t", int(token[:-2]) % 12, int(token[-2:])))       # "430"
+    return keys
+
+
+def _last_value(words: str) -> Optional[set]:
+    """The last number the user said, or None. After a correction it is the value they settled on."""
+    tokens = re.findall(_VALUE, words)
+    return _keys(tokens[-1]) if tokens else None
+
+
+def _plan_values(calls: List[tuple]) -> set:
+    out = set()
+    for tool, args in calls:
+        for v in args.values():
+            m = re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(v))
+            if m:
+                h, mi = int(m.group(1)), int(m.group(2))
+                out |= {("t", h % 12, mi), ("h", h % 12)}
+            elif isinstance(v, (int, float)) and not isinstance(v, bool):
+                out |= {("n", int(v))}
+            elif isinstance(v, str):
+                for token in re.findall(_VALUE, v.lower()):   # "I'll be home by eight" in a message
+                    out |= _keys(token)
+    return out
+
+
+# A question is answered, never acted on by the fast mind ("Is the AC on at home?" switched the AC
+# on, 16 Oct 2026). A polite request phrased as a question ("Could you set an alarm for 7?") is a request.
+_POLITE = re.compile(r"^\W*(can|could|would|will) (you|u)\b|^\W*please\b|^\W*(can|could) i (get|have)\b", re.I)
+_QUESTION = re.compile(r"^\W*(is|are|was|were|do|does|did|what|what's|whats|which|how|why|when|where|who|"
+                       r"should|shall|am i|have i|has|had|isn't|aren't|don't|doesn't)\b", re.I)
+
+
+def asks_question(words: str) -> bool:
+    sentences = [s for s in re.split(r"(?<=[.?!])\s+", (words or "").strip()) if s.strip()]
+    if not sentences:
+        return False
+    last = sentences[-1]
+    if _POLITE.search(last):
+        return False
+    return last.rstrip().endswith("?") or bool(_QUESTION.search(last))
+
+
+def vet_plan(calls: List[tuple], words: str) -> str:
+    """The fast mind's whole first step: every call must pass `vet`, and when the user said a
+    number, the last one they said (the value a correction settled on) must be in the plan.
+    "3:30, no, cancel that, set it for 430 instead" planned as cancel_alarm(03:30) alone is
+    handed on (measured 16 Oct 2026, live)."""
+    w = (words or "").lower()
+    if calls and asks_question(words):
+        return "a question: the cloud mind answers it"
+    for tool, args in calls:
+        why = vet(tool, args, w)
+        if why:
+            return why
+    last = _last_value(w)
+    if last and calls and not (last & _plan_values(calls)):
+        return "the last value the user said is not in the plan"
+    return ""
 
 
 def vet(tool: str, args: Dict[str, Any], words: str) -> str:
@@ -209,7 +295,7 @@ class HybridThinker:
         coord = toolbox.coord
         done_before = len(coord.history)
         self.fast.history = []          # stateless: each request is judged on its own words
-        self.fast.vet = lambda tool, args: vet(tool, args, text)
+        self.fast.vet = lambda calls: vet_plan(calls, text)
         agen = self.fast.run(text, toolbox, note=note, allow_listen=allow_listen)
         escalate_why = ""
         acted_at: Optional[float] = None

@@ -10,7 +10,7 @@ import datetime as dt
 import json
 
 from duet_voice.coordinator import Coordinator
-from duet_voice.galaxy.fast import vet
+from duet_voice.galaxy.fast import vet, vet_plan
 from duet_voice.galaxy.modes import MODES
 from duet_voice.galaxy.tools import PhoneToolbox, cut_off, next_occurrence
 
@@ -71,3 +71,30 @@ def test_the_fast_mind_acts_only_on_what_the_words_name():
     assert vet("set_brightness", {"percent": 50}, "make the screen brighter")
     assert vet("set_destination", {"place": "the airport"}, "take me to the office")
     assert vet("get_weather", {"place": "Chennai"}, "weather")                     # not a fast action at all
+
+
+def test_the_last_value_the_user_said_must_be_in_the_fast_plan():
+    live = "set an alarm for 3.30. no, no, cancel that. could you set it for 430 instead?"
+    assert vet_plan([("cancel_alarm", {"time": "03:30"})], live)            # what the fast mind did, live
+    assert vet_plan([("set_alarm", {"time": "04:30"})], live) == ""
+    assert vet_plan([("set_alarm", {"time": "06:30"})], "wake me up at 630") == ""
+    assert vet_plan([("send_message", {"to": "Rahul", "text": "I'll be home by eight."})],
+                    "send a message to rahul saying i'll be home by eight") == ""
+    assert vet_plan([("set_alarm", {"time": "06:30"}), ("set_timer", {"minutes": 20})],
+                    "set an alarm for 6:30 and a timer for 20 minutes") == ""
+    assert vet_plan([("set_torch", {"on": True})], "turn on the torch") == ""
+    assert vet_plan([("set_alarm", {"time": "06:15"})], "wake me up at quarter past six") == ""
+    assert vet_plan([("set_alarm", {"time": "07:45"})], "set an alarm for 7.15, no, 7.45") == ""
+    assert vet_plan([("set_alarm", {"time": "07:15"})], "set an alarm for 7.15, no, 7.45")   # the stale value
+    assert vet_plan([("set_car_climate", {"temperature": 22})], "set the ac to 22. no, 21.")
+
+
+def test_a_question_is_never_a_fast_action():
+    from duet_voice.galaxy.fast import asks_question
+    assert vet_plan([("control_home_device", {"device": "AC", "action": "set", "value": "on"})], "Is the AC on at home?")
+    assert asks_question("What alarms do I have now?") and asks_question("is the door locked")
+    assert asks_question("Set an alarm for 7. Is that early enough?")
+    assert not asks_question("Could you set it for 430 instead?") and not asks_question("Can you turn on the torch?")
+    assert not asks_question("Please call Priya.") and not asks_question("Turn on the AC.")
+    # a polite request is not a question, but it must still name its action ("alarm") to stay fast
+    assert vet_plan([("set_alarm", {"time": "04:30"})], "Could you set an alarm for 430 instead?") == ""
