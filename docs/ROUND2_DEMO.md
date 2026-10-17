@@ -83,10 +83,15 @@ limits with Maps in front (6). Each has a fallback that is already built: DUET's
    ```
    To stop it later: `bash scripts/galaxy_stop.sh`.
 3. `python scripts/smartthings_setup.py --reset` (the home's starting state).
-4. On the phone, the home screen of DUET shows **"Ready · ✓ Cloud mind · ✓ Fast mind · ✓ SmartThings · 7 devices"**.
+4. `python scripts/demo_preflight.py`: one line per check (keys, SmartThings, the stack, the phone, its
+   permissions, battery, Do Not Disturb). It must end with **READY**.
+5. On the phone, the home screen of DUET shows **"Ready · ✓ Cloud mind · ✓ Fast mind · ✓ SmartThings · 7 devices"**.
    Anything red: fix it before the call.
-5. One run of the demo script. Phone: **Do Not Disturb on**, notifications off, brightness up, 100% charged.
-6. Close everything else on the laptop (the GPU is shared with the speech models and the fast mind).
+6. **Pace:** the free Gemma API allows about 4 cloud-mind calls per key per minute (3 keys: about 6 cloud questions
+   a minute, each needs two calls). Simple phone actions use the fast mind and no quota. If the jury fires many
+   questions at once, DUET waits for room ("Still working on it.") rather than failing.
+7. One run of the demo script. Phone: **Do Not Disturb on**, notifications off, brightness up, 100% charged.
+8. Close everything else on the laptop (the GPU is shared with the speech models and the fast mind).
 
 ## 4. The online set-up
 

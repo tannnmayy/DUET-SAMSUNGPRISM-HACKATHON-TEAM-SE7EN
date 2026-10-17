@@ -132,9 +132,11 @@ class Pool:
         self.average: Dict[str, float] = {}
 
     def estimate(self, model: str) -> float:
-        """Input tokens the next call to `model` will likely use: the recent average,
-        or the size of one DUET thinker call (the instructions and 13 tools)."""
-        return self.average.get(model, 2600.0)
+        """Input tokens the next call to `model` will likely use: the recent average, or
+        before any call the size of one thinker call (the benchmark's: its instructions and 13
+        tools, about 2,600; DUET_GEMMA_EST_TOKENS for another agent's, so a fresh process does
+        not book too little and draw 429s)."""
+        return self.average.get(model, float(os.environ.get("DUET_GEMMA_EST_TOKENS", "2600")))
 
     def _window(self, i: int, model: str) -> _Window:
         return self.windows.setdefault((i, model), _Window())

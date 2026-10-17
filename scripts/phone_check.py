@@ -124,6 +124,12 @@ async def main() -> int:
             if r:
                 bad.append(op)
         step("permissions granted", not bad, ("not granted: " + ", ".join(bad)) if bad else "all")
+        # Samsung's battery care can put a backgrounded app to sleep: DUET may run in the background and
+        # is left out of battery optimisation, so it keeps listening behind Google Maps
+        adb("shell", "cmd", "appops", "set", PKG, "RUN_ANY_IN_BACKGROUND", "allow")
+        idle = adb("shell", "cmd", "deviceidle", "whitelist", "+" + PKG)
+        step("background running allowed, no battery optimisation", "Added" in idle or "already" in idle.lower() or not idle,
+             idle.splitlines()[0] if idle else "")
     step("phone's localhost:8787 is this laptop", "8787" in adb("reverse", "tcp:8787", "tcp:8787") or True,
          adb("reverse", "--list").replace("\n", "; "))
 

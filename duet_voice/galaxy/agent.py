@@ -43,7 +43,10 @@ load_dotenv(os.path.join(_ROOT, ".env.livekit"))
 for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"),
                       ("DUET_PROGRESS_AFTER", "6"),
                       ("DUET_ACK_GRACE", "0.5" if os.environ.get("DUET_FAST", "0") == "1" else "0.3"),
-                      ("DUET_GEMMA_DEADLINE_S", "15"), ("DUET_GEMMA_OFFLINE_AFTER_S", "2")):
+                      ("DUET_GEMMA_DEADLINE_S", "15"), ("DUET_GEMMA_OFFLINE_AFTER_S", "2"),
+                      # a phone mode's call is about 3,600 input tokens (its tools and instructions):
+                      # booked as such from the first call, a fresh agent does not draw 429s
+                      ("DUET_GEMMA_EST_TOKENS", "3800")):
     os.environ.setdefault(_name, _value)
 
 from livekit import agents, rtc  # noqa: E402

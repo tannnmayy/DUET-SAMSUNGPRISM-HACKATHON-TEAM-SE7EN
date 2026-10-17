@@ -45,7 +45,17 @@ def fake_clients(monkeypatch, script):
 def with_keys(monkeypatch, n, tpm=15000):
     monkeypatch.setenv("GOOGLE_API_KEYS", ",".join("key%d" % i for i in range(n)))
     monkeypatch.setenv("DUET_GEMMA_TPM", str(tpm))
+    # the benchmark's settings: importing the phone app's agent (another test) sets its own
+    for name in ("DUET_GEMMA_EST_TOKENS", "DUET_GEMMA_OFFLINE_AFTER_S"):
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(gemma_api, "_pool", None)
+
+
+def test_a_fresh_pool_books_the_agents_own_call_size(monkeypatch):
+    with_keys(monkeypatch, 1)
+    assert gemma_api.pool().estimate("m") == 2600.0                 # the benchmark's thinker call
+    monkeypatch.setenv("DUET_GEMMA_EST_TOKENS", "3800")             # the phone app's
+    assert gemma_api.pool().estimate("m") == 3800.0
 
 
 def run(coro):

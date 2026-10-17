@@ -92,6 +92,21 @@ MAPS = [
 ]
 
 
+# Drive mode: the destination corrected mid-sentence, the route handed to Google Maps, then the home, a
+# message and the music while Maps stays in front
+DRIVE = [
+    ("destination", "Take me to the office. No wait, the airport, I have a flight.",
+     {"done": [("set_destination", {"place": "airport"})], "never": [("set_destination", {"place": "office"})]}),
+    ("to_maps", "Hand it to Google Maps.", {"done": [("open_navigation", {})], "after": "maps_front"}),
+    ("d_home", "Turn on the AC at home.",
+     {"done": [("control_home_device", {"device": "ac|air"})], "after": "home:Air conditioner:on", "behind_maps": True}),
+    ("d_music", "Play some music.", {"done": [("control_media", {"action": "play"})], "behind_maps": True}),
+    ("d_eta", "When will I get there?", {"reads": ["get_trip_status"], "say": r"\d"}),
+    ("d_text", "Tell Priya I'm on my way and when I'll get there.",
+     {"done": [("send_message", {"to": "priya", "text": r"\d"})]}),
+]
+
+
 def top_activity() -> str:
     out = adb("shell", "dumpsys", "activity", "activities")
     m = re.search(r"topResumedActivity=ActivityRecord\{\S+ \S+ ([^/\s]+)", out)
@@ -133,6 +148,9 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
     for tool, args in want.get("done", []):
         if not any(match(e, tool, args) for e in done):
             problems.append("NOT DONE %s %s" % (tool, args))
+    for tool, args in want.get("never", []):
+        if any(match(e, tool, args) for e in done):
+            problems.append("STALE %s %s" % (tool, args))
     for tool in want.get("reads", []):
         if not any(e.get("tool") == tool for e in done):
             problems.append("NOT READ %s" % tool)
@@ -221,7 +239,8 @@ async def main() -> int:
     # typed requests only: the device's microphone (on the emulator, the laptop's) must not add words
     await cdp_eval("DuetApp.room.localParticipant.setMicrophoneEnabled(false).then(() => true)", 20)
     results = []
-    for name, text, want in CASES + DRILL + ([] if args.no_maps else MAPS):
+    cases = DRIVE if args.mode == "drive" else CASES + DRILL + ([] if args.no_maps else MAPS)
+    for name, text, want in cases:
         if want.get("behind_maps") and "maps" not in top_activity():
             await asyncio.sleep(1.0)
         r = await run_case(name, text, want)

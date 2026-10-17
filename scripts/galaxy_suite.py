@@ -446,7 +446,16 @@ def prepare(sc: dict, pipe, voice: str) -> List[tuple]:
             out.append((text, text, None, pause))
             continue
         clean = text.lstrip("@!")
-        audio = np.concatenate([np.asarray(r.audio, dtype=np.float32) for r in pipe(clean, voice=voice)])
+        # the scripted voice is the same every run: synthesized once, kept on disk
+        import hashlib
+        cache = os.path.join(ROOT, "results", "galaxy", "suite", "_voice_cache",
+                             hashlib.sha1((voice + "|" + clean).encode()).hexdigest() + ".npy")
+        if os.path.exists(cache):
+            audio = np.load(cache)
+        else:
+            audio = np.concatenate([np.asarray(r.audio, dtype=np.float32) for r in pipe(clean, voice=voice)])
+            os.makedirs(os.path.dirname(cache), exist_ok=True)
+            np.save(cache, audio)
         out.append((text, clean, audio, pause))
     return out
 
