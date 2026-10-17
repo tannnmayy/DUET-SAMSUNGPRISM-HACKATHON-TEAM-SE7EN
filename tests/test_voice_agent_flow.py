@@ -174,3 +174,11 @@ def test_a_request_routed_to_a_slower_mind_is_covered_at_once(monkeypatch):
 def test_snake_case_is_spoken_as_words():
     a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Your driver_license is updated.")])
     assert speak(a, "update it") == ["Your driver license is updated."]
+
+
+def test_a_silent_reply_can_be_replaced_by_the_agents_own_line():
+    """The phone app's hook: when its guards held a request back and the thinker says nothing, the
+    agent asks for the rest itself. The benchmark's agent keeps silence silent (test above)."""
+    a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="<silent>")], ack=None)
+    a.silent_fallback = lambda confirmed: "Who should I call?"
+    assert speak(a, "call my") == ["Who should I call?"]

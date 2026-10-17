@@ -220,6 +220,10 @@ class DuetAgent(Agent):
         reply (always empty for the benchmark); `why`: the failure."""
         return "Sorry, something went wrong on my side. Could you say that once more?"
 
+    def silent_fallback(self, confirmed: List[str]) -> str:
+        """What to say when the thinker's reply is empty or <silent>. The benchmark: nothing."""
+        return ""
+
     def silent_answers(self, confirmed: List[str]) -> bool:
         """Does a <silent> reply close the request? The benchmark: always (it is noise)."""
         return True
@@ -435,6 +439,12 @@ class DuetAgent(Agent):
                     if words and "<silent>" not in words:
                         yield words
                         spoke = True
+                    else:
+                        line = self.silent_fallback(confirmed)
+                        if line:
+                            self._trace("silent_fallback", text=line)
+                            yield line
+                            spoke = True
         finally:
             worker.cancel()
             if not ack_task.done():

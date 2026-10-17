@@ -543,10 +543,18 @@
     state.alerts.push({ at: hhmm(new Date()), reason });
     save(); changed("alerts");
     if (settings().direct && isNative() && fam.length) {
+      // only the people whose text the phone's radio took count as alerted
+      const reached = [], missed = [];
       for (const c of fam) {
-        try { await Native.sms({ number: c.number, text: "DUET alert from " + (settings().name || "your family member") + ": " + reason, direct: true }); } catch (e) { /* next */ }
+        let r = null;
+        try { r = await Native.sms({ number: c.number, text: "DUET alert from " + (settings().name || "your family member") + ": " + reason, direct: true }); }
+        catch (e) { r = { error: String((e && e.message) || e) }; }
+        if (r && r.sent) reached.push(c.name);
+        else if (r && r.unconfirmed) reached.push(c.name + " (sending, not confirmed yet)");
+        else missed.push(c.name + (r && r.error ? ": " + r.error : ""));
       }
-      return ok({ alerted: fam.map((c) => c.name), how: "text message" });
+      if (!reached.length) return fail("the alert texts did not go out (" + missed.join("; ") + ")");
+      return ok({ alerted: reached, how: "text message", not_reached: missed });
     }
     return ok({ alerted: fam.length ? fam.map((c) => c.name) : ["family (demo)"], how: "family app alert (simulated)" });
   };

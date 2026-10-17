@@ -180,6 +180,17 @@ def test_a_time_has_one_spelling_so_cancel_and_set_again_work():
     assert sent == [("set_alarm", {"time": "07:00"}), ("cancel_alarm", {"time": "07:00"}), ("set_alarm", {"time": "07:00"})]
 
 
+def test_a_call_the_guards_held_back_is_remembered_until_the_request_is_answered():
+    """If the model then says nothing, the agent asks for the missing part itself (18 Oct 2026)."""
+    box, sent, _ = make()
+    box.coord.heard("Call my")
+    box.coord.turn_committed()
+    assert call(box, "call_contact", {"name": "my"})["status"] == "not_executed" and sent == []
+    assert box.unfinished == ("call_contact", "cut_off")
+    box.new_request()
+    assert box.unfinished is None
+
+
 def test_times_in_a_text_message_are_sent_in_digits():
     """18 Oct 2026, Drive mode: the arrival time went out as "about half past three"."""
     from duet_voice.galaxy.tools import message_times

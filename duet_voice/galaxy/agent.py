@@ -129,6 +129,12 @@ async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str)
     return answer.startswith("yes")
 
 
+# The question for a request cut off mid-phrase, when the model asks nothing itself
+ASK_REST = {"call_contact": "Who should I call?", "send_message": "Who should I text?",
+            "set_alarm": "For what time?", "set_reminder": "For what time?", "set_timer": "For how long?",
+            "navigate_to": "Where to?", "set_destination": "Where to?", "add_stop": "Where should I add the stop?",
+            "control_home_device": "Which device, and what should I do with it?"}
+
 FILLER = re.compile(r"(just )?(let me know|feel free|is there anything else|anything else)", re.I)
 
 # Readings that change: once a reply is delivered, the thinker's memory keeps that it read them, not
@@ -242,6 +248,19 @@ class GalaxyAgent(base.DuetAgent):
         """One "Still working on it." at most, and none once an action has been confirmed: the
         rest of the wait is only the wording of the answer."""
         return lines_so_far < 1 and not confirmed
+
+    def silent_fallback(self, confirmed) -> str:
+        """The guards held a request back (cut off mid-phrase, or undecided) and the model then said
+        nothing: DUET asks for the missing part itself. 18 Oct 2026: after "Call my", the cloud mind
+        replied <silent> although told never to, and the user heard only "One moment."."""
+        held = self._toolbox.unfinished
+        if not held or confirmed:
+            return ""
+        self._toolbox.unfinished = None
+        tool, why = held
+        if why == "undecided":
+            return "Which one do you want?"
+        return ASK_REST.get(tool, "Sorry, I didn't catch the end of that. Could you finish it?")
 
     def silent_answers(self, confirmed) -> bool:
         """A silent reply closes the request only when something was done in it (the fast mind's

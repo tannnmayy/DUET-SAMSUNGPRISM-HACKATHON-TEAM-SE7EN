@@ -143,6 +143,9 @@ class PhoneToolbox:
         self.asked: set = set()
         # the last call that ran: (tool, args, the phone's reply, its spoken confirmation or None)
         self.last_done: Optional[tuple] = None
+        # a call of this request the guards held back, as (tool, "cut_off" or "undecided"): if the model
+        # then says nothing, the agent asks for the missing part itself
+        self.unfinished: Optional[tuple] = None
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -150,6 +153,7 @@ class PhoneToolbox:
         screens may run again; everything else stays exactly-once."""
         self.held_back = []
         self.asked = set()
+        self.unfinished = None
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") == "ui":
@@ -194,6 +198,7 @@ class PhoneToolbox:
         timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
+            self.unfinished = (tool, "cut_off")
             self.emit({"kind": "tool_asked", "tool": tool, "args": args})
             return json.dumps({"status": "not_executed", "reason":
                                "the user's words stop mid-phrase; ask them, in a few words, for the rest"})
@@ -201,6 +206,7 @@ class PhoneToolbox:
             # "Call Rahul, or maybe Priya, I'm not sure": the user has not chosen, so nothing is
             # done whatever the model decided; it asks instead (measured 16 Oct: the cloud model
             # with minimal thinking called both)
+            self.unfinished = (tool, "undecided")
             self.emit({"kind": "tool_asked", "tool": tool, "args": args})
             return json.dumps({"status": "not_executed", "reason":
                                "the user has not decided yet. Ask which one, in one short question that names "

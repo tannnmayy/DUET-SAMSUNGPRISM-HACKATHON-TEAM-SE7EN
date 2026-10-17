@@ -274,3 +274,19 @@ def test_old_readings_are_not_kept_for_later_questions():
              "function": {"name": "get_home_status", "arguments": "{}"}}]},
             {"role": "tool", "tool_call_id": "c1", "content": '{"devices": ["AC: on"]}'}]
     assert galaxy_agent.stale_readings(chat) == 1 and "out_of_date" in chat[1]["content"]
+
+
+def test_a_request_held_back_and_then_met_with_silence_gets_a_question():
+    """18 Oct 2026: the cut-off guard held "Call my" back, the cloud mind then replied <silent>,
+    and the user heard only "One moment."."""
+    from types import SimpleNamespace
+    from duet_voice.galaxy import agent as galaxy_agent
+    ask = galaxy_agent.GalaxyAgent.silent_fallback
+    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=("call_contact", "cut_off")))
+    assert ask(me, []) == "Who should I call?"
+    assert me._toolbox.unfinished is None and ask(me, []) == ""          # asked once
+    me._toolbox.unfinished = ("call_contact", "undecided")
+    assert ask(me, []) == "Which one do you want?"
+    me._toolbox.unfinished = ("set_brightness", "cut_off")
+    assert ask(me, ["Torch on."]) == ""                                   # something was done and said
+    assert ask(me, []).startswith("Sorry, I didn't catch the end")
