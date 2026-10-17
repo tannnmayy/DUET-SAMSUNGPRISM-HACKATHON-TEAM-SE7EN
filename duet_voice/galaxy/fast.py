@@ -181,6 +181,17 @@ _QUESTION = re.compile(r"^\W*(is|are|was|were|do|does|did|what|what's|whats|whic
 _DROPPED = re.compile(r"\b(never ?mind|forget (it|that|about it)|don'?t bother|skip (it|that)|leave it|no need)\b", re.I)
 
 
+# a message whose words point at a fact to look up rather than state it
+_NEEDS_LOOKUP = re.compile(r"arrival time|\beta\b|when (i'?ll|i will|we'?ll|we will) (get|be|reach|arrive)|how long|"
+                           r"my location|where i am|the (latest|current) |the time i", re.I)
+
+
+def user_named(tool: str, words: str) -> bool:
+    """Do the user's own words name this action ("set the AC to 22", "call Priya")? Then it was asked for."""
+    pattern = NAMED.get(tool)
+    return bool(pattern and re.search(pattern, (words or "").lower()))
+
+
 def drops_something(words: str) -> bool:
     return bool(_DROPPED.search(words or ""))
 
@@ -229,6 +240,10 @@ def vet(tool: str, args: Dict[str, Any], words: str) -> str:
         parts = [p for p in re.findall(r"[a-z0-9]+", value) if len(p) >= 2 and p not in ("the", "my", "to", "a")]
         if parts and not any(re.search(r"\b%s" % re.escape(p), w) or p in RELATIONS for p in parts):
             return "%s '%s' is not in the user's words" % (key, value)
+    if tool == "send_message" and _NEEDS_LOOKUP.search(str(args.get("text") or "")):
+        # "tell Priya I'll be there by the arrival time": the time must be looked up (the trip), and
+        # the fast mind would send the words as they are (measured 17 Oct 2026)
+        return "the message needs a fact looked up first: the cloud mind"
     num_key = NUMBER_ARGS.get(tool)
     if num_key and args.get(num_key) is not None:
         try:
@@ -253,6 +268,29 @@ def vet(tool: str, args: Dict[str, Any], words: str) -> str:
 
 AFTER_ACTION_S = 12.0   # the gate's hold, the phone's reply and a short last word fit easily
 CLOUD_DOWN_S = 20.0     # after failing to reach the cloud mind, requests skip it for this long
+
+REFUSED_MAX = 3         # tries of an action the toolbox refused, in one request, before DUET asks the user
+
+# the question DUET asks when the cloud mind keeps trying an action it may not take yet
+_ASK = {
+    "set_brightness": lambda a: ("set the brightness to %s percent" % a["percent"]) if a.get("percent") is not None
+    else "change the brightness",
+    "set_screen_timeout": lambda a: "set the screen timeout to %s seconds" % a.get("seconds"),
+    "call_contact": lambda a: "call %s" % a.get("name"),
+    "send_message": lambda a: "text %s" % a.get("to"),
+    "control_home_device": lambda a: "%s the %s" % (str(a.get("action") or "change").replace("_", " "), a.get("device")),
+    "set_car_climate": lambda a: ("set the car's AC to %s degrees" % a["temperature"]) if a.get("temperature") is not None
+    else "switch the car's AC %s" % ("off" if a.get("on") is False else "on"),
+}
+
+
+def ask_first(tool: str, args: Dict[str, Any]) -> str:
+    try:
+        what = _ASK[tool](args or {})
+    except Exception:
+        what = "do that"
+    return "Should I go ahead and %s?" % what
+
 
 CLOUD_OFF = "the cloud mind is switched off (offline drill)"
 CLOUD_DOWN = "cannot reach the cloud mind (it failed moments ago)"
@@ -407,10 +445,23 @@ class HybridThinker:
                          "happened (do not retry it; tell the user it may not have gone through and to check "
                          "the phone): " + "; ".join(unsure))
         slow_note = "\n".join([x for x in [note] + extra if x])
-        async for ev in self.slow.run(text, toolbox, audio=audio, note=slow_note, allow_listen=allow_listen):
-            if ev.kind == "say":
-                self.edge_log = []
-                self.cloud_down_until = 0.0
-            if ev.kind == "error" and cloud_unreachable(ev.text):
-                self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
-            yield ev
+        refused: Dict[str, int] = {}
+        agen = self.slow.run(text, toolbox, audio=audio, note=slow_note, allow_listen=allow_listen)
+        try:
+            async for ev in agen:
+                if ev.kind == "say":
+                    self.edge_log = []
+                    self.cloud_down_until = 0.0
+                if ev.kind == "error" and cloud_unreachable(ev.text):
+                    self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
+                yield ev
+                if ev.kind == "tool_done" and ev.outcome == "not_executed":
+                    refused[ev.name] = refused.get(ev.name, 0) + 1
+                    if refused[ev.name] >= REFUSED_MAX:
+                        # the cloud mind keeps calling an action it was told not to (17 Oct 2026: seven
+                        # times, 15 s of silence): stop it, and ask the user plainly instead
+                        log.warning("cloud mind: %s refused %d times; asking the user", ev.name, refused[ev.name])
+                        yield ThinkEvent("say", text=ask_first(ev.name, ev.args))
+                        return
+        finally:
+            await agen.aclose()

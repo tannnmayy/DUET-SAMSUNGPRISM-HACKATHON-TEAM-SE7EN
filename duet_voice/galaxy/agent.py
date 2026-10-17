@@ -44,6 +44,10 @@ for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"
                       ("DUET_PROGRESS_AFTER", "6"),
                       ("DUET_ACK_GRACE", "0.5" if os.environ.get("DUET_FAST", "0") == "1" else "0.3"),
                       ("DUET_GEMMA_DEADLINE_S", "15"), ("DUET_GEMMA_OFFLINE_AFTER_S", "2"),
+                      # the fast mind decides in 0.3 s, so the gate's hold alone stands between a pause and
+                      # an action: 1.4 s, not the benchmark's 1.1 s (17 Oct 2026: "3:30." then "no, no"
+                      # after a 1.1 s pause set 3:30 first, then undid it)
+                      ("DUET_COMMIT_HOLD", "1.4"),
                       # a phone mode's call is about 3,600 input tokens (its tools and instructions):
                       # booked as such from the first call, a fresh agent does not draw 429s
                       ("DUET_GEMMA_EST_TOKENS", "3800")):
@@ -97,6 +101,12 @@ def consent_model() -> Optional[tuple]:
         return (os.environ.get("DUET_FAST_BASE_URL", "http://127.0.0.1:18002/v1"),
                 os.environ.get("DUET_FAST_MODEL", "gemma-4-e2b"))
     return None
+
+
+def asked_for(tool: str, words: str) -> bool:
+    """The user's own words plainly ask for this action: they name it, and they are not a question
+    ("set the AC to 22" yes; "is it my brightness?" no). Then no model is asked."""
+    return fast.user_named(tool, words) and not fast.asks_question(words)
 
 
 async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str) -> bool:
@@ -367,8 +377,15 @@ async def entrypoint(ctx: JobContext) -> None:
     said = {"last": ""}  # what DUET last said, for the consent gate
 
     async def consent(tool: str, args: Dict[str, Any]) -> bool:
-        ok = await user_agreed(tool, args, coord.open_utterance, said["last"])
-        trace("consent", tool=tool, args=args, allowed=ok)
+        words = coord.open_utterance
+        if asked_for(tool, words):
+            # the user's own words ask for it ("set the AC to 22, no 21"): no model to second-guess
+            # them (17 Oct 2026: the small model said no to exactly that). A question that mentions it
+            # ("is it my brightness?") is still checked.
+            trace("consent", tool=tool, args=args, allowed=True, by="named")
+            return True
+        ok = await user_agreed(tool, args, words, said["last"])
+        trace("consent", tool=tool, args=args, allowed=ok, by="model")
         return ok
 
     names = {t["name"] for t in mode["tools"]}

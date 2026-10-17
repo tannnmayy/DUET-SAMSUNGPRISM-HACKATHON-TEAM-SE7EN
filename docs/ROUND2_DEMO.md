@@ -101,6 +101,7 @@ limits with Maps in front (6). Each has a fallback that is already built: DUET's
 | What the jury hears | The presenter's voice and DUET's, from the phone's loudspeaker, through the laptop microphone. Test the level once: DUET must be clearly audible. (Alternative: scrcpy without `--no-audio` forwards the phone's sound to the laptop; then share system audio. Choose by testing.) |
 | The SmartThings home | my.smartthings.com in a laptop browser, signed in with the account that owns the home: the devices change live. Share it next to the phone window |
 | If the jury wants to interrupt DUET themselves | Their voice comes out of the laptop speaker: put the phone next to it. Rehearse once. Fallback: the presenter says what they ask |
+| **When you are not demoing** | DUET hears the meeting too. During the talk and the Q&A, tap the **microphone button** in DUET's top bar (muted), or end the conversation, so it does not answer the jury's questions to you. Unmute for the jury's free play |
 | Backup | A recorded run of the whole script (made on the 20th); the laptop browser at http://localhost:8787 runs the same app with the phone simulated |
 
 ## 5. The demo script

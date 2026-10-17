@@ -646,6 +646,8 @@ async def main() -> int:
             await asyncio.sleep(2.0)   # the room closes before the next one opens
     report(summarize(results, folder))
     print("\nsaved:", folder)
+    if home_loc:
+        await st.close()
     return 0
 
 

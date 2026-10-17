@@ -173,3 +173,31 @@ def test_a_dropped_request_is_never_the_fast_minds():
     assert drops_something(words) and vet_plan([("set_alarm", {"time": "06:00"})], words)
     assert not drops_something("Turn on the AC. Actually, leave the light on.")
     assert vet_plan([("set_alarm", {"time": "07:00"})], "Set an alarm for 6, no, 7.") == ""
+
+
+def test_a_message_that_needs_a_fact_goes_to_the_cloud_mind():
+    """17 Oct 2026: "tell Priya I'll be there by the arrival time" was sent word for word."""
+    assert vet_plan([("send_message", {"to": "Priya", "text": "I'll be there by the arrival time."})],
+                    "And tell Priya I'll be there by the arrival time.")
+    assert vet_plan([("send_message", {"to": "Rahul", "text": "I'll be home by eight."})],
+                    "send a message to rahul saying i'll be home by eight") == ""
+
+
+def test_an_action_refused_again_and_again_ends_in_a_question():
+    """17 Oct 2026: the cloud mind called a refused set_car_climate seven times; 15 s of silence."""
+    refused = ThinkEvent("tool_done", name="set_car_climate", args={"on": True, "temperature": 21}, outcome="not_executed")
+    slow = Script("26b", [ThinkEvent("decided", tools=True)] + [refused] * 7 + [ThinkEvent("say", text="")])
+    events, _ = collect(HybridThinker(Script("e2b", [ThinkEvent("escalate", text="x")]), slow))
+    says = [e.text for e in events if e.kind == "say"]
+    assert says == ["Should I go ahead and set the car's AC to 21 degrees?"]
+    assert sum(1 for e in events if e.kind == "tool_done") == fast_mod.REFUSED_MAX
+
+
+def test_an_action_the_user_named_needs_no_model_to_agree():
+    from duet_voice.galaxy.agent import asked_for
+    assert asked_for("set_car_climate", "It's hot in here, set the AC to 22, no 21.")
+    assert asked_for("call_contact", "Can you call my daughter, please?")
+    assert asked_for("set_brightness", "Okay, bring the brightness down to forty percent.")
+    assert not asked_for("set_brightness", "I keep my brightness really high. Is that it?")       # a question
+    assert not asked_for("set_brightness", "Would lowering my brightness help my battery?")
+    assert not asked_for("call_contact", "Yes, please.")                                          # the model judges
