@@ -153,6 +153,12 @@ class PhoneToolbox:
             return json.dumps({"status": "error", "error": "unknown tool '%s'" % tool,
                                "instruction": "use only the tools you were given"})
         args = coerce_props(spec["parameters"]["properties"], raw_args)
+        if isinstance(args.get("time"), str):
+            # one spelling of a time: "7:00" and "07:00" are the same alarm to the ledger (17 Oct 2026: a
+            # cancel of "7:00" did not clear the "07:00" it cancelled, so setting 07:00 again read "already done")
+            m = re.match(r"\s*(\d{1,2})[:.](\d{2})\s*$", args["time"])
+            if m and int(m.group(1)) < 24 and int(m.group(2)) < 60:
+                args["time"] = "%02d:%s" % (int(m.group(1)), m.group(2))
         kind = spec.get("kind", "read")
         self.last_done = None
         if tool in ("set_alarm", "set_reminder") and args.get("time"):

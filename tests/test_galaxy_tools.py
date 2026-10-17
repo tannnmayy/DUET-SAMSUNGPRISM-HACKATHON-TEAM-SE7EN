@@ -169,3 +169,12 @@ def test_a_call_refused_by_the_consent_check_is_not_retried_in_a_loop():
     box.new_request()                            # a new request may ask again
     call(box, "call_contact", {"name": "Priya"})
     assert asked == ["call_contact", "call_contact"]
+
+
+def test_a_time_has_one_spelling_so_cancel_and_set_again_work():
+    """17 Oct 2026: cancel_alarm("7:00") did not clear set_alarm("07:00") in the ledger."""
+    box, sent, _ = make()
+    call(box, "set_alarm", {"time": "07:00"})
+    call(box, "cancel_alarm", {"time": "7:00"})
+    assert call(box, "set_alarm", {"time": "7.00"})["status"] == "ok"           # set again, really
+    assert sent == [("set_alarm", {"time": "07:00"}), ("cancel_alarm", {"time": "07:00"}), ("set_alarm", {"time": "07:00"})]
