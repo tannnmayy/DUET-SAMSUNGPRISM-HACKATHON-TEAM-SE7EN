@@ -36,7 +36,9 @@ OUT = os.path.join(ROOT, "results", "galaxy", "phone")
 RUNTIME = ["android.permission.RECORD_AUDIO", "android.permission.CAMERA", "android.permission.CALL_PHONE",
            "android.permission.SEND_SMS", "android.permission.READ_CONTACTS", "android.permission.READ_CALENDAR",
            "android.permission.WRITE_CALENDAR", "android.permission.POST_NOTIFICATIONS"]
-APPOPS = ["WRITE_SETTINGS", "GET_USAGE_STATS"]
+# WRITE_SETTINGS: brightness and timeout; GET_USAGE_STATS: screen time; SYSTEM_ALERT_WINDOW ("Appear on
+# top"): open the Clock, dialer, Messages or Maps while Google Maps is in front (Android blocks it otherwise)
+APPOPS = ["WRITE_SETTINGS", "GET_USAGE_STATS", "SYSTEM_ALERT_WINDOW"]
 
 
 def adb(*args, check=False, timeout=120) -> str:
@@ -55,7 +57,13 @@ def step(name: str, ok: bool, detail: str = "") -> bool:
 async def cdp_eval(expr: str, timeout: float = 120.0):
     """Evaluate JavaScript in DUET's WebView and return its value (promises awaited)."""
     import aiohttp
-    sockets = re.findall(r"@(webview_devtools_remote_\d+)", adb("shell", "cat", "/proc/net/unix"))
+    pid = ""
+    for _ in range(50):        # DUET may still be starting (a cold WebView takes several seconds)
+        pid = adb("shell", "pidof", PKG).strip()
+        sockets = re.findall(r"@(webview_devtools_remote_%s)\b" % pid, adb("shell", "cat", "/proc/net/unix")) if pid else []
+        if sockets:
+            break
+        time.sleep(0.5)
     if not sockets:
         raise RuntimeError("no debuggable WebView: is DUET open (a debug build)?")
     adb("forward", "tcp:9333", "localabstract:" + sockets[-1], check=True)
@@ -82,6 +90,7 @@ async def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-install", action="store_true")
     ap.add_argument("--no-grant", action="store_true")
+    ap.add_argument("--no-overlay", action="store_true", help="leave 'Appear on top' off (tests DUET's refusal)")
     ap.add_argument("--eval", default="")
     args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
@@ -110,7 +119,8 @@ async def main() -> int:
             if r and "Exception" in r:
                 bad.append(perm.split(".")[-1])
         for op in APPOPS:
-            r = adb("shell", "appops", "set", PKG, op, "allow")
+            mode = "default" if (op == "SYSTEM_ALERT_WINDOW" and args.no_overlay) else "allow"
+            r = adb("shell", "appops", "set", PKG, op, mode)
             if r:
                 bad.append(op)
         step("permissions granted", not bad, ("not granted: " + ", ".join(bad)) if bad else "all")
@@ -119,13 +129,14 @@ async def main() -> int:
 
     adb("shell", "am", "start", "-n", PKG + "/.MainActivity")
     ok = False
-    for _ in range(30):
+    for _ in range(45):        # a cold start of the WebView takes several seconds on a slow device
         time.sleep(1)
         try:
             ok = bool(await cdp_eval("typeof DuetPhone === 'object' && DuetPhone.NATIVE", 10))
-            break
         except Exception:
-            continue
+            ok = False
+        if ok:
+            break
     if not step("DUET running, native plugin present", ok):
         return 1
     await cdp_eval("(() => { const s = JSON.parse(localStorage.getItem('duet.settings') || '{}');"

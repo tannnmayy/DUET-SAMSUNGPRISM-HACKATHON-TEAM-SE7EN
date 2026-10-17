@@ -126,6 +126,17 @@
   const ok = (extra) => ({ status: "ok", ...extra });
   const fail = (error, extra) => ({ status: "error", error, ...extra });
   const needs = (permission, instruction) => ({ status: "needs_permission", permission, instruction });
+  // The native side answers {blocked} when Android would not let DUET open another app's screen: DUET is
+  // behind another app (Google Maps) and the user has not let it appear on top. Nothing was done.
+  const BLOCKED = () => needs("display_over_apps", "Nothing was done: DUET is behind another app, and Android only lets " +
+    "it open the Clock, the dialer, Messages or Maps from there if the user allows 'Appear on top' for DUET (DUET's " +
+    "settings has the button). Say this in one short sentence; or the user can switch back to DUET and ask again.");
+  // DUET's own alarms (the default on a phone) or the Clock app (Settings). Measured on Android 16
+  // (17 Oct 2026): Google's Clock app ignored a cancel request for an alarm hours away and came to the
+  // front instead, and Android gives other apps no way to read the Clock's alarms. DUET's own alarms are
+  // exact (set, cancel, list), open no screen, and show as the phone's next alarm on the lock screen.
+  const duetAlarms = () => isNative() && settings().alarms !== "clock";
+  let backgroundListening = false;   // set by app.js once the microphone service runs
   function parseTime(t) {
     const m = /^(\d{1,2}):(\d{2})/.exec(String(t || "").trim());
     if (!m) return null;
@@ -167,36 +178,70 @@
   T.set_alarm = async ({ time, label }) => {
     const p = parseTime(time);
     if (!p) return fail("not a time: " + time);
-    if (isNative()) await Native.setAlarm({ hour: p.hour, minute: p.minute, label: label || "" });
+    let where = isNative() ? "Clock app" : "Clock (simulated)";
+    if (duetAlarms()) {
+      const r = await Native.duetAlarmSet({ hour: p.hour, minute: p.minute, label: label || "" });
+      if (!r.granted) return r.need === "notifications"
+        ? needs("notifications", "Ask the user to allow notifications for DUET, so its alarm can ring; the button is in DUET's settings.")
+        : needs("alarms_and_reminders", "Ask the user to allow 'Alarms and reminders' for DUET; the button is in DUET's settings.");
+      where = "DUET's alarms";
+    } else if (isNative()) {
+      const r = await Native.setAlarm({ hour: p.hour, minute: p.minute, label: label || "" });
+      if (r && r.blocked) return BLOCKED();
+    }
     state.alarms = state.alarms.filter((a) => a.time !== p.text);
     state.alarms.push({ time: p.text, label: label || "", at: hhmm(new Date()) });
     save(); changed("alarms");
-    return ok({ alarm: spoken(p.text), where: isNative() ? "Samsung Clock" : "Clock (simulated)" });
+    return ok({ alarm: spoken(p.text), where });
   };
 
   T.cancel_alarm = async ({ time }) => {
     const p = parseTime(time);
     if (!p) return fail("not a time: " + time);
     const had = state.alarms.some((a) => a.time === p.text);
+    if (duetAlarms()) {    // exact: DUET knows its own alarms
+      const r = await Native.duetAlarmCancel({ hour: p.hour, minute: p.minute });
+      state.alarms = state.alarms.filter((a) => a.time !== p.text);
+      save(); changed("alarms");
+      return r.cancelled ? ok({ cancelled: spoken(p.text) })
+        : ok({ cancelled: false, note: "there was no " + spoken(p.text) + " alarm, so nothing needed cancelling" });
+    }
     let requested = false;
-    if (isNative()) { try { requested = !!(await Native.dismissAlarm({ hour: p.hour, minute: p.minute })).requested; } catch (e) { requested = false; } }
+    if (isNative()) {
+      let r = null;
+      try { r = await Native.dismissAlarm({ hour: p.hour, minute: p.minute }); } catch (e) { r = null; }
+      if (r && r.blocked) return BLOCKED();
+      requested = !!(r && r.requested);
+    }
     state.alarms = state.alarms.filter((a) => a.time !== p.text);
     save(); changed("alarms");
     if (!had && !isNative()) return ok({ cancelled: false, note: "there was no " + spoken(p.text) + " alarm, so nothing needed cancelling" });
-    return ok({ cancelled: spoken(p.text), note: isNative() && !requested
-      ? "the Clock app did not confirm it; ask the user to check Clock" : undefined });
+    if (isNative()) {   // the Clock app was asked; Android lets no other app check that it did it
+      return ok({ cancelled: spoken(p.text), verified: false, note: requested
+        ? "the Clock app was asked to cancel it, but Android gives no way to check: say it was asked, and that they can check the Clock app"
+        : "the Clock app did not take the request: ask the user to cancel it in the Clock app" });
+    }
+    return ok({ cancelled: spoken(p.text) });
   };
 
   T.list_alarms = async () => {
     let next = null;
     if (isNative()) { try { next = (await Native.nextAlarm()).time || null; } catch (e) { next = null; } }
+    if (duetAlarms()) {
+      const r = await Native.duetAlarmList();
+      return ok({ set_by_duet: (r.alarms || []).map((a) => spoken(pad(a.hour) + ":" + pad(a.minute)) + (a.label ? " (" + a.label + ")" : "")),
+        phone_next_alarm: next });
+    }
     return ok({ set_by_duet: state.alarms.map((a) => spoken(a.time) + (a.label ? " (" + a.label + ")" : "")),
       phone_next_alarm: next });
   };
 
   T.set_timer = async ({ minutes: m, label }) => {
     const seconds = Math.max(1, Math.round(Number(m) * 60));
-    if (isNative()) await Native.setTimer({ seconds, label: label || "" });
+    if (isNative()) {
+      const r = await Native.setTimer({ seconds, label: label || "" });
+      if (r && r.blocked) return BLOCKED();
+    }
     return ok({ timer_minutes: +(seconds / 60).toFixed(1), rings_at: hhmm(new Date(Date.now() + seconds * 1000)) });
   };
 
@@ -247,14 +292,17 @@
   };
 
   T.open_settings = async ({ page }) => {
-    if (isNative()) await Native.openSettings({ page });
-    else toast("Opening " + page.replace(/_/g, " ") + " settings (simulated)");
+    if (isNative()) {
+      const r = await Native.openSettings({ page });
+      if (r && r.blocked) return BLOCKED();
+    } else toast("Opening " + page.replace(/_/g, " ") + " settings (simulated)");
     return ok({ opened: page });
   };
 
   T.open_app = async ({ name }) => {
     if (isNative()) {
       const r = await Native.openApp({ name });
+      if (r && r.blocked) return BLOCKED();
       return r.opened ? ok({ opened: r.opened }) : fail("no app called " + name + " on this phone");
     }
     const app = bestMatch(SIM.apps, name, (a) => a.name);
@@ -264,10 +312,14 @@
   };
 
   T.navigate_to = async ({ destination, mode }) => {
-    if (isNative()) await Native.navigate({ destination, mode: mode || "driving" });
-    else window.open("https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination), "_blank");
+    if (isNative()) {
+      const r = await Native.navigate({ destination, mode: mode || "driving" });
+      if (r && r.blocked) return BLOCKED();
+    } else window.open("https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(destination), "_blank");
     return ok({ navigating_to: destination, app: "Google Maps",
-      note: "DUET stops listening while Google Maps is on screen; the user comes back to DUET to talk again" });
+      note: !isNative() ? "Google Maps opened in another browser tab"
+        : backgroundListening ? "Google Maps is now in front; DUET keeps listening, so the user can just keep talking"
+        : "Google Maps is now in front; the user comes back to DUET to talk again" });
   };
 
   T.call_contact = async ({ name }) => {
@@ -276,6 +328,7 @@
     const direct = !!settings().direct;
     if (isNative()) {
       const r = await Native.call({ number: c.number, direct });
+      if (r && r.blocked) return BLOCKED();
       return ok({ calling: c.name, state: r.direct ? "ringing" : "the dialer is open; the user taps call",
         note: "nothing is known yet about the conversation itself" });
     }
@@ -289,6 +342,7 @@
     const direct = !!settings().direct;
     if (isNative()) {
       const r = await Native.sms({ number: c.number, text, direct });
+      if (r && r.blocked) return BLOCKED();
       return ok({ to: c.name, text, how: r.sent ? "sent" : "Messages is open with the text; the user taps send" });
     }
     toast("Message to " + c.name + ": " + text);
@@ -367,6 +421,16 @@
     await step("alarm: set 23:58", () => T.set_alarm({ time: "23:58", label: "DUET self-test" }));
     await step("alarm: cancel 23:58", () => T.cancel_alarm({ time: "23:58" }));
     await step("next alarm", () => T.list_alarms({}));
+    if (isNative()) {   // DUET's own alarms, whichever kind Settings uses: set, find, cancel, gone
+      await step("DUET's own alarm: set, list, cancel 23:57", async () => {
+        const s = await Native.duetAlarmSet({ hour: 23, minute: 57, label: "DUET self-test" });
+        if (!s.granted) return { status: "needs_permission", need: s.need };
+        const listed = ((await Native.duetAlarmList()).alarms || []).some((a) => a.hour === 23 && a.minute === 57);
+        const c = await Native.duetAlarmCancel({ hour: 23, minute: 57 });
+        const gone = !((await Native.duetAlarmList()).alarms || []).some((a) => a.hour === 23 && a.minute === 57);
+        return listed && c.cancelled && gone ? { status: "ok", rings: s.rings } : { status: "error", listed, cancelled: c.cancelled, gone };
+      });
+    }
     await step("torch on", () => T.set_torch({ on: true }));
     await new Promise((r) => setTimeout(r, 600));
     await step("torch off", () => T.set_torch({ on: false }));
@@ -377,6 +441,11 @@
         return r.granted ? { status: "ok", found: (r.contacts || []).length } : { status: "needs_permission" };
       });
       await step("permissions", async () => ({ status: "ok", ...(await Native.permissions()) }));
+      await step("act while Maps is in front (Appear on top)", async () => {
+        const p = await Native.permissions();
+        return p.display_over_apps ? { status: "ok", display_over_apps: true }
+          : { status: "needs_permission", fix: "allow Appear on top for DUET (settings button)" };
+      });
     }
     return { device: isNative() ? "this phone" : "simulated phone", results: out,
       passed: out.filter((x) => x.ok).length, total: out.length };
@@ -399,10 +468,12 @@
   T.control_home_device = async ({ device, action, value }) => {
     const d = bestMatch(state.home, device, (x) => x.name + " " + x.type + (x.type === "ac" ? " aircon air conditioning" : ""));
     if (!d) return fail("no device called " + device, { devices: state.home.map((x) => x.name) });
-    const v = value == null ? null : String(value);
+    const v = value == null || String(value).trim() === "" ? null : String(value);
     const num = v == null ? NaN : parseFloat(v);
     const can = { light: ["turn_on", "turn_off", "set"], ac: ["turn_on", "turn_off", "set"], tv: ["turn_on", "turn_off"],
       lock: ["lock", "unlock"], vacuum: ["start", "stop", "dock"], washer: ["start", "stop"] }[d.type] || [];
+    // "turn on the AC and set it to 22" can arrive as turn_on with the value: on, at that value
+    if (action === "turn_on" && v != null && can.includes("set")) action = "set";
     if (!can.includes(action)) return fail(d.name + " cannot " + action.replace("_", " "), { can: can });
     if (action === "turn_on") d.on = true;
     if (action === "turn_off") d.on = false;
@@ -562,6 +633,7 @@
 
   window.DuetPhone = {
     NATIVE: NATIVE_APP, get acting() { return isNative(); }, selfTest, run, reset, settings, contacts, skipAhead, tripView, describe, spoken,
+    set backgroundListening(on) { backgroundListening = !!on; }, get backgroundListening() { return backgroundListening; },
     get state() { return state; },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },
     native: Native,

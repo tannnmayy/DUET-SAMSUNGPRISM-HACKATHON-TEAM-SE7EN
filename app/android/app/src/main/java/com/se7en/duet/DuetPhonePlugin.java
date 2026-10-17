@@ -32,6 +32,8 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.telecom.TelecomManager;
 import android.os.PowerManager;
 import android.os.Process;
 import android.provider.AlarmClock;
@@ -84,10 +86,33 @@ public class DuetPhonePlugin extends Plugin {
         ctx().startActivity(intent);
     }
 
+    // Android lets an app open another app's screen (the Clock, the dialer, Messages, Maps, Settings)
+    // only while the app itself is on screen, or when the user has allowed it to appear on top of other
+    // apps. The microphone service that keeps DUET listening behind Google Maps does not count. Without
+    // either, the screen silently never opens: so DUET checks first and says so, instead of reporting an
+    // action that never happened.
+    private volatile boolean onScreen = true;
+
+    @Override
+    protected void handleOnStart() { onScreen = true; }
+
+    @Override
+    protected void handleOnStop() { onScreen = false; }
+
+    private boolean canOpenScreens() {
+        return onScreen || Settings.canDrawOverlays(ctx());
+    }
+
+    /** The answer when Android would block the screen: nothing was done. */
+    private void blocked(PluginCall call) {
+        call.resolve(new JSObject().put("blocked", "display_over_apps"));
+    }
+
     // ------------------------------------------------------------------ Clock
 
     @PluginMethod
     public void setAlarm(PluginCall call) {
+        if (!canOpenScreens()) { blocked(call); return; }
         Intent i = new Intent(AlarmClock.ACTION_SET_ALARM)
             .putExtra(AlarmClock.EXTRA_HOUR, call.getInt("hour", 7))
             .putExtra(AlarmClock.EXTRA_MINUTES, call.getInt("minute", 0))
@@ -104,6 +129,7 @@ public class DuetPhonePlugin extends Plugin {
 
     @PluginMethod
     public void dismissAlarm(PluginCall call) {
+        if (!canOpenScreens()) { blocked(call); return; }
         int hour = call.getInt("hour", 0);
         int minute = call.getInt("minute", 0);
         Intent i = new Intent(AlarmClock.ACTION_DISMISS_ALARM)
@@ -122,6 +148,7 @@ public class DuetPhonePlugin extends Plugin {
 
     @PluginMethod
     public void setTimer(PluginCall call) {
+        if (!canOpenScreens()) { blocked(call); return; }
         Intent i = new Intent(AlarmClock.ACTION_SET_TIMER)
             .putExtra(AlarmClock.EXTRA_LENGTH, call.getInt("seconds", 60))
             .putExtra(AlarmClock.EXTRA_SKIP_UI, true);
@@ -133,6 +160,42 @@ public class DuetPhonePlugin extends Plugin {
         } catch (ActivityNotFoundException e) {
             call.reject("no Clock app on this phone accepts timers");
         }
+    }
+
+    // DUET's own alarms (DuetAlarms): exact set, cancel and list, also while another app is on screen
+
+    @PluginMethod
+    public void duetAlarmSet(PluginCall call) {
+        if (!DuetAlarms.allowed(ctx())) {
+            call.resolve(new JSObject().put("granted", false).put("need", "alarms_and_reminders"));
+            return;
+        }
+        if (!DuetAlarms.canRing(ctx())) {
+            call.resolve(new JSObject().put("granted", false).put("need", "notifications"));
+            return;
+        }
+        int hour = call.getInt("hour", 7), minute = call.getInt("minute", 0);
+        long at = DuetAlarms.set(ctx(), hour, minute, call.getString("label", ""));
+        call.resolve(new JSObject().put("granted", true).put("set", true)
+            .put("rings", new SimpleDateFormat("EEE h:mm a", Locale.ENGLISH).format(at)));
+    }
+
+    @PluginMethod
+    public void duetAlarmCancel(PluginCall call) {
+        boolean found = DuetAlarms.cancel(ctx(), call.getInt("hour", 0), call.getInt("minute", 0));
+        call.resolve(new JSObject().put("cancelled", found));
+    }
+
+    @PluginMethod
+    public void duetAlarmList(PluginCall call) {
+        JSArray out = new JSArray();
+        org.json.JSONArray list = DuetAlarms.load(ctx());
+        for (int k = 0; k < list.length(); k++) {
+            org.json.JSONObject a = list.optJSONObject(k);
+            if (a != null) out.put(new JSObject().put("hour", a.optInt("hour")).put("minute", a.optInt("minute"))
+                .put("label", a.optString("label", "")));
+        }
+        call.resolve(new JSObject().put("alarms", out));
     }
 
     @PluginMethod
@@ -337,6 +400,7 @@ public class DuetPhonePlugin extends Plugin {
             call.resolve(new JSObject());
             return;
         }
+        if (!canOpenScreens()) { blocked(call); return; }
         Intent i = pm.getLaunchIntentForPackage(best.activityInfo.packageName);
         if (i != null) start(i);
         call.resolve(new JSObject().put("opened", best.loadLabel(pm).toString()));
@@ -377,6 +441,7 @@ public class DuetPhonePlugin extends Plugin {
 
     @PluginMethod
     public void openSettings(PluginCall call) {
+        if (!canOpenScreens()) { blocked(call); return; }
         String page = call.getString("page", "battery");
         Intent i;
         switch (page) {
@@ -409,6 +474,7 @@ public class DuetPhonePlugin extends Plugin {
 
     @PluginMethod
     public void navigate(PluginCall call) {
+        if (!canOpenScreens()) { blocked(call); return; }
         String dest = Uri.encode(call.getString("destination", ""));
         String mode = call.getString("mode", "driving");
         Map<String, String> codes = new HashMap<>();
@@ -431,8 +497,20 @@ public class DuetPhonePlugin extends Plugin {
     public void call(PluginCall call) {
         String number = call.getString("number", "");
         boolean direct = call.getBoolean("direct", false) && getPermissionState("call") == PermissionState.GRANTED;
-        start(new Intent(direct ? Intent.ACTION_CALL : Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(number))));
-        call.resolve(new JSObject().put("direct", direct));
+        if (direct) {
+            // through Android's call service: it places the call even while another app is on screen
+            try {
+                TelecomManager tm = (TelecomManager) ctx().getSystemService(Context.TELECOM_SERVICE);
+                tm.placeCall(Uri.fromParts("tel", number, null), new Bundle());
+                call.resolve(new JSObject().put("direct", true));
+                return;
+            } catch (Exception e) {   // no telephony, or the call service refused: the dialer below
+                direct = false;
+            }
+        }
+        if (!canOpenScreens()) { blocked(call); return; }
+        start(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(number))));
+        call.resolve(new JSObject().put("direct", false));
     }
 
     @PluginMethod
@@ -446,6 +524,7 @@ public class DuetPhonePlugin extends Plugin {
             call.resolve(new JSObject().put("sent", true));
             return;
         }
+        if (!canOpenScreens()) { blocked(call); return; }
         Intent i = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + Uri.encode(number))).putExtra("sms_body", text);
         start(i);
         call.resolve(new JSObject().put("sent", false));
@@ -621,6 +700,8 @@ public class DuetPhonePlugin extends Plugin {
         out.put("contacts", getPermissionState("contacts") == PermissionState.GRANTED);
         out.put("calendar", getPermissionState("calendar") == PermissionState.GRANTED);
         out.put("notifications", Build.VERSION.SDK_INT < 33 || getPermissionState("notifications") == PermissionState.GRANTED);
+        out.put("display_over_apps", Settings.canDrawOverlays(ctx()));
+        out.put("alarms_and_reminders", DuetAlarms.allowed(ctx()));
         call.resolve(out);
     }
 
@@ -638,6 +719,16 @@ public class DuetPhonePlugin extends Plugin {
             case "contacts": requestPermissionForAlias("contacts", call, "permissionDone"); break;
             case "calendar": requestPermissionForAlias("calendar", call, "permissionDone"); break;
             case "notifications": requestPermissionForAlias("notifications", call, "permissionDone"); break;
+            case "display_over_apps":
+                start(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ctx().getPackageName())));
+                call.resolve();
+                break;
+            case "alarms_and_reminders":
+                if (Build.VERSION.SDK_INT >= 31) {
+                    start(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + ctx().getPackageName())));
+                }
+                call.resolve();
+                break;
             default: call.reject("unknown permission " + name);
         }
     }

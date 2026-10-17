@@ -19,10 +19,11 @@
   $("set-direct").checked = !!S.direct;
   $("set-city").value = S.city || "";
   $("set-simulate").checked = !!S.simulate;
+  $("set-alarms").value = S.alarms === "clock" ? "clock" : "duet";
   writeSettings(S);
   for (const [id, key, prop] of [["set-server", "server", "value"], ["set-name", "name", "value"],
     ["set-contacts", "contacts", "value"], ["set-direct", "direct", "checked"], ["set-city", "city", "value"],
-    ["set-simulate", "simulate", "checked"]]) {
+    ["set-simulate", "simulate", "checked"], ["set-alarms", "alarms", "value"]]) {
     $(id).addEventListener("change", () => { S[key] = $(id)[prop]; writeSettings(S); });
   }
   const servedHere = !P.NATIVE && /^https?:$/.test(location.protocol);
@@ -166,7 +167,22 @@
     switch (ev.kind) {
       case "session_start":
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
+        homeLive = null;
+        homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
+        renderPanel("all");
         break;
+      case "home": {
+        const was = homeLive && homeLive.devices ? new Map(homeLive.devices.map((d) => [d.name, d.state])) : null;
+        homeLive = ev;
+        renderPanel("all");
+        if (was && ev.devices) {   // flash what just changed
+          ev.devices.filter((d) => was.get(d.name) !== d.state).forEach((d) => {
+            const el = document.querySelector('#panel .device[data-name="' + CSS.escape(d.name) + '"]');
+            if (el) el.classList.add("flash");
+          });
+        }
+        break;
+      }
       case "agent_state":
         orb(ev.state);
         break;
@@ -234,13 +250,17 @@
         const li = toolRows.get(k) || addStep("", "", "");
         toolRows.delete(k);
         const what = esc(toolText(ev.tool, ev.args));
-        const where = SERVER_SIDE.has(ev.tool) ? "looked up by DUET" : "on the phone";
+        const r0 = ev.result || {};
+        const where = r0.source === "SmartThings" ? "in your SmartThings home"
+          : SERVER_SIDE.has(ev.tool) ? "looked up by DUET" : "on the phone";
         if (ev.kind === "tool_done" && ev.tool === "set_alarm") setAlarms.add(String(ev.args.time));
         if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && ev.result && ev.result.cancelled === false) {
           setStep(li, "t-cached", "=", "Nothing to cancel: " + esc(P.spoken(ev.args.time)) + " was never set", "DUET had held it back");
         } else if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && setAlarms.has(String(ev.args.time))) {
           setAlarms.delete(String(ev.args.time));
           setStep(li, "t-undo", "↶", "Undone: the " + esc(P.spoken(ev.args.time)) + " alarm", "you took it back after it was set, so DUET reversed it");
+        } else if (ev.kind === "tool_done" && r0.status === "sent") {
+          setStep(li, "t-fail", "?", "Sent, not confirmed yet: " + what, [where, esc(r0.note || "")].filter(Boolean).join(" · "));
         } else if (ev.kind === "tool_done") {
           setStep(li, "t-done", "✓", "Done: " + what, [where, esc(summary(ev.result))].filter(Boolean).join(" · "));
         }
@@ -263,8 +283,18 @@
   let battery = null;
   P.onChange((what) => { if (what && what.battery) battery = what.battery; renderPanel(what); });
 
+  // the home: live from SmartThings when DUET has a token (the "home" events), else simulated in the app
+  let homeLive = null;        // {source, devices: [{name, room, kind, state, on}], error}
+  let homeNote = "";          // why the home is simulated, from the session start
   function devicesHTML() {
-    return '<p class="sub">Home · SmartThings (simulated)</p><div class="devices">' + P.state.home.map((d) => {
+    if (homeLive && homeLive.devices) {
+      return '<p class="sub">Home · SmartThings (live)</p><div class="devices">' + homeLive.devices.map((d) =>
+        '<div class="device' + (d.on ? " on" : "") + '" data-name="' + esc(d.name) + '"><b>' + esc(d.name) + "</b><small>" +
+        esc(d.state) + (d.room ? " · " + esc(d.room) : "") + "</small></div>").join("") + "</div>";
+    }
+    const label = homeLive && homeLive.error ? "Home · SmartThings unavailable: " + esc(homeLive.error)
+      : "Home · simulated" + (homeNote ? " <small>(" + esc(homeNote) + ")</small>" : "");
+    return '<p class="sub">' + label + '</p><div class="devices">' + P.state.home.map((d) => {
       const on = d.on || d.locked === false || d.state === "cleaning" || d.state === "running";
       return '<div class="device' + (on ? " on" : "") + '" data-id="' + d.id + '"><b>' + esc(d.name) + "</b><small>" + esc(P.describe(d)) + "</small></div>";
     }).join("") + "</div>";
@@ -403,7 +433,8 @@
         try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
         try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
         // keep listening while another app (Google Maps) is in front; a failure here never stops the talk
-        try { await P.native.listenInBackground({ on: true }); } catch (e) { console.warn("background listening:", e); }
+        try { await P.native.listenInBackground({ on: true }); P.backgroundListening = true; }
+        catch (e) { P.backgroundListening = false; console.warn("background listening:", e); }
       }
       $("conn").textContent = "Connected · waiting for DUET…";
       orb("initializing");
@@ -420,6 +451,7 @@
     if (P.NATIVE) {
       try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ }
       try { await P.native.listenInBackground({ on: false }); } catch (e) { /* ignore */ }
+      P.backgroundListening = false;
     }
     document.querySelectorAll("body > audio").forEach((a) => a.remove());
     $("session").hidden = true; $("home").hidden = false;

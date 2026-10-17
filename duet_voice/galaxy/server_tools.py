@@ -33,12 +33,24 @@ WMO = {0: "clear sky", 1: "mostly clear", 2: "partly cloudy", 3: "overcast", 45:
        96: "thunderstorms with hail", 99: "thunderstorms with heavy hail"}
 
 
+_sessions: Dict[int, tuple] = {}
+
+
 async def _get_json(url: str, timeout: float = 6.0) -> Any:
+    """GET a JSON document, on a connection kept open per event loop (a new TLS connection for each of the
+    weather's two requests cost about a second, measured 17 Oct 2026)."""
     import aiohttp
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=timeout)) as s:
-        async with s.get(url) as r:
-            r.raise_for_status()
-            return await r.json()
+    loop = asyncio.get_running_loop()
+    held = _sessions.get(id(loop))
+    if held is None or held[0] is not loop or held[1].closed:
+        held = (loop, aiohttp.ClientSession())
+        _sessions[id(loop)] = held
+    async with held[1].get(url, timeout=aiohttp.ClientTimeout(total=timeout)) as r:
+        r.raise_for_status()
+        return await r.json()
+
+
+_places: Dict[str, Dict[str, Any]] = {}     # a town's coordinates do not change: looked up once
 
 
 def _day_index(day: str, today: dt.date) -> Optional[int]:
@@ -63,11 +75,16 @@ async def get_weather(args: Dict[str, Any], fetch: Callable[[str], Awaitable[Any
     place = str(args.get("place") or "").strip()
     if not place:
         return {"status": "error", "error": "no place given", "instruction": "ask the user which town or city"}
-    geo = await fetch(GEOCODE + "?" + urlencode({"name": place, "count": 1, "language": "en", "format": "json"}))
-    hits = (geo or {}).get("results") or []
-    if not hits:
-        return {"status": "error", "error": "no place called %s was found" % place}
-    p = hits[0]
+    key = " ".join(place.lower().split())
+    p = _places.get(key) if fetch is _get_json else None
+    if p is None:
+        geo = await fetch(GEOCODE + "?" + urlencode({"name": place, "count": 1, "language": "en", "format": "json"}))
+        hits = (geo or {}).get("results") or []
+        if not hits:
+            return {"status": "error", "error": "no place called %s was found" % place}
+        p = hits[0]
+        if fetch is _get_json:
+            _places[key] = p
     q = {"latitude": p["latitude"], "longitude": p["longitude"], "timezone": "auto", "forecast_days": 7,
          "current": "temperature_2m,apparent_temperature,weather_code,wind_speed_10m",
          "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code"}

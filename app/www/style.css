@@ -98,11 +98,11 @@ h1 { font-size: clamp(30px, 7vw, 44px); line-height: 1.08; margin: 18px 0 12px; 
 .field { display: grid; gap: 6px; margin: 10px 0 14px; }
 .field span { font-size: 14.5px; font-weight: 600; }
 .field small, .switch-row small { color: var(--muted); font-weight: 400; }
-input, textarea {
+input, textarea, select {
   font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid transparent;
   border-radius: 14px; padding: 12px 14px; width: 100%;
 }
-input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); outline: none; }
 .switch-row { display: flex; gap: 12px; align-items: flex-start; margin: 6px 0 14px; font-size: 14.5px; }
 .switch-row input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--accent); flex: none; }
 .perm-head { font-weight: 600; font-size: 14.5px; margin: 16px 0 6px; }

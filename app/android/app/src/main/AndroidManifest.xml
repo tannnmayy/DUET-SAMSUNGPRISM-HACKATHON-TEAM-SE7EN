@@ -32,6 +32,11 @@
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
+        <!-- DUET's own alarms (the fallback when the Clock app ignores a cancel request) ring here -->
+        <receiver
+            android:name=".DuetAlarms"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -79,4 +84,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <!-- open the Clock, the dialer, Messages or Maps while Google Maps is in front: Android allows it only
+         to an app the user lets "appear on top" (the microphone service alone does not count) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- DUET's own alarms: exact alarm times -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 </manifest>

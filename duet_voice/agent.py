@@ -220,6 +220,10 @@ class DuetAgent(Agent):
         reply (always empty for the benchmark)."""
         return "Sorry, something went wrong on my side. Could you say that once more?"
 
+    def ack_line(self) -> str:
+        """The fixed line that covers the wait; the benchmark's is always "One moment."."""
+        return FALLBACK_ACK
+
     def _user_messages(self, chat_ctx: llm.ChatContext) -> List[str]:
         return [item.text_content.strip() for item in chat_ctx.items
                 if isinstance(item, llm.ChatMessage) and item.role == "user" and item.text_content]
@@ -307,6 +311,7 @@ class DuetAgent(Agent):
         graced = False  # the talker was asked to cover a slow thinker (traced once)
         listening = False
         decided_tools: Optional[bool] = None
+        cover_now = False   # the request went to a slower mind (the phone app's two speeds): cover it now
         last_speech = started
         progress_lines = 0
         confirmed: List[str] = []   # actions confirmed aloud in this reply (the phone app)
@@ -322,7 +327,7 @@ class DuetAgent(Agent):
         try:
             while True:
                 if not spoke and decided_tools is None and not listening:
-                    timeout = max(0.05, ACK_GRACE_S - (time.time() - started))
+                    timeout = 0.0 if cover_now else max(0.05, ACK_GRACE_S - (time.time() - started))
                 elif decided_tools and not spoke:
                     timeout = 0.0
                 else:
@@ -335,7 +340,7 @@ class DuetAgent(Agent):
                     if not spoke and decided_tools:
                         ack = await speak_ack(0.6)
                         fallback = not ack
-                        ack = ack or FALLBACK_ACK
+                        ack = ack or self.ack_line()
                         self._trace("talker", text=ack, reason="tools", fallback=fallback)
                         if ack:
                             yield ack + " "
@@ -350,7 +355,7 @@ class DuetAgent(Agent):
                             ack = await speak_ack(0.3)
                             # with no talker model, the fixed line covers the wait
                             fallback = not ack and not CONFIG.talker_enabled
-                            ack = FALLBACK_ACK if fallback else ack
+                            ack = self.ack_line() if fallback else ack
                             if ack or not graced:
                                 self._trace("talker", text=ack, reason="grace", fallback=fallback)
                             graced = True
@@ -372,6 +377,11 @@ class DuetAgent(Agent):
                     self._trace("listen_done", quiet_s=round(self._quiet_for(), 2))
                     continue
                 kind = ev.kind
+                if kind == "route":
+                    # only the phone app's two speeds send this: the request went to the cloud mind,
+                    # so the wait is seconds and is covered at once rather than after the grace
+                    cover_now = ev.text == "cloud"
+                    continue
                 if kind == "listen":
                     listening = True
                     self._trace("thinker_listen", reason=ev.text, after_s=round(time.time() - started, 2),

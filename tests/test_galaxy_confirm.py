@@ -50,7 +50,23 @@ def test_a_done_action_is_confirmed_from_the_phones_reply():
         "Your message to Priya is ready; tap send."
     assert confirmation("control_home_device", {"device": "AC", "action": "set", "value": "24"},
                         {"status": "ok", "device": "Air conditioner", "now": "on, 24°C cool"}) == \
-        "Air conditioner: on, 24 degrees cool."
+        "The air conditioner is now on at 24 degrees, cool mode."
+    # SmartThings' wording of the same devices
+    home = lambda device, now: confirmation("control_home_device", {"device": device, "action": "x"},  # noqa: E731
+                                            {"status": "ok", "device": device, "now": now, "source": "SmartThings"})
+    assert home("Air conditioner", "off (set to 22°C), room 29°C") == "The air conditioner is now off."
+    assert home("Living room light", "on, 40%") == "The living room light is now on at 40 percent."
+    assert home("TV", "on, volume 35") == "The TV is now on, volume 35."
+    assert home("Front door lock", "unlocked") == "The front door lock is now unlocked."
+    assert home("Robot vacuum", "returning to its dock") == "The robot vacuum is now returning to its dock."
+    # the Clock app was asked to cancel, and nobody can check it did: never "Cancelled"
+    assert confirmation("cancel_alarm", {"time": "15:30"}, {"status": "ok", "cancelled": "3:30 PM", "verified": False}) == \
+        "I asked the Clock app to cancel the 3:30 in the afternoon alarm; you can check it there."
+    assert confirmation("cancel_alarm", {"time": "15:30"}, {"status": "ok", "cancelled": "3:30 PM"}) == \
+        "Cancelled the 3:30 in the afternoon alarm."
+    # sent but not confirmed by the device: not said as done
+    assert confirmation("control_home_device", {"device": "TV", "action": "turn_on"},
+                        {"status": "sent", "device": "TV", "now": "off"}) is None
     assert confirmation("set_destination", {"place": "the airport"},
                         {"status": "ok", "destination": "the airport", "arrival": "8:12 PM"}) == \
         "Heading to the airport, arriving around 8:12 PM."

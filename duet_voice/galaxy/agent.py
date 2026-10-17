@@ -35,20 +35,25 @@ load_dotenv(os.path.join(_ROOT, ".env.livekit"))
 # the user's turn. On a phone, close a turn sooner and say "One moment." after 0.4 s of quiet
 # instead of 1.6 s. The thinker's keep_listening still holds back an answer to an unfinished
 # sentence, and the commit gate still holds every action. Set before the config is read.
+# With two speeds, the fast mind's route is usually known within half a second: the acknowledgement waits
+# that long for it ("Sure." for a simple action, "One moment." for the cloud mind, said the moment the
+# request goes to the cloud). "Still working on it." only after 6 s: cloud answers mostly take 4 to 5.
 for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"),
-                      ("DUET_PROGRESS_AFTER", "4")):
+                      ("DUET_PROGRESS_AFTER", "6"),
+                      ("DUET_ACK_GRACE", "0.5" if os.environ.get("DUET_FAST", "0") == "1" else "0.3")):
     os.environ.setdefault(_name, _value)
 
 from livekit import agents, rtc  # noqa: E402
 from livekit.agents import AgentServer, AgentSession, JobContext, JobExecutorType  # noqa: E402
+from livekit.agents.types import DEFAULT_API_CONNECT_OPTIONS  # noqa: E402
 
 from .. import agent as base  # noqa: E402  (the benchmark agent's building blocks)
 from .. import speech_models  # noqa: E402
 from ..config import CONFIG  # noqa: E402
 from ..coordinator import Coordinator  # noqa: E402
-from ..plugins import KokoroTTS, WhisperSTT  # noqa: E402
+from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
-from . import fast  # noqa: E402
+from . import fast, smartthings  # noqa: E402
 from .confirm import adds_nothing  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
@@ -137,14 +142,29 @@ class GalaxyAgent(base.DuetAgent):
         instructions = mode["thinker"] + ("\nTHE USER AND THEIR PHONE\n" + context if context else "")
         thinker = make_thinker(specs=llm_specs(mode["tools"]), instructions=instructions,
                                review=REVIEW if os.environ.get("DUET_REVIEW", "1") == "1" else None)
+        self._route_now: Optional[str] = None   # where this request is being handled: edge or cloud
+
+        def on_route(where: str, why: str) -> None:
+            self._route_now = where
+            trace("route", where=where, why=why)
         if fast.enabled():
             # two speeds: the small Gemma on our GPU looks first (duet_voice/galaxy/fast.py)
             thinker = fast.HybridThinker(fast.make_fast_thinker(mode["tools"], mode["title"]), thinker,
-                                         on_route=lambda where, why: trace("route", where=where, why=why))
+                                         on_route=on_route)
         super().__init__(trace, coord, toolbox, thinker=thinker,
                          instructions=instructions, talker_instructions=mode["talker"])
         self.cut_off: Optional[str] = None
         self._seen = 0  # coordinator history already covered by an answered request
+
+    async def llm_node(self, chat_ctx, tools, model_settings):
+        self._route_now = None
+        async for chunk in super().llm_node(chat_ctx, tools, model_settings):
+            yield chunk
+
+    def ack_line(self) -> str:
+        """"Sure." when the fast mind is doing a simple action (its confirmation follows in about a
+        second); "One moment." when the request needs the cloud mind, or nobody knows yet."""
+        return "Sure." if self._route_now == "edge" else "One moment."
 
     def done_note(self, done_before) -> str:
         """What a plan the user overtook had already done on the phone. It happened, so the
@@ -211,6 +231,49 @@ class GalaxyAgent(base.DuetAgent):
             self._toolbox.new_request()
 
 
+# --- the voice: the fixed lines are synthesized once ------------------------------------------------
+
+FIXED_LINES = ("Sure.", "One moment.", "Still working on it.")
+_fixed_audio: Dict[str, Any] = {}
+
+
+def fixed_audio(text: str):
+    """The cached audio of a fixed line, or None for any other text."""
+    key = " ".join((text or "").split())
+    if key not in FIXED_LINES:
+        return None
+    if key not in _fixed_audio:
+        _fixed_audio[key] = speech_models.synthesize(key)
+    return _fixed_audio[key]
+
+
+class FixedLineStream(KokoroStream):
+    async def _run(self, output_emitter) -> None:
+        import numpy as np
+        audio = fixed_audio(self.input_text)
+        if audio is None:
+            audio = await asyncio.to_thread(speech_models.synthesize, self.input_text)
+        pcm16 = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16).tobytes()
+        from livekit.agents import utils
+        output_emitter.initialize(request_id=utils.shortuuid(), sample_rate=KokoroTTS.SAMPLE_RATE,
+                                  num_channels=1, mime_type="audio/pcm")
+        output_emitter.push(pcm16)
+        output_emitter.flush()
+
+
+class GalaxyTTS(KokoroTTS):
+    """Kokoro, with "Sure.", "One moment." and "Still working on it." ready before they are needed."""
+
+    def synthesize(self, text: str, *, conn_options=DEFAULT_API_CONNECT_OPTIONS) -> "FixedLineStream":
+        return FixedLineStream(tts=self, input_text=text, conn_options=conn_options)
+
+
+def prewarm(proc) -> None:
+    base.prewarm(proc)
+    for line in FIXED_LINES:
+        fixed_audio(line)
+
+
 def _load() -> float:
     try:
         return min(1.0, len(server.active_jobs) * 0.25)
@@ -219,7 +282,7 @@ def _load() -> float:
 
 
 server = AgentServer(
-    setup_fnc=base.prewarm,
+    setup_fnc=prewarm,
     load_fnc=_load,
     load_threshold=0.99,
     job_executor_type=JobExecutorType.THREAD,
@@ -246,8 +309,33 @@ async def entrypoint(ctx: JobContext) -> None:
             log.debug("could not publish to the phone: %s", exc)
 
     await ctx.connect()
+    # the SmartThings home, checked while the phone joins (a token lasts 24 hours)
+    home_check = asyncio.ensure_future(smartthings.check()) if smartthings.enabled() else None
     phone = await ctx.wait_for_participant()
     trace = RoomTrace(room, publish)
+    home = {"live": False, "why": "no SmartThings token: the home is simulated in the app"}
+    if home_check is not None:
+        try:
+            out = await asyncio.wait_for(home_check, 8.0)
+        except Exception as exc:  # the home never stops the conversation
+            out = {"ok": False, "why": "SmartThings did not answer (%s)" % (str(exc)[:80] or type(exc).__name__)}
+        home = {"live": bool(out.get("ok")), "why": out.get("why", "")}
+        if not home["live"]:
+            log.warning("SmartThings unavailable, using the app's simulated home: %s", home["why"])
+    trace("home", source="SmartThings" if home["live"] else "simulated", why=home["why"])
+
+    async def publish_home() -> None:
+        """The home's devices as they are now, for the phone's home panel."""
+        try:
+            publish({"kind": "home", "source": "SmartThings", "devices": await smartthings.snapshot()})
+        except Exception as exc:
+            publish({"kind": "home", "source": "SmartThings", "error": str(exc)[:160]})
+
+    def emit(msg: Dict[str, Any]) -> None:
+        publish(msg)
+        if home["live"] and msg.get("kind") in ("tool_done", "tool_failed", "tool_unknown") \
+                and msg.get("tool") in smartthings.TOOLS:
+            asyncio.ensure_future(publish_home())
     coord = Coordinator(commit_hold_s=CONFIG.commit_hold_s, revising_hold_s=CONFIG.revising_hold_s,
                         dangling_hold_s=CONFIG.dangling_hold_s)
     said = {"last": ""}  # what DUET last said, for the consent gate
@@ -258,9 +346,10 @@ async def entrypoint(ctx: JobContext) -> None:
         return ok
 
     names = {t["name"] for t in mode["tools"]}
-    toolbox = PhoneToolbox(coord, mode["tools"], rpc_sender(ctx.room, lambda: phone.identity), emit=publish,
+    run_here = dict(SERVER_TOOLS, **(smartthings.TOOLS if home["live"] else {}))
+    toolbox = PhoneToolbox(coord, mode["tools"], rpc_sender(ctx.room, lambda: phone.identity), emit=emit,
                            consent=consent if os.environ.get("DUET_CONSENT", "1") == "1" else None,
-                           server={k: fn for k, fn in SERVER_TOOLS.items() if k in names})
+                           server={k: fn for k, fn in run_here.items() if k in names})
     context = "; ".join(x for x in (
         ("Their name is %s." % name) if name else "",
         ("They live in %s." % meta["city"]) if meta.get("city") else "",
@@ -273,7 +362,7 @@ async def entrypoint(ctx: JobContext) -> None:
         vad=ctx.proc.userdata.get("vad") or base.build_vad(),
         stt=WhisperSTT(),
         llm=base.build_placeholder_llm(),
-        tts=KokoroTTS(),
+        tts=GalaxyTTS(),
         turn_handling={
             "turn_detection": base.build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
@@ -327,12 +416,21 @@ async def entrypoint(ctx: JobContext) -> None:
         if not text or coord.user_speaking:
             return
         trace("phone_event", event=msg.get("kind"), text=text)
-        user_input = text if msg.get("kind") == "text" else "[Phone event] " + text
-        session.generate_reply(user_input=user_input)
+        typed = msg.get("kind") == "text"
+        # Typed words and phone events never pass the ears, so the coordinator is told here: typed words are
+        # words the user said, and either way the turn is complete. Without this, an action they lead to
+        # waited at the gate for a spoken turn to close (forever, before the user had spoken at all).
+        if typed:
+            coord.heard(text)
+        coord.turn_committed()
+        session.generate_reply(user_input=text if typed else "[Phone event] " + text)
 
     trace("session_start", room=room, mode=mode["title"], backend=CONFIG.llm_backend,
           thinker=agent._thinker.model, asr=CONFIG.asr_model, tts=CONFIG.tts_backend)
-    publish({"kind": "session_start", "mode": mode["title"], "model": agent._thinker.model})
+    publish({"kind": "session_start", "mode": mode["title"], "model": agent._thinker.model,
+             "home": "SmartThings" if home["live"] else "simulated", "home_why": home["why"]})
+    if home["live"]:
+        asyncio.ensure_future(publish_home())
     await session.start(room=ctx.room, agent=agent)
     session.say(mode["greeting"].format(name=name or "there").replace("Hello there", "Hello"))
 

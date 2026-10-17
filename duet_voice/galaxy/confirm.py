@@ -60,6 +60,8 @@ def _alarm(a: Dict[str, Any], r: Dict[str, Any]) -> str:
 def _cancel(a: Dict[str, Any], r: Dict[str, Any]) -> str:
     if r.get("cancelled") is False:
         return "There was no %s alarm, so nothing to cancel." % spoken_time(a.get("time"))
+    if r.get("verified") is False:   # the Clock app was asked; nobody can check it did it
+        return "I asked the Clock app to cancel the %s alarm; you can check it there." % spoken_time(a.get("time"))
     return "Cancelled the %s alarm." % spoken_time(a.get("time"))
 
 
@@ -80,9 +82,23 @@ def _message(a: Dict[str, Any], r: Dict[str, Any]) -> str:
         else ("Your message to %s is ready; tap send." % who)
 
 
+def home_state(now: Any) -> str:
+    """A device's state as the phone or SmartThings reported it, as a person says it:
+    'on, 24°C cool, room 29°C' -> 'on at 24 degrees, cool mode'; 'on, 40%' -> 'on at 40 percent'."""
+    s = re.sub(r",?\s*room -?[\d.]+\s*°C", "", str(now or ""))          # the room's reading is not news here
+    s = re.sub(r"\s*\(set to [^)]*\)", "", s).strip()
+    s = re.sub(r"^on, (\d+)%$", r"on at \1 percent", s)
+    s = re.sub(r"^on, ([\d.]+)\s*°C\s*(\w+)?$", lambda m: "on at %s degrees%s" % (
+        m.group(1), (", %s mode" % m.group(2)) if m.group(2) else ""), s)
+    return _degrees(s.replace("%", " percent")).strip()
+
+
 def _home(a: Dict[str, Any], r: Dict[str, Any]) -> str:
-    device, now = r.get("device") or a.get("device"), r.get("now")
-    return ("%s: %s." % (device, _degrees(now))) if now else ""
+    device, now = str(r.get("device") or a.get("device") or ""), home_state(r.get("now"))
+    if not (device and now):
+        return ""
+    name = device if device[:2].isupper() else device[0].lower() + device[1:]   # "TV" stays "TV"
+    return "The %s is now %s." % (name, now)
 
 
 def _destination(a: Dict[str, Any], r: Dict[str, Any]) -> str:

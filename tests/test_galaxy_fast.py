@@ -64,8 +64,9 @@ def test_a_simple_action_stays_on_the_fast_mind():
     seen, on_route = routes()
     fast, slow = Script("e2b", ACT, record_action=True), Script("26b", CLOUD)
     events, _ = collect(HybridThinker(fast, slow, on_route=on_route))
-    assert [e.kind for e in events] == ["decided", "tool_start", "tool_done", "say"]
-    assert slow.calls == 0 and seen == ["edge"]
+    # the turn loop hears the route first ("Sure." rather than "One moment.")
+    assert [e.kind for e in events] == ["route", "decided", "tool_start", "tool_done", "say"]
+    assert events[0].text == "edge" and slow.calls == 0 and seen == ["edge"]
 
 
 def test_a_hand_off_goes_to_the_cloud_mind():
@@ -74,6 +75,7 @@ def test_a_hand_off_goes_to_the_cloud_mind():
     events, _ = collect(HybridThinker(fast, slow, on_route=on_route))
     assert [e.text for e in events if e.kind == "say"] == ["7 or 6:30?"]
     assert slow.calls == 1 and seen == ["cloud"]
+    assert [e.text for e in events if e.kind == "route"] == ["cloud"]   # the wait is covered at once
 
 
 def test_a_fast_reply_without_a_tool_goes_to_the_cloud_mind():

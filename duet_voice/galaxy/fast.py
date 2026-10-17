@@ -296,7 +296,11 @@ class HybridThinker:
         done_before = len(coord.history)
         self.fast.history = []          # stateless: each request is judged on its own words
         self.fast.vet = lambda calls: vet_plan(calls, text)
-        agen = self.fast.run(text, toolbox, note=note, allow_listen=allow_listen)
+        # The fast mind does not need the clock: it acts only on values the user said, and the toolbox
+        # settles a time without AM or PM itself. Without the minute-by-minute "Now:" line its instructions
+        # stay the same from request to request, so the server reuses its processed copy of them.
+        fast_note = "\n".join(l for l in (note or "").splitlines() if not l.startswith("Now: "))
+        agen = self.fast.run(text, toolbox, note=fast_note, allow_listen=allow_listen)
         escalate_why = ""
         acted_at: Optional[float] = None
         started = time.time()
@@ -335,6 +339,7 @@ class HybridThinker:
                         break
                     acted_at = time.time()
                     self._route("edge", "a simple phone action")
+                    yield ThinkEvent("route", text="edge")
                 yield ev
                 if ev.kind == "say":
                     self.edge_log.append('User: "%s" -> done on the phone: %s' % (
@@ -346,6 +351,7 @@ class HybridThinker:
         # the cloud mind takes over: it is told what the fast mind already did, for this request
         # and for earlier ones it handled alone
         self._route("cloud", escalate_why)
+        yield ThinkEvent("route", text="cloud")   # the turn loop covers the longer wait at once
         extra = []
         if self.edge_log:
             extra.append("Handled quickly by the phone since you last answered (already done; do not repeat): "

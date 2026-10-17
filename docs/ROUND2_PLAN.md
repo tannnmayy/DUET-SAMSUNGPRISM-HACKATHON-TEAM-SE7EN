@@ -1,7 +1,7 @@
 # DUET for Galaxy, Round 2: goals, scope and implementation plan
 
 **Status:** v2, locked 16 Oct 2026.
-- **Demo:** Tuesday **21 October**, online: presentation, live demo, then Q&A.
+- **Demo:** Wednesday **21 October**, online: presentation, live demo, then Q&A.
 - **Phone:** Galaxy S24 (SM-S921E, Exynos 2400, 8 GB RAM, One UI 8.5 / Android 16).
 - **Language:** English only.
 - **Plan:** [section 0](#0-the-21-october-plan-what-we-actually-build-in-five-days) is what we build for the demo. Sections 5–9 describe the full phone-first target, which continues after 21 Oct as the worklet roadmap.
@@ -55,13 +55,13 @@ next to a cloud Gemma slow mind, both behind the same coordinator.
 
 ### 0.3 Day by day
 
-**Day 0 · Thu 16 Oct (today)**
+**Day 0 · Fri 16 Oct (today)**
 - [x] Plan locked; branch `round2` created; plan committed.
 - [x] Laptop stack verified: 3 of 3 Gemma keys reach Gemma 4 26B, tool calling OK; local llama.cpp supports Gemma 4.
 - [ ] Baseline on the laptop: the 8 fake-phone scenarios, with per-stage timings.
 - [ ] Per-stage latency in the timeline events: end of speech, turn closed, ack, plan, action, answer.
 
-**Day 1 · Fri 17 Oct: the S24, and the must-fixes**
+**Day 1 · Sat 17 Oct: the S24, and the must-fixes**
 
 S24 bring-up:
 - [ ] USB debugging, install, permissions, all three modes.
@@ -78,7 +78,7 @@ Fixes:
 
 **Gate:** the 8 scenarios work live on the S24; before and after numbers recorded.
 
-**Day 2 · Sat 18 Oct: two speeds, and reach**
+**Day 2 · Sun 18 Oct: two speeds, and reach**
 
 Two speeds:
 - [ ] **Local fast mind:** Gemma 4 E4B (E2B if the GPU is tight) on llama.cpp.
@@ -97,7 +97,7 @@ New capabilities:
 
 **Gate:** G1; simple local action p50 ≤ 2.5 s.
 
-**Day 3 · Sun 19 Oct: robustness, then freeze**
+**Day 3 · Mon 19 Oct: robustness, then freeze**
 
 Failure drills:
 - [ ] Cloud lost mid-request.
@@ -114,7 +114,7 @@ Testing and polish:
 
 **Gate:** G2, G5.
 
-**Day 4 · Mon 20 Oct: rehearse**
+**Day 4 · Tue 20 Oct: rehearse**
 
 Online set-up test:
 - [ ] Meeting app, phone mirrored with scrcpy, audio path (what the jury hears).
@@ -127,7 +127,7 @@ Rehearse and prepare:
 
 **Gate:** G7, G8.
 
-**Day 5 · Tue 21 Oct: demo day**
+**Day 5 · Wed 21 Oct: demo day**
 - [ ] Morning smoke test: keys and quota, agent warm, phone charged, Do Not Disturb on, notifications off.
 
 **Stretch, only if Days 1–3 are green early:**

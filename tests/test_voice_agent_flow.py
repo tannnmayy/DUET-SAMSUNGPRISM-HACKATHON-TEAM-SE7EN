@@ -143,6 +143,34 @@ def test_markdown_in_the_answer_is_not_read_aloud():
     assert speak(a, "where is my order") == ["Your order is out for delivery."]
 
 
+def test_a_request_routed_to_a_slower_mind_is_covered_at_once(monkeypatch):
+    """The phone app's two speeds: when the request goes to the cloud mind, "One moment." comes at once,
+    not after the grace period; the fixed line is the agent's own (ack_line)."""
+    monkeypatch.setattr(agent_mod, "CONFIG", dataclasses.replace(agent_mod.CONFIG, talker_enabled=False))
+    monkeypatch.setattr(agent_mod, "ACK_GRACE_S", 5.0)          # without the route, no line for 5 s
+    a = make_agent([], ack=None)
+    a._coord.last_speech_end = a._coord.clock() - 10.0         # the user finished long ago
+
+    class Slow(FakeThinker):
+        async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+            yield ThinkEvent("route", text="cloud")
+            await asyncio.sleep(0.6)
+            yield ThinkEvent("decided", tools=False)
+            yield ThinkEvent("say", text="It will rain later.")
+    a._thinker = Slow([])
+
+    async def go():
+        out, t0 = [], asyncio.get_running_loop().time()
+        ctx = llm.ChatContext.empty()
+        ctx.add_message(role="user", content="will it rain")
+        async for chunk in a.llm_node(ctx, [], None):
+            if isinstance(chunk, str) and chunk.strip():
+                out.append((chunk.strip(), round(asyncio.get_running_loop().time() - t0, 1)))
+        return out
+    said = asyncio.run(go())
+    assert said[0][0] == "One moment." and said[0][1] < 0.3 and said[-1][0] == "It will rain later."
+
+
 def test_snake_case_is_spoken_as_words():
     a = make_agent([ThinkEvent("decided", tools=False), ThinkEvent("say", text="Your driver_license is updated.")])
     assert speak(a, "update it") == ["Your driver license is updated."]
