@@ -231,3 +231,24 @@ def test_a_silent_reply_keeps_the_request_open_unless_something_was_done():
     me._coord.history.append(CallRecord("set_torch", {"on": True}, 0, 0.0, outcome="ok"))
     assert galaxy_agent.GalaxyAgent.silent_answers(me, []) is True
     assert agent_mod.DuetAgent.silent_answers(me, []) is True      # the benchmark: silence answers noise
+
+
+def test_old_readings_are_not_kept_for_later_questions():
+    """17 Oct 2026: asked again later, the battery was answered from the old reading."""
+    from google.genai import types
+    from duet_voice.galaxy import agent as galaxy_agent
+    history = [
+        types.Content(role="user", parts=[types.Part(text="how much battery do I have?")]),
+        types.Content(role="model", parts=[types.Part.from_function_call(name="get_battery_report", args={})]),
+        types.Content(role="user", parts=[types.Part.from_function_response(name="get_battery_report", response={"result": {"level": 100}}),
+                                          types.Part.from_function_response(name="list_installed_apps", response={"result": {"count": 18}})]),
+    ]
+    assert galaxy_agent.stale_readings(history) == 1
+    parts = history[2].parts
+    assert parts[0].function_response.response["result"]["status"] == "out_of_date"
+    assert parts[1].function_response.response == {"result": {"count": 18}}       # installed apps do not go stale
+    assert galaxy_agent.stale_readings(history) == 0                                 # once is enough
+    chat = [{"role": "assistant", "content": None, "tool_calls": [{"id": "c1", "type": "function",
+             "function": {"name": "get_home_status", "arguments": "{}"}}]},
+            {"role": "tool", "tool_call_id": "c1", "content": '{"devices": ["AC: on"]}'}]
+    assert galaxy_agent.stale_readings(chat) == 1 and "out_of_date" in chat[1]["content"]

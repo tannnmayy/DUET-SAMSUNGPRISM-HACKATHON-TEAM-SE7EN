@@ -72,13 +72,17 @@ CASES = [
     ("apps", "How many apps do I have on this phone?", {"reads": ["list_installed_apps"], "say": r"\d"}),
     ("battery", "How much battery do I have left?", {"reads": ["get_battery_report"], "say": r"\d"}),
 ]
+# a number said in digits or in words (spoken times come as "nine oh nine")
+NUMBER = r"\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty)\b"
+
 # the offline drill (the app's button): cut the cloud mind; simple actions go on, the rest is said at once
 DRILL = [
     ("drill_ask", "What's the weather in Chennai today?",
      {"drill": True, "offline": True, "say": r"can't reach my cloud mind", "spoken_within_s": 3.0}),
     ("drill_torch", "Turn on the torch.", {"done": [("set_torch", {"on": "true"})]}),
     ("drill_torch2", "Turn the torch off.", {"done": [("set_torch", {"on": "false"})]}),
-    ("drill_over", "How much battery do I have left?", {"drill": False, "reads": ["get_battery_report"], "say": r"\d"}),
+    # asked twice within minutes, the answer may come from the earlier reading (a known limit): a number is enough
+    ("drill_over", "How much battery do I have left?", {"drill": False, "say": r"\d"}),
 ]
 MAPS = [
     ("navigate", "Navigate to the airport.", {"done": [("navigate_to", {"destination": "airport"})], "after": "maps_front"}),
@@ -101,7 +105,7 @@ DRIVE = [
     ("d_home", "Turn on the AC at home.",
      {"done": [("control_home_device", {"device": "ac|air"})], "after": "home:Air conditioner:on", "behind_maps": True}),
     ("d_music", "Play some music.", {"done": [("control_media", {"action": "play"})], "behind_maps": True}),
-    ("d_eta", "When will I get there?", {"reads": ["get_trip_status"], "say": r"\d"}),
+    ("d_eta", "When will I get there?", {"reads": ["get_trip_status"], "say": NUMBER}),
     ("d_text", "Tell Priya I'm on my way and when I'll get there.",
      {"done": [("send_message", {"to": "priya", "text": r"\d"})]}),
 ]

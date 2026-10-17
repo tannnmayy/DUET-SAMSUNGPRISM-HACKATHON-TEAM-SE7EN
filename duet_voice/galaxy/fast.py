@@ -369,7 +369,8 @@ class HybridThinker:
         # The fast mind does not need the clock: it acts only on values the user said, and the toolbox
         # settles a time without AM or PM itself. Without the minute-by-minute "Now:" line its instructions
         # stay the same from request to request, so the server reuses its processed copy of them.
-        fast_note = "\n".join(l for l in (note or "").splitlines() if not l.startswith("Now: "))
+        fast_note = "\n".join(l for l in (note or "").splitlines()
+                              if not l.startswith(("Now: ", "Earlier in this conversation you read")))
         agen = self.fast.run(text, toolbox, note=fast_note, allow_listen=allow_listen)
         escalate_why = ""
         acted_at: Optional[float] = None

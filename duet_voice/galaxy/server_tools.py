@@ -71,10 +71,28 @@ def _day_index(day: str, today: dt.date) -> Optional[int]:
     return None
 
 
-async def get_weather(args: Dict[str, Any], fetch: Callable[[str], Awaitable[Any]] = _get_json) -> Dict[str, Any]:
+async def get_weather(args: Dict[str, Any], fetch: Callable[[str], Awaitable[Any]] = _get_json,
+                      fallback=None) -> Dict[str, Any]:
+    """Open-Meteo; if it cannot be reached or fails (17 Oct 2026: 503 for a while), the web answer
+    (Gemma with Google Search grounding) instead, so the weather does not depend on one free service."""
     place = str(args.get("place") or "").strip()
     if not place:
         return {"status": "error", "error": "no place given", "instruction": "ask the user which town or city"}
+    try:
+        return await _open_meteo(place, args, fetch)
+    except Exception as exc:
+        log.warning("Open-Meteo failed (%s); asking the web instead", str(exc)[:120])
+        day = str(args.get("day") or "today")
+        web = await (fallback or web_search)({"question": "What is the weather forecast in %s for %s: conditions, "
+                                                          "temperature, chance of rain?" % (place, day)})
+        if web.get("status") == "ok":
+            return {"status": "ok", "place": place, "day": day, "forecast": web.get("answer"),
+                    "source": "a web search (the weather service was unavailable)", "sources": web.get("sources", [])}
+        return {"status": "error", "error": "the weather service is unavailable: %s" % str(exc)[:120],
+                "instruction": "tell the user you could not get the weather just now"}
+
+
+async def _open_meteo(place: str, args: Dict[str, Any], fetch) -> Dict[str, Any]:
     key = " ".join(place.lower().split())
     p = _places.get(key) if fetch is _get_json else None
     if p is None:

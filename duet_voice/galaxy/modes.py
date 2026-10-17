@@ -104,7 +104,8 @@ MESSAGE = {
     "name": "send_message", "kind": "write", "repeatable": True, "consent": True,
     "description": "Send a text message to one of the user's saved contacts.",
     "parameters": _obj({"to": {**S, "description": "The contact as the user named them."},
-                        "text": {**S, "description": "The message, in the user's words, first person."}},
+                        "text": {**S, "description": "The message, in the user's words, first person. It is read, "
+                                                     "not heard: times and numbers in digits (\"9:10 PM\")."}},
                        ["to", "text"])}
 
 TORCH = {

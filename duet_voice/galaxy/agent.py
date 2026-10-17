@@ -128,6 +128,34 @@ async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str)
 
 FILLER = re.compile(r"(just )?(let me know|feel free|is there anything else|anything else)", re.I)
 
+# Readings that change: once a reply is delivered, the thinker's memory keeps that it read them, not
+# what they said, so a later question is answered from a fresh reading (17 Oct 2026: asked again two
+# minutes later, the battery was answered from the old reading, whatever the instructions said).
+VOLATILE_READS = {"get_battery_report", "get_home_status", "list_alarms", "get_trip_status", "get_weather",
+                  "get_app_usage", "get_medication_schedule"}
+STALE = {"status": "out_of_date", "note": "an earlier reading, now out of date: read it again with the tool if needed"}
+
+
+def stale_readings(history) -> int:
+    """Replace the results of volatile readings in a thinker's history (Gemma's contents, or a local
+    model's chat messages) with an out-of-date note. Returns how many were replaced."""
+    n = 0
+    names = {c.get("id"): (c.get("function") or {}).get("name") for item in history or [] if isinstance(item, dict)
+             for c in item.get("tool_calls") or []}
+    for item in history or []:
+        if isinstance(item, dict):                     # a local model's chat message
+            if item.get("role") == "tool" and names.get(item.get("tool_call_id")) in VOLATILE_READS \
+                    and item.get("content") != json.dumps(STALE):
+                item["content"] = json.dumps(STALE)
+                n += 1
+            continue
+        for part in getattr(item, "parts", None) or []:
+            fr = getattr(part, "function_response", None)
+            if fr is not None and fr.name in VOLATILE_READS and fr.response != {"result": STALE}:
+                fr.response = {"result": STALE}
+                n += 1
+    return n
+
 # The cloud mind cannot be reached (no internet, Google down, or the offline drill): said at once, and
 # true, because simple phone actions run on the fast mind on our own machine.
 OFFLINE_LINE = ("I can't reach my cloud mind right now, so I can't do that one. Simple things on the phone, "
@@ -257,6 +285,11 @@ class GalaxyAgent(base.DuetAgent):
         if never:
             lines.append("Planned but never carried out, because the user kept talking (it did not happen, "
                          "so there is nothing to undo): " + "; ".join(never))
+        read = sorted({r.tool for r in self._coord.history[:self._seen] if r.tool in VOLATILE_READS and r.outcome == "ok"})
+        if read:
+            lines.append("Earlier in this conversation you read: %s. Those readings, and your answers from them, "
+                         "are out of date now: if the user asks about any of it, call the tool again before you "
+                         "answer." % ", ".join(read))
         return "\n".join(lines)
 
     def reply_delivered(self) -> None:
@@ -265,6 +298,7 @@ class GalaxyAgent(base.DuetAgent):
         if closed:
             self._seen = len(self._coord.history)
             self._toolbox.new_request()
+            stale_readings(self._thinker.history)
 
 
 # --- the voice: the fixed lines are synthesized once ------------------------------------------------
