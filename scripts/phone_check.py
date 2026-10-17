@@ -149,6 +149,10 @@ async def main() -> int:
                    " s.server = 'localhost:8787'; localStorage.setItem('duet.settings', JSON.stringify(s));"
                    " const e = document.getElementById('set-server'); if (e) e.value = s.server; return true; })()")
     step("server address set", True, "localhost:8787 (through USB)")
+    saved = await cdp_eval("JSON.parse(localStorage.getItem('duet.settings') || '{}').contacts || ''")
+    step("demo contacts are real numbers", not re.search(r"\+?91?0{6,}\d{0,3}\b", saved or ""),
+         "placeholders: put the teammates' numbers in DUET's settings (Contacts)"
+         if re.search(r"\+?91?0{6,}\d{0,3}\b", saved or "") else "set")
 
     t = time.time()
     result = await cdp_eval("DuetPhone.selfTest()", timeout=180)

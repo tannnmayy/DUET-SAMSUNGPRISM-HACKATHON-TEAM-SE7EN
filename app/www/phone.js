@@ -343,7 +343,10 @@
     if (isNative()) {
       const r = await Native.sms({ number: c.number, text, direct });
       if (r && r.blocked) return BLOCKED();
-      return ok({ to: c.name, text, how: r.sent ? "sent" : "Messages is open with the text; the user taps send" });
+      if (r.error) return fail(r.error);   // the radio said no: no SIM, no signal, airplane mode
+      return ok({ to: c.name, text, how: r.sent ? "sent"
+        : r.unconfirmed ? "handed to the phone; it has not confirmed the text went out"
+        : "Messages is open with the text; the user taps send" });
     }
     toast("Message to " + c.name + ": " + text);
     return ok({ to: c.name, text, how: "sent (simulated)" });

@@ -48,6 +48,13 @@ def test_a_done_action_is_confirmed_from_the_phones_reply():
     assert confirmation("send_message", {"to": "Priya", "text": "Late"},
                         {"status": "ok", "to": "Priya", "how": "Messages is open with the text; the user taps send"}) == \
         "Your message to Priya is ready; tap send."
+    assert confirmation("send_message", {"to": "Priya", "text": "Late"},
+                        {"status": "ok", "to": "Priya", "how": "sent"}) == "Message sent to Priya."
+    assert confirmation("control_media", {"action": "play"}, {"status": "ok", "media": "play"}) ==         "Pressed play on your music app."
+    # a direct text the radio has not confirmed: never "sent", never "tap send"
+    assert confirmation("send_message", {"to": "Priya", "text": "Late"},
+                        {"status": "ok", "to": "Priya", "how": "handed to the phone; it has not confirmed the text went out"}) == \
+        "Your message to Priya is with the phone, but it hasn't confirmed it went out."
     assert confirmation("control_home_device", {"device": "AC", "action": "set", "value": "24"},
                         {"status": "ok", "device": "Air conditioner", "now": "on, 24°C cool"}) == \
         "The air conditioner is now on at 24 degrees, cool mode."
@@ -111,6 +118,21 @@ def test_an_answer_that_only_repeats_the_confirmation_is_dropped_and_one_with_ne
     both = ["Cancelled the 3:30 in the morning alarm.", "Alarm set for 4:30 in the morning."]
     assert adds_nothing("OK. I've cancelled your 3:30 alarm and set a new one for 4:30 in the morning.", both)
     assert not adds_nothing("Your only alarm now is at 4:30, and it's 2 hours away.", both)
+
+
+def test_an_answer_never_claims_more_than_the_phone_reported():
+    """18 Oct 2026, Drive mode: after "Your message to Priya is ready; tap send." the cloud mind
+    added "I've sent that to Priya." The claim is dropped; what is true is kept."""
+    from duet_voice.galaxy.confirm import drop_overclaims
+    ready = ["Your message to Priya (daughter) is ready; tap send."]
+    assert drop_overclaims("I've sent that to Priya.", ready) == ""
+    assert drop_overclaims("Just tap send. You're about 10 minutes away.", ready) == \
+        "Just tap send. You're about 10 minutes away."
+    assert drop_overclaims("I've sent that to Priya.", ["Message sent to Priya."]) == "I've sent that to Priya."
+    dialer = ["The dialer is open to call Priya."]
+    assert drop_overclaims("Calling her now. Tap the call button to start.", dialer) == "Tap the call button to start."
+    assert drop_overclaims("Music is now playing.", ["Pressed play on your music app."]) == ""
+    assert drop_overclaims("Anything else?", []) == "Anything else?"
 
 
 class FakeThinker:

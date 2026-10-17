@@ -78,8 +78,12 @@ def _call(a: Dict[str, Any], r: Dict[str, Any]) -> str:
 
 def _message(a: Dict[str, Any], r: Dict[str, Any]) -> str:
     who = r.get("to") or a.get("to")
-    return ("Message sent to %s." % who) if str(r.get("how", "")).startswith("sent") \
-        else ("Your message to %s is ready; tap send." % who)
+    how = str(r.get("how", ""))
+    if how.startswith("sent"):
+        return "Message sent to %s." % who
+    if how.startswith("handed"):       # a direct text the radio has not confirmed yet
+        return "Your message to %s is with the phone, but it hasn't confirmed it went out." % who
+    return "Your message to %s is ready; tap send." % who
 
 
 def home_state(now: Any) -> str:
@@ -124,7 +128,9 @@ def _event(a: Dict[str, Any], r: Dict[str, Any]) -> str:
 
 
 def _media(a: Dict[str, Any], r: Dict[str, Any]) -> str:
-    return {"play": "Playing.", "pause": "Paused.", "next": "Next track.", "previous": "Previous track."}.get(
+    # play is a key press: nothing tells DUET that a music app took it (none may be open), so it says what it did
+    return {"play": "Pressed play on your music app.", "pause": "Paused.", "next": "Next track.",
+            "previous": "Previous track."}.get(
         str(a.get("action")), "")
 
 
@@ -185,6 +191,29 @@ def adds_nothing(answer: str, confirmations: List[str]) -> bool:
         return False
     said = set().union(*(_content(c) for c in confirmations))
     return not (_content(answer) - said - _FILLER)
+
+
+# What a confirmation says was NOT (yet) done, and the claims in the slow mind's answer that would
+# contradict it. The slow mind sometimes words a result its own way (18 Oct 2026, Drive mode: after
+# "Your message to Priya is ready; tap send." it added "I've sent that to Priya.").
+_NOT_DONE = [
+    (re.compile(r"is ready; tap send|hasn't confirmed it went out", re.I),
+     re.compile(r"\b(sent|texted|messaged|delivered)\b", re.I)),
+    (re.compile(r"^The dialer is open", re.I),
+     re.compile(r"\b(calling|called|ringing|rang|connected|on the line)\b", re.I)),
+    (re.compile(r"^Pressed play", re.I),
+     re.compile(r"\b(is playing|now playing|started playing|playing now|music is on)\b", re.I)),
+]
+
+
+def drop_overclaims(answer: str, confirmations: List[str]) -> str:
+    """The answer without the sentences that claim more than the phone reported: a message "sent"
+    that only waits for the user's tap, a call "ringing" in a dialer nobody has tapped."""
+    claims = [claim for done, claim in _NOT_DONE if any(done.search(c) for c in confirmations or [])]
+    if not claims or not (answer or "").strip():
+        return answer
+    parts = re.split(r"(?<=[.!?])\s+", answer.strip())
+    return " ".join(p for p in parts if not any(c.search(p) for c in claims))
 
 
 def confirmation(tool: str, args: Dict[str, Any], result: Any) -> Optional[str]:

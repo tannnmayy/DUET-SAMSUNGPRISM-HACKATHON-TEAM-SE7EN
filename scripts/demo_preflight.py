@@ -93,9 +93,35 @@ def main() -> int:
     line(bool(level and int(level.group(1)) >= 60), "phone battery", (level.group(1) + "%") if level else "?")
     zen = adb("shell", "settings", "get", "global", "zen_mode").strip()
     line(zen not in ("0", ""), "Do Not Disturb", "on" if zen not in ("0", "") else "off: turn it on for the demo")
-    vol = re.search(r"STREAM_MUSIC.*?Current: .*?(\d+)", adb("shell", "dumpsys", "audio"), re.S)
-    line(None, "media volume (index)", vol.group(1) if vol else "?")
+    audio = adb("shell", "dumpsys", "audio")
+    # DUET's voice (WebRTC in the app) plays as media on the emulator, and may play as call audio on a phone
+    # with hardware echo cancellation: both volumes, on the loudspeaker, must be up
+    for name, stream in (("media volume", "STREAM_MUSIC"), ("call volume", "STREAM_VOICE_CALL")):
+        sec = re.search(r"- %s:.*?Max: (\d+).*?Current: ([^\n]*)" % stream, audio, re.S)
+        speaker = re.search(r"\(speaker\): (\d+)", sec.group(2)) if sec else None
+        if sec and speaker:
+            level, top = int(speaker.group(1)), int(sec.group(1))
+            line(level >= 0.7 * top, name + " on the loudspeaker", "%d of %d%s" % (
+                level, top, "" if level >= 0.7 * top else ": turn it up (call volume: press volume up while DUET speaks)"))
+        else:
+            line(None, name + " on the loudspeaker", "not reported: press volume up while DUET speaks")
+    if installed:
+        contacts_check()
     return finish()
+
+
+def contacts_check() -> None:
+    """The demo contacts must be real numbers (the teammates'), not the placeholders DUET starts with."""
+    try:
+        import asyncio
+        from phone_check import cdp_eval
+        saved = asyncio.run(cdp_eval("JSON.parse(localStorage.getItem('duet.settings') || '{}').contacts || ''", 20))
+    except Exception as exc:
+        line(None, "demo contacts", "open DUET on the phone to check them (%s)" % type(exc).__name__)
+        return
+    placeholder = re.search(r"\+?91?0{6,}\d{0,3}\b", saved or "") is not None
+    line(not placeholder and bool(saved), "demo contacts", "placeholder numbers: put the teammates' real numbers in "
+         "DUET's settings" if placeholder else "; ".join(l.strip() for l in (saved or "").splitlines()[:3]))
 
 
 def finish() -> int:

@@ -166,6 +166,7 @@
     toParent({ type: "duet", ev });
     switch (ev.kind) {
       case "session_start":
+        reconnects = 0; rejoinUntil = 0;   // a fresh conversation: a later drop gets its own 3 minutes
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
         homeLive = null;
         homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
@@ -426,12 +427,34 @@
     addStep("t-heard", "⚙", "Phone event sent to DUET", esc(text));
   }
 
-  let wantRoom = false, reconnects = 0;   // the user wants a conversation; automatic rejoins so far
+  // The user wants a conversation: after a drop (the network, or DUET's laptop restarting, which takes about
+  // a minute), the app rejoins on its own for up to 3 minutes, then leaves it to the user.
+  let wantRoom = false, reconnects = 0, rejoinUntil = 0, rejoinTimer = null;
+  // One microphone for the whole conversation: a rejoin publishes the same one again. A new capture opened
+  // while another app is in front (Google Maps) never starts on Android 16, so DUET would stop hearing.
+  let micTrack = null;
+  function rejoinSoon(why, ms) {
+    if (!wantRoom || rejoinTimer) return;
+    if (!rejoinUntil) rejoinUntil = Date.now() + 180000;
+    if (Date.now() > rejoinUntil) {
+      $("conn").textContent = "Could not reconnect";
+      addStep("t-fail", "!", "Could not reconnect", "tap End, then start the conversation again");
+      return;
+    }
+    reconnects++;
+    addStep("t-fail", "↻", why + ": reconnecting", "attempt " + reconnects);
+    if (reconnects === 1) toast(why + ", reconnecting…");
+    rejoinTimer = setTimeout(() => { rejoinTimer = null; if (wantRoom && !room) start(mode, null, true); }, ms);
+  }
+
   async function start(m, creds, again) {
     const base = serverBase();
     if (!creds && !base) { $("settings").open = true; $("set-server").focus(); toast("Enter the server address first, or scan the laptop's code"); return; }
     wantRoom = true;
-    if (!again) reconnects = 0;
+    if (!again) {   // a new conversation: a fresh rejoin window, and the microphone starts unmuted
+      reconnects = 0; rejoinUntil = 0;
+      $("mute").setAttribute("aria-pressed", "false"); $("mute").setAttribute("aria-label", "Mute microphone");
+    }
     mode = m;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
     document.body.classList.add("mode-" + m);
@@ -454,7 +477,7 @@
         ({ url, token } = await resp.json());
       }
 
-      room = new LK.Room({ adaptiveStream: false, dynacast: false,
+      room = new LK.Room({ adaptiveStream: false, dynacast: false, stopLocalTrackOnUnpublish: false,
         audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
       room.registerRpcMethod("duet.tool", async (data) => {
         let req = {};
@@ -472,28 +495,41 @@
           if (hooks.remoteAudio) hooks.remoteAudio(track);
         }
       });
+      room.on(LK.RoomEvent.TrackUnsubscribed, (track) => { track.detach().forEach((a) => a.remove()); });
+      const thisRoom = room;
+      let up = false;   // this room was connected (a room that never connected leaves through the catch below)
       room.on(LK.RoomEvent.Disconnected, () => {
-        orb("ended"); $("conn").textContent = "Disconnected"; room = null;
-        // the connection dropped (not the user ending it): join a new conversation, a few times at most
-        if (wantRoom && reconnects < 3) {
-          reconnects++;
-          addStep("t-fail", "↻", "Connection lost: reconnecting", "attempt " + reconnects + " of 3");
-          toast("Connection lost, reconnecting…");
-          setTimeout(() => { if (wantRoom && !room) start(mode, null, true); }, 1500);
-        }
+        if (room === thisRoom) room = null;
+        orb("ended"); $("conn").textContent = "Disconnected";
+        // the connection dropped (not the user ending it): join a new conversation
+        if (up) rejoinSoon("Connection lost", 1500);
       });
       room.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
         if (p.isAgent || /agent/.test(p.identity)) {
           orb("ended"); $("conn").textContent = "DUET left the room";
           // the agent restarted or failed: leave, and the rejoin above starts a fresh conversation
-          if (wantRoom && reconnects < 3 && room) room.disconnect();
+          if (wantRoom && room === thisRoom) thisRoom.disconnect(false);   // false: keep the microphone
         }
       });
 
       await room.connect(url, token);
+      up = true;
+      // DUET joins within seconds; a room it never joins (its laptop was still starting) is left for a new one
+      setTimeout(() => {
+        const here = [...thisRoom.remoteParticipants.values()].some((p) => p.isAgent || /agent/.test(p.identity));
+        if (wantRoom && room === thisRoom && !here) {
+          addStep("t-fail", "!", "DUET did not join", "trying a new conversation");
+          thisRoom.disconnect(false);
+        }
+      }, 30000);
       await room.startAudio();
       if (hooks.mic) await hooks.mic(room);
-      else await room.localParticipant.setMicrophoneEnabled(true);
+      else {
+        if (!micTrack || micTrack.mediaStreamTrack.readyState === "ended") {
+          micTrack = await LK.createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
+        }
+        await room.localParticipant.publishTrack(micTrack, { source: LK.Track.Source.Microphone });
+      }
       if (P.NATIVE) {  // after the microphone: WebRTC has switched the phone to call audio by now
         try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
         try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
@@ -505,15 +541,19 @@
       orb("initializing");
     } catch (e) {
       console.error(e);
+      if (room && room.state !== "connected") { const r = room; room = null; try { await r.disconnect(false); } catch (x) { /* never connected */ } }
       orb("ended");
       $("conn").textContent = "Could not connect";
       addStep("t-fail", "!", "Could not connect", esc(e.message || String(e)));
+      if (again) rejoinSoon("DUET's laptop did not answer", 3000);   // it may be restarting
     }
   }
 
   async function end() {
     wantRoom = false;
+    if (rejoinTimer) { clearTimeout(rejoinTimer); rejoinTimer = null; }
     if (room) { try { await room.disconnect(); } catch (e) { /* already gone */ } room = null; }
+    if (micTrack) { micTrack.stop(); micTrack = null; }
     if (P.NATIVE) {
       try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ }
       try { await P.native.listenInBackground({ on: false }); } catch (e) { /* ignore */ }

@@ -16,11 +16,15 @@ import androidx.core.app.NotificationCompat;
  * A visible foreground service of type microphone: while it runs, Android keeps DUET's
  * microphone and conversation alive when another app (Google Maps in Drive mode) is in front.
  * Started from DuetPhonePlugin.listenInBackground when a conversation starts, stopped when it ends.
+ * Android 14+ lets it start only while DUET is on screen, so a rejoin behind Maps keeps the
+ * running one instead of starting it again (running says which).
  */
 public class DuetListenService extends Service {
 
     private static final String CHANNEL = "duet.listening";
     private static final int ID = 7;
+
+    static volatile boolean running = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -43,7 +47,20 @@ public class DuetListenService extends Service {
         } else {
             startForeground(ID, n);
         }
+        running = true;
         return START_NOT_STICKY;
+    }
+
+    /** DUET swiped away from the recent apps: the conversation is gone, so is the "listening" notice. */
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        stopSelf();
+    }
+
+    @Override
+    public void onDestroy() {
+        running = false;
+        super.onDestroy();
     }
 
     @Override

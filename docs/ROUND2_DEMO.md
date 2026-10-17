@@ -44,6 +44,13 @@ About three hours. Do the steps in order; stop and fix at the first failure.
 3. Settings › Security and privacy › **Auto Blocker: off** (it blocks USB commands).
 4. Charge to 100%. Wi-Fi or mobile data on. Plug into the laptop with a USB-C data cable; tap **Allow** on the
    "Allow USB debugging?" prompt (tick "Always allow").
+5. Settings › Connections › SIM manager: a **preferred SIM for calls and for messages** (not "Ask every time"), or
+   a direct call or text waits for someone to pick a SIM.
+6. Watch the phone while `phone_check.py` installs DUET: if **Google Play Protect** asks about the app ("Scan app" /
+   "Unsafe app blocked"), tap *Install without scanning* or *More details › Install anyway*. (DUET asks for none of
+   the permissions Play Protect's India pilot blocks: no SMS reading, no notification or accessibility access.)
+   If Android ever says **"Restricted setting"** when a permission is allowed by hand: App info › ⋮ › *Allow
+   restricted settings*. `phone_check.py` grants everything over USB, so this should not come up.
 
 **On the laptop:**
 ```bash
@@ -51,6 +58,9 @@ bash scripts/galaxy_demo.sh             # with FAST_MODEL set (see 3); wait for 
 python scripts/phone_check.py            # install, permissions, Appear on top, USB route, self-test, screenshot
 python scripts/smartthings_setup.py --reset
 python scripts/phone_e2e.py              # 19 end-to-end cases on the S24, also behind Google Maps
+python scripts/phone_e2e.py --mode drive # 6 Drive cases
+python scripts/phone_resilience.py       # behind Maps: a dropped conversation, 5 minutes, 20 s without network;
+                                         # each must end "listening" with the request done
 ```
 
 **Then test by hand, and write down what happens:**
@@ -60,7 +70,7 @@ python scripts/phone_e2e.py              # 19 end-to-end cases on the S24, also 
 | 1 | Self-test (Settings › Run the phone self-test) | All steps green |
 | 2 | "Set an alarm for 6:30, no, make it 7" | One DUET alarm at 7; the lock screen shows it as the next alarm |
 | 3 | Samsung Clock: Settings › Alarms › "The phone's Clock app"; "Set an alarm for 6:45", then "cancel the 6:45 alarm" | **Decide the alarm kind:** if Samsung Clock really removes it without opening, Clock is an option; otherwise keep DUET's own (the default) |
-| 4 | Loudspeaker: let DUET give a long answer in a quiet room, then in a noisy one | It never stops itself (no false interruption); if it does, switch to Galaxy Buds |
+| 4 | Loudspeaker: let DUET give a long answer in a quiet room, then in a noisy one. **While it speaks, press volume up to the top**: that raises whichever volume DUET's voice uses (media volume on the emulator; call volume if the S24 switches to call audio). Don't ask DUET to lower the media volume during the demo: its own voice may get quieter too | Loud and clear from the loudspeaker (not the earpiece); it never stops itself (no false interruption); if it does, switch to Galaxy Buds |
 | 5 | Interrupt a long answer | DUET stops within half a second |
 | 6 | Drive mode: "Take me to the airport", "hand it to Google Maps"; with Maps in front, "Turn on the AC at home" and "Tell Priya when I'll get there" | Both done; the notification "DUET is listening" stays |
 | 7 | The drill button, then "What's the weather?" and "Turn on the torch" | Honest line at once; the torch works |
@@ -98,7 +108,7 @@ limits with Maps in front (6). Each has a fallback that is already built: DUET's
 | What | How |
 |---|---|
 | The phone's screen in the meeting | `set ADB=E:\android-toolchain\sdk\platform-tools\adb.exe` then `E:\android-toolchain\scrcpy-win64-v5.0.1\scrcpy.exe --no-audio --stay-awake --window-title "DUET on Galaxy S24"` (the `ADB` line stops scrcpy's own adb from fighting ours); share that window |
-| What the jury hears | The presenter's voice and DUET's, from the phone's loudspeaker, through the laptop microphone. Test the level once: DUET must be clearly audible. (Alternative: scrcpy without `--no-audio` forwards the phone's sound to the laptop; then share system audio. Choose by testing.) |
+| What the jury hears | The presenter's voice and DUET's, from the phone's loudspeaker, through the laptop microphone. Test the level once: DUET must be clearly audible. (Alternative: scrcpy without `--no-audio` forwards the phone's sound to the laptop, and by default **silences the phone's own speaker**, so DUET then speaks only from the laptop; share system audio. `--audio-source=playback --audio-dup` keeps both, but apps may opt out of capture and DUET's voice is call audio: test before relying on it. Choose by testing.) |
 | The SmartThings home | my.smartthings.com in a laptop browser, signed in with the account that owns the home: the devices change live. Share it next to the phone window |
 | If the jury wants to interrupt DUET themselves | Their voice comes out of the laptop speaker: put the phone next to it. Rehearse once. Fallback: the presenter says what they ask |
 | **When you are not demoing** | DUET hears the meeting too. During the talk and the Q&A, tap the **microphone button** in DUET's top bar (muted), or end the conversation, so it does not answer the jury's questions to you. Unmute for the jury's free play |
@@ -157,7 +167,8 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 |---|---|---|
 | DUET mishears | "The recogniser heard X; watch, it acts only on what it heard and the timeline shows it." | Repeat more clearly |
 | A long pause before an answer (the cloud mind is slow) | "That's the cloud mind; simple actions don't wait for it." | Show the fast mind with an alarm |
-| The connection drops | "It rejoins by itself." | The app reconnects up to 3 times; otherwise tap the mode again |
+| The connection drops | "It rejoins by itself." | The app keeps rejoining for 3 minutes, also behind Maps, with the same microphone (tested: about 5 s after a drop, 20 s after the network returns); otherwise tap End and the mode again |
+| The agent hangs or crashes | "Let me restart its brain; the phone reconnects on its own." | `bash scripts/galaxy_stop.sh`, then the start command (section 3): about 2 minutes, and the phone rejoins by itself (tested: 110 s) |
 | An action is blocked behind Maps | DUET says what to allow: that is the honest behaviour | Come back to DUET, ask again |
 | SmartThings token expired | "The home is simulated in the app now; the screen says so." | New token (section 3, step 1), restart the stack |
 | Everything fails | "Here is the recording from last night." | Play the backup recording |

@@ -178,3 +178,18 @@ def test_a_time_has_one_spelling_so_cancel_and_set_again_work():
     call(box, "cancel_alarm", {"time": "7:00"})
     assert call(box, "set_alarm", {"time": "7.00"})["status"] == "ok"           # set again, really
     assert sent == [("set_alarm", {"time": "07:00"}), ("cancel_alarm", {"time": "07:00"}), ("set_alarm", {"time": "07:00"})]
+
+
+def test_times_in_a_text_message_are_sent_in_digits():
+    """18 Oct 2026, Drive mode: the arrival time went out as "about half past three"."""
+    from duet_voice.galaxy.tools import message_times
+    assert message_times("I'll be there at about half past three.") == "I'll be there at about 3:30."
+    assert message_times("See you at quarter to five") == "See you at 4:45"
+    assert message_times("quarter to one") == "12:45"
+    assert message_times("Meet at six o'clock") == "Meet at 6:00"
+    assert message_times("Quarter past 12 works") == "12:15 works"
+    for same in ("half past caring", "around 3:25 AM", "I'll be 10 minutes late", "half past 13"):
+        assert message_times(same) == same
+    box, sent, _ = make()
+    call(box, "send_message", {"to": "Priya", "text": "On my way, there at half past three."})
+    assert sent == [("send_message", {"to": "Priya", "text": "On my way, there at 3:30."})]

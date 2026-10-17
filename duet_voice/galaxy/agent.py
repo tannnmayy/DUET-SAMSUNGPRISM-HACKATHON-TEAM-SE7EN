@@ -67,7 +67,7 @@ from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
 from . import fast, smartthings  # noqa: E402
-from .confirm import adds_nothing  # noqa: E402
+from .confirm import adds_nothing, drop_overclaims  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, rpc_sender  # noqa: E402
@@ -266,12 +266,13 @@ class GalaxyAgent(base.DuetAgent):
         """Spoken, not read:
         - drop a leading "OK." and a closing filler sentence ("Let me know if you need anything
           else."), which models add however often they are told not to;
+        - drop a sentence that claims more than the phone reported ("I've sent it" after "ready; tap send");
         - drop an answer that only repeats what was already confirmed aloud in this reply."""
         text = re.sub(r"^\s*(ok(ay)?|alright)[.,!]\s*", "", " ".join((words or "").split()), flags=re.I)
         parts = [p for p in re.split(r"(?<=[.!?])\s+", text) if p]
         while len(parts) > 1 and FILLER.match(parts[-1]):
             parts.pop()
-        text = " ".join(parts)
+        text = drop_overclaims(" ".join(parts), self._confirmed_now)
         if adds_nothing(text, self._confirmed_now):
             return ""
         return text

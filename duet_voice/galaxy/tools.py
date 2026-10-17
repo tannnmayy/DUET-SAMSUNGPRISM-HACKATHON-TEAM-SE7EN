@@ -31,6 +31,32 @@ log = logging.getLogger("duet.galaxy.tools")
 
 TIMEOUTS = {"read": 8.0, "write": 10.0, "ui": 6.0}
 
+_HOURS = {w: i + 1 for i, w in enumerate("one two three four five six seven eight nine ten eleven twelve".split())}
+_CLOCK = re.compile(r"\b(half past|quarter past|quarter to)\s+(\d{1,2}|%s)\b|\b(\d{1,2}|%s) o'?clock\b"
+                    % ("|".join(_HOURS), "|".join(_HOURS)), re.I)
+
+
+def message_times(text: str) -> str:
+    """Times in a text message in digits, whatever the model wrote: "half past three" -> "3:30",
+    "quarter to five" -> "4:45", "six o'clock" -> "6:00" (18 Oct 2026: a Drive text gave the arrival
+    time in words although told to use digits; a reader glancing at a phone wants the number)."""
+    def hour(word: str) -> int:
+        return int(word) if word.isdigit() else _HOURS[word.lower()]
+
+    def digits(m: "re.Match") -> str:
+        if m.group(3):
+            h = hour(m.group(3))
+            return "%d:00" % h if 1 <= h <= 12 else m.group(0)
+        h, how = hour(m.group(2)), m.group(1).lower()
+        if not 1 <= h <= 12:
+            return m.group(0)
+        if how == "half past":
+            return "%d:30" % h
+        if how == "quarter past":
+            return "%d:15" % h
+        return "%d:45" % ((h + 10) % 12 + 1)
+    return _CLOCK.sub(digits, text)
+
 
 class PhoneError(Exception):
     """The phone carried out the call and reported a failure (payload: its JSON)."""
@@ -159,6 +185,8 @@ class PhoneToolbox:
             m = re.match(r"\s*(\d{1,2})[:.](\d{2})\s*$", args["time"])
             if m and int(m.group(1)) < 24 and int(m.group(2)) < 60:
                 args["time"] = "%02d:%s" % (int(m.group(1)), m.group(2))
+        if tool == "send_message" and isinstance(args.get("text"), str):
+            args["text"] = message_times(args["text"])
         kind = spec.get("kind", "read")
         self.last_done = None
         if tool in ("set_alarm", "set_reminder") and args.get("time"):
