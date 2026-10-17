@@ -12,7 +12,7 @@ import time
 
 from duet_voice.coordinator import CallRecord, Coordinator
 from duet_voice.galaxy import fast as fast_mod
-from duet_voice.galaxy.fast import HybridThinker
+from duet_voice.galaxy.fast import HybridThinker, vet_plan
 from duet_voice.thinker import ThinkEvent
 
 
@@ -41,11 +41,11 @@ class Box:
         self.coord = Coordinator()
 
 
-def collect(thinker, text="set an alarm for 7", box=None):
+def collect(thinker, text="set an alarm for 7", box=None, allow_listen=True):
     box = box or Box()
 
     async def go():
-        return [ev async for ev in thinker.run(text, box, note="Now: Friday 23:50.")]
+        return [ev async for ev in thinker.run(text, box, note="Now: Friday 23:50.", allow_listen=allow_listen)]
     return asyncio.run(go()), box
 
 
@@ -158,3 +158,18 @@ def test_the_fast_mind_sees_only_simple_actions_and_the_hand_off():
     names = [s["name"] for s in fast_mod.fast_specs(MODES["care"]["tools"])]
     assert "ask_expert" in names and "call_contact" in names
     assert not {"log_medication", "get_medication_schedule", "alert_family", "log_checkin"} & set(names)
+
+
+def test_the_second_look_after_waiting_goes_to_the_cloud_mind():
+    """17 Oct 2026: told to respond now, the fast mind set an alarm the user had just dropped."""
+    fast, slow = Script("e2b", ACT, record_action=True), Script("26b", CLOUD)
+    events, box = collect(HybridThinker(fast, slow), allow_listen=False)
+    assert fast.calls == 0 and slow.calls == 1 and [e.text for e in events if e.kind == "say"] == ["7 or 6:30?"]
+
+
+def test_a_dropped_request_is_never_the_fast_minds():
+    from duet_voice.galaxy.fast import drops_something
+    words = "Set an alarm for 6 tomorrow morning. Actually, never mind, forget it."
+    assert drops_something(words) and vet_plan([("set_alarm", {"time": "06:00"})], words)
+    assert not drops_something("Turn on the AC. Actually, leave the light on.")
+    assert vet_plan([("set_alarm", {"time": "07:00"})], "Set an alarm for 6, no, 7.") == ""

@@ -111,6 +111,10 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); outline
 .perm.granted em { color: var(--ok); }
 .text-btn { border: 0; background: none; color: var(--accent); padding: 10px 0 16px; cursor: pointer; font-size: 14.5px; }
 .foot { color: var(--muted); font-size: 13px; text-align: center; margin: 26px 0 10px; }
+.health { font-size: 14px; border-radius: 14px; padding: 10px 14px; margin: 4px 0 14px; line-height: 1.5; }
+.health.ok { background: var(--ok-soft); color: var(--ok); }
+.health.bad { background: var(--bad-soft); color: var(--bad); }
+.health small { opacity: .8; }
 
 /* ---------- session ---------- */
 .bar { display: flex; align-items: center; gap: 8px; padding: 4px 0 12px; }

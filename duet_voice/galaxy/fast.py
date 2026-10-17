@@ -175,6 +175,16 @@ _QUESTION = re.compile(r"^\W*(is|are|was|were|do|does|did|what|what's|whats|whic
                        r"should|shall|am i|have i|has|had|isn't|aren't|don't|doesn't)\b", re.I)
 
 
+# The user drops something ("Set an alarm for 6. Actually, never mind, forget it."): whatever is left to do
+# is the cloud mind's to judge, never the fast mind's (17 Oct 2026: the fast mind's second look, told to
+# "respond now", set the dropped 6:00 alarm).
+_DROPPED = re.compile(r"\b(never ?mind|forget (it|that|about it)|don'?t bother|skip (it|that)|leave it|no need)\b", re.I)
+
+
+def drops_something(words: str) -> bool:
+    return bool(_DROPPED.search(words or ""))
+
+
 def asks_question(words: str) -> bool:
     sentences = [s for s in re.split(r"(?<=[.?!])\s+", (words or "").strip()) if s.strip()]
     if not sentences:
@@ -193,6 +203,8 @@ def vet_plan(calls: List[tuple], words: str) -> str:
     w = (words or "").lower()
     if calls and asks_question(words):
         return "a question: the cloud mind answers it"
+    if calls and drops_something(words):
+        return "the user dropped something: the cloud mind decides what is left"
     for tool, args in calls:
         why = vet(tool, args, w)
         if why:
@@ -306,6 +318,14 @@ class HybridThinker:
                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         coord = toolbox.coord
         done_before = len(coord.history)
+        if not allow_listen:
+            # the second look, after waiting for a user who had not finished: these are the unclear
+            # requests by nature, so the cloud mind takes them (17 Oct 2026: the fast mind, told to respond
+            # now, acted on a request the user had just dropped)
+            async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before,
+                                        "a second look after the user finished"):
+                yield ev
+            return
         self.fast.history = []          # stateless: each request is judged on its own words
         self.fast.vet = lambda calls: vet_plan(calls, text)
         # The fast mind does not need the clock: it acts only on values the user said, and the toolbox
@@ -360,13 +380,19 @@ class HybridThinker:
                     return
         finally:
             await agen.aclose()
+        async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before, escalate_why):
+            yield ev
+
+    async def _cloud(self, text: str, toolbox, audio, note: str, allow_listen: bool, done_before: int,
+                     why: str) -> AsyncIterator[ThinkEvent]:
+        coord = toolbox.coord
         if self.cloud_off or time.monotonic() < self.cloud_down_until:
             # no cloud mind: say so at once (the agent's offline line), never wait for it
             yield ThinkEvent("error", text=CLOUD_OFF if self.cloud_off else CLOUD_DOWN)
             return
         # the cloud mind takes over: it is told what the fast mind already did, for this request
         # and for earlier ones it handled alone
-        self._route("cloud", escalate_why)
+        self._route("cloud", why)
         yield ThinkEvent("route", text="cloud")   # the turn loop covers the longer wait at once
         extra = []
         if self.edge_log:

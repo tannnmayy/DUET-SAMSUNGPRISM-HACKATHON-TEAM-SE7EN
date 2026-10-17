@@ -427,6 +427,41 @@ flowchart TB
 - **The live timeline** on the phone shows each step as it happens: heard, planned, **Never
   ran**, **Done**, **Not repeated**, and what DUET said.
 
+### 10.1 Round 2: two speeds, real actions, honest failures
+
+Added for the Round 2 live demo (branch `round2`; the benchmark path is unchanged: every new behaviour
+is a hook whose default is the benchmark's).
+
+```mermaid
+flowchart LR
+    W["The user's words<br/>(open request)"] --> F{"Fast mind<br/>Gemma 4 E2B · laptop GPU"}
+    F -- "keep listening" --> L["wait for quiet,<br/>then the cloud mind looks"]
+    F -- "a simple action" --> V{"vet_plan:<br/>named in the words? values said?<br/>last value in the plan? not a question?<br/>nothing dropped?"}
+    V -- yes --> CO{{"Coordinator<br/>gate · epochs · ledger"}}
+    V -- no --> C["Cloud mind<br/>Gemma 4 26B"]
+    F -- "ask_expert · no tool · slow · error" --> C
+    C --> CO
+    CO --> T["Phone (RPC) · SmartThings ·<br/>weather · web"]
+    T --> K["Confirmed aloud from the device's own reply"]
+```
+
+| Part | What it does | Where |
+|---|---|---|
+| **Fast mind** | Gemma 4 E2B (Q4_0, llama.cpp, `--reasoning off`) sees each request first with only the simple phone actions and `ask_expert`. It acts in one step and says nothing but the confirmations. Its instructions carry no clock, so the server reuses its processed prompt | `galaxy/fast.py` |
+| **vet_plan** | Before the fast mind's plan runs: every action must be named in the user's words with values from them; the last number said must be in the plan; a question or a dropped request goes to the cloud mind. A failed check costs a second, never a wrong action | `galaxy/fast.py` |
+| **Routing** | Hand-off, a reply without a tool, an error, no decision in 3 s, and every second look after waiting: the cloud mind, told what the fast mind already did and what is unconfirmed | `HybridThinker` |
+| **Guards in the toolbox** | Whatever mind planned it: no write on words cut off mid-phrase ("Call my") or while the user wavers ("6:30, or maybe 7"); a time without AM or PM means the next one; a consent check (the fast mind) for settings, calls, texts and the home, asked once per request | `galaxy/tools.py` |
+| **Confirmations** | The moment an action is done, a template says so from the phone's reply ("Alarm set for 7 in the morning."); the cloud mind's answer adds only what is new. "Sent" (not confirmed by the device) and "unknown" (no reply) are never said as done | `galaxy/confirm.py` |
+| **Acknowledgement** | "Sure." when the fast mind acts, "One moment." the moment the cloud mind takes over; synthesized once at start-up | `galaxy/agent.py` |
+| **SmartThings** | The home tools on SmartThings' REST API (run by DUET, so the token stays on the laptop); a change is done when the device reports it; a name that fits two devices or none is asked about | `galaxy/smartthings.py` |
+| **Cloud unreachable** | After 2 s of failing to reach Google at all, DUET says "I can't reach my cloud mind right now…" and keeps simple actions on the fast mind; the cloud is skipped for 20 s; the app's drill button cuts it live | `gemma_api.py`, `galaxy/fast.py` |
+| **Android** | DUET's own alarms (exact set, cancel, list; they ring; the lock screen shows them); "Appear on top" so actions work while Google Maps is in front, and an honest refusal without it; a microphone foreground service; calls through Android's call service | `app/android/.../DuetPhonePlugin.java`, `DuetAlarms.java` |
+
+**How it is tested:** unit tests for each rule (`tests/test_galaxy_*.py`); the Galaxy Correction Suite, 36 spoken
+scenarios checked for stale actions, duplicates, missing actions and false claims (`scripts/galaxy_suite.py`); the
+real app end to end on Android, also behind Google Maps and with the cloud cut (`scripts/phone_e2e.py`); and the
+fast mind's decisions alone, with held-out cases (`scripts/galaxy_fast_eval.py`).
+
 ## 11. Latency and resources
 
 A typical turn with one tool, measured from the user's last word (medians from our runs

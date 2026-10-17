@@ -391,6 +391,30 @@
     return s.replace(/\/$/, "");
   }
 
+  // ---------------------------------------------------------------- is everything up? (home screen)
+  async function refreshHealth() {
+    const el = $("health"), base = serverBase();
+    if (!base || !$("session").hidden) return;
+    try {
+      const h = await (await fetch(base + "/api/health", { cache: "no-store" })).json();
+      const part = (name, x) => x.ok === null ? "" : (x.ok ? "✓ " : "✕ ") + name + (x.ok ? "" : " <small>(" + esc(x.why || "") + ")</small>");
+      const parts = [part("Cloud mind", h.cloud_mind), part("Fast mind", h.fast_mind),
+        h.smartthings.ok === null ? "" : part("SmartThings" + (h.smartthings.devices ? " · " + h.smartthings.devices + " devices" : ""), h.smartthings)]
+        .filter(Boolean);
+      const allOk = [h.cloud_mind, h.fast_mind, h.smartthings].every((x) => x.ok !== false);
+      el.className = "health " + (allOk ? "ok" : "bad");
+      el.innerHTML = (allOk ? "Ready · " : "Check · ") + parts.join(" · ");
+    } catch (e) {
+      el.className = "health bad";
+      el.textContent = "✕ The laptop running DUET does not answer at " + base;
+    }
+    el.hidden = false;
+  }
+  refreshHealth();
+  setInterval(refreshHealth, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshHealth(); });
+  $("set-server").addEventListener("change", refreshHealth);
+
   async function deviceLine() {
     if (P.NATIVE) { try { const d = await P.native.deviceInfo(); return d.line; } catch (e) { return "Android phone"; } }
     return "a laptop browser (phone actions simulated)";
@@ -402,9 +426,12 @@
     addStep("t-heard", "⚙", "Phone event sent to DUET", esc(text));
   }
 
-  async function start(m, creds) {
+  let wantRoom = false, reconnects = 0;   // the user wants a conversation; automatic rejoins so far
+  async function start(m, creds, again) {
     const base = serverBase();
     if (!creds && !base) { $("settings").open = true; $("set-server").focus(); toast("Enter the server address first, or scan the laptop's code"); return; }
+    wantRoom = true;
+    if (!again) reconnects = 0;
     mode = m;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
     document.body.classList.add("mode-" + m);
@@ -445,8 +472,23 @@
           if (hooks.remoteAudio) hooks.remoteAudio(track);
         }
       });
-      room.on(LK.RoomEvent.Disconnected, () => { orb("ended"); $("conn").textContent = "Disconnected"; room = null; });
-      room.on(LK.RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /agent/.test(p.identity)) { orb("ended"); $("conn").textContent = "DUET left the room"; } });
+      room.on(LK.RoomEvent.Disconnected, () => {
+        orb("ended"); $("conn").textContent = "Disconnected"; room = null;
+        // the connection dropped (not the user ending it): join a new conversation, a few times at most
+        if (wantRoom && reconnects < 3) {
+          reconnects++;
+          addStep("t-fail", "↻", "Connection lost: reconnecting", "attempt " + reconnects + " of 3");
+          toast("Connection lost, reconnecting…");
+          setTimeout(() => { if (wantRoom && !room) start(mode, null, true); }, 1500);
+        }
+      });
+      room.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
+        if (p.isAgent || /agent/.test(p.identity)) {
+          orb("ended"); $("conn").textContent = "DUET left the room";
+          // the agent restarted or failed: leave, and the rejoin above starts a fresh conversation
+          if (wantRoom && reconnects < 3 && room) room.disconnect();
+        }
+      });
 
       await room.connect(url, token);
       await room.startAudio();
@@ -470,6 +512,7 @@
   }
 
   async function end() {
+    wantRoom = false;
     if (room) { try { await room.disconnect(); } catch (e) { /* already gone */ } room = null; }
     if (P.NATIVE) {
       try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ }

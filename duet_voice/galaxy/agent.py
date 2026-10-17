@@ -392,6 +392,10 @@ async def entrypoint(ctx: JobContext) -> None:
             "preemptive_generation": {"enabled": CONFIG.preemptive,
                                       "max_speech_duration": CONFIG.preempt_max_speech_s,
                                       "max_retries": CONFIG.preempt_max_retries},
+            # how much speech cuts DUET off (LiveKit's default 0.5 s): the lever for a loudspeaker whose
+            # echo interrupts DUET (DUET_INTERRUPT_MIN_S=0.8); speech with no words within 2 s resumes it
+            **({"interruption": {"min_duration": float(os.environ["DUET_INTERRUPT_MIN_S"])}}
+               if os.environ.get("DUET_INTERRUPT_MIN_S") else {}),
         },
         user_away_timeout=None,
     )
