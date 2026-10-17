@@ -48,6 +48,9 @@ for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"
                       # an action: 1.4 s, not the benchmark's 1.1 s (17 Oct 2026: "3:30." then "no, no"
                       # after a 1.1 s pause set 3:30 first, then undid it)
                       ("DUET_COMMIT_HOLD", "1.4"),
+                      # the cloud mind answers without a long reasoning step: about half the wait, and every
+                      # phone test since 16 Oct ran this way (the benchmark leaves Gemma's default)
+                      ("DUET_THINKER_THINKING", "minimal"),
                       # a phone mode's call is about 3,600 input tokens (its tools and instructions):
                       # booked as such from the first call, a fresh agent does not draw 429s
                       ("DUET_GEMMA_EST_TOKENS", "3800")):

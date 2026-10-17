@@ -22,6 +22,9 @@ const N = {
   before: { ack: 1.78, action: 5.6, answer: 14.3 },                         // 30 Sep, the phone app before Round 2
 };
 
+// node build_deck_r2.js <out.pptx> <numbers.json>: the latest runs' numbers replace the defaults above
+if (process.argv[3]) Object.assign(N, JSON.parse(require("fs").readFileSync(process.argv[3], "utf8")));
+
 // White and Samsung blue (#1428A0), as in Round 1
 const C = {
   bg: "FFFFFF", panel: "F5F7FB", panel2: "E9EDF5", line: "D9DFEA", ink: "0F1C3F", muted: "4F5B73",
@@ -231,7 +234,7 @@ function stat(slide, x, y, w, big, small, color) {
   frame(s, 5, "The coordinator and its guards", "Plan early, commit late, act once: whichever mind made the plan",
     "Deterministic, about 250 lines, covered by unit tests. The same code passed Round 1's benchmark.");
   const c = [["Epochs", "Every new word voids older plans, even after the turn has closed. A cough only delays them.", C.hold],
-    ["Commit gate", "An action waits until you have been quiet 1.1 s (1.8 s after “no wait”, 2.2 s after an open sentence). Thinking starts at once; only acting waits.", C.hold],
+    ["Commit gate", "An action waits until you have been quiet 1.4 s on the phone (1.8 s after “no wait”, 2.2 s after an open sentence). Thinking starts at once; only acting waits.", C.hold],
     ["Idempotency ledger", "The same action never runs twice, even if you barge in while it runs.", C.hold],
     ["Failure policy", "A failed reading is retried once; a failed or unconfirmed change is never re-sent, and you are told.", C.hold]];
   c.forEach(([h, b, col], i) => card(s, 0.55 + (i % 2) * 6.17, 1.8 + Math.floor(i / 2) * 1.32, 5.98, 1.18, h, b, col, { bs: 10.5 }));
@@ -308,7 +311,8 @@ function stat(slide, x, y, w, big, small, color) {
   stat(s, 0.75, 4.2, 2.6, N.suitePassed + "/" + N.suiteRuns, "spoken conversations passed", C.ok);
   stat(s, 3.4, 4.2, 2.6, N.suiteStale + " · " + N.suiteDup, "stale · duplicate actions", C.ok);
   t(s, "Fast mind on our GPU, cloud mind Gemma 4 26B, a simulated phone answering exactly as the app does, the real SmartThings home.",
-    0.75, 5.5, 5.2, 1.0, { fontSize: 10, color: C.ink });
+    0.75, 5.5, 5.2, 0.55, { fontSize: 10, color: C.ink });
+  if (N.suiteNote) t(s, N.suiteNote, 0.75, 6.1, 5.2, 0.65, { fontSize: 10, color: C.muted, italic: true });
   box(s, 6.35, 3.75, 6.43, 3.1, { fill: C.panel });
   t(s, "BUGS OUR TESTS CAUGHT BEFORE ANY JURY DID", 6.55, 3.88, 6.0, 0.25, { fontSize: 10, bold: true, color: C.bad, charSpacing: 1.5 });
   ["“Garage door” matched the front door lock", "“Turn on the AC at 22” left it at 24",

@@ -178,11 +178,15 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
    Galaxy phones; the coordinator is 250 lines of deterministic code that ports to Kotlin; Samsung could bind it to
    Bixby's device agents and SmartThings directly.
 
-**The numbers** (fill in from the last runs before the demo):
+**The numbers** (17 Oct 2026; refresh with the night-of-the-20th runs):
 - Round 1: FDB-v3 Pass@1 0.81 (judge: Gemma 4 standing in for gpt-4o, disclosed); 75/100 by exact match.
-- Galaxy Correction Suite (36 scenarios, two runs, two speeds): see `results/galaxy/suite/hybrid_min_full/summary.json`.
-- End to end on Android 16 (the emulator), the real app: 19 cases, also behind Google Maps and with the cloud cut.
-- The fast mind alone: 0 wrong actions in 124 decisions; a decision in about 0.2 s.
+- Galaxy Correction Suite, 36 spoken scenarios, two speeds (`results/galaxy/suite/final_r2`): 34/36 passed,
+  **0 stale and 0 duplicate actions**, 0 model errors; the two misses (a misheard time, an extra no-op) were fixed and
+  re-run 10/10. From the end of speech (p50): "Sure."/"One moment." 0.9 s, action done 2.5 s, answer ready 4.1 s.
+- End to end on Android 16 (the emulator), the real app: Assistant 19 cases (also behind Google Maps and with the cloud
+  cut) and Drive 6 cases; the last failure was a test expecting "07:00" where the model wrote "7:00" (now one spelling).
+- The fast mind alone: 0 wrong actions in 62 decisions, 14/14 held out, 0.23 s to decide (p50).
+- 139 unit tests.
 
 ## 8. Questions the jury may ask
 
@@ -195,7 +199,7 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
    values come from those words, the last number said is in its plan, and it is not a question. Deterministic code
    checks this before anything runs; anything else goes to the cloud mind. Measured: 0 wrong actions in 124 cases.
 3. *What exactly does the coordinator do?* Epochs (new words void older plans), a commit gate (an action waits until
-   you have been quiet 1.1 s, 1.8 s after a correction, 2.2 s after an open sentence), an idempotency ledger (the same
+   you have been quiet 1.4 s on the phone (1.1 s in the benchmark), 1.8 s after a correction, 2.2 s after an open sentence), an idempotency ledger (the same
    action never twice), and a failure policy (a failed read is retried once; a failed or unconfirmed write is never
    re-sent, and the user is told).
 4. *Doesn't the hold make it slow?* Thinking starts at once; only acting waits, and the hold mostly overlaps the
@@ -214,9 +218,9 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 
 **Speed**
 
-10. *Your latency?* From the end of speech: "Sure."/"One moment." about 0.9 s; a simple action done about 1.5–2.5 s
-    (fast mind); a cloud answer about 4–5 s. (Quote the suite's latest p50/p90.)
-11. *Where does the time go?* End-of-turn detection (~0.5 s), the gate's hold for actions (1.1 s), and the cloud
+10. *Your latency?* From the end of speech (p50, 36 spoken scenarios): "Sure."/"One moment." 0.9 s; a simple action done 2.5 s
+    (fast mind, including the 1.4 s safety hold); a cloud answer ready in 4.1 s.
+11. *Where does the time go?* End-of-turn detection (~0.5 s), the gate's hold for actions (1.4 s), and the cloud
     model (~3 s a call). Simple actions skip the cloud.
 12. *Why is the cloud answer 4–5 s?* Two model calls (decide, then phrase the answer from the tool's result) at ~1.5–3 s
     each through a free-tier API. Minimal thinking halved it.
@@ -247,7 +251,7 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 
 **Testing**
 
-22. *How did you test it?* Unit tests for every rule (129), the Galaxy Correction Suite (36 spoken scenarios with what
+22. *How did you test it?* Unit tests for every rule (139), the Galaxy Correction Suite (36 spoken scenarios with what
     DUET must do, must never do and must never claim, run repeatedly), an end-to-end test of the real app on Android,
     and the fast mind's own evaluation with held-out cases.
 23. *Who wrote the test sentences?* We did, from the FDB-v3 failure categories; none are benchmark items.
