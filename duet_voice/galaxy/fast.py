@@ -240,6 +240,16 @@ def vet(tool: str, args: Dict[str, Any], words: str) -> str:
 
 
 AFTER_ACTION_S = 12.0   # the gate's hold, the phone's reply and a short last word fit easily
+CLOUD_DOWN_S = 20.0     # after failing to reach the cloud mind, requests skip it for this long
+
+CLOUD_OFF = "the cloud mind is switched off (offline drill)"
+CLOUD_DOWN = "cannot reach the cloud mind (it failed moments ago)"
+
+
+def cloud_unreachable(why: str) -> bool:
+    """Does this failure mean the cloud mind cannot be reached (rather than a bad answer)?"""
+    w = (why or "").lower()
+    return "cannot reach" in w or "offline drill" in w
 
 
 def enabled() -> bool:
@@ -278,6 +288,8 @@ class HybridThinker:
         self.model = "%s (fast) + %s (cloud)" % (fast.model, slow.model)
         # requests the fast mind handled since the cloud mind last spoke, so the cloud mind knows them
         self.edge_log: List[str] = []
+        self.cloud_off = False          # the offline drill (the app's switch): the cloud mind is cut
+        self.cloud_down_until = 0.0     # it could not be reached moments ago: do not wait for it again
 
     @property
     def history(self):
@@ -348,6 +360,10 @@ class HybridThinker:
                     return
         finally:
             await agen.aclose()
+        if self.cloud_off or time.monotonic() < self.cloud_down_until:
+            # no cloud mind: say so at once (the agent's offline line), never wait for it
+            yield ThinkEvent("error", text=CLOUD_OFF if self.cloud_off else CLOUD_DOWN)
+            return
         # the cloud mind takes over: it is told what the fast mind already did, for this request
         # and for earlier ones it handled alone
         self._route("cloud", escalate_why)
@@ -359,8 +375,16 @@ class HybridThinker:
         ran = ["%s(%s)" % (r.tool, json.dumps(r.args)) for r in coord.history[done_before:] if r.outcome == "ok"]
         if ran:
             extra.append("Already carried out for this request (do not repeat): " + "; ".join(ran))
+        unsure = ["%s(%s)" % (r.tool, json.dumps(r.args)) for r in coord.history[done_before:] if r.outcome == "unknown"]
+        if unsure:
+            extra.append("Tried for this request, but the phone never confirmed it, so it may or may not have "
+                         "happened (do not retry it; tell the user it may not have gone through and to check "
+                         "the phone): " + "; ".join(unsure))
         slow_note = "\n".join([x for x in [note] + extra if x])
         async for ev in self.slow.run(text, toolbox, audio=audio, note=slow_note, allow_listen=allow_listen):
             if ev.kind == "say":
                 self.edge_log = []
+                self.cloud_down_until = 0.0
+            if ev.kind == "error" and cloud_unreachable(ev.text):
+                self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
             yield ev

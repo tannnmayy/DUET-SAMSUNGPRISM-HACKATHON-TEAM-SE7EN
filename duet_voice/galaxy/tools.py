@@ -113,6 +113,8 @@ class PhoneToolbox:
         self.last_tool_end = 0.0
         # calls of this request that the gate held back (the user kept talking): they never ran
         self.held_back: List[Dict[str, Any]] = []
+        # calls of this request the consent check refused (the user is asked first, once)
+        self.asked: set = set()
         # the last call that ran: (tool, args, the phone's reply, its spoken confirmation or None)
         self.last_done: Optional[tuple] = None
 
@@ -121,6 +123,7 @@ class PhoneToolbox:
         """The last request was answered. Repeatable actions ("call her again") and
         screens may run again; everything else stays exactly-once."""
         self.held_back = []
+        self.asked = set()
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") == "ui":
@@ -169,12 +172,20 @@ class PhoneToolbox:
                                "the user has not decided yet. Ask which one, in one short question that names "
                                "the options; act only on their answer"})
         if spec.get("consent") and self.consent is not None:
+            key = (tool, json.dumps(args, sort_keys=True))
+            if key in self.asked:
+                # asked about already in this request: the model must stop and ask the user (17 Oct 2026:
+                # the cloud mind called a refused call eight times in a row, 14 s of silence)
+                return json.dumps({"status": "not_executed", "reason":
+                                   "refused already: STOP calling tools now. Reply to the user with one short "
+                                   "question offering this; act only on their yes"})
             try:
                 allowed = await self.consent(tool, args)
             except Exception as exc:  # a failed check never blocks what the user asked for
                 log.warning("consent check failed: %s", exc)
                 allowed = True
             if not allowed:
+                self.asked.add(key)
                 self.emit({"kind": "tool_asked", "tool": tool, "args": args})
                 return json.dumps({"status": "not_executed", "reason":
                                    "not done yet: the user has not asked for this. Offer it in one short "
@@ -217,6 +228,14 @@ class PhoneToolbox:
                 # the thinker sees exactly what the user has already been told
                 return json.dumps({**record.result, "already_said_to_user": said}, default=str)
             return json.dumps(record.result, default=str)
+        if record.outcome == "cached" and record.error:
+            # tried before and its outcome is unknown (the phone did not answer): still unknown, never
+            # "already done" (17 Oct 2026: the cloud mind retried a timer the phone had not answered,
+            # read already_done, and said the timer was set)
+            self.emit({"kind": "tool_unknown", "tool": tool, "args": args, "error": record.error})
+            return json.dumps({"status": "unknown_outcome", "error": record.error, "instruction":
+                               "this was already tried and the phone did not confirm it: do not retry; tell "
+                               "the user it may not have gone through and to check on the phone"})
         if record.outcome == "cached":
             self.emit({"kind": "tool_cached", "tool": tool, "args": args})
             return json.dumps({"status": "already_done", "note":

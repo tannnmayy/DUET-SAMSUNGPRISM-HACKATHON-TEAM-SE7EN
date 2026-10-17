@@ -72,6 +72,14 @@ CASES = [
     ("apps", "How many apps do I have on this phone?", {"reads": ["list_installed_apps"], "say": r"\d"}),
     ("battery", "How much battery do I have left?", {"reads": ["get_battery_report"], "say": r"\d"}),
 ]
+# the offline drill (the app's button): cut the cloud mind; simple actions go on, the rest is said at once
+DRILL = [
+    ("drill_ask", "What's the weather in Chennai today?",
+     {"drill": True, "offline": True, "say": r"can't reach my cloud mind", "spoken_within_s": 3.0}),
+    ("drill_torch", "Turn on the torch.", {"done": [("set_torch", {"on": "true"})]}),
+    ("drill_torch2", "Turn the torch off.", {"done": [("set_torch", {"on": "false"})]}),
+    ("drill_over", "How much battery do I have left?", {"drill": False, "reads": ["get_battery_report"], "say": r"\d"}),
+]
 MAPS = [
     ("navigate", "Navigate to the airport.", {"done": [("navigate_to", {"destination": "airport"})], "after": "maps_front"}),
     ("bg_home", "Turn off the AC at home.",
@@ -110,6 +118,11 @@ def match(ev: dict, tool: str, args: dict) -> bool:
 
 
 async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
+    if "drill" in want:   # the app's drill button: cut (or restore) the cloud mind
+        await cdp_eval("DuetApp.room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify("
+                       "{kind: 'drill', cloud_off: %s})), {reliable: true, topic: 'duet.phone'}).then(() => true)"
+                       % ("true" if want["drill"] else "false"), 20)
+        await asyncio.sleep(1.0)
     out = await cdp_eval(SEND_AND_WAIT % {"limit": limit_s * 1000, "text": json.dumps(text)}, timeout=limit_s + 15)
     evs, sent = out["events"], out["sent"]
     done = [e for e in evs if e.get("kind") == "tool_done"]
@@ -127,8 +140,17 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
         problems.append("DID NOT SAY /%s/" % want["say"])
     for e in failed:
         problems.append("%s %s %s" % (e["kind"].upper(), e.get("tool"), json.dumps(e.get("result") or e.get("error") or "")[:120]))
-    if any(e.get("kind") == "thinker_error" for e in evs):
+    errors = [e for e in evs if e.get("kind") == "thinker_error"]
+    if want.get("offline"):
+        if not any(re.search(r"cannot reach|offline drill", e.get("text", "")) for e in errors):
+            problems.append("NO OFFLINE ANSWER")
+    elif errors:
         problems.append("MODEL ERROR")
+    if want.get("spoken_within_s") and want.get("say"):
+        # the honest line itself (not just "One moment.") must have started within the limit
+        line_t = [e["t"] for e in evs if e.get("kind") == "thinker_error"]
+        if not line_t or (line_t[0] - sent) / 1000 > want["spoken_within_s"]:
+            problems.append("OFFLINE ANSWER TOO LATE")
     after = want.get("after", "")
     if after.startswith("alarm_has:") and after.split(":", 1)[1] not in await duet_alarms():
         problems.append("ALARM NOT SET ON THE PHONE")
@@ -199,7 +221,7 @@ async def main() -> int:
     # typed requests only: the device's microphone (on the emulator, the laptop's) must not add words
     await cdp_eval("DuetApp.room.localParticipant.setMicrophoneEnabled(false).then(() => true)", 20)
     results = []
-    for name, text, want in CASES + ([] if args.no_maps else MAPS):
+    for name, text, want in CASES + DRILL + ([] if args.no_maps else MAPS):
         if want.get("behind_maps") and "maps" not in top_activity():
             await asyncio.sleep(1.0)
         r = await run_case(name, text, want)

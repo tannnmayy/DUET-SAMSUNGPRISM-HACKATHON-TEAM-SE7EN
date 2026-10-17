@@ -38,9 +38,12 @@ load_dotenv(os.path.join(_ROOT, ".env.livekit"))
 # With two speeds, the fast mind's route is usually known within half a second: the acknowledgement waits
 # that long for it ("Sure." for a simple action, "One moment." for the cloud mind, said the moment the
 # request goes to the cloud). "Still working on it." only after 6 s: cloud answers mostly take 4 to 5.
+# A person holding a phone does not wait 28 s (the benchmark's answer window) for the cloud mind: 15 s at
+# most, and 2 s when Google cannot be reached at all (then DUET says so; simple actions stay on the fast mind).
 for _name, _value in (("DUET_ENDPOINT_MIN", "0.5"), ("DUET_ACK_MIN_QUIET", "0.4"),
                       ("DUET_PROGRESS_AFTER", "6"),
-                      ("DUET_ACK_GRACE", "0.5" if os.environ.get("DUET_FAST", "0") == "1" else "0.3")):
+                      ("DUET_ACK_GRACE", "0.5" if os.environ.get("DUET_FAST", "0") == "1" else "0.3"),
+                      ("DUET_GEMMA_DEADLINE_S", "15"), ("DUET_GEMMA_OFFLINE_AFTER_S", "2")):
     os.environ.setdefault(_name, _value)
 
 from livekit import agents, rtc  # noqa: E402
@@ -112,6 +115,11 @@ async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str)
 
 FILLER = re.compile(r"(just )?(let me know|feel free|is there anything else|anything else)", re.I)
 
+# The cloud mind cannot be reached (no internet, Google down, or the offline drill): said at once, and
+# true, because simple phone actions run on the fast mind on our own machine.
+OFFLINE_LINE = ("I can't reach my cloud mind right now, so I can't do that one. Simple things on the phone, "
+                "like alarms, timers and the torch, still work.")
+
 # what the phone's timeline shows, and which fields of each event it needs
 SHOWN = {
     "user_state": ("state",), "heard": ("text",), "think_start": ("text",),
@@ -119,6 +127,7 @@ SHOWN = {
     "talker": ("text", "reason"), "thinker_say": ("text", "after_s"), "thinker_error": ("text",),
     "thinker_review": ("text",), "confirmed": ("text",), "route": ("where", "why"),
     "superseded": (), "agent_said": ("text", "interrupted"), "agent_state": ("state",),
+    "drill": ("cloud_off",),
 }
 
 
@@ -190,9 +199,23 @@ class GalaxyAgent(base.DuetAgent):
         rest of the wait is only the wording of the answer."""
         return lines_so_far < 1 and not confirmed
 
-    def error_line(self, confirmed) -> str:
+    def silent_answers(self, confirmed) -> bool:
+        """A silent reply closes the request only when something was done in it (the fast mind's
+        confirmations said it all). Otherwise the words stay open for what the user says next: 17 Oct
+        2026, "Call my" got a silent reply, and the "My daughter" that followed lost its "call"."""
+        return bool(confirmed) or any(r.outcome == "ok" for r in self._coord.history[self._seen:])
+
+    def error_answers(self, why: str) -> bool:
+        """"I can't reach my cloud mind" answers the request: it is not kept open for the next words
+        (measured 17 Oct 2026: a weather question asked during the drill was answered, from the cloud,
+        in place of the battery question asked after it)."""
+        return fast.cloud_unreachable(why)
+
+    def error_line(self, confirmed, why: str = "") -> str:
         if confirmed:
             return ""   # what was asked is done and was said; nothing is missing
+        if fast.cloud_unreachable(why):
+            return OFFLINE_LINE if fast.enabled() else OFFLINE_LINE.split(". ")[0] + "."
         return "Sorry, I couldn't get that done just now. Could you say it again?"
 
     def polish(self, words: str) -> str:
@@ -411,6 +434,13 @@ async def entrypoint(ctx: JobContext) -> None:
         try:
             msg = json.loads(packet.data.decode("utf-8"))
         except ValueError:
+            return
+        if msg.get("kind") == "drill":
+            # the offline drill: the cloud mind is cut (or restored); the fast mind keeps going
+            off = bool(msg.get("cloud_off"))
+            if isinstance(agent._thinker, fast.HybridThinker):
+                agent._thinker.cloud_off = off
+                trace("drill", cloud_off=off)
             return
         text = str(msg.get("text", "")).strip()
         if not text or coord.user_speaking:

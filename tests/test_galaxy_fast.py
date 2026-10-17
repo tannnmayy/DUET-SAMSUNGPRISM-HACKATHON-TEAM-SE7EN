@@ -94,6 +94,32 @@ def test_a_failed_or_slow_fast_mind_hands_over_in_time():
         assert time.monotonic() - start < 2.0
 
 
+def test_without_the_cloud_mind_simple_actions_still_run_and_the_rest_is_said_at_once():
+    # the offline drill: the fast mind still acts; a request for the cloud mind fails at once, honestly
+    fast, slow = Script("e2b", ACT, record_action=True), Script("26b", CLOUD)
+    hybrid = HybridThinker(fast, slow)
+    hybrid.cloud_off = True
+    events, _ = collect(hybrid)
+    assert [e.kind for e in events][-1] == "say" and slow.calls == 0
+    hybrid.fast = Script("e2b", [ThinkEvent("escalate", text="a question")])
+    start = time.monotonic()
+    events, _ = collect(hybrid, "what's the weather?")
+    assert [(e.kind, e.text) for e in events] == [("error", fast_mod.CLOUD_OFF)] and slow.calls == 0
+    assert time.monotonic() - start < 0.5
+
+
+def test_after_the_cloud_mind_could_not_be_reached_it_is_skipped_for_a_while():
+    fast = Script("e2b", [ThinkEvent("escalate", text="a question")])
+    slow = Script("26b", [ThinkEvent("error", text="cannot reach Google's API (getaddrinfo failed)")])
+    hybrid = HybridThinker(fast, slow)
+    collect(hybrid, "what's the weather?")
+    assert slow.calls == 1
+    hybrid.fast = Script("e2b", [ThinkEvent("escalate", text="a question")])
+    events, _ = collect(hybrid, "and tomorrow?")
+    assert slow.calls == 1 and [(e.kind, e.text) for e in events] == [("error", fast_mod.CLOUD_DOWN)]
+    assert fast_mod.cloud_unreachable(events[0].text) and not fast_mod.cloud_unreachable("quota exceeded")
+
+
 def test_keep_listening_passes_through():
     fast, slow = Script("e2b", [ThinkEvent("listen", text="the order number is...")]), Script("26b", CLOUD)
     events, _ = collect(HybridThinker(fast, slow))

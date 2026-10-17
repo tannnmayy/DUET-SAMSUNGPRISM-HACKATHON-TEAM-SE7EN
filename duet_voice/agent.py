@@ -215,10 +215,19 @@ class DuetAgent(Agent):
         """May another "Still working on it." be said? The benchmark: every few seconds."""
         return True
 
-    def error_line(self, confirmed: List[str]) -> str:
+    def error_line(self, confirmed: List[str], why: str = "") -> str:
         """What to say when the thinker fails. `confirmed`: what was already confirmed in this
-        reply (always empty for the benchmark)."""
+        reply (always empty for the benchmark); `why`: the failure."""
         return "Sorry, something went wrong on my side. Could you say that once more?"
+
+    def silent_answers(self, confirmed: List[str]) -> bool:
+        """Does a <silent> reply close the request? The benchmark: always (it is noise)."""
+        return True
+
+    def error_answers(self, why: str) -> bool:
+        """Is the error line a final answer that closes the request (rather than asking the user to say
+        it again, which keeps it open)? Never for the benchmark."""
+        return False
 
     def ack_line(self) -> str:
         """The fixed line that covers the wait; the benchmark's is always "One moment."."""
@@ -404,11 +413,13 @@ class DuetAgent(Agent):
                         spoke, last_speech = True, time.time()
                 elif kind == "error":
                     self._trace("thinker_error", text=ev.text)
-                    if confirmed:
-                        # The action ran and was confirmed aloud; only the wording of the answer
-                        # failed. The request is answered: asking for it again would invite a repeat.
+                    if confirmed or self.error_answers(ev.text or ""):
+                        # The action ran and was confirmed aloud, and only the wording of the answer
+                        # failed (asking for it again would invite a repeat); or the line is itself
+                        # the answer ("I can't reach my cloud mind"). Either way the request is answered,
+                        # and must not be read again with the user's next words.
                         self._pending_consumed = answered_upto
-                    line = self.error_line(confirmed)
+                    line = self.error_line(confirmed, ev.text or "")
                     if line:
                         yield line
                         spoke = True
@@ -417,8 +428,10 @@ class DuetAgent(Agent):
                     words = self.polish(re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip())
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
-                    # the thinker finished: this request is answered once the reply lands
-                    self._pending_consumed = answered_upto
+                    # the thinker finished: this request is answered once the reply lands (a silent
+                    # reply too, unless the agent keeps it open for the user's next words)
+                    if "<silent>" not in words or self.silent_answers(confirmed):
+                        self._pending_consumed = answered_upto
                     if words and "<silent>" not in words:
                         yield words
                         spoke = True

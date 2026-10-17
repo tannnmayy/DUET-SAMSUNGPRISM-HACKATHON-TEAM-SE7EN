@@ -163,8 +163,19 @@ def test_the_benchmark_agent_confirms_nothing():
 
 
 class FailingAfterConfirm(Confirming):
-    def error_line(self, confirmed):
+    def error_line(self, confirmed, why=""):
         return "" if confirmed else "Sorry, I couldn't get that done just now. Could you say it again?"
+
+
+def test_the_phone_says_plainly_when_the_cloud_mind_cannot_be_reached(monkeypatch):
+    from duet_voice.galaxy import agent as galaxy_agent
+    from duet_voice.galaxy import fast
+    monkeypatch.setenv("DUET_FAST", "1")
+    line = galaxy_agent.GalaxyAgent.error_line(None, [], fast.CLOUD_OFF)
+    assert line.startswith("I can't reach my cloud mind right now") and "alarms" in line
+    assert galaxy_agent.GalaxyAgent.error_line(None, [], "cannot reach Google's API (getaddrinfo failed)") == line
+    assert galaxy_agent.GalaxyAgent.error_line(None, [], "504 deadline").startswith("Sorry")
+    assert galaxy_agent.GalaxyAgent.error_line(None, ["Alarm set."], fast.CLOUD_OFF) == ""
 
 
 def test_a_failure_after_the_action_was_confirmed_asks_for_nothing_again():
@@ -180,6 +191,25 @@ def test_a_failure_after_the_action_was_confirmed_asks_for_nothing_again():
     assert a._pending_consumed == 1          # the request is answered: it will not be read again
 
 
+def test_an_offline_answer_closes_the_request_and_an_apology_does_not():
+    """After "I can't reach my cloud mind", the next words are a new request; after "say it again" the
+    request stays open (17 Oct 2026: a weather question was answered in place of the next question)."""
+    from duet_voice.galaxy import agent as galaxy_agent
+
+    class Phone(agent_mod.DuetAgent):
+        error_answers = galaxy_agent.GalaxyAgent.error_answers
+        error_line = galaxy_agent.GalaxyAgent.error_line
+
+    async def no_talker(text, context="", usage=None, instructions=None):
+        return None
+    agent_mod.talker.acknowledgement = no_talker
+    for why, closed in (("the cloud mind is switched off (offline drill)", True), ("504 deadline", False)):
+        a = Phone(agent_mod.Trace("test"), Coordinator(commit_hold_s=0.0), toolbox=None)
+        a._thinker = FakeThinker([ThinkEvent("error", text=why)])
+        speak(a, "what's the weather")
+        assert (a._pending_consumed == 1) is closed, why
+
+
 def test_the_benchmark_still_apologises_when_the_thinker_fails():
     a = agent_mod.DuetAgent(agent_mod.Trace("test"), Coordinator(commit_hold_s=0.0), toolbox=None)
     a._thinker = FakeThinker([ThinkEvent("decided", tools=True), ThinkEvent("error", text="504")])
@@ -188,3 +218,16 @@ def test_the_benchmark_still_apologises_when_the_thinker_fails():
         return None
     agent_mod.talker.acknowledgement = no_talker
     assert speak(a, "track my order")[-1] == "Sorry, something went wrong on my side. Could you say that once more?"
+
+
+def test_a_silent_reply_keeps_the_request_open_unless_something_was_done():
+    """17 Oct 2026: "Call my" got a silent reply; the "My daughter" that followed lost its "call"."""
+    from types import SimpleNamespace as NS
+    from duet_voice.coordinator import CallRecord
+    from duet_voice.galaxy import agent as galaxy_agent
+    me = NS(_coord=Coordinator(), _seen=0)
+    assert galaxy_agent.GalaxyAgent.silent_answers(me, []) is False
+    assert galaxy_agent.GalaxyAgent.silent_answers(me, ["Torch on."]) is True
+    me._coord.history.append(CallRecord("set_torch", {"on": True}, 0, 0.0, outcome="ok"))
+    assert galaxy_agent.GalaxyAgent.silent_answers(me, []) is True
+    assert agent_mod.DuetAgent.silent_answers(me, []) is True      # the benchmark: silence answers noise

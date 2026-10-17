@@ -132,3 +132,40 @@ def test_a_held_back_call_is_remembered_for_the_request_only():
     assert box.held_back == [{"tool": "set_alarm", "args": {"time": "15:30"}}]
     box.new_request()
     assert box.held_back == []
+
+
+def test_an_action_the_phone_never_confirmed_stays_unconfirmed_when_tried_again():
+    """17 Oct 2026: the phone did not answer a timer in time; the cloud mind tried it again, was told
+    already_done, and said the timer was set. A second try now hears unknown_outcome again."""
+    sent = []
+
+    async def silent_phone(tool, args, timeout):
+        sent.append(tool)
+        await asyncio.sleep(5)
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    events = []
+    box = PhoneToolbox(coord, MODES["assistant"]["tools"], silent_phone, emit=events.append)
+    box.specs["set_timer"] = dict(box.specs["set_timer"], timeout=0.2)
+    first = json.loads(asyncio.run(box.call("set_timer", {"minutes": 3})))
+    again = json.loads(asyncio.run(box.call("set_timer", {"minutes": 3})))
+    assert first["status"] == again["status"] == "unknown_outcome" and sent == ["set_timer"]
+    assert "do not retry" in again["instruction"] and box.last_done is None
+    assert [e["kind"] for e in events if e["kind"] != "tool_planned"] == ["tool_unknown", "tool_unknown"]
+
+
+def test_a_call_refused_by_the_consent_check_is_not_retried_in_a_loop():
+    asked = []
+
+    async def consent(tool, args):
+        asked.append(tool)
+        return False
+    box, sent, events = make()
+    box.consent = consent
+    first = call(box, "call_contact", {"name": "Priya"})
+    again = call(box, "call_contact", {"name": "Priya"})
+    assert first["status"] == again["status"] == "not_executed" and sent == [] and asked == ["call_contact"]
+    assert "STOP calling tools" in again["reason"]
+    box.new_request()                            # a new request may ask again
+    call(box, "call_contact", {"name": "Priya"})
+    assert asked == ["call_contact", "call_contact"]

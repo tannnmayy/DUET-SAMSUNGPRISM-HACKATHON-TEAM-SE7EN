@@ -179,6 +179,36 @@ scenario("drive_stop", "drive", [
     do=[("set_destination", {"place": "home"}), ("add_stop", {"place": "pharmac"})],
     never=[("add_stop", {"place": "petrol|pump"})], only=True)
 
+# Added 17 Oct 2026: the phone's newer actions, the world, the SmartThings home, and failures
+def _next_monday() -> str:
+    import datetime as _dt
+    today = _dt.date.today()
+    return (today + _dt.timedelta(days=(0 - today.weekday()) % 7 or 7)).isoformat()
+
+
+scenario("torch", "assistant", [("@Turn on the torch.", 7.0)], do=[("set_torch", {"on": "true"})], only=True)
+scenario("media", "assistant", [("@Pause the music.", 7.0)], do=[("control_media", {"action": "pause"})], only=True)
+scenario("volume_fix", "assistant", [("@Set the volume to 30. No, 50 percent.", 8.0)],
+         do=[("set_volume", {"percent": "^50$"})], never=[("set_volume", {"percent": "^30$"})], only=True)
+scenario("weather", "assistant", [("@Will it rain in Chennai tomorrow?", 12.0)],
+         reads=["get_weather"], do=[], only=True, say=[r"\d|rain|shower|dry|chance"])
+scenario("web", "assistant", [("@Who won the T20 cricket world cup in 2024?", 15.0)],
+         reads=["web_search"], do=[], only=True, say=[r"India"])
+scenario("calendar", "assistant", [("@Put a dentist appointment in my calendar for Monday at 4 in the afternoon.", 10.0)],
+         do=[("create_event", {"title": "dentist", "time": "=16:00", "date": "^" + _next_monday() + "$"})], only=True)
+scenario("home_fix", "assistant", [("@Set the AC at home to 22 degrees. Actually, make it 21.", 9.0)],
+         do=[("control_home_device", {"device": "ac|air", "value": "^21"})],
+         never=[("control_home_device", {"value": "^22"})], only=True)
+scenario("cut_off", "assistant", [("@Call my", 9.0), ("@My daughter.", 8.0)],
+         ask=True, do=[("call_contact", {"name": "daughter|priya"})], only=True)
+scenario("drill", "assistant", [("#drill:on", 0.5), ("@What's the weather in Chennai today?", 8.0),
+                                ("@Turn on the torch.", 7.0), ("#drill:off", 0.5)],
+         do=[("set_torch", {"on": "true"})], only=True, say=[r"can't reach my cloud mind"], errors_ok=True)
+scenario("phone_timeout", "assistant", [("@Set a timer for 3 minutes.", 16.0)],
+         phone={"slow": {"set_timer": 13.0}}, do=[], only=True,
+         say=[r"may not|might not|not sure|couldn't confirm|can't confirm|check"],
+         claim=[r"[Tt]imer (is )?set for 3"])
+
 
 # --- a simulated phone (the same answers as the app's browser build, app/www/phone.js) --------
 
@@ -325,8 +355,13 @@ async def run_one(name: str, sc: dict, speech: List[tuple], quiet: bool = False)
     state = {"agent": "initializing", "said_at": 0.0, "greeted": False}
     record: List[dict] = []
 
+    slow = (sc.get("expect", {}).get("phone") or {}).get("slow", {})
+
     async def on_tool(data: rtc.RpcInvocationData) -> str:
         req = json.loads(data.payload)
+        if req["tool"] in slow:   # a phone that does not answer in time (the timeout drill)
+            log("   PHONE (silent for %.0f s) <- %s" % (slow[req["tool"]], req["tool"]))
+            await asyncio.sleep(slow[req["tool"]])
         out = phone.run(req["tool"], req.get("args", {}))
         log("   PHONE <- %s %s -> %s" % (req["tool"], json.dumps(req.get("args")), json.dumps(out)[:120]))
         return json.dumps(out)
@@ -377,6 +412,12 @@ async def run_one(name: str, sc: dict, speech: List[tuple], quiet: bool = False)
         await silence(0.8)
         line_end = 0.0
         for text, clean, audio, pause in speech:
+            if text.startswith("#drill:"):   # the app's drill button: cut or restore the cloud mind
+                await room.local_participant.publish_data(json.dumps({"kind": "drill", "cloud_off": text.endswith(":on")}),
+                                                          reliable=True, topic="duet.phone")
+                log("DRILL ", text)
+                await silence(pause)
+                continue
             if text.startswith("@"):
                 await until(lambda: state["agent"] == "listening" and state["said_at"] >= line_end, 75)
                 await silence(0.6)
@@ -400,6 +441,9 @@ def prepare(sc: dict, pipe, voice: str) -> List[tuple]:
     for i, (text, pause) in enumerate(sc["lines"]):
         if text.startswith("~noise:"):
             out.append((text, "(room noise %ss)" % text.split(":")[1], noise(float(text.split(":")[1]), seed=i), pause))
+            continue
+        if text.startswith("#"):
+            out.append((text, text, None, pause))
             continue
         clean = text.lstrip("@!")
         audio = np.concatenate([np.asarray(r.audio, dtype=np.float32) for r in pipe(clean, voice=voice)])
@@ -471,7 +515,8 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("claim", []):
         if re.search(rx, spoken, re.I):
             problems.append("FALSE CLAIM /%s/" % rx)
-    errors = [e for e in ev if e.get("kind") == "thinker_error"]
+    errors = [e for e in ev if e.get("kind") == "thinker_error"
+              and not (expect.get("errors_ok") and re.search(r"cannot reach|offline drill", e.get("text", "")))]
     for e in errors:
         problems.append("MODEL ERROR %s" % e.get("text", "")[:90])
     return {"ok": not problems, "problems": problems, "stale": len(stale), "duplicates": len(dup),
@@ -557,12 +602,25 @@ async def main() -> int:
     os.makedirs(folder, exist_ok=True)
     os.environ.setdefault("DUET_TTS_DEVICE", "cpu")  # the agent's models keep the GPU
     from duet_voice import speech_models
+    from duet_voice.galaxy import smartthings as st
     pipe = speech_models.kokoro()
     results = []
+    home_loc = None
+    if st.enabled():   # the SmartThings home starts every scenario in the same state
+        from smartthings_setup import reset
+        try:
+            home_loc = await st.location_id()
+        except st.HomeError as exc:
+            print("SmartThings unavailable (%s): the agent will use the simulated home" % exc)
     for rep in range(args.repeat):
         for name in names:
             sc = S[name]
             print("\n=== %s (run %d of %d)" % (name, rep + 1, args.repeat), flush=True)
+            if home_loc:
+                try:
+                    await reset(home_loc)
+                except st.HomeError as exc:
+                    print("SmartThings reset failed: %s" % exc)
             try:
                 run = await run_one(name, sc, prepare(sc, pipe, args.voice), quiet=args.quiet)
             except Exception as exc:  # one broken run must not stop the suite

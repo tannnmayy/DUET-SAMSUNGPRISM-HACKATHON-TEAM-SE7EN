@@ -169,6 +169,15 @@
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
         homeLive = null;
         homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
+        twoSpeeds = /\(fast\)/.test(ev.model || "");
+        cloudOff = false;
+        renderPanel("all");
+        break;
+      case "drill":
+        cloudOff = !!ev.cloud_off;
+        addStep(cloudOff ? "t-fail" : "t-done", cloudOff ? "☁✕" : "☁",
+          cloudOff ? "Drill: the cloud mind is cut off" : "Drill over: the cloud mind is back",
+          cloudOff ? "simple actions stay on the fast mind on our own machine" : "");
         renderPanel("all");
         break;
       case "home": {
@@ -233,7 +242,9 @@
         duetOpen = null;
         break;
       case "thinker_error":
-        addStep("t-fail", "!", "Something went wrong in the slow mind", esc(ev.text || ""));
+        if (/cannot reach|offline drill/i.test(ev.text || "")) {
+          addStep("t-fail", "☁✕", "Cloud mind unreachable: DUET said so at once", esc(ev.text || ""));
+        } else addStep("t-fail", "!", "Something went wrong in the slow mind", esc(ev.text || ""));
         break;
       case "superseded":
         addStep("t-drop", "↺", "Plan dropped: you kept talking", "nothing was done with the old words");
@@ -283,6 +294,8 @@
   let battery = null;
   P.onChange((what) => { if (what && what.battery) battery = what.battery; renderPanel(what); });
 
+  let twoSpeeds = false;      // a fast mind runs next to the cloud mind (the drill needs it)
+  let cloudOff = false;       // the offline drill is on
   // the home: live from SmartThings when DUET has a token (the "home" events), else simulated in the app
   let homeLive = null;        // {source, devices: [{name, room, kind, state, on}], error}
   let homeNote = "";          // why the home is simulated, from the session start
@@ -338,7 +351,17 @@
       html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Simulate: 10 min from destination</button></div>';
       html += devicesHTML();
     }
+    if (twoSpeeds) {   // the offline drill: cut DUET's cloud mind, live, and watch the fast mind carry on
+      html += '<div class="row-btns"><button class="chip" id="drill">' +
+        (cloudOff ? "Restore the cloud mind" : "Drill: cut the cloud mind") + "</button></div>";
+    }
     el.innerHTML = html;
+    const drill = $("drill");
+    if (drill) drill.onclick = () => {
+      if (!room) return;
+      room.localParticipant.publishData(enc.encode(JSON.stringify({ kind: "drill", cloud_off: !cloudOff })),
+        { reliable: true, topic: "duet.phone" });
+    };
     if (what && what.device) { const d = el.querySelector('[data-id="' + what.device + '"]'); if (d) d.classList.add("flash"); }
     const near = $("ev-near");
     if (near) near.onclick = () => simulate("near");
