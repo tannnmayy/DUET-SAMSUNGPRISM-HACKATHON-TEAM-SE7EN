@@ -355,7 +355,7 @@ answers when the cloud, the phone or a device does not respond. The plan:
 
 ## Engineering quality
 
-- **131 unit tests** (`python -m pytest tests -q`): the coordinator's gate, epochs and
+- **144 unit tests** (`python -m pytest tests -q`): the coordinator's gate, epochs and
   ledger; the key pool, backups and deadlines; the speaking rules; tool argument
   handling; the phone bridge.
 - **No benchmark item is written into the agent.** `tests/test_voice_integrity.py`
@@ -388,7 +388,7 @@ duet_voice/              the agent
 bench/                   live runner, warm-up, offline evaluators, judge adapter, reports
 scripts/                 machine check, offline evaluation, the extension's demo tools
 app/                     DUET for Galaxy: Android app, web build, demo recorder
-tests/                   131 unit tests
+tests/                   144 unit tests
 docs/                    architecture, results, engineering notes, requirements, research
 AI disclosure/           LangAI 3.0 AI disclosure form (PDF)
 results/reported/        the reported run: reports, traces and logs

@@ -197,7 +197,7 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 - End to end on Android 16 (the emulator), the real app: Assistant 19 cases (also behind Google Maps and with the cloud
   cut) and Drive 6 cases; the last failure was a test expecting "07:00" where the model wrote "7:00" (now one spelling).
 - The fast mind alone: 0 wrong actions in 62 decisions, 14/14 held out, 0.23 s to decide (p50).
-- 139 unit tests.
+- 144 unit tests.
 
 ## 8. Questions the jury may ask
 
@@ -262,7 +262,7 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 
 **Testing**
 
-22. *How did you test it?* Unit tests for every rule (139), the Galaxy Correction Suite (36 spoken scenarios with what
+22. *How did you test it?* Unit tests for every rule (144), the Galaxy Correction Suite (36 spoken scenarios with what
     DUET must do, must never do and must never claim, run repeatedly), an end-to-end test of the real app on Android,
     and the fast mind's own evaluation with held-out cases.
 23. *Who wrote the test sentences?* We did, from the FDB-v3 failure categories; none are benchmark items.

@@ -112,7 +112,7 @@ recovered (retry, human in the loop), and called a Bixby-like use case "wonderfu
     "sent".
   - A cloud-mind sentence that claims more than the device reported is removed. It was caught live: "I've sent that to
     Priya" right after "ready; tap send".
-- **Verified:** unit tests (141); phone_e2e Drive `d_text`.
+- **Verified:** unit tests (144); phone_e2e Drive `d_text`.
 - **Value:** Theme 05's "no false done! claims", word for word.
 
 **A7. Never dead air · 8/10**
