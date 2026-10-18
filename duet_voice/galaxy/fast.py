@@ -178,7 +178,10 @@ _QUESTION = re.compile(r"^\W*(is|are|was|were|do|does|did|what|what's|whats|whic
 # The user drops something ("Set an alarm for 6. Actually, never mind, forget it."): whatever is left to do
 # is the cloud mind's to judge, never the fast mind's (17 Oct 2026: the fast mind's second look, told to
 # "respond now", set the dropped 6:00 alarm).
-_DROPPED = re.compile(r"\b(never ?mind|forget (it|that|about it)|don'?t bother|skip (it|that)|leave it|no need)\b", re.I)
+# "leave the light on" keeps a device as it is: a part of the request dropped, not a new action (18 Oct
+# 2026: the fast mind turned it into control_home_device(light, on) after "switch off the living room light")
+_DROPPED = re.compile(r"\b(never ?mind|forget (it|that|about it)|don'?t bother|skip (it|that)|leave it|no need|"
+                      r"leave (that|them|the [a-z ]{1,30}?) (on|off|alone|be|as (it|they) (is|are)))\b", re.I)
 
 
 # a message whose words point at a fact to look up rather than state it

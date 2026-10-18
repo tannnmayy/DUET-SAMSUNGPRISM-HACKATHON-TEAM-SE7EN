@@ -516,6 +516,13 @@
       reconnects = 0; rejoinUntil = 0;
       $("mute").setAttribute("aria-pressed", "false"); $("mute").setAttribute("aria-label", "Mute microphone");
     }
+    if (P.NATIVE && !P.backgroundListening) {
+      // First, while DUET is surely on screen (the user just started it): Android lets the microphone service
+      // start only then, and without it DUET behind Google Maps is silenced, then frozen (18 Oct 2026: the
+      // service, started after connecting, lost the race to a Maps opened 2 s after the start)
+      try { await P.native.listenInBackground({ on: true }); P.backgroundListening = true; }
+      catch (e) { P.backgroundListening = false; console.warn("background listening:", e); }
+    }
     mode = m;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
     document.body.classList.add("mode-" + m);
@@ -597,9 +604,6 @@
       if (P.NATIVE) {  // after the microphone: WebRTC has switched the phone to call audio by now
         try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
         try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
-        // keep listening while another app (Google Maps) is in front; a failure here never stops the talk
-        try { await P.native.listenInBackground({ on: true }); P.backgroundListening = true; }
-        catch (e) { P.backgroundListening = false; console.warn("background listening:", e); }
       }
       $("conn").textContent = "Connected · waiting for DUET…";
       orb("initializing");
@@ -610,6 +614,10 @@
       $("conn").textContent = "Could not connect";
       addStep("t-fail", "!", "Could not connect", esc(e.message || String(e)));
       if (again) rejoinSoon("DUET's laptop did not answer", 3000);   // it may be restarting
+      else if (P.NATIVE && P.backgroundListening) {   // no conversation after all: no "DUET is listening" either
+        try { await P.native.listenInBackground({ on: false }); } catch (x) { /* ignore */ }
+        P.backgroundListening = false;
+      }
     }
   }
 

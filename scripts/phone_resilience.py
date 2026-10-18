@@ -48,15 +48,23 @@ LIGHT_OFF = ("Turn off the living room light.", {"done": [("control_home_device"
                                                  "behind_maps": True})
 
 
-def android_mic() -> dict:
-    """DUET's microphone as Android sees it, from AudioService's recording events: is a capture of DUET's
-    running (its last event is not a stop), and is it silenced (what Android does to a background app)?"""
+BEFORE: set = set()   # captures that existed before this run (an earlier test's): never this run's microphone
+
+
+def _captures() -> dict:
+    """{capture id: (its last event, silenced or not, the line)} for DUET, from AudioService's recording events."""
     last = {}
     for l in adb("shell", "dumpsys", "audio").splitlines():
-        m = re.search(r"rec (start|update|stop) riid:(\d+) .*?((?:not )?silenced) pack:(\S+)", l)
+        m = re.search(r"rec (\w+) riid:(\d+) .*?((?:not )?silenced) pack:(\S+)", l)
         if m and m.group(4) == PKG:
             last[m.group(2)] = (m.group(1), m.group(3), l.strip())
-    live = [v for v in last.values() if v[0] != "stop"]
+    return last
+
+
+def android_mic() -> dict:
+    """DUET's microphone as Android sees it: is a capture of this run running (its last event is not a stop
+    or, on Android 16, a release), and is it silenced (what Android does to a background app's microphone)?"""
+    live = [v for k, v in _captures().items() if k not in BEFORE and v[0] not in ("stop", "release")]
     return {"recording": bool(live), "silenced": any(v[1] == "silenced" for v in live), "lines": [v[2] for v in live][:3]}
 
 
@@ -218,11 +226,13 @@ async def case_restart() -> dict:
 
 
 async def setup(mode: str) -> bool:
-    if st.enabled():
+    live = st.enabled() and bool((await st.check()).get("ok"))
+    if live:   # the SmartThings home starts in the same state; without a token the app's simulated one is used
         from smartthings_setup import reset
         await reset(await st.location_id())
     adb("reverse", "tcp:8787", "tcp:8787")
     adb("emu", "avd", "hostmicoff")       # the emulator only: its microphone hears silence, not the laptop's
+    BEFORE.update(_captures())            # an earlier run's captures are not this one's
     adb("shell", "am", "force-stop", PKG)
     adb("shell", "am", "start", "-n", PKG + "/.MainActivity")
     for _ in range(60):
@@ -235,10 +245,16 @@ async def setup(mode: str) -> bool:
     await cdp_eval("""(() => { const s = JSON.parse(localStorage.getItem('duet.settings') || '{}');
         Object.assign(s, {server: 'localhost:8787', name: 'Tanmay', city: 'Chennai'}); delete s.simulate;
         localStorage.setItem('duet.settings', JSON.stringify(s)); return true; })()""")
+    if not live:
+        await cdp_eval("(() => { DuetPhone.reset(); return true; })()")
     await cdp_eval("""(() => { window.__ev = []; DuetApp.hooks.events.push((e) => window.__ev.push(Object.assign({t: Date.now()}, e)));
         DuetApp.start('%s'); return true; })()""" % mode)
     back = await wait_back(0, 90)
-    s = await state()
+    for _ in range(20):   # as a person would: DUET on screen until its microphone is up, then Maps
+        s = await state()
+        if s["mic"] and s["listening"]:
+            break
+        await asyncio.sleep(0.5)
     step("conversation started", back is not None, "in %ss · microphone on %s · background listening %s" % (
         back, s["mic"], s["listening"]))
     if not step("Google Maps in front", await open_maps(), top_activity()):

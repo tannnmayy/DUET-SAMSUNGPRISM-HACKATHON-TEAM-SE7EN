@@ -171,7 +171,10 @@ def test_a_dropped_request_is_never_the_fast_minds():
     from duet_voice.galaxy.fast import drops_something
     words = "Set an alarm for 6 tomorrow morning. Actually, never mind, forget it."
     assert drops_something(words) and vet_plan([("set_alarm", {"time": "06:00"})], words)
-    assert not drops_something("Turn on the AC. Actually, leave the light on.")
+    # "leave the light on" keeps a device as it is, and is the cloud mind's to judge since 18 Oct 2026 (the fast
+    # mind turned it into an action); "leave" in any other sense is not a drop
+    assert drops_something("Turn on the AC. Actually, leave the light on.")
+    assert not drops_something("Turn on the AC before I leave the office.")
     assert vet_plan([("set_alarm", {"time": "07:00"})], "Set an alarm for 6, no, 7.") == ""
 
 
@@ -208,3 +211,13 @@ def test_a_message_that_asks_for_the_arrival_time_goes_to_the_cloud_mind_whateve
     "I'll let you know when I get there", which drops the time the user asked to send."""
     plan = [("send_message", {"to": "Priya", "text": "I'm on my way and I'll let you know when I get there."})]
     assert vet_plan(plan, "Tell Priya I'm on my way and when I'll get there.") != ""
+
+
+def test_leaving_a_device_as_it_is_is_not_a_new_action():
+    """18 Oct 2026, spoken suite: "switch off the living room light. Actually, leave the light on." planned
+    control_home_device(living room light, on) on the fast mind."""
+    plan = [("control_home_device", {"device": "AC", "action": "turn_on"}),
+            ("control_home_device", {"device": "living room light", "action": "set", "value": "on"})]
+    words = "Turn on the AC and uh switch off the living room light. Actually leave the light on."
+    assert vet_plan(plan, words) != ""
+    assert vet_plan([("control_home_device", {"device": "AC", "action": "turn_on"})], "Turn on the AC.") == ""

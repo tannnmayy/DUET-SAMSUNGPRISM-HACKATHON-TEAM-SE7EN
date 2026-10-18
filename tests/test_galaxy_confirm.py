@@ -326,3 +326,12 @@ def test_a_refused_or_failed_action_met_with_silence_is_said():
     assert ask(me, []) == "Sorry, that didn't work on the phone."
     me._toolbox.failed = [("set_torch", "error")]
     assert ask(me, ["Alarm set for 7 in the morning."]) == ""                  # something was done and said
+
+
+def test_a_restated_arrival_adds_nothing():
+    """18 Oct 2026: "Heading to home, arriving around 5:44 PM." was followed by "Heading home, you'll be there
+    around 5:44 PM."."""
+    from duet_voice.galaxy.confirm import adds_nothing
+    said = ["Heading to home, arriving around 5:44 PM."]
+    assert adds_nothing("Heading home, you'll be there around 5:44 PM.", said)
+    assert not adds_nothing("You'll be there around 5:44 PM, before the rain starts.", said)

@@ -417,6 +417,8 @@ async def run_all(args) -> int:
         except Exception:
             pass
         await asyncio.sleep(1.0)
+    if not HOME_LIVE["ok"]:   # the app's simulated home starts every run in the same state too
+        await cdp_eval("(() => { DuetPhone.reset(); return true; })()")
     await cdp_eval("""(() => { window.__ev = []; DuetApp.hooks.events.push((e) => window.__ev.push(Object.assign({t: Date.now()}, e)));
         DuetApp.start('%s'); return true; })()""" % {"arrival": "drive", "washer": "assistant", "skills": "assistant", "newskill": "assistant",
          "drills": "assistant"}.get(args.mode, args.mode))

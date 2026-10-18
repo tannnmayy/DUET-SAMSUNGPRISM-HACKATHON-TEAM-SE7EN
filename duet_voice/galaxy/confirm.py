@@ -175,7 +175,7 @@ _FILLER = {"ok", "okay", "alright", "sure", "done", "great", "all", "right", "no
            "i'm", "im", "have", "has", "been", "is", "it", "it's", "its", "the", "a", "an", "your", "you", "for",
            "to", "at", "in", "on", "of", "and", "that", "this", "there", "so", "as", "with", "set", "new",
            "again", "instead", "up", "o'clock", "oclock", "am", "pm", "successfully", "already", "requested",
-           "one"}
+           "one", "you'll", "youll", "be", "will", "arriving", "arrive", "around", "about", "heading"}
 _SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes", "second": "seconds"}
 
 

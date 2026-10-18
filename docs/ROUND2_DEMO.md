@@ -57,11 +57,11 @@ About three hours. Do the steps in order; stop and fix at the first failure.
 bash scripts/galaxy_demo.sh             # with FAST_MODEL set (see 3); wait for "Ready."
 python scripts/phone_check.py            # install, permissions, Appear on top, USB route, self-test, screenshot
 python scripts/smartthings_setup.py --reset
-python scripts/phone_e2e.py              # 19 end-to-end cases on the S24, also behind Google Maps
-python scripts/phone_e2e.py --mode drive # 6 Drive cases
-python scripts/phone_resilience.py       # behind Maps: a dropped conversation, 5 minutes, 20 s without network;
-                                         # each must end "listening" with the request done
+python scripts/verify_all.py --device s24   # everything, about 70 minutes, one report in results/verify/:
+#   unit tests, the stack, the spoken suite, end to end on the S24 (Assistant, Drive, arrival offers, washer,
+#   skills, a new skill added live, drills), resilience behind Maps, the preflight (its red lines count here)
 ```
+Short of time: `python scripts/verify_all.py --device s24 --no-suite` (the phone parts only, about 40 minutes).
 
 **Then test by hand, and write down what happens:**
 
