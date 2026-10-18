@@ -92,6 +92,8 @@ async def main() -> int:
     ap.add_argument("--no-grant", action="store_true")
     ap.add_argument("--no-overlay", action="store_true", help="leave 'Appear on top' off (tests DUET's refusal)")
     ap.add_argument("--eval", default="")
+    ap.add_argument("--assistant", action="store_true",
+                    help="make DUET the phone's digital assistant (assist gesture, side key); ask the phone's owner first")
     args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
 
@@ -130,6 +132,11 @@ async def main() -> int:
         idle = adb("shell", "cmd", "deviceidle", "whitelist", "+" + PKG)
         step("background running allowed, no battery optimisation", "Added" in idle or "already" in idle.lower() or not idle,
              idle.splitlines()[0] if idle else "")
+    if args.assistant:
+        # Android forgets the role when the app is reinstalled, so it is set after the install
+        adb("shell", "cmd", "role", "add-role-holder", "android.app.role.ASSISTANT", PKG)
+        holders = adb("shell", "cmd", "role", "get-role-holders", "android.app.role.ASSISTANT")
+        step("DUET is the phone's assistant (assist gesture, side key)", PKG in holders, holders or "none")
     step("phone's localhost:8787 is this laptop", "8787" in adb("reverse", "tcp:8787", "tcp:8787") or True,
          adb("reverse", "--list").replace("\n", "; "))
 

@@ -105,6 +105,9 @@ def main() -> int:
                 level, top, "" if level >= 0.7 * top else ": turn it up (call volume: press volume up while DUET speaks)"))
         else:
             line(None, name + " on the loudspeaker", "not reported: press volume up while DUET speaks")
+    holder = adb("shell", "cmd", "role", "get-role-holders", "android.app.role.ASSISTANT").strip()
+    line(None, "phone's assistant", "DUET (assist gesture, side key)" if PKG in holder else (holder or "none") +
+         ": phone_check.py --assistant makes it DUET")
     if installed:
         contacts_check()
     return finish()

@@ -592,6 +592,18 @@
 
   document.querySelectorAll(".mode-card").forEach((b) => b.addEventListener("click", () => start(b.dataset.mode)));
 
+  // ---------------------------------------------------------------- the phone's assistant
+  // Opened as the digital assistant (the assist gesture, the side key): straight into a conversation,
+  // or, in one already, the microphone on.
+  async function assistLaunch() {
+    if (!room && !wantRoom) { toast("DUET is listening"); start("assistant"); return; }
+    if (room && $("mute").getAttribute("aria-pressed") === "true") $("mute").click();
+  }
+  if (P.NATIVE) {
+    try { P.native.addListener("assist", () => assistLaunch()); } catch (e) { console.warn(e); }
+    P.native.launchReason().then((r) => { if (r && r.assist) assistLaunch(); }).catch(() => {});
+  }
+
   // ---------------------------------------------------------------- pairing by QR code
   // The laptop's pair page shows "DUET1|mode|livekit url|room token": the phone joins with it
   // directly, so it needs only internet, not a network path to the laptop.

@@ -115,6 +115,36 @@ public class DuetPhonePlugin extends Plugin {
     @Override
     protected void handleOnStop() { onScreen = false; }
 
+    // ------------------------------------------------------------------ the phone's assistant
+    // Set as the default digital assistant, DUET is opened by Android's assist intent (the assist
+    // gesture, the side key where One UI offers it): the app then starts a conversation at once.
+    private volatile boolean assistPending = false;
+
+    @Override
+    public void load() {
+        Intent i = getActivity() == null ? null : getActivity().getIntent();
+        assistPending = i != null && Intent.ACTION_ASSIST.equals(i.getAction());
+    }
+
+    @Override
+    protected void handleOnNewIntent(Intent intent) {
+        super.handleOnNewIntent(intent);
+        if (intent != null && Intent.ACTION_ASSIST.equals(intent.getAction())) {
+            assistPending = false;
+            notifyListeners("assist", new JSObject().put("at", System.currentTimeMillis()), true);
+        }
+    }
+
+    /** Was DUET opened as the assistant (a cold start)? Answered once. */
+    @PluginMethod
+    public void launchReason(PluginCall call) {
+        safely(call, () -> {
+            boolean assist = assistPending;
+            assistPending = false;
+            call.resolve(new JSObject().put("assist", assist));
+        });
+    }
+
     private boolean canOpenScreens() {
         return onScreen || Settings.canDrawOverlays(ctx());
     }

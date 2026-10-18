@@ -24,6 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- DUET as the phone's digital assistant: chosen in Settings > Apps > Default apps, it opens
+                 straight into a conversation from the assist gesture or the side key -->
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
 
         <!-- keeps listening while another app (Google Maps) is in front; started only during a conversation -->
