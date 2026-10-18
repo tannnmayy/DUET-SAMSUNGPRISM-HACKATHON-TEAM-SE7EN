@@ -62,8 +62,10 @@ def main() -> int:
                           ("SmartThings home", "smartthings")):
             x = h.get(key, {})
             line(x.get("ok"), name, x.get("why") or ("%s devices" % x["devices"] if x.get("devices") else ""))
+        # the whole log: it starts afresh with the stack, and the line is written once, at the start (18 Oct
+        # 2026: after a full spoken suite the log passed 200 KB and the line fell out of the part read)
         agent_up = "registered worker" in open(os.path.join(ROOT, "results", "galaxy", "agent.log"), encoding="utf-8",
-                                                errors="replace").read()[-200000:]
+                                                errors="replace").read()
         line(agent_up, "agent registered with LiveKit", "results/galaxy/agent.log")
     except Exception as exc:
         line(False, "token server :8787", "not answering (%s): start bash scripts/galaxy_demo.sh" % type(exc).__name__)

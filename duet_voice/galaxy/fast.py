@@ -242,6 +242,10 @@ def vet_plan(calls: List[tuple], words: str, offer=None) -> str:
     return ""
 
 
+# the words that name a mode the fast mind may switch on
+MODE_WORDS = {"adaptive": r"adaptive|auto"}
+
+
 def vet(tool: str, args: Dict[str, Any], words: str) -> str:
     """'' when the plan plainly matches the user's words, else why it goes to the cloud mind."""
     w = (words or "").lower()
@@ -260,6 +264,12 @@ def vet(tool: str, args: Dict[str, Any], words: str) -> str:
         # "tell Priya I'll be there by the arrival time": the time must be looked up (the trip), and
         # the fast mind would send the words as they are (measured 17 Oct 2026)
         return "the message needs a fact looked up first: the cloud mind"
+    for k, v in args.items():
+        # a mode switched on must be one the user named (18 Oct 2026: "Would lowering my brightness help
+        # my battery?", heard as "With lowering, my brightness helped my battery.", turned on adaptive
+        # brightness); a plain on/off is the action itself, named above
+        if k != "on" and (v is True or str(v).lower() == "true") and not re.search(MODE_WORDS.get(k, re.escape(k)), w):
+            return "%s is not in the user's words" % k
     num_key = NUMBER_ARGS.get(tool)
     if num_key and args.get(num_key) is not None:
         try:

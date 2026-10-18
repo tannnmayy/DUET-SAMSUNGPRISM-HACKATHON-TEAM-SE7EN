@@ -221,3 +221,13 @@ def test_leaving_a_device_as_it_is_is_not_a_new_action():
     words = "Turn on the AC and uh switch off the living room light. Actually leave the light on."
     assert vet_plan(plan, words) != ""
     assert vet_plan([("control_home_device", {"device": "AC", "action": "turn_on"})], "Turn on the AC.") == ""
+
+
+def test_a_mode_the_user_never_named_is_not_switched_on():
+    """18 Oct 2026: "Would lowering my brightness help my battery?" was heard as "With lowering, my brightness
+    helped my battery.", and the fast mind turned on adaptive brightness."""
+    from duet_voice.galaxy.fast import vet
+    assert vet("set_brightness", {"adaptive": True}, "With lowering, my brightness helped my battery.") != ""
+    assert vet("set_brightness", {"adaptive": True}, "Turn on adaptive brightness.") == ""
+    assert vet("set_brightness", {"adaptive": True}, "Put the brightness on auto.") == ""
+    assert vet("set_torch", {"on": True}, "Turn on the torch.") == ""
