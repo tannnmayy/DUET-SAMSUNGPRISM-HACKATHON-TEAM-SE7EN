@@ -246,7 +246,12 @@ class GalaxyAgent(base.DuetAgent):
 
     def confirm(self, ev) -> str:
         """The action that just ran, confirmed at once from the phone's own reply
-        (duet_voice/galaxy/confirm.py); the slow mind's answer adds the rest."""
+        (duet_voice/galaxy/confirm.py); the slow mind's answer adds the rest. The confirmation travels on
+        the event itself: by the time an event is spoken, the thinker may have run the next action."""
+        if getattr(ev, "text", ""):
+            return ev.text
+        if getattr(ev, "outcome", "ok") not in ("ok", ""):
+            return ""
         done = self._toolbox.last_done
         if not done or done[0] != getattr(ev, "name", None):
             return ""

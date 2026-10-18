@@ -63,6 +63,10 @@ python scripts/verify_all.py --device s24   # everything, about 70 minutes, one 
 ```
 Short of time: `python scripts/verify_all.py --device s24 --no-suite` (the phone parts only, about 40 minutes).
 
+**After the run, on the phone:** open the Clock app and stop or delete the test timers by hand (a 5-minute timer
+and a 10-minute "Hang the laundry" timer), and delete any test alarm left at 6:30 or 7:00 in DUET's list. **Never
+force-stop the Clock** (on the emulator the script does; on Naman's phone it would cancel his own alarms).
+
 **Then test by hand, and write down what happens:**
 
 | # | Test | Pass when |
@@ -78,7 +82,7 @@ Short of time: `python scripts/verify_all.py --device s24 --no-suite` (the phone
 | 9 | 10 live trials of the demo script (section 5), by two different speakers | 0 wrong actions |
 | 10 | 5 full rehearsals in the real online set-up (section 4) | Clean |
 | 11 | With Naman's OK: `python scripts/phone_check.py --no-install --assistant`, then Settings › Advanced features › Side button › Press and hold: **Digital assistant** (if One UI offers it). Hold the side key (or swipe up from a bottom corner) | DUET opens straight into a conversation (tested on Android 16: 5 s from a cold start). If One UI's side key offers only Bixby, use the gesture |
-| 12 | Drive: "Take me home", then **Skip ahead: 10 min from destination** | DUET speaks first with the AC offer; "yes, make it 22" sets it in SmartThings; "no thanks" (even said over the offer) does nothing |
+| 12 | Drive: "Take me home", then **Skip ahead: 10 min from destination** | DUET speaks first with the AC offer (and, after 6 pm, a light); "yes, make it 22" sets the AC to 22 and does the rest of the offer too; "just the AC" does the AC alone; "no thanks" (even said over the offer) does nothing |
 
 **Known unknowns only the S24 answers:** Samsung Clock's behaviour (3), loudspeaker echo (4), Samsung's background
 limits with Maps in front (6). Each has a fallback that is already built: DUET's own alarms, Galaxy Buds, and

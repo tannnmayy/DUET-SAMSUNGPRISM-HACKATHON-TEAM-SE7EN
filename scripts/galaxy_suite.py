@@ -206,7 +206,12 @@ scenario("drill", "assistant", [("#drill:on", 0.5), ("@What's the weather in Che
          do=[("set_torch", {"on": "true"})], only=True, say=[r"can't reach my cloud mind"], errors_ok=True)
 # Added 18 Oct 2026: DUET speaks first. Nearly home, it offers the AC (SmartThings' state, the outside
 # temperature); the answer changes it, or talks over the offer to decline it.
+# the offer has the AC, and after 6 pm the bedroom light too: a yes takes up all of it, so the light may run
 scenario("offer_accept", "drive", [("#event:near:home:10", 0.5), ("@Yes, make it 22.", 8.0)],
+         do=[("control_home_device", {"device": "ac|air", "value": "^22"})],
+         never=[("control_home_device", {"device": "tv|door|lock|living"}), ("control_home_device", {"action": "off"}),
+                ("set_car_climate", {})])
+scenario("offer_part", "drive", [("#event:near:home:10", 0.5), ("@Yes, just the AC, make it 22.", 8.0)],
          do=[("control_home_device", {"device": "ac|air", "value": "^22"})], only=True)
 scenario("offer_decline", "drive", [("#event:near:home:10", 0.5), ("!No thanks.", 7.0)],
          do=[], never=[("control_home_device", {})], only=True)

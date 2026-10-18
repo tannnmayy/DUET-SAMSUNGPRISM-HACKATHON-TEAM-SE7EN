@@ -127,3 +127,171 @@ def test_a_plain_no_to_an_offer_is_answered_at_once_and_nothing_runs():
     events = asyncio.run(go())
     assert [e.text for e in events if e.kind == "say"] == ["Okay, I'll leave it."]
     assert fast.calls == 0 and slow.calls == 0 and seen == ["declined"] and hybrid.offers.active() is None
+
+
+# --- a yes to the whole offer -----------------------------------------------------------------------
+
+AC22 = ("control_home_device", {"device": "Air conditioner", "action": "set", "value": "22"})
+
+
+def test_a_yes_that_changes_one_part_takes_up_the_rest_as_offered():
+    offer = arrival_offer(10, HOME, 31, hour=19)          # the AC at 24 and the living room light
+    light = [{"device": "Living room light", "action": "turn_on"}]
+    rest = lambda words, done=(AC22,): [i.args for i in proactive.rest(offer, list(done), words)]
+    assert rest("Yes, make it 22.") == light               # 18 Oct 2026: the light was left out
+    assert rest("Yes please.") == light
+    assert rest("Sure, why not.") == light
+    assert rest("Yes, both, make it 22.") == light
+    assert rest("Okay, the AC at 22.") == light            # a change to the AC, the offer taken up
+    assert rest("Yes, the AC at 22 and the light.") == light
+    # the user picked a part, asked, said no, or the plan went beyond the offer: nothing more
+    assert rest("Yes, the AC.") == []
+    assert rest("Yes, just the AC, make it 22.") == []
+    assert rest("Just the AC.") == []
+    assert rest("Sure, but not the light.") == []
+    assert rest("Yes, skip the light.") == []
+    assert rest("Yes, make it 22?") == []
+    assert rest("No, make it 22.") == []
+    assert rest("Yes.", done=()) == []
+    assert rest("Yes.", done=(AC22, ("control_home_device", {"device": "TV", "action": "turn_on"}))) == []
+    both = (AC22, ("control_home_device", {"device": "Living room light", "action": "turn_on"}))
+    assert rest("Yes, make it 22.", done=both) == []
+    offer.made_at -= proactive.OFFER_TTL_S + 1             # a lapsed offer is not taken up
+    assert rest("Yes, make it 22.") == []
+
+
+class Acting:
+    """The fast mind as measured on 18 Oct 2026: it sets the AC to 22 and stops there."""
+
+    def __init__(self):
+        self.model, self.history, self.thinking, self.calls = "e2b", [], "", 0
+
+    async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+        import json
+        from duet_voice.thinker import ThinkEvent, said_of
+        self.calls += 1
+        yield ThinkEvent("decided", tools=True)
+        tool, args = AC22
+        yield ThinkEvent("tool_start", name=tool, args=args)
+        out = json.loads(await toolbox.call(tool, dict(args), epoch=toolbox.coord.epoch))
+        yield ThinkEvent("tool_done", name=tool, args=args, outcome=out.get("status", "ok"), text=said_of(out))
+        yield ThinkEvent("say", text="<silent>")
+
+
+def offer_run(words):
+    import json
+    from duet_voice.coordinator import Coordinator
+    from duet_voice.galaxy.modes import MODES
+    from duet_voice.galaxy.tools import PhoneToolbox
+    sent = []
+
+    async def send(tool, args, timeout):
+        sent.append((tool, args))
+        return json.dumps({"status": "ok", "device": args.get("device"), "now": "on"})
+    hybrid = HybridThinker(Acting(), Script("26b", []))
+    hybrid.offers = Offers()
+    hybrid.offers.make(arrival_offer(10, HOME, 31, hour=19))
+
+    async def consent(tool, args):
+        return hybrid.offers.consent(tool, args, words)
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    box = PhoneToolbox(coord, MODES["drive"]["tools"], send, consent=consent)
+
+    async def go():
+        return [ev async for ev in hybrid.run(words, box, note="")]
+    return asyncio.run(go()), sent
+
+
+def test_the_thinker_carries_out_the_rest_of_an_offer_the_user_said_yes_to():
+    # words beyond a plain answer: a model plans (the AC only, as measured), and the rest is added
+    events, sent = offer_run("Yes, make it 22, thank you so much.")
+    assert [a.get("device") for _, a in sent] == ["Air conditioner", "Living room light"]
+    assert sent[1] == ("control_home_device", {"device": "Living room light", "action": "turn_on"})
+    done = [(e.name, e.outcome) for e in events if e.kind == "tool_done"]
+    assert done == [("control_home_device", "ok"), ("control_home_device", "ok")]
+    assert events[-1].kind == "say"                        # the extra action runs before the reply ends
+    said = [e.text for e in events if e.kind == "tool_done"]
+    assert all(said) and len(set(said)) == 2               # each action carries its own read-back
+
+
+def test_just_the_ac_runs_the_ac_alone():
+    events, sent = offer_run("Yes, just the AC, make it 22, thank you so much.")
+    assert [a.get("device") for _, a in sent] == ["Air conditioner"]
+
+
+# --- an answer settled from the offer itself ---------------------------------------------------------
+
+def test_a_plain_answer_is_settled_from_the_offer_without_a_model():
+    offer = arrival_offer(10, HOME, 31, hour=19)          # the AC at 24 and the living room light
+    ac = lambda v: ("control_home_device", {"device": "Air conditioner", "action": "turn_on", "value": v})
+    light = ("control_home_device", {"device": "Living room light", "action": "turn_on"})
+    ans = lambda words: proactive.answer(offer, words)
+    assert ans("Yes.") == [ac("24"), light]
+    assert ans("Yes please, go ahead.") == [ac("24"), light]
+    assert ans("Yes, make it 22.") == [ac("22"), light]
+    assert ans("Sure, set it to 22 degrees.") == [ac("22"), light]
+    assert ans("Yes, just the AC, make it 22.") == [ac("22")]      # 18 Oct 2026: the fast mind set the car's AC
+    assert ans("Yes, only the air conditioner.") == [ac("24")]
+    assert ans("Yes, the AC.") == [ac("24")]
+    assert ans("Yes, just the light.") == [light]
+    assert ans("Okay, but not the light.") == [ac("24")]
+    assert ans("Yes, skip the AC.") == [light]
+    assert ans("Yes, both.") == [ac("24"), light]
+    assert ans("Sure, why not.") == [ac("24"), light]
+    assert offer.items[0].args["value"] == "24"                    # the offer itself is never changed
+    # anything more than an answer, or an unclear one, goes to a model: never a guess
+    for words in ("Yes, and text Priya that I'm almost home.", "Yes, make it twenty two.", "Yes, 22 or 23.",
+                  "Yes, make it 5.", "Yes, just the light at 40.", "Yes, not that.", "No thanks.",
+                  "No, make it 22.", "What's the temperature at home?", "Turn on the car AC."):
+        assert ans(words) is None, words
+    offer.made_at -= proactive.OFFER_TTL_S + 1
+    assert ans("Yes.") is None
+
+
+def test_a_yes_to_the_laundry_timer_and_a_change_to_it():
+    offer = washer_offer()
+    assert proactive.answer(offer, "Yes please.") == [("set_timer", {"minutes": 10, "label": "Hang the laundry"})]
+    assert proactive.answer(offer, "Sure, make it 15.") == [("set_timer", {"minutes": 15, "label": "Hang the laundry"})]
+
+
+class Never:
+    """A mind that must not be asked."""
+
+    def __init__(self):
+        self.model, self.history, self.thinking, self.calls = "never", [], "", 0
+
+    async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+        self.calls += 1
+        raise AssertionError("a model was asked: " + text)
+        yield
+
+
+def test_just_the_ac_in_drive_mode_is_the_home_ac_and_no_model_is_asked():
+    import json
+    from duet_voice.coordinator import Coordinator
+    from duet_voice.galaxy.modes import MODES
+    from duet_voice.galaxy.tools import PhoneToolbox
+    sent = []
+
+    async def send(tool, args, timeout):
+        sent.append((tool, args))
+        return json.dumps({"status": "ok"})
+    words = "Yes, just the AC, make it 22."
+    fast, slow = Never(), Never()
+    hybrid = HybridThinker(fast, slow)
+    hybrid.offers = Offers()
+    hybrid.offers.make(arrival_offer(10, HOME, 31, hour=19))
+
+    async def consent(tool, args):
+        return hybrid.offers.consent(tool, args, words)
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    box = PhoneToolbox(coord, MODES["drive"]["tools"], send, consent=consent)
+
+    async def go():
+        return [ev async for ev in hybrid.run(words, box, note="")]
+    events = asyncio.run(go())
+    assert sent == [("control_home_device", {"device": "Air conditioner", "action": "turn_on", "value": "22"})]
+    assert fast.calls == 0 and slow.calls == 0
+    assert [e.kind for e in events][-1] == "say"

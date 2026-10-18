@@ -335,3 +335,17 @@ def test_a_restated_arrival_adds_nothing():
     said = ["Heading to home, arriving around 5:44 PM."]
     assert adds_nothing("Heading home, you'll be there around 5:44 PM.", said)
     assert not adds_nothing("You'll be there around 5:44 PM, before the rain starts.", said)
+
+
+def test_each_action_is_read_back_from_its_own_event():
+    """18 Oct 2026: "Yes, make it 22" ran the AC and the light; the thinker had run the light before the AC's
+    event was spoken, so the AC's read-back (taken from the toolbox's last call) was lost."""
+    from types import SimpleNamespace
+    from duet_voice.galaxy import agent as galaxy_agent
+    light = "The bedroom light is now on."
+    me = SimpleNamespace(_toolbox=SimpleNamespace(last_done=("control_home_device", {"device": "Bedroom light"}, {}, light)))
+    ac = ThinkEvent("tool_done", name="control_home_device", outcome="ok", text="The air conditioner is now on at 22 degrees.")
+    on = ThinkEvent("tool_done", name="control_home_device", outcome="ok", text=light)
+    assert [galaxy_agent.GalaxyAgent.confirm(me, e) for e in (ac, on)] == [ac.text, light]
+    # a call that failed never borrows another call's read-back
+    assert galaxy_agent.GalaxyAgent.confirm(me, ThinkEvent("tool_done", name="control_home_device", outcome="error")) == ""

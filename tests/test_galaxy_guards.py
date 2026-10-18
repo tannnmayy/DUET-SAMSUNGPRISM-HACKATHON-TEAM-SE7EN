@@ -51,8 +51,11 @@ def test_the_toolbox_applies_both_rules():
     assert sent == []
     box, sent = make_box("Set an alarm for 6:30.")
     asyncio.run(box.call("set_alarm", {"time": "18:30"}))
-    hour = int(sent[0][1]["time"][:2])
-    assert sent[0][1]["time"] in ("06:30", "18:30") and (hour == 6) == (dt.datetime.now().hour >= 18 or dt.datetime.now().hour < 6)
+    # the next 6:30 from now: 06:30 from 18:30 until 06:30, 18:30 otherwise (18 Oct 2026: run at 18:10, the
+    # test expected 06:30 although 18:30 was 20 minutes away)
+    now = dt.datetime.now()
+    morning = now.hour * 60 + now.minute >= 18 * 60 + 30 or now.hour * 60 + now.minute < 6 * 60 + 30
+    assert sent[0][1]["time"] == ("06:30" if morning else "18:30")
 
 
 def test_the_fast_mind_acts_only_on_what_the_words_name():

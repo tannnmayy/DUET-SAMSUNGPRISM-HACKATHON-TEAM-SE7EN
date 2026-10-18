@@ -25,7 +25,7 @@ import re
 import time
 from typing import Any, AsyncIterator, Callable, Dict, List, Optional
 
-from ..thinker import ThinkEvent
+from ..thinker import ThinkEvent, said_of
 
 log = logging.getLogger("duet.galaxy.fast")
 
@@ -395,6 +395,28 @@ class HybridThinker:
                 yield ThinkEvent("decided", tools=False)
                 yield ThinkEvent("say", text="Okay, I'll leave it.")
                 return
+            from .proactive import answer
+            plan = answer(offer, text)
+            if plan:
+                # "yes", "yes, make it 22", "just the AC": the answer is settled from the offer itself, with
+                # no model, and runs through the toolbox like any other action (consent, gate, ledger, read-back)
+                self._route("edge", "an answer to DUET's offer, settled from the offer")
+                yield ThinkEvent("route", text="edge")
+                yield ThinkEvent("decided", tools=True)
+                epoch = coord.epoch
+                for tool, args in plan:
+                    if coord.overtaken(epoch):
+                        from ..coordinator import Superseded
+                        raise Superseded()      # the user's words changed: as for any plan, it is void
+                    yield ThinkEvent("tool_start", name=tool, args=args)
+                    out = json.loads(await toolbox.call(tool, dict(args), epoch=epoch))
+                    yield ThinkEvent("tool_done", name=tool, args=args, text=said_of(out),
+                                     outcome=str(out.get("status", "ok")) if isinstance(out, dict) else "ok")
+                self.edge_log.append('User: "%s" -> answered DUET\'s offer: %s' % (
+                    text[-160:], "; ".join("%s(%s)" % (r.tool, json.dumps(r.args))
+                                           for r in coord.history[done_before:] if r.outcome == "ok") or "nothing"))
+                yield ThinkEvent("say", text="<silent>")
+                return
         from . import readings
         reading = readings.which(text) if os.environ.get("DUET_FAST_READINGS", "1") == "1" else None
         if reading and reading in getattr(toolbox, "specs", {}):
@@ -405,7 +427,7 @@ class HybridThinker:
             yield ThinkEvent("decided", tools=False)
             yield ThinkEvent("tool_start", name=reading, args={})
             result = json.loads(await toolbox.call(reading, {}, epoch=coord.epoch))
-            yield ThinkEvent("tool_done", name=reading, args={},
+            yield ThinkEvent("tool_done", name=reading, args={}, text=said_of(result),
                              outcome=str(result.get("status", "ok")) if isinstance(result, dict) else "ok")
             said = readings.answer(reading, result, text)
             if said:
@@ -459,6 +481,9 @@ class HybridThinker:
                     acted_at = time.time()
                     self._route("edge", "a simple phone action")
                     yield ThinkEvent("route", text="edge")
+                if ev.kind == "say":
+                    async for extra in self._offer_rest(text, toolbox, done_before):
+                        yield extra
                 yield ev
                 if ev.kind == "say":
                     self.edge_log.append('User: "%s" -> done on the phone: %s' % (
@@ -469,6 +494,27 @@ class HybridThinker:
             await agen.aclose()
         async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before, escalate_why):
             yield ev
+
+    async def _offer_rest(self, text: str, toolbox, done_before: int) -> AsyncIterator[ThinkEvent]:
+        """A yes to DUET's whole offer that changed one part ("yes, make it 22") takes up its other parts
+        too: the offered actions the plan left out run as offered, through the toolbox like any other
+        (the consent check, the gate, the ledger, the read-back), before the reply ends."""
+        offer = self.offers.active() if self.offers is not None else None
+        if offer is None:
+            return
+        from .proactive import rest
+        coord = toolbox.coord
+        epoch = coord.epoch
+        done = [(r.tool, r.args) for r in coord.history[done_before:] if r.outcome == "ok"]
+        for item in rest(offer, done, text):
+            if coord.overtaken(epoch):
+                from ..coordinator import Superseded
+                raise Superseded()
+            log.info("offer: the user's yes takes up %s too", item.label)
+            yield ThinkEvent("tool_start", name=item.tool, args=dict(item.args))
+            out = json.loads(await toolbox.call(item.tool, dict(item.args), epoch=epoch))
+            yield ThinkEvent("tool_done", name=item.tool, args=dict(item.args), text=said_of(out),
+                             outcome=str(out.get("status", "ok")) if isinstance(out, dict) else "ok")
 
     async def _cloud(self, text: str, toolbox, audio, note: str, allow_listen: bool, done_before: int,
                      why: str) -> AsyncIterator[ThinkEvent]:
@@ -504,6 +550,8 @@ class HybridThinker:
                 if ev.kind == "say":
                     self.edge_log = []
                     self.cloud_down_until = 0.0
+                    async for extra in self._offer_rest(text, toolbox, done_before):
+                        yield extra
                 if ev.kind == "error" and cloud_unreachable(ev.text):
                     self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
                 yield ev

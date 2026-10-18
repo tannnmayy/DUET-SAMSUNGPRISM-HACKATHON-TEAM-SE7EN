@@ -159,7 +159,7 @@ ARRIVAL = [
     ("offer_no", "No thanks.", {"say": r"leave it", "never": [("control_home_device", {})], "no_model": True}),
     ("offer2", None, {"skip_ahead": 10, "offered": True, "say": r"AC at 24"}),
     ("offer_yes", "Yes, make it 22.", {"done": [("control_home_device", {"device": "ac|air", "value": "22"})],
-                                       "after": "home:Air conditioner:on, 22"}),
+                                       "after": "home:Air conditioner:on, 22", "offer_all": True}),
 ]
 
 
@@ -251,6 +251,9 @@ async def home_state(device: str) -> str:
                           "return d ? DuetPhone.describe(d) : ''; })()" % json.dumps(device)) or ""
 
 
+LAST_OFFER: dict = {"items": []}   # the latest offer DUET made in this run (what a yes takes up)
+
+
 def match(ev: dict, tool: str, args: dict) -> bool:
     return ev.get("tool") == tool and all(re.search(p, str((ev.get("args") or {}).get(k, "")).lower())
                                          for k, p in args.items())
@@ -304,6 +307,17 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
         problems.append("DID NOT SAY /%s/" % want["say"])
     if want.get("offered") and not any(e.get("kind") == "offer" for e in evs):
         problems.append("NO OFFER")
+    for e in evs:
+        if e.get("kind") == "offer":
+            LAST_OFFER["items"] = e.get("items") or []
+    if want.get("offer_all"):
+        # a yes that changed one part takes up the whole offer: every offered device was acted on (18 Oct
+        # 2026: "AC at 24 and the bedroom light?" "Yes, make it 22." set the AC and left the light out)
+        for item in LAST_OFFER["items"]:
+            dev = str((item.get("args") or {}).get("device", "")).lower()
+            if not any(e.get("tool") == item.get("tool") and dev in str((e.get("args") or {}).get("device", "")).lower()
+                       for e in done):
+                problems.append("OFFER PART LEFT OUT: %s" % item.get("label"))
     if want.get("no_model") and any(e.get("kind") == "route" and e.get("where") == "cloud" for e in evs):
         problems.append("A PLAIN NO WENT TO THE CLOUD MIND")
     for e in failed if not want.get("failures_ok") else []:
@@ -449,6 +463,11 @@ async def run_all(args) -> int:
         await cdp_eval("DuetApp.end().then(() => true)", 20)
     except Exception:
         pass
+    if adb("shell", "getprop", "ro.kernel.qemu").strip() == "1" and any(
+            e.get("tool") == "set_timer" for r in results for e in r.get("events", []) if e.get("kind") == "tool_done"):
+        # the emulator only: the test's timers would ring on (18 Oct 2026: 14 expired timers ringing at once).
+        # Never on a real phone: stopping the Clock there would also cancel its owner's own alarms
+        adb("shell", "am", "force-stop", "com.google.android.deskclock")
     path = os.path.join(OUT, "e2e_%s.json" % time.strftime("%m%d_%H%M%S"))
     with open(path, "w", encoding="utf-8") as fh:
         json.dump({"device": adb("shell", "getprop", "ro.product.model"), "results": results}, fh, indent=1)

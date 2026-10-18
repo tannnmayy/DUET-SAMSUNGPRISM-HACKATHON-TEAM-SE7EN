@@ -24,7 +24,7 @@ from .config import CONFIG
 from .coordinator import Superseded
 from .fdb_tools import TOOL_SPECS
 from .prompts import TALKER_INSTRUCTIONS, THINKER_INSTRUCTIONS
-from .thinker import KEEP_LISTENING, KEEP_LISTENING_DESCRIPTION, ThinkEvent
+from .thinker import KEEP_LISTENING, KEEP_LISTENING_DESCRIPTION, ThinkEvent, said_of
 
 log = logging.getLogger("duet.local")
 
@@ -284,7 +284,7 @@ class LocalThinker:
                     raise Superseded()  # the user's words changed: this plan is void
                 parsed = json.loads(out)
                 outcome = str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok"
-                yield ThinkEvent("tool_done", name=c["name"], args=args, outcome=outcome)
+                yield ThinkEvent("tool_done", name=c["name"], args=args, outcome=outcome, text=said_of(parsed))
                 messages.append({"role": "tool", "tool_call_id": c["id"], "content": out})
                 outcomes.append(outcome)
             if self.one_step:

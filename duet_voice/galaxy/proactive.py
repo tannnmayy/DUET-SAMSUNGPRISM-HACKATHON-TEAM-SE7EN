@@ -33,6 +33,11 @@ _YES = re.compile(r"^\W*(yes|yeah|yep|yup|sure|ok(ay)?|alright|all right|please|
 _NO = re.compile(r"^\W*(no|nope|nah|not now|not yet|no thanks|no thank you|don'?t|leave it|skip it|"
                  r"never ?mind|it'?s fine|i'?m (fine|good|okay)|not needed)\b", re.I)
 _CHANGE = re.compile(r"\b(make it|set it|but|just|only|instead|change|at \d|to \d)\b|\d", re.I)
+# "just the AC", "not the light", "skip the light": the user picks some of the offer, not all of it
+_SOME = re.compile(r"\b(just|only|except|without|not|no|don'?t|skip|leave|rather)\b", re.I)
+_ALL = re.compile(r"\b(both|all|everything|the lot)\b", re.I)
+_PHRASES = re.compile(r"\b(why not|no problem|no worries|not a problem)\b", re.I)
+ROOMS = {"living", "bedroom", "kitchen", "hall", "office", "front", "back", "porch", "dining", "garage"}
 
 
 def declines(words: str) -> bool:
@@ -66,8 +71,7 @@ def same_device(a: str, b: str) -> bool:
     ka, kb = _kinds(a), _kinds(b)
     if not (ka & kb):
         return False
-    rooms = {"living", "bedroom", "kitchen", "hall", "office", "front", "back", "porch", "dining", "garage"}
-    ra, rb = set(re.findall(r"[a-z]+", a)) & rooms, set(re.findall(r"[a-z]+", b)) & rooms
+    ra, rb = set(re.findall(r"[a-z]+", a)) & ROOMS, set(re.findall(r"[a-z]+", b)) & ROOMS
     return not ra or not rb or bool(ra & rb)
 
 
@@ -83,6 +87,15 @@ class OfferItem:
         if tool == "control_home_device":
             return same_device(str(args.get("device", "")), str(self.args.get("device", "")))
         return True
+
+    def named_in(self, words: str) -> bool:
+        """Do the user's words name this item's device ("the AC", "the bedroom light")?"""
+        device = str(self.args.get("device", ""))
+        if not device or not (_kinds(words) & _kinds(device)):
+            return False
+        rw = set(re.findall(r"[a-z]+", (words or "").lower())) & ROOMS
+        rd = set(re.findall(r"[a-z]+", device.lower())) & ROOMS
+        return not rw or not rd or bool(rw & rd)
 
 
 @dataclass
@@ -143,6 +156,93 @@ def covers(offer: Optional[Offer], calls: List[tuple], words: str) -> bool:
                 if n not in offered and n not in said:
                     return False
     return True
+
+
+# the words a plain answer to an offer is made of (besides the offered devices' names and one number)
+_ANSWER_WORDS = set("""yes yeah yep yup sure ok okay alright all right please go ahead do it that this them those the c
+    sounds good why of course definitely perfect great thanks thank you just only both everything lot and to at it
+    make set turn switch start on up degrees degree percent celsius a too as well then fine room not no don't dont
+    skip without except leave rather but instead""".split())
+_NEG = {"not", "no", "don't", "dont", "skip", "without", "except", "leave", "rather"}
+# a changed value must make sense for what it changes ("make it 22" for the AC; "make it 15" for a timer)
+_RANGES = {"control_home_device": (16.0, 30.0), "set_timer": (1.0, 180.0)}
+
+
+def _number_key(item: OfferItem) -> Optional[str]:
+    for k, v in item.args.items():
+        if k != "device" and re.fullmatch(r"\d+(\.\d+)?", str(v).strip()):
+            return k
+    return None
+
+
+def answer(offer: Optional[Offer], words: str) -> Optional[List[tuple]]:
+    """A plain answer to the open offer, settled from the offer itself with no model: [(tool, args)] to run.
+    "Yes" runs it as offered; "yes, make it 22" changes the one value it can change and runs the rest as
+    offered; "just the AC" or "not the light" runs a part. None when the words say anything more (a model
+    reads them), or when the answer is unclear (two numbers, a number nothing offered can take): never a
+    guess. (18 Oct 2026: in Drive mode the fast mind read "yes, just the AC, make it 22" as the car's AC.)"""
+    if offer is None or not offer.is_open() or not accepts(words):
+        return None
+    w = (words or "").strip()
+    if w.endswith("?"):
+        return None
+    low = _PHRASES.sub(" ", w.lower())
+    device_words = set(ROOMS)
+    for item in offer.items:
+        for kind in _kinds(str(item.args.get("device", ""))):
+            device_words |= set(ALIASES[kind].split())
+        device_words |= set(re.findall(r"[a-z]+", str(item.args.get("device", "")).lower()))
+    tokens = re.findall(r"[a-z']+", re.sub(r"\d+(?:\.\d+)?", " ", low))
+    if any(t not in _ANSWER_WORDS and t not in device_words for t in tokens):
+        return None
+    named = [i for i in offer.items if i.named_in(w)]
+    if _NEG & set(tokens):
+        chosen = [i for i in offer.items if i not in named] if named else []
+    elif _ALL.search(w):
+        chosen = list(offer.items)
+    elif named and ({"just", "only"} & set(tokens) or not _numbers(w)):
+        chosen = named
+    else:
+        chosen = list(offer.items)
+    if not chosen:
+        return None
+    calls = [(i.tool, dict(i.args)) for i in chosen]
+    said = sorted(_numbers(w))
+    if len(said) > 1:
+        return None
+    if said:
+        takes = [(n, _number_key(i)) for n, i in enumerate(chosen) if _number_key(i)]
+        lo, hi = _RANGES.get(chosen[takes[0][0]].tool, (0.0, 1e9)) if len(takes) == 1 else (0.0, -1.0)
+        if not lo <= said[0] <= hi:
+            return None
+        n, key = takes[0]
+        old = calls[n][1][key]
+        value = int(said[0]) if said[0] == int(said[0]) else said[0]
+        calls[n][1][key] = str(value) if isinstance(old, str) else value
+    return calls
+
+
+def rest(offer: Optional[Offer], done: List[tuple], words: str) -> List[OfferItem]:
+    """The offered actions a yes still asks for after the plan ran. "Shall I start the AC at 24 and switch
+    on the bedroom light?" "Yes, make it 22": the user took the whole offer and changed one part, so the
+    light goes on too, as offered (18 Oct 2026: the fast mind set the AC to 22 and left the light out).
+    Nothing more when the user picked a part ("just the AC", "not the light", "yes, the AC"), asked a
+    question, or the plan went beyond the offer."""
+    if offer is None or not offer.is_open() or not done or not accepts(words):
+        return []
+    w = (words or "").strip()
+    if w.endswith("?") or not all(offer.match(t, a) for t, a in done):
+        return []
+    left = [i for i in offer.items if not any(i.matches(t, a) for t, a in done)]
+    if not left or _ALL.search(w):
+        return left
+    tail = _PHRASES.sub(" ", _YES.sub("", w, count=1))
+    if _SOME.search(tail):
+        return []
+    named = [i for i in offer.items if i.named_in(w)]
+    if named and not any(i in left for i in named) and not _numbers(w):
+        return []                 # "yes, the AC": that one only
+    return left
 
 
 # --- the offers ------------------------------------------------------------------------------------
