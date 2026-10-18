@@ -135,6 +135,19 @@ def test_an_answer_never_claims_more_than_the_phone_reported():
     assert drop_overclaims("Anything else?", []) == "Anything else?"
 
 
+def test_an_answer_never_states_a_different_time_from_the_one_just_confirmed():
+    """18 Oct 2026, Drive mode: "Heading to home, arriving around 3:54 PM." was followed by "Heading home,
+    you'll be there around half past three."."""
+    from duet_voice.galaxy.confirm import clock_times, drop_overclaims
+    assert clock_times("arriving around 3:54 PM") == {(3, 54)} and clock_times("at half past three") == {(3, 30)}
+    assert clock_times("15:54") == {(3, 54)} and clock_times("7 in the morning") == {(7, 0)}
+    trip = ["Heading to home, arriving around 3:54 PM."]
+    assert drop_overclaims("Heading home, you'll be there around half past three.", trip) == ""
+    assert drop_overclaims("Traffic is light. You'll be there at 3:54.", trip) == "Traffic is light. You'll be there at 3:54."
+    assert drop_overclaims("Your other alarm is still on.", ["Alarm set for 7 in the morning."]) == \
+        "Your other alarm is still on."
+
+
 class FakeThinker:
     def __init__(self, events):
         self.events, self.history, self.model = events, [], "fake"

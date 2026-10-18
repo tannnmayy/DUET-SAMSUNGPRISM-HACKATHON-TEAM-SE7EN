@@ -590,6 +590,7 @@
   T.set_destination = async ({ place }) => {
     const km = distanceTo(place);
     state.trip = { destination: place, stops: [], totalKm: km, leftKm: km, speedKmh: 32 };
+    state.trip.startMin = tripView().minutes_left;   // a trip that starts close by never says "nearly there"
     save(); changed("trip");
     const v = tripView();
     return ok({ destination: place, minutes: v.minutes_left, arrival: v.arrival, km: km });
@@ -616,15 +617,39 @@
     if (!t || t.leftKm <= 0) return;
     t.leftKm = Math.max(0, t.leftKm - t.speedKmh / 3600 * 5);   // 5 s of driving
     save(); changed("trip");
+    tripEvents();
   }
   setInterval(driveTick, 5000);
-  function skipAhead(minutesLeft) {  // demo control: jump to N minutes before arrival
+  // The trip tells DUET, once, when the car is NEAR_MIN minutes or less from its destination (DUET then
+  // offers to get the home ready, or says how far it is): the app's listener sends it as a phone event.
+  const NEAR_MIN = 10;
+  function tripEvents() {
+    const t = state.trip;
+    if (!t || t.nearSent || (t.startMin != null && t.startMin <= NEAR_MIN)) return;
+    const v = tripView();
+    if (v && v.minutes_left <= NEAR_MIN && v.minutes_left > 0) {
+      t.nearSent = true; save();
+      changed({ trip_event: "near", view: v });
+    }
+  }
+  function skipAhead(minutesLeft) {  // demo control: fast-forward the drive to N minutes before arrival
     const t = state.trip; if (!t) return null;
     t.stops = [];
     t.leftKm = Math.min(t.totalKm, t.speedKmh * minutesLeft / 60);
+    t.nearSent = false;   // re-armed: the trip announces it again
     save(); changed("trip");
+    tripEvents();
     return tripView();
   }
+  // Care: the medicine that falls due now is announced to DUET once (it reminds the user, kindly)
+  function careTick() {
+    const key = (m) => state.day + " " + m.time + " " + m.name;
+    const due = state.meds.find((m) => !m.taken && slotNow(m) >= 0 && slotNow(m) <= 2 && !(state.announced || []).includes(key(m)));
+    if (!due) return;
+    state.announced = (state.announced || []).slice(-20).concat([key(due)]); save();
+    changed({ med_due: { name: due.name, time: due.time } });
+  }
+  setInterval(careTick, 30000);
 
   // ---------------------------------------------------------------- the RPC entry point
   async function run(tool, args) {

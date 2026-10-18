@@ -66,7 +66,7 @@ from ..config import CONFIG  # noqa: E402
 from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
-from . import fast, smartthings  # noqa: E402
+from . import fast, proactive, smartthings  # noqa: E402
 from .confirm import adds_nothing, drop_overclaims  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
@@ -82,6 +82,7 @@ speech_models.ASR_PROMPT = (
     "medicines and tablets, check-in, destination, arrival time.")
 
 AGENT_NAME = os.environ.get("DUET_GALAXY_AGENT", "duet-galaxy")
+HOME_POLL_S = float(os.environ.get("DUET_HOME_POLL_S", "10"))   # how often the home is asked what changed
 
 # the second look before an answer is spoken (DUET_REVIEW=0 turns it off)
 REVIEW = ("Second look before your answer is spoken. Actions carried out in this turn: {done}. "
@@ -178,6 +179,8 @@ SHOWN = {
     "thinker_review": ("text",), "confirmed": ("text",), "route": ("where", "why"),
     "superseded": (), "agent_said": ("text", "interrupted"), "agent_state": ("state",),
     "drill": ("cloud_off",),
+    "offer": ("text", "why", "items", "source"), "offer_accepted": ("text",), "offer_declined": ("text",),
+    "offer_expired": ("text",),
 }
 
 
@@ -214,6 +217,11 @@ class GalaxyAgent(base.DuetAgent):
                          instructions=instructions, talker_instructions=mode["talker"])
         self.cut_off: Optional[str] = None
         self._seen = 0  # coordinator history already covered by an answered request
+        # what DUET offered by itself (proactive.py): its note goes to both minds, and the consent gate
+        # and the fast mind's check accept an answer that takes it up
+        self.offers = proactive.Offers(on_status=lambda o: trace("offer_" + o.status, text=o.text))
+        if isinstance(self._thinker, fast.HybridThinker):
+            self._thinker.offers = self.offers
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         self._route_now = None
@@ -313,11 +321,15 @@ class GalaxyAgent(base.DuetAgent):
             lines.append("Earlier in this conversation you read: %s. Those readings, and your answers from them, "
                          "are out of date now: if the user asks about any of it, call the tool again before you "
                          "answer." % ", ".join(read))
+        offer = self.offers.active()
+        if offer is not None:
+            lines.append(offer.note())
         return "\n".join(lines)
 
     def reply_delivered(self) -> None:
         closed = self._pending_consumed is not None
         super().reply_delivered()
+        self.offers.answered()
         if closed:
             self._seen = len(self._coord.history)
             self._toolbox.new_request()
@@ -429,12 +441,20 @@ async def entrypoint(ctx: JobContext) -> None:
         if home["live"] and msg.get("kind") in ("tool_done", "tool_failed", "tool_unknown") \
                 and msg.get("tool") in smartthings.TOOLS:
             asyncio.ensure_future(publish_home())
+        if msg.get("kind") == "tool_done":
+            taken = agent.offers.done(str(msg.get("tool")), msg.get("args") or {})
+            if taken is not None:
+                trace("offer_accepted", text=taken.text, tool=msg.get("tool"), args=msg.get("args"))
     coord = Coordinator(commit_hold_s=CONFIG.commit_hold_s, revising_hold_s=CONFIG.revising_hold_s,
                         dangling_hold_s=CONFIG.dangling_hold_s)
     said = {"last": ""}  # what DUET last said, for the consent gate
 
     async def consent(tool: str, args: Dict[str, Any]) -> bool:
         words = coord.open_utterance
+        if agent.offers.consent(tool, args, words):
+            # the user's answer takes up DUET's own offer ("yes", "make it 22"): they agreed to exactly this
+            trace("consent", tool=tool, args=args, allowed=True, by="offer")
+            return True
         if asked_for(tool, words):
             # the user's own words ask for it ("set the AC to 22, no 21"): no model to second-guess
             # them (17 Oct 2026: the small model said no to exactly that). A question that mentions it
@@ -447,7 +467,8 @@ async def entrypoint(ctx: JobContext) -> None:
 
     names = {t["name"] for t in mode["tools"]}
     run_here = dict(SERVER_TOOLS, **(smartthings.TOOLS if home["live"] else {}))
-    toolbox = PhoneToolbox(coord, mode["tools"], rpc_sender(ctx.room, lambda: phone.identity), emit=emit,
+    rpc_send = rpc_sender(ctx.room, lambda: phone.identity)
+    toolbox = PhoneToolbox(coord, mode["tools"], rpc_send, emit=emit,
                            consent=consent if os.environ.get("DUET_CONSENT", "1") == "1" else None,
                            server={k: fn for k, fn in run_here.items() if k in names})
     context = "; ".join(x for x in (
@@ -492,9 +513,80 @@ async def entrypoint(ctx: JobContext) -> None:
             coord.heard(ev.transcript)
             trace("heard", text=ev.transcript)
 
+    agent_now = {"state": "initializing"}
+
     @session.on("agent_state_changed")
     def _agent_state(ev) -> None:
+        agent_now["state"] = ev.new_state
         trace("agent_state", state=ev.new_state)
+
+    async def speak_first(offer: proactive.Offer) -> None:
+        """DUET speaks without being asked, once nobody is talking and it is not busy (it waits up to
+        20 s). The user can talk over it like any other line. Nothing runs from the offer itself."""
+        for _ in range(80):
+            if agent_now["state"] == "listening" and not coord.user_speaking:
+                break
+            await asyncio.sleep(0.25)
+        else:
+            trace("offer_skipped", text=offer.text, why="the conversation stayed busy for 20 s")
+            return
+        if offer.items:
+            agent.offers.make(offer)
+        trace("offer", **{k: v for k, v in offer.event().items() if k != "kind"})
+        session.say(offer.text)
+        if offer.items:
+            async def lapse() -> None:
+                await asyncio.sleep(proactive.OFFER_TTL_S + 0.5)
+                if not offer.is_open() and offer.status == "expired":
+                    trace("offer_expired", text=offer.text)
+            asyncio.ensure_future(lapse())
+
+    async def arrive(msg: Dict[str, Any]) -> None:
+        """The car is nearly at its destination (the app's trip). Nearly home: offer to get the home ready,
+        from the home's real state and the outside temperature. Anywhere else: say how far it is."""
+        place = str(msg.get("destination") or "").strip() or "your destination"
+        try:
+            minutes = max(1, int(round(float(msg.get("minutes") or 10))))
+        except (TypeError, ValueError):
+            minutes = 10
+        if not re.search(r"\bhome\b", place, re.I):
+            await speak_first(proactive.Offer(text="About %d minutes to %s now." % (minutes, place),
+                                              why="%d min left on the trip" % minutes, items=[], source="arrival"))
+            return
+
+        async def home_now() -> list:
+            if home["live"]:
+                return await smartthings.snapshot()
+            reply = json.loads(await rpc_send("get_home_status", {}, 8.0))
+            return proactive.devices_from_phone(reply.get("devices") or [])
+
+        async def outside_now() -> Optional[float]:
+            city = (meta.get("city") or "").strip()
+            if not city:
+                return None
+            weather = await SERVER_TOOLS["get_weather"]({"place": city})
+            return ((weather or {}).get("now") or {}).get("temperature_c")
+
+        got = await asyncio.gather(asyncio.wait_for(home_now(), 8.0), asyncio.wait_for(outside_now(), 5.0),
+                                   return_exceptions=True)
+        devices = got[0] if isinstance(got[0], list) else []
+        outside = got[1] if isinstance(got[1], (int, float)) else None
+        if not isinstance(got[0], list):
+            log.warning("arrival offer without the home's state: %s", got[0])
+        await speak_first(proactive.arrival_offer(minutes, devices, outside, dt.datetime.now().hour))
+
+    async def watch_home() -> None:
+        """What the home reports by itself: a washer that has finished gets an offer (Assistant mode)."""
+        last: Dict[str, str] = {}
+        while ctx.room.isconnected():
+            try:
+                for d in await smartthings.snapshot():
+                    was, last[d["name"]] = last.get(d["name"]), d["state"]
+                    if d["kind"] == "washer" and was and was.startswith("running") and d["state"] == "finished":
+                        asyncio.ensure_future(speak_first(proactive.washer_offer()))
+            except Exception as exc:  # the home's news is a bonus; never let it break the conversation
+                log.debug("home check: %s", exc)
+            await asyncio.sleep(HOME_POLL_S)
 
     @session.on("conversation_item_added")
     def _item(ev) -> None:
@@ -523,6 +615,11 @@ async def entrypoint(ctx: JobContext) -> None:
                 agent._thinker.cloud_off = off
                 trace("drill", cloud_off=off)
             return
+        if msg.get("kind") == "event" and msg.get("event") == "near_destination":
+            # the trip itself says the car is nearly there: DUET builds an offer from facts and says it first
+            trace("phone_event", event="near_destination", text=str(msg.get("text", "")))
+            asyncio.ensure_future(arrive(msg))
+            return
         text = str(msg.get("text", "")).strip()
         if not text or coord.user_speaking:
             return
@@ -544,6 +641,12 @@ async def entrypoint(ctx: JobContext) -> None:
         asyncio.ensure_future(publish_home())
     await session.start(room=ctx.room, agent=agent)
     session.say(mode["greeting"].format(name=name or "there").replace("Hello there", "Hello"))
+    if home["live"] and "set_timer" in names:
+        watcher = asyncio.ensure_future(watch_home())
+
+        async def _stop_watch() -> None:
+            watcher.cancel()
+        ctx.add_shutdown_callback(_stop_watch)
 
 
 if __name__ == "__main__":

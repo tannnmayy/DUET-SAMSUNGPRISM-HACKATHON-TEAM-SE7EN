@@ -247,6 +247,20 @@
           addStep("t-fail", "☁✕", "Cloud mind unreachable: DUET said so at once", esc(ev.text || ""));
         } else addStep("t-fail", "!", "Something went wrong in the slow mind", esc(ev.text || ""));
         break;
+      case "offer":
+        addStep("t-offer", "💡", "DUET spoke first: “" + esc(ev.text) + "”",
+          esc(ev.why || "") + (ev.items && ev.items.length ? " · it waits for your answer; silence never acts" : ""));
+        moment("t-offer", "💡  " + ev.text);
+        break;
+      case "offer_accepted":
+        addStep("t-done", "✓", "You took up DUET's offer", esc(ev.text || ""));
+        break;
+      case "offer_declined":
+        addStep("t-cached", "✕", "You declined DUET's offer: nothing was done", esc(ev.text || ""));
+        break;
+      case "offer_expired":
+        addStep("t-cached", "⌛", "No answer: DUET's offer lapsed, nothing was done", esc(ev.text || ""));
+        break;
       case "superseded":
         addStep("t-drop", "↺", "Plan dropped: you kept talking", "nothing was done with the old words");
         break;
@@ -293,7 +307,21 @@
   // ---------------------------------------------------------------- mode panels
   let mode = "assistant";
   let battery = null;
-  P.onChange((what) => { if (what && what.battery) battery = what.battery; renderPanel(what); });
+  P.onChange((what) => {
+    if (what && what.battery) battery = what.battery;
+    // the trip and the medicine schedule tell DUET by themselves (it may then speak first)
+    if (what && what.trip_event === "near" && mode === "drive") {
+      const v = what.view;
+      phoneEvent("The car is " + v.minutes_left + " minutes from " + v.destination + ".",
+        { event: "near_destination", destination: v.destination, minutes: v.minutes_left });
+    }
+    if (what && what.med_due && mode === "care") {
+      const evening = parseInt(what.med_due.time, 10) >= 12;
+      phoneEvent("It is medicine time: the " + (evening ? "evening" : "morning") + " dose of " + what.med_due.name + " is due now.",
+        { event: "medicine_due" });
+    }
+    renderPanel(what);
+  });
 
   let twoSpeeds = false;      // a fast mind runs next to the cloud mind (the drill needs it)
   let cloudOff = false;       // the offline drill is on
@@ -349,7 +377,7 @@
           (t.stops.length ? '<span class="eta">via ' + esc(t.stops.join(", ")) + "</span>" : "") + '</div><div class="progress"><span style="width:' + Math.round(t.done * 100) + '%"></span></div>';
       } else html += '<p class="note">No trip yet. Try: “Take me to the office, no wait, the airport.”</p>';
       html += '<div class="stats">' + stat("Car AC", P.state.car.ac ? "on" : "off") + stat("Cabin", P.state.car.temp + "°C") + stat("Range", P.state.car.rangeKm + " km") + "</div>";
-      html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Simulate: 10 min from destination</button></div>';
+      html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Skip ahead: 10 min from destination</button></div>';
       html += devicesHTML();
     }
     if (twoSpeeds) {   // the offline drill: cut DUET's cloud mind, live, and watch the fast mind carry on
@@ -371,10 +399,7 @@
   }
   // the demo buttons: a phone or car event DUET reacts to without being asked
   function simulate(kind) {
-    if (kind === "near") {
-      const v = P.skipAhead(10);
-      if (v) phoneEvent("The car is 10 minutes from " + v.destination + ".");
-    }
+    if (kind === "near") P.skipAhead(10);   // the trip itself then tells DUET (P.onChange above)
     if (kind === "medicine") phoneEvent("It is medicine time: the evening dose of Metformin 500 mg is due now.");
   }
   function stat(label, value, hot) { return '<div class="stat' + (hot ? " hot" : "") + '"><small>' + label + "</small><b>" + esc(value) + "</b></div>"; }
@@ -421,9 +446,10 @@
     return "a laptop browser (phone actions simulated)";
   }
 
-  function phoneEvent(text) {
+  function phoneEvent(text, extra) {
     if (!room) return;
-    room.localParticipant.publishData(enc.encode(JSON.stringify({ kind: "event", text })), { reliable: true, topic: "duet.phone" });
+    room.localParticipant.publishData(enc.encode(JSON.stringify(Object.assign({ kind: "event", text }, extra || {}))),
+      { reliable: true, topic: "duet.phone" });
     addStep("t-heard", "⚙", "Phone event sent to DUET", esc(text));
   }
 

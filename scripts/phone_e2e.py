@@ -55,6 +55,27 @@ SEND_AND_WAIT = """
 })()
 """
 
+# the trip is fast-forwarded to N minutes from its destination; DUET speaks first. Done when its offer has
+# been said and the conversation has been quiet for 2 s.
+SKIP_AND_WAIT = """
+(async () => {
+  const LIMIT = %(limit)d;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const start = Date.now(), from = window.__ev.length;
+  %(action)s
+  while (Date.now() - start < LIMIT) {
+    await sleep(250);
+    const evs = window.__ev.slice(from);
+    const offered = evs.some((e) => e.kind === "offer");
+    const spoken = evs.filter((e) => e.kind === "agent_said").length;
+    const speaking = evs.filter((e) => e.kind === "agent_state").map((e) => e.state).pop() === "speaking";
+    const last = evs.length ? evs[evs.length - 1].t : start;
+    if (offered && spoken && !speaking && Date.now() - last > 2000) break;
+  }
+  return {sent: start, events: window.__ev.slice(from)};
+})()
+"""
+
 # (name, typed request, checks) - checks: tools that must be done (with argument patterns), tools that
 # must not be done, a regex the spoken words must match, and a check of the phone or home afterwards
 CASES = [
@@ -111,6 +132,25 @@ DRIVE = [
 ]
 
 
+# DUET speaks first: nearly home, it offers to get the home ready (the AC, from SmartThings' state and the
+# outside temperature). A plain no runs nothing and is answered at once; a yes with a change runs the change.
+ARRIVAL = [
+    ("trip_home", "Take me home.", {"done": [("set_destination", {"place": "home"})]}),
+    ("offer", None, {"skip_ahead": 10, "offered": True, "say": r"home in about \d+ minutes.*\?"}),
+    ("offer_no", "No thanks.", {"say": r"leave it", "never": [("control_home_device", {})], "no_model": True}),
+    ("offer2", None, {"skip_ahead": 10, "offered": True, "say": r"AC at 24"}),
+    ("offer_yes", "Yes, make it 22.", {"done": [("control_home_device", {"device": "ac|air", "value": "22"})],
+                                       "after": "home:Air conditioner:on, 22"}),
+]
+
+
+# The home reports by itself: the washer finishes, DUET offers a laundry timer (Assistant mode)
+WASHER = [
+    ("washer", None, {"finish_washer": True, "offered": True, "say": r"washer has finished.*timer"}),
+    ("washer_yes", "Yes please.", {"done": [("set_timer", {"minutes": "^10(\.0)?$"})]}),
+]
+
+
 def top_activity() -> str:
     out = adb("shell", "dumpsys", "activity", "activities")
     m = re.search(r"topResumedActivity=ActivityRecord\{\S+ \S+ ([^/\s]+)", out)
@@ -142,7 +182,14 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
                        "{kind: 'drill', cloud_off: %s})), {reliable: true, topic: 'duet.phone'}).then(() => true)"
                        % ("true" if want["drill"] else "false"), 20)
         await asyncio.sleep(1.0)
-    out = await cdp_eval(SEND_AND_WAIT % {"limit": limit_s * 1000, "text": json.dumps(text)}, timeout=limit_s + 15)
+    if text is None and want.get("skip_ahead"):
+        out = await cdp_eval(SKIP_AND_WAIT % {"limit": limit_s * 1000, "action": "DuetPhone.skipAhead(%d);" % want["skip_ahead"]},
+                             timeout=limit_s + 15)
+    elif text is None and want.get("finish_washer"):
+        await st.finish_washer()          # the home reports it; DUET's check of the home notices within seconds
+        out = await cdp_eval(SKIP_AND_WAIT % {"limit": limit_s * 1000, "action": ""}, timeout=limit_s + 15)
+    else:
+        out = await cdp_eval(SEND_AND_WAIT % {"limit": limit_s * 1000, "text": json.dumps(text)}, timeout=limit_s + 15)
     evs, sent = out["events"], out["sent"]
     done = [e for e in evs if e.get("kind") == "tool_done"]
     failed = [e for e in evs if e.get("kind") in ("tool_failed", "tool_unknown", "tool_asked", "tool_dropped")]
@@ -160,6 +207,10 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
             problems.append("NOT READ %s" % tool)
     if want.get("say") and not re.search(want["say"], said, re.I):
         problems.append("DID NOT SAY /%s/" % want["say"])
+    if want.get("offered") and not any(e.get("kind") == "offer" for e in evs):
+        problems.append("NO OFFER")
+    if want.get("no_model") and any(e.get("kind") == "route" and e.get("where") == "cloud" for e in evs):
+        problems.append("A PLAIN NO WENT TO THE CLOUD MIND")
     for e in failed:
         problems.append("%s %s %s" % (e["kind"].upper(), e.get("tool"), json.dumps(e.get("result") or e.get("error") or "")[:120]))
     errors = [e for e in evs if e.get("kind") == "thinker_error"]
@@ -235,7 +286,7 @@ async def main() -> int:
             pass
         await asyncio.sleep(1.0)
     await cdp_eval("""(() => { window.__ev = []; DuetApp.hooks.events.push((e) => window.__ev.push(Object.assign({t: Date.now()}, e)));
-        DuetApp.start('%s'); return true; })()""" % args.mode)
+        DuetApp.start('%s'); return true; })()""" % ("drive" if args.mode == "arrival" else args.mode))
     greeted = await cdp_eval("""(async () => { for (let i = 0; i < 120; i++) { if (window.__ev.some((e) => e.kind === 'agent_said')) return window.__ev.find((e) => e.kind === 'session_start') || true;
         await new Promise((r) => setTimeout(r, 500)); } return false; })()""", timeout=80)
     if not step("conversation started, DUET greeted", bool(greeted), json.dumps(greeted)[:160] if greeted else "no greeting in 60 s"):
@@ -243,13 +294,15 @@ async def main() -> int:
     # typed requests only: the device's microphone (on the emulator, the laptop's) must not add words
     await cdp_eval("DuetApp.room.localParticipant.setMicrophoneEnabled(false).then(() => true)", 20)
     results = []
-    cases = DRIVE if args.mode == "drive" else CASES + DRILL + ([] if args.no_maps else MAPS)
+    cases = DRIVE if args.mode == "drive" else ARRIVAL if args.mode == "arrival" else WASHER if args.mode == "washer" else (
+        CASES + DRILL + ([] if args.no_maps else MAPS))
     for name, text, want in cases:
         if want.get("behind_maps") and "maps" not in top_activity():
             await asyncio.sleep(1.0)
         r = await run_case(name, text, want)
         results.append(r)
-        step("%-12s %s" % (name, text[:44]), r["ok"], "%s · speaks %ss · action %ss · answer %ss · %s · said: %s" % (
+        step("%-12s %s" % (name, (text or ("(the trip: %d min from home)" % want["skip_ahead"] if want.get("skip_ahead")
+                                           else "(the washer finishes)"))[:44]), r["ok"], "%s · speaks %ss · action %ss · answer %ss · %s · said: %s" % (
             "/".join(x for x in r["route"] if x) or "-", r["speaks_s"], r["action_s"], r["answer_s"],
             "; ".join(r["problems"]) or ", ".join(r["tools"]), r["said"][:110]))
         await asyncio.sleep(1.5)

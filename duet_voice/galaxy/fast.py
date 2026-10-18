@@ -206,11 +206,16 @@ def asks_question(words: str) -> bool:
     return last.rstrip().endswith("?") or bool(_QUESTION.search(last))
 
 
-def vet_plan(calls: List[tuple], words: str) -> str:
+def vet_plan(calls: List[tuple], words: str, offer=None) -> str:
     """The fast mind's whole first step: every call must pass `vet`, and when the user said a
     number, the last one they said (the value a correction settled on) must be in the plan.
     "3:30, no, cancel that, set it for 430 instead" planned as cancel_alarm(03:30) alone is
-    handed on (measured 16 Oct 2026, live)."""
+    handed on (measured 16 Oct 2026, live).
+    An answer to DUET's own open offer ("yes", "make it 22", "just the AC") names no action, yet asks
+    for one: a plan that stays inside the offer, with only values offered or said, may run."""
+    from .proactive import covers
+    if offer is not None and covers(offer, calls, words):
+        return ""
     w = (words or "").lower()
     if calls and asks_question(words):
         return "a question: the cloud mind answers it"
@@ -340,6 +345,7 @@ class HybridThinker:
         self.edge_log: List[str] = []
         self.cloud_off = False          # the offline drill (the app's switch): the cloud mind is cut
         self.cloud_down_until = 0.0     # it could not be reached moments ago: do not wait for it again
+        self.offers = None              # DUET's open offer, if any (proactive.Offers, set by the agent)
 
     @property
     def history(self):
@@ -364,8 +370,19 @@ class HybridThinker:
                                         "a second look after the user finished"):
                 yield ev
             return
+        offer = self.offers.active() if self.offers is not None else None
+        if offer is not None:
+            from .proactive import declines
+            if declines(text):
+                # "no thanks" to DUET's own offer: nothing to do and nothing to look up, so no model either
+                self.offers.resolve("declined")
+                self._route("edge", "the user declined DUET's offer")
+                yield ThinkEvent("route", text="edge")
+                yield ThinkEvent("decided", tools=False)
+                yield ThinkEvent("say", text="Okay, I'll leave it.")
+                return
         self.fast.history = []          # stateless: each request is judged on its own words
-        self.fast.vet = lambda calls: vet_plan(calls, text)
+        self.fast.vet = lambda calls: vet_plan(calls, text, offer)
         # The fast mind does not need the clock: it acts only on values the user said, and the toolbox
         # settles a time without AM or PM itself. Without the minute-by-minute "Now:" line its instructions
         # stay the same from request to request, so the server reuses its processed copy of them.

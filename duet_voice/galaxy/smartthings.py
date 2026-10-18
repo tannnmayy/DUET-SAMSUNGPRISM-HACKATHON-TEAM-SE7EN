@@ -383,6 +383,20 @@ async def snapshot() -> List[Dict[str, Any]]:
     return out
 
 
+async def finish_washer() -> str:
+    """Demo and drill control: the home's (virtual) washer reports its cycle finished, as a real one would.
+    Returns the washer's name, or '' when the home has none."""
+    washer = next((d for d in await devices(fresh=True) if d["kind"] == "washer"), None)
+    if washer is None:
+        return ""
+    state = lambda attr, value: {"component": "main", "capability": "washerOperatingState",  # noqa: E731
+                                 "attribute": attr, "value": value}
+    await request("POST", "/virtualdevices/%s/events" % washer["id"], {"deviceEvents": [
+        state("machineState", "stop"), state("washerJobState", "finish"),
+        {"component": "main", "capability": "switch", "attribute": "switch", "value": "off"}]})
+    return washer["label"]
+
+
 async def check() -> Dict[str, Any]:
     """Is the token alive, and what is in the home? For start-up and the readiness check."""
     if not token():

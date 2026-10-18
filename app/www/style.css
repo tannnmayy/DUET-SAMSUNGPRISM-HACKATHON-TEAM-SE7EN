@@ -178,6 +178,9 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); outline
 .timeline .t-undo { background: var(--hold-soft); }
 .timeline .t-undo i { background: var(--hold); color: #fff; }
 .timeline .t-route { background: var(--surface-2); }
+.timeline .t-offer { background: var(--accent-soft); }
+.timeline .t-offer i { background: var(--accent); color: #fff; }
+.moment.t-offer { background: var(--accent-soft); color: var(--accent); }
 .timeline .t-route i { background: var(--accent); color: var(--accent-ink, #fff); }
 .timeline .t-fail i { background: var(--bad); color: #fff; }
 .timeline .t-listen i { background: var(--accent); color: #fff; }

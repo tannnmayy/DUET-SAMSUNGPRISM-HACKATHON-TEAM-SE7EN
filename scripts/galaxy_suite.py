@@ -204,6 +204,12 @@ scenario("cut_off", "assistant", [("@Call my", 9.0), ("@My daughter.", 8.0)],
 scenario("drill", "assistant", [("#drill:on", 0.5), ("@What's the weather in Chennai today?", 8.0),
                                 ("@Turn on the torch.", 7.0), ("#drill:off", 0.5)],
          do=[("set_torch", {"on": "true"})], only=True, say=[r"can't reach my cloud mind"], errors_ok=True)
+# Added 18 Oct 2026: DUET speaks first. Nearly home, it offers the AC (SmartThings' state, the outside
+# temperature); the answer changes it, or talks over the offer to decline it.
+scenario("offer_accept", "drive", [("#event:near:home:10", 0.5), ("@Yes, make it 22.", 8.0)],
+         do=[("control_home_device", {"device": "ac|air", "value": "^22"})], only=True)
+scenario("offer_decline", "drive", [("#event:near:home:10", 0.5), ("!No thanks.", 7.0)],
+         do=[], never=[("control_home_device", {})], only=True)
 scenario("phone_timeout", "assistant", [("@Set a timer for 3 minutes.", 16.0)],
          phone={"slow": {"set_timer": 13.0}}, do=[], only=True,
          say=[r"may not|might not|not sure|couldn't confirm|can't confirm|check"],
@@ -416,6 +422,16 @@ async def run_one(name: str, sc: dict, speech: List[tuple], quiet: bool = False)
                 await room.local_participant.publish_data(json.dumps({"kind": "drill", "cloud_off": text.endswith(":on")}),
                                                           reliable=True, topic="duet.phone")
                 log("DRILL ", text)
+                await silence(pause)
+                continue
+            if text.startswith("#event:"):   # the car reports it is nearly there: DUET may speak first
+                _, what, place, minutes = text.split(":")
+                await room.local_participant.publish_data(json.dumps({
+                    "kind": "event", "event": "near_destination", "destination": place, "minutes": int(minutes),
+                    "text": "The car is %s minutes from %s." % (minutes, place)}), reliable=True, topic="duet.phone")
+                log("EVENT ", text)
+                await until(lambda: state["agent"] == "speaking", 20)
+                line_end = time.time()          # the next "@" line waits for DUET's offer to end
                 await silence(pause)
                 continue
             if text.startswith("@"):

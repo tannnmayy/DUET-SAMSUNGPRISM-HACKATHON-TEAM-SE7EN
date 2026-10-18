@@ -206,14 +206,42 @@ _NOT_DONE = [
 ]
 
 
+_HOURS = {w: i + 1 for i, w in enumerate("one two three four five six seven eight nine ten eleven twelve".split())}
+_SPOKEN_TIME = re.compile(r"\b(half past|quarter past|quarter to)\s+(\d{1,2}|%s)\b" % "|".join(_HOURS), re.I)
+
+
+def clock_times(text: str) -> set:
+    """The clock times a sentence states, as (hour on a 12-hour dial, minute): "3:54 PM" and "15:54" are
+    (3, 54); "half past three" is (3, 30); "7 in the morning" is (7, 0)."""
+    def digits(m: "re.Match") -> str:
+        h = int(m.group(2)) if m.group(2).isdigit() else _HOURS[m.group(2).lower()]
+        how = m.group(1).lower()
+        return "%d:%02d" % (((h + 10) % 12 + 1, 45) if how == "quarter to" else (h, 30 if how == "half past" else 15))
+    t = _SPOKEN_TIME.sub(digits, text or "")
+    found = {(int(h) % 12, int(mm)) for h, mm in re.findall(r"\b(\d{1,2}):(\d{2})\b", t)}
+    found |= {(int(h) % 12, 0) for h in re.findall(
+        r"(?<![:\d])\b(\d{1,2})\s*(?:am|pm|a\.m\.|p\.m\.|o'?clock|in the (?:morning|afternoon|evening)|at night)\b",
+        t, re.I)}
+    return found
+
+
 def drop_overclaims(answer: str, confirmations: List[str]) -> str:
-    """The answer without the sentences that claim more than the phone reported: a message "sent"
-    that only waits for the user's tap, a call "ringing" in a dialer nobody has tapped."""
+    """The answer without the sentences that claim more than the phone reported, or contradict it:
+    - a message "sent" that only waits for the user's tap, a call "ringing" in a dialer nobody tapped;
+    - a different clock time from the one just confirmed (18 Oct 2026, Drive mode: after "Heading to
+      home, arriving around 3:54 PM." the cloud mind added "you'll be there around half past three")."""
     claims = [claim for done, claim in _NOT_DONE if any(done.search(c) for c in confirmations or [])]
-    if not claims or not (answer or "").strip():
+    confirmed_times = set().union(*(clock_times(c) for c in confirmations or [])) if confirmations else set()
+    if not (claims or confirmed_times) or not (answer or "").strip():
         return answer
     parts = re.split(r"(?<=[.!?])\s+", answer.strip())
-    return " ".join(p for p in parts if not any(c.search(p) for c in claims))
+
+    def contradicts(sentence: str) -> bool:
+        if any(c.search(sentence) for c in claims):
+            return True
+        times = clock_times(sentence)
+        return bool(confirmed_times and times and not times & confirmed_times)
+    return " ".join(p for p in parts if not contradicts(p))
 
 
 def confirmation(tool: str, args: Dict[str, Any], result: Any) -> Optional[str]:
