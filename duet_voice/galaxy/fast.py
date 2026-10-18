@@ -182,7 +182,7 @@ _DROPPED = re.compile(r"\b(never ?mind|forget (it|that|about it)|don'?t bother|s
 
 
 # a message whose words point at a fact to look up rather than state it
-_NEEDS_LOOKUP = re.compile(r"arrival time|\beta\b|when (i'?ll|i will|we'?ll|we will) (get|be|reach|arrive)|how long|"
+_NEEDS_LOOKUP = re.compile(r"arrival time|\beta\b|when (i|we)('?ll| will)? (get|be|reach|arrive)|how long|"
                            r"my location|where i am|the (latest|current) |the time i", re.I)
 
 
@@ -253,7 +253,7 @@ def vet(tool: str, args: Dict[str, Any], words: str) -> str:
         parts = [p for p in re.findall(r"[a-z0-9]+", value) if len(p) >= 2 and p not in ("the", "my", "to", "a")]
         if parts and not any(re.search(r"\b%s" % re.escape(p), w) or p in RELATIONS for p in parts):
             return "%s '%s' is not in the user's words" % (key, value)
-    if tool == "send_message" and _NEEDS_LOOKUP.search(str(args.get("text") or "")):
+    if tool == "send_message" and (_NEEDS_LOOKUP.search(str(args.get("text") or "")) or _NEEDS_LOOKUP.search(w)):
         # "tell Priya I'll be there by the arrival time": the time must be looked up (the trip), and
         # the fast mind would send the words as they are (measured 17 Oct 2026)
         return "the message needs a fact looked up first: the cloud mind"
@@ -391,6 +391,23 @@ class HybridThinker:
                 yield ThinkEvent("route", text="edge")
                 yield ThinkEvent("decided", tools=False)
                 yield ThinkEvent("say", text="Okay, I'll leave it.")
+                return
+        from . import readings
+        reading = readings.which(text) if os.environ.get("DUET_FAST_READINGS", "1") == "1" else None
+        if reading and reading in getattr(toolbox, "specs", {}):
+            # a plain reading ("how much battery do I have?"): read it and say it, with no model call (about a
+            # second, against two cloud calls); a template that cannot answer it hands it on as usual
+            self._route("edge", "a plain reading, answered from the reading itself")
+            yield ThinkEvent("route", text="edge")
+            yield ThinkEvent("decided", tools=False)
+            yield ThinkEvent("tool_start", name=reading, args={})
+            result = json.loads(await toolbox.call(reading, {}, epoch=coord.epoch))
+            yield ThinkEvent("tool_done", name=reading, args={},
+                             outcome=str(result.get("status", "ok")) if isinstance(result, dict) else "ok")
+            said = readings.answer(reading, result, text)
+            if said:
+                self.edge_log.append('User: "%s" -> answered from %s: %s' % (text[-160:], reading, said))
+                yield ThinkEvent("say", text=said)
                 return
         self.fast.history = []          # stateless: each request is judged on its own words
         self.fast.vet = lambda calls: vet_plan(calls, text, offer)

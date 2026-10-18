@@ -201,3 +201,10 @@ def test_an_action_the_user_named_needs_no_model_to_agree():
     assert not asked_for("set_brightness", "I keep my brightness really high. Is that it?")       # a question
     assert not asked_for("set_brightness", "Would lowering my brightness help my battery?")
     assert not asked_for("call_contact", "Yes, please.")                                          # the model judges
+
+
+def test_a_message_that_asks_for_the_arrival_time_goes_to_the_cloud_mind_whatever_the_draft_says():
+    """18 Oct 2026: "tell Priya I'm on my way and when I'll get there" was drafted by the fast mind as
+    "I'll let you know when I get there", which drops the time the user asked to send."""
+    plan = [("send_message", {"to": "Priya", "text": "I'm on my way and I'll let you know when I get there."})]
+    assert vet_plan(plan, "Tell Priya I'm on my way and when I'll get there.") != ""

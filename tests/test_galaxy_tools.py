@@ -204,3 +204,13 @@ def test_times_in_a_text_message_are_sent_in_digits():
     box, sent, _ = make()
     call(box, "send_message", {"to": "Priya", "text": "On my way, there at half past three."})
     assert sent == [("send_message", {"to": "Priya", "text": "On my way, there at 3:30."})]
+
+
+def test_a_reading_is_fresh_in_every_request():
+    """18 Oct 2026: a battery question asked a minute after another got the first one's reading."""
+    box, sent, events = make({"get_battery_report": {"status": "ok", "level": 80}})
+    call(box, "get_battery_report", {})
+    assert call(box, "get_battery_report", {})["status"] == "already_done"      # within one request: read once
+    box.new_request()
+    assert call(box, "get_battery_report", {})["status"] == "ok"                # a new request: read again
+    assert sent == [("get_battery_report", {}), ("get_battery_report", {})]

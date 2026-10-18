@@ -152,15 +152,17 @@ class PhoneToolbox:
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
-        """The last request was answered. Repeatable actions ("call her again") and
-        screens may run again; everything else stays exactly-once."""
+        """The last request was answered. Repeatable actions ("call her again"), screens and readings
+        may run again; everything else stays exactly-once. A reading is never answered from an earlier
+        request's copy (18 Oct 2026: "how much battery?" asked a minute later got the old reading, from
+        the ledger, and was answered with it)."""
         self.held_back = []
         self.asked = set()
         self.unfinished = None
         self.failed = []
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
-            if spec.get("repeatable") or spec.get("kind") == "ui":
+            if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
                 del self.coord.ledger[key]
 
     def _target(self, spec: Dict[str, Any], args: Dict[str, Any]) -> List[Any]:
