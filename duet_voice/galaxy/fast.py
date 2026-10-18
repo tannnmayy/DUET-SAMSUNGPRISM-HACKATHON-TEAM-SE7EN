@@ -356,6 +356,7 @@ class HybridThinker:
         self.cloud_off = False          # the offline drill (the app's switch): the cloud mind is cut
         self.cloud_down_until = 0.0     # it could not be reached moments ago: do not wait for it again
         self.offers = None              # DUET's open offer, if any (proactive.Offers, set by the agent)
+        self.cloud_delay_s = 0.0        # the slow-cloud drill: every cloud answer comes this much later
 
     @property
     def history(self):
@@ -460,6 +461,9 @@ class HybridThinker:
         # and for earlier ones it handled alone
         self._route("cloud", why)
         yield ThinkEvent("route", text="cloud")   # the turn loop covers the longer wait at once
+        if self.cloud_delay_s > 0:
+            # the slow-cloud drill: variable latency, live ("One moment.", then "Still working on it.")
+            await asyncio.sleep(self.cloud_delay_s)
         extra = []
         if self.edge_log:
             extra.append("Handled quickly by the phone since you last answered (already done; do not repeat): "

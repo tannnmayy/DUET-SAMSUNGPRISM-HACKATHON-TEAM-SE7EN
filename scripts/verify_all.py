@@ -9,8 +9,8 @@ Steps, in order (each one's exit code and summary line are kept; a failed step d
   1. unit tests (pytest)
   2. the stack answers (/api/health: fast mind, cloud mind, SmartThings, LiveKit)
   3. the spoken suite (scripts/galaxy_suite.py): every scenario, or a quick set
-  4. the phone: install and self-test (phone_check.py), end to end in Assistant, Drive, arrival and
-     washer modes (phone_e2e.py), resilience behind Maps (phone_resilience.py)
+  4. the phone: install and self-test (phone_check.py), end to end in Assistant, Drive, arrival,
+     washer, skills and new-skill modes (phone_e2e.py), resilience behind Maps (phone_resilience.py)
   5. the demo-day preflight (demo_preflight.py): on the emulator its red lines are expected (Do Not
      Disturb, volume, demo contacts) and do not fail the run; with --device s24 they do
 
@@ -121,7 +121,8 @@ def main() -> int:
         code, out, s = run([PY, "scripts/phone_check.py"], 600)
         step("phone: install and self-test", code == 0 and "FAIL self-test" not in out,
              last(r"self-test - (.*)$", out, "no self-test") + ("" if code == 0 else " (exit %d)" % code), s)
-        modes = [("assistant", 1800), ("drive", 1200), ("arrival", 900), ("washer", 600)]
+        modes = [("assistant", 1800), ("drive", 1200), ("arrival", 900), ("washer", 600), ("skills", 900),
+                 ("newskill", 600), ("drills", 1200)]
         if args.quick:
             modes = modes[:1]
         for m, limit in modes:

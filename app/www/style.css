@@ -249,3 +249,8 @@ body.embed::-webkit-scrollbar { display: none; }
 .selftest li.ok { color: var(--ok); }
 .selftest li.bad { color: var(--bad); background: var(--bad-soft); }
 .selftest small { color: var(--muted); display: block; word-break: break-word; }
+
+/* the drills panel (show how DUET recovers) */
+details.drills { margin-top: 10px; }
+details.drills summary { cursor: pointer; font-size: 13px; color: var(--muted, #667); padding: 4px 0; }
+.chip.on { background: var(--hold-soft); color: var(--hold); border-color: var(--hold); }

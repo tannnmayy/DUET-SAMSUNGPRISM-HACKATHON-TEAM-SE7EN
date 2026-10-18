@@ -176,16 +176,23 @@
         homeLive = null;
         homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
         twoSpeeds = /\(fast\)/.test(ev.model || "");
-        cloudOff = false;
+        cloudOff = false; slowCloud = false; homeDown = false;   // a new conversation starts with no drill
         renderPanel("all");
         break;
-      case "drill":
-        cloudOff = !!ev.cloud_off;
-        addStep(cloudOff ? "t-fail" : "t-done", cloudOff ? "☁✕" : "☁",
-          cloudOff ? "Drill: the cloud mind is cut off" : "Drill over: the cloud mind is back",
-          cloudOff ? "simple actions stay on the fast mind on our own machine" : "");
+      case "drill": {
+        const what = ev.what || "cloud_off", on = ev.what ? !!ev.on : !!ev.cloud_off;
+        if (what === "cloud_off") cloudOff = on;
+        if (what === "slow_cloud") slowCloud = on;
+        if (what === "home_down") homeDown = on;
+        const T = {
+          cloud_off: ["☁✕", "Drill: the cloud mind is cut off", "simple actions stay on the fast mind on our own machine", "Drill over: the cloud mind is back"],
+          slow_cloud: ["⏳", "Drill: the cloud mind answers " + (ev.seconds || 6) + " s later", "variable latency: DUET covers the wait, simple actions stay fast", "Drill over: the cloud mind's normal speed"],
+          home_down: ["⌂✕", "Drill: SmartThings is unreachable", "DUET says so and claims nothing", "Drill over: SmartThings is back"],
+        }[what] || ["⚠", "Drill: " + what, "", "Drill over: " + what];
+        addStep(on ? "t-fail" : "t-done", on ? T[0] : "✓", on ? T[1] : T[3], on ? T[2] : "");
         renderPanel("all");
         break;
+      }
       case "home": {
         const was = homeLive && homeLive.devices ? new Map(homeLive.devices.map((d) => [d.name, d.state])) : null;
         homeLive = ev;
@@ -329,7 +336,9 @@
   });
 
   let twoSpeeds = false;      // a fast mind runs next to the cloud mind (the drill needs it)
+  let drillsOpen = false;     // the drills panel stays open while the presenter uses it
   let cloudOff = false;       // the offline drill is on
+  let slowCloud = false, homeDown = false;   // the slow-cloud and SmartThings-offline drills
   // the home: live from SmartThings when DUET has a token (the "home" events), else simulated in the app
   let homeLive = null;        // {source, devices: [{name, room, kind, state, on}], error}
   let homeNote = "";          // why the home is simulated, from the session start
@@ -385,16 +394,37 @@
       html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Skip ahead: 10 min from destination</button></div>';
       html += devicesHTML();
     }
-    if (twoSpeeds) {   // the offline drill: cut DUET's cloud mind, live, and watch the fast mind carry on
-      html += '<div class="row-btns"><button class="chip" id="drill">' +
-        (cloudOff ? "Restore the cloud mind" : "Drill: cut the cloud mind") + "</button></div>";
-    }
+    // Drills: a failure on demand, and how DUET recovers from it (each one shows on the timeline)
+    html += '<details class="drills"' + (drillsOpen ? " open" : "") + '><summary>Drills: show how DUET recovers</summary><div class="row-btns">' +
+      (twoSpeeds ? '<button class="chip' + (cloudOff ? " on" : "") + '" id="drill">' + (cloudOff ? "Restore the cloud mind" : "Cut the cloud mind") + "</button>" +
+        '<button class="chip' + (slowCloud ? " on" : "") + '" id="drill-slow">' + (slowCloud ? "Cloud back to normal" : "Slow cloud (+6 s)") + "</button>" : "") +
+      '<button class="chip' + (P.drill.refuse ? " on" : "") + '" id="drill-refuse">' + (P.drill.refuse ? "Phone acts again" : "Phone refuses actions") + "</button>" +
+      (homeLive && homeLive.devices ? '<button class="chip' + (homeDown ? " on" : "") + '" id="drill-home">' + (homeDown ? "SmartThings back" : "SmartThings offline") + "</button>" : "") +
+      '<button class="chip" id="drill-drop">Drop the connection</button></div></details>';
     el.innerHTML = html;
-    const drill = $("drill");
-    if (drill) drill.onclick = () => {
-      if (!room) return;
-      room.localParticipant.publishData(enc.encode(JSON.stringify({ kind: "drill", cloud_off: !cloudOff })),
+    const det = el.querySelector("details.drills");
+    if (det) det.addEventListener("toggle", () => { drillsOpen = det.open; });
+    const send = (msg) => {
+      if (room) room.localParticipant.publishData(enc.encode(JSON.stringify(Object.assign({ kind: "drill" }, msg))),
         { reliable: true, topic: "duet.phone" });
+    };
+    const drill = $("drill");
+    if (drill) drill.onclick = () => send({ cloud_off: !cloudOff });
+    const slow = $("drill-slow");
+    if (slow) slow.onclick = () => send({ slow_cloud_s: slowCloud ? 0 : 6 });
+    const homeBtn = $("drill-home");
+    if (homeBtn) homeBtn.onclick = () => send({ home_down: !homeDown });
+    $("drill-refuse").onclick = () => {
+      P.drill.refuse = !P.drill.refuse;
+      addStep(P.drill.refuse ? "t-fail" : "t-done", P.drill.refuse ? "⚠" : "✓",
+        P.drill.refuse ? "Drill: the phone refuses DUET's actions" : "Drill over: the phone acts again",
+        P.drill.refuse ? "as if a permission were off: DUET must say what to allow, and claim nothing" : "");
+      renderPanel("all");
+    };
+    $("drill-drop").onclick = () => {
+      if (!room) return;
+      addStep("t-fail", "⚠", "Drill: the connection is dropped", "DUET rejoins by itself, with the same microphone");
+      room.disconnect(false);
     };
     if (what && what.device) { const d = el.querySelector('[data-id="' + what.device + '"]'); if (d) d.classList.add("flash"); }
     const near = $("ev-near");
@@ -492,7 +522,9 @@
     $("home").hidden = true; $("session").hidden = false;
     $("mode-title").textContent = { assistant: "Assistant", care: "Care", drive: "Drive" }[m];
     $("conn").textContent = "Connecting…";
-    chat.innerHTML = ""; timeline.innerHTML = ""; toolRows = new Map(); lastUser = duetOpen = null; setAlarms.clear();
+    if (again) addStep("t-route", "↻", "Rejoining: a new conversation with DUET", "the timeline above is kept");
+    else { chat.innerHTML = ""; timeline.innerHTML = ""; setAlarms.clear(); }
+    toolRows = new Map(); lastUser = duetOpen = null;
     $("moment").hidden = true;
     orb("connecting");
     renderPanel("all");

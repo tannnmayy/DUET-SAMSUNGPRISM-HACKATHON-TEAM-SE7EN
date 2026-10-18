@@ -701,9 +701,16 @@
   loadSkills(null);
 
   // ---------------------------------------------------------------- the RPC entry point
+  // the app's drill "Phone refuses actions": every action (not a reading) is refused, as if its
+  // permission were off, so the room can see DUET say what to allow and claim nothing
+  const drill = { refuse: false };
   async function run(tool, args) {
     const fn = T[tool];
     if (!fn) return fail("this phone has no tool " + tool);
+    if (drill.refuse && !/^(get_|list_)/.test(tool)) {
+      return needs("android", "Drill: the phone refused this action, as it would if DUET's permission for it were off. " +
+        "Nothing was done. Tell the user, in one sentence, that the phone did not allow it and they can allow it in DUET's settings.");
+    }
     try {
       const out = await fn(args || {});
       return out;
@@ -718,7 +725,7 @@
 
   window.DuetPhone = {
     NATIVE: NATIVE_APP, get acting() { return isNative(); }, selfTest, run, reset, settings, contacts, skipAhead, tripView, describe, spoken,
-    loadSkills, fill, get skills() { return skills; },
+    loadSkills, fill, get skills() { return skills; }, drill,
     set backgroundListening(on) { backgroundListening = !!on; }, get backgroundListening() { return backgroundListening; },
     get state() { return state; },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },

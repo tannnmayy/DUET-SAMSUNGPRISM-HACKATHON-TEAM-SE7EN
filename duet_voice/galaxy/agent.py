@@ -178,7 +178,7 @@ SHOWN = {
     "talker": ("text", "reason"), "thinker_say": ("text", "after_s"), "thinker_error": ("text",),
     "thinker_review": ("text",), "confirmed": ("text",), "route": ("where", "why"),
     "superseded": (), "agent_said": ("text", "interrupted"), "agent_state": ("state",),
-    "drill": ("cloud_off",),
+    "drill": ("cloud_off", "what", "on", "seconds"),
     "offer": ("text", "why", "items", "source"), "offer_accepted": ("text",), "offer_declined": ("text",),
     "offer_expired": ("text",),
 }
@@ -264,6 +264,14 @@ class GalaxyAgent(base.DuetAgent):
         call held back by the guard, once with no call planned at all)."""
         if confirmed:
             return ""
+        failed = getattr(self._toolbox, "failed", [])
+        if failed:
+            # the phone refused or failed an action and the model said nothing (18 Oct 2026, the refusal drill:
+            # "One moment." and then silence): never leave the user guessing whether it happened
+            self._toolbox.failed = []
+            if any(why == "needs_permission" for _, why in failed):
+                return "The phone didn't let me do that. You can allow it in DUET's settings."
+            return "Sorry, that didn't work on the phone."
         held = self._toolbox.unfinished
         if not held:
             words = self._coord.open_utterance
@@ -420,6 +428,7 @@ async def entrypoint(ctx: JobContext) -> None:
             log.debug("could not publish to the phone: %s", exc)
 
     await ctx.connect()
+    smartthings.DRILL["down"] = False   # a drill never outlives its conversation
     # the SmartThings home, checked while the phone joins (a token lasts 24 hours)
     home_check = asyncio.ensure_future(smartthings.check()) if smartthings.enabled() else None
     phone = await ctx.wait_for_participant()
@@ -615,11 +624,17 @@ async def entrypoint(ctx: JobContext) -> None:
         except ValueError:
             return
         if msg.get("kind") == "drill":
-            # the offline drill: the cloud mind is cut (or restored); the fast mind keeps going
-            off = bool(msg.get("cloud_off"))
-            if isinstance(agent._thinker, fast.HybridThinker):
-                agent._thinker.cloud_off = off
-                trace("drill", cloud_off=off)
+            # the app's drills: a failure shown live, and how DUET recovers (the fast mind keeps going)
+            hybrid = agent._thinker if isinstance(agent._thinker, fast.HybridThinker) else None
+            if "cloud_off" in msg and hybrid is not None:
+                hybrid.cloud_off = bool(msg["cloud_off"])
+                trace("drill", what="cloud_off", on=hybrid.cloud_off, cloud_off=hybrid.cloud_off)
+            if "slow_cloud_s" in msg and hybrid is not None:
+                hybrid.cloud_delay_s = max(0.0, min(20.0, float(msg.get("slow_cloud_s") or 0)))
+                trace("drill", what="slow_cloud", on=hybrid.cloud_delay_s > 0, seconds=hybrid.cloud_delay_s)
+            if "home_down" in msg and home["live"]:
+                smartthings.DRILL["down"] = bool(msg["home_down"])
+                trace("drill", what="home_down", on=smartthings.DRILL["down"])
             return
         if msg.get("kind") == "event" and msg.get("event") == "near_destination":
             # the trip itself says the car is nearly there: DUET builds an offer from facts and says it first

@@ -146,6 +146,9 @@ class PhoneToolbox:
         # a call of this request the guards held back, as (tool, "cut_off" or "undecided"): if the model
         # then says nothing, the agent asks for the missing part itself
         self.unfinished: Optional[tuple] = None
+        # the actions of this request the phone refused or failed, as (tool, "needs_permission" or "error"):
+        # if the model then says nothing, the agent says so itself
+        self.failed: List[tuple] = []
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -154,6 +157,7 @@ class PhoneToolbox:
         self.held_back = []
         self.asked = set()
         self.unfinished = None
+        self.failed = []
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") == "ui":
@@ -288,8 +292,12 @@ class PhoneToolbox:
                                "on the phone"})
         if record.error.startswith("PhoneError: "):
             reply = record.error[len("PhoneError: "):]
-            self.emit({"kind": "tool_failed", "tool": tool, "args": args, "result": json.loads(reply)})
+            result = json.loads(reply)
+            self.failed.append((tool, "needs_permission" if isinstance(result, dict) and
+                                result.get("status") == "needs_permission" else "error"))
+            self.emit({"kind": "tool_failed", "tool": tool, "args": args, "result": result})
             return reply
+        self.failed.append((tool, "error"))
         self.emit({"kind": "tool_failed", "tool": tool, "args": args, "error": record.error})
         return json.dumps({"status": "error", "error": record.error, "instruction":
                            "tell the user this step failed and what they can do next"})

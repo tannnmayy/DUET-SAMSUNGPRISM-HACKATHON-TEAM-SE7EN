@@ -295,7 +295,7 @@ def test_a_request_held_back_and_then_met_with_silence_gets_a_question():
     from types import SimpleNamespace
     from duet_voice.galaxy import agent as galaxy_agent
     ask = galaxy_agent.GalaxyAgent.silent_fallback
-    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=("call_contact", "cut_off")),
+    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=("call_contact", "cut_off"), failed=[]),
                          _coord=SimpleNamespace(open_utterance="Turn on the torch."))
     assert ask(me, []) == "Who should I call?"
     assert me._toolbox.unfinished is None and ask(me, []) == ""          # asked once
@@ -310,3 +310,19 @@ def test_a_request_held_back_and_then_met_with_silence_gets_a_question():
     me._toolbox.unfinished = ("set_brightness", "cut_off")
     assert ask(me, ["Torch on."]) == ""                                   # something was done and said
     assert ask(me, []).startswith("Sorry, I didn't catch the end")
+
+
+def test_a_refused_or_failed_action_met_with_silence_is_said():
+    """18 Oct 2026, the refusal drill: the phone refused the torch, the cloud mind replied <silent>, and the
+    user heard only "One moment."."""
+    from types import SimpleNamespace
+    from duet_voice.galaxy import agent as galaxy_agent
+    ask = galaxy_agent.GalaxyAgent.silent_fallback
+    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=None, failed=[("set_torch", "needs_permission")]),
+                         _coord=SimpleNamespace(open_utterance="Turn on the torch."))
+    assert ask(me, []) == "The phone didn't let me do that. You can allow it in DUET's settings."
+    assert me._toolbox.failed == [] and ask(me, []) == ""                     # said once
+    me._toolbox.failed = [("set_brightness", "error")]
+    assert ask(me, []) == "Sorry, that didn't work on the phone."
+    me._toolbox.failed = [("set_torch", "error")]
+    assert ask(me, ["Alarm set for 7 in the morning."]) == ""                  # something was done and said

@@ -67,8 +67,14 @@ async def close() -> None:
         await held[1].close()
 
 
+# the app's drill: SmartThings answers nothing, as in a real outage (reset at each conversation start)
+DRILL = {"down": False}
+
+
 async def request(method: str, path: str, body: Any = None, timeout: float = 6.0) -> Any:
     import aiohttp
+    if DRILL["down"]:
+        raise HomeError(None, "SmartThings cannot be reached (a drill: the home is cut off)")
     headers = {"Authorization": "Bearer " + token(), "Accept": "application/json"}
     try:
         async with _session().request(method, API + path, json=body, headers=headers,

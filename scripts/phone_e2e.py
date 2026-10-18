@@ -76,6 +76,25 @@ SKIP_AND_WAIT = """
 })()
 """
 
+# the drill "Drop the connection": done when a new conversation has started and DUET is in the room again
+DROP_AND_WAIT = """
+(async () => {
+  const LIMIT = %(limit)d;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const start = Date.now(), from = window.__ev.length;
+  const sessions = window.__ev.filter((e) => e.kind === "session_start").length;
+  document.getElementById("drill-drop").click();
+  while (Date.now() - start < LIMIT) {
+    await sleep(250);
+    const r = DuetApp.room;
+    const agent = r && r.state === "connected" && [...r.remoteParticipants.values()].length > 0;
+    if (agent && window.__ev.filter((e) => e.kind === "session_start").length > sessions)
+      return {back_s: (Date.now() - start) / 1000, events: window.__ev.slice(from)};
+  }
+  return {back_s: null, events: window.__ev.slice(from)};
+})()
+"""
+
 # (name, typed request, checks) - checks: tools that must be done (with argument patterns), tools that
 # must not be done, a regex the spoken words must match, and a check of the phone or home afterwards
 CASES = [
@@ -186,6 +205,25 @@ NEWSKILL = [
 SKILLS_FILE = os.path.join(ROOT, "app", "www", "skills.json")
 
 
+# The drills panel: each failure on demand, and DUET's recovery from it
+DRILLS = [
+    ("slow_weather", "What's the weather in Chennai today?",
+     {"drill": {"slow_cloud_s": 6}, "reads": ["get_weather"], "say": r"still working on it"}),
+    ("slow_torch", "Turn on the torch.", {"done": [("set_torch", {"on": "true"})], "max_action_s": 3.0}),
+    ("slow_off", "Turn the torch off.", {"drill": {"slow_cloud_s": 0}, "done": [("set_torch", {"on": "false"})]}),
+    ("refuses", "Turn on the torch.", {"phone_refuses": True, "failures_ok": True, "no_say": r"torch (is )?on",
+                                       "say": r"allow|permission|didn'?t|did not|couldn'?t|could not|wasn'?t able|unable"}),
+    ("refuses_off", "Turn on the torch.", {"phone_refuses": False, "done": [("set_torch", {"on": "true"})]}),
+    ("drop", None, {"drop": True}),
+    ("after_drop", "Turn the torch off.", {"done": [("set_torch", {"on": "false"})]}),
+]
+DRILLS_HOME = [
+    ("home_down", "Turn on the bedroom light.", {"drill": {"home_down": True}, "failures_ok": True,
+                                                 "no_say": r"is now on", "say": r"smartthings|reach|couldn'?t|can'?t"}),
+    ("home_back", "Turn on the bedroom light.", {"drill": {"home_down": False}, "done": [("control_home_device", {"device": "bedroom"})]}),
+]
+
+
 def top_activity() -> str:
     out = adb("shell", "dumpsys", "activity", "activities")
     m = re.search(r"topResumedActivity=ActivityRecord\{\S+ \S+ ([^/\s]+)", out)
@@ -219,11 +257,22 @@ def match(ev: dict, tool: str, args: dict) -> bool:
 
 
 async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
-    if "drill" in want:   # the app's drill button: cut (or restore) the cloud mind
+    if "drill" in want:   # the app's drill buttons: cut or slow the cloud mind, cut SmartThings
+        msg = want["drill"] if isinstance(want["drill"], dict) else {"cloud_off": bool(want["drill"])}
         await cdp_eval("DuetApp.room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify("
-                       "{kind: 'drill', cloud_off: %s})), {reliable: true, topic: 'duet.phone'}).then(() => true)"
-                       % ("true" if want["drill"] else "false"), 20)
+                       "Object.assign({kind: 'drill'}, %s))), {reliable: true, topic: 'duet.phone'}).then(() => true)"
+                       % json.dumps(msg), 20)
         await asyncio.sleep(1.0)
+    if "phone_refuses" in want:   # the phone-side drill: every action refused, as if a permission were off
+        await cdp_eval("(() => { DuetPhone.drill.refuse = %s; return true; })()" % ("true" if want["phone_refuses"] else "false"))
+    if want.get("drop"):          # the drill button "Drop the connection": DUET must come back by itself
+        out = await cdp_eval(DROP_AND_WAIT % {"limit": limit_s * 1000}, timeout=limit_s + 15)
+        evs = out["events"]
+        back = out.get("back_s")
+        problems = [] if back is not None else ["DID NOT REJOIN"]
+        return {"name": name, "text": "(drop)", "ok": not problems, "problems": problems, "route": [],
+                "speaks_s": None, "action_s": back, "answer_s": None, "done_s": back, "tools": [],
+                "said": "back in %s s" % back, "events": evs}
     if text is None and want.get("skip_ahead"):
         out = await cdp_eval(SKIP_AND_WAIT % {"limit": limit_s * 1000, "action": "DuetPhone.skipAhead(%d);" % want["skip_ahead"]},
                              timeout=limit_s + 15)
@@ -247,13 +296,17 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
     for tool in want.get("reads", []):
         if not any(e.get("tool") == tool for e in done):
             problems.append("NOT READ %s" % tool)
+    if want.get("no_say") and re.search(want["no_say"], said, re.I):
+        problems.append("SAID /%s/ (a claim it must not make)" % want["no_say"])
+    if want.get("max_action_s") and (not done or (min(e["t"] for e in done) - sent) / 1000 > want["max_action_s"]):
+        problems.append("ACTION SLOWER THAN %s s" % want["max_action_s"])
     if want.get("say") and not re.search(want["say"], said, re.I):
         problems.append("DID NOT SAY /%s/" % want["say"])
     if want.get("offered") and not any(e.get("kind") == "offer" for e in evs):
         problems.append("NO OFFER")
     if want.get("no_model") and any(e.get("kind") == "route" and e.get("where") == "cloud" for e in evs):
         problems.append("A PLAIN NO WENT TO THE CLOUD MIND")
-    for e in failed:
+    for e in failed if not want.get("failures_ok") else []:
         problems.append("%s %s %s" % (e["kind"].upper(), e.get("tool"), json.dumps(e.get("result") or e.get("error") or "")[:120]))
     errors = [e for e in evs if e.get("kind") == "thinker_error"]
     if want.get("offline"):
@@ -365,7 +418,8 @@ async def run_all(args) -> int:
             pass
         await asyncio.sleep(1.0)
     await cdp_eval("""(() => { window.__ev = []; DuetApp.hooks.events.push((e) => window.__ev.push(Object.assign({t: Date.now()}, e)));
-        DuetApp.start('%s'); return true; })()""" % {"arrival": "drive", "washer": "assistant", "skills": "assistant", "newskill": "assistant"}.get(args.mode, args.mode))
+        DuetApp.start('%s'); return true; })()""" % {"arrival": "drive", "washer": "assistant", "skills": "assistant", "newskill": "assistant",
+         "drills": "assistant"}.get(args.mode, args.mode))
     greeted = await cdp_eval("""(async () => { for (let i = 0; i < 120; i++) { if (window.__ev.some((e) => e.kind === 'agent_said')) return window.__ev.find((e) => e.kind === 'session_start') || true;
         await new Promise((r) => setTimeout(r, 500)); } return false; })()""", timeout=80)
     if not step("conversation started, DUET greeted", bool(greeted), json.dumps(greeted)[:160] if greeted else "no greeting in 60 s"):
@@ -373,7 +427,8 @@ async def run_all(args) -> int:
     # typed requests only: the device's microphone (on the emulator, the laptop's) must not add words
     await cdp_eval("DuetApp.room.localParticipant.setMicrophoneEnabled(false).then(() => true)", 20)
     results = []
-    cases = {"drive": DRIVE, "arrival": ARRIVAL, "washer": WASHER, "skills": SKILLS, "newskill": NEWSKILL}.get(
+    cases = {"drive": DRIVE, "arrival": ARRIVAL, "washer": WASHER, "skills": SKILLS, "newskill": NEWSKILL,
+             "drills": DRILLS + (DRILLS_HOME if HOME_LIVE["ok"] else [])}.get(
         args.mode, CASES + DRILL + ([] if args.no_maps else MAPS))
     for name, text, want in cases:
         if want.get("behind_maps") and "maps" not in top_activity():
@@ -381,6 +436,7 @@ async def run_all(args) -> int:
         r = await run_case(name, text, want)
         results.append(r)
         step("%-12s %s" % (name, (text or ("(the trip: %d min from home)" % want["skip_ahead"] if want.get("skip_ahead")
+                                           else "(the connection is dropped)" if want.get("drop")
                                            else "(the washer finishes)"))[:44]), r["ok"], "%s · speaks %ss · action %ss · answer %ss · %s · said: %s" % (
             "/".join(x for x in r["route"] if x) or "-", r["speaks_s"], r["action_s"], r["answer_s"],
             "; ".join(r["problems"]) or ", ".join(r["tools"]), r["said"][:110]))
