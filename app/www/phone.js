@@ -651,6 +651,55 @@
   }
   setInterval(careTick, 30000);
 
+  // ---------------------------------------------------------------- skills (skills.json)
+  // A capability declared in skills.json, with no code: one generic executor runs it (an Android
+  // setting written and read back, an intent, Do Not Disturb). DUET's coordinator decides when.
+  let skills = [];
+  const fill = (tpl, args) => String(tpl || "").replace(/\{(\w+)(\?([^:}]*):([^}]*))?\}/g, (m, k, q, a, b) =>
+    q ? ((args[k] === true || String(args[k]).toLowerCase() === "true") ? a : b) : (args[k] == null ? "" : String(args[k])));
+  async function loadSkills(base) {
+    // the laptop's copy first (a new skill without a new app), else the one inside the app
+    const urls = [base ? String(base).replace(/\/$/, "") + "/skills.json" : null, "skills.json"].filter(Boolean);
+    for (const url of urls) {
+      try {
+        const r = await fetch(url, { cache: "no-store" });
+        if (r.ok) { skills = (await r.json()).skills || []; break; }
+      } catch (e) { /* the next copy */ }
+    }
+    skills.forEach((s) => { T[s.name] = (args) => runSkill(s, args || {}); });
+    return skills;
+  }
+  async function runSkill(s, args) {
+    const run = s.run || {};
+    if (!isNative()) {
+      toast(fill(s.label || s.name, args) + " (simulated)");
+      return ok({ skill: s.name, simulated: true });
+    }
+    if (run.type === "setting") {
+      let value = fill(run.value, args);
+      if (run.values && run.values[value] != null) value = run.values[value];
+      const w = await Native.putSetting({ namespace: run.namespace, key: run.key, value });
+      if (!w.granted) return needs("modify_system_settings", "Ask the user to allow 'Modify system settings' for DUET; the button is in DUET's settings.");
+      if (s.verify && String(w.value) !== String(value)) return fail("the phone kept " + run.key + " at " + w.value);
+      return ok({ [run.key]: w.value, verified: !!s.verify });
+    }
+    if (run.type === "dnd") {
+      const on = fill(run.on, args) === "true";
+      const r = await Native.doNotDisturb({ on });
+      if (!r.granted) return needs("do_not_disturb_access", "Ask the user to allow Do Not Disturb access for DUET; the button is in DUET's settings.");
+      if (s.verify && r.on !== on) return fail("Do Not Disturb stayed " + (r.on ? "on" : "off"));
+      return ok({ do_not_disturb: r.on ? "on" : "off", verified: !!s.verify });
+    }
+    if (run.type === "intent") {
+      const r = await Native.openIntent({ action: run.action, data: run.data ? fill(run.data, args) : null,
+        package: run.package || null, mimeType: run.mimeType || null });
+      if (r && r.blocked) return BLOCKED();
+      return r && r.opened ? ok({ opened: fill(s.label || s.name, args) }) : fail("no app on this phone can do that");
+    }
+    return fail("this phone cannot run a skill of type " + run.type);
+  }
+  loadSkills(null);
+
   // ---------------------------------------------------------------- the RPC entry point
   async function run(tool, args) {
     const fn = T[tool];
@@ -669,6 +718,7 @@
 
   window.DuetPhone = {
     NATIVE: NATIVE_APP, get acting() { return isNative(); }, selfTest, run, reset, settings, contacts, skipAhead, tripView, describe, spoken,
+    loadSkills, fill, get skills() { return skills; },
     set backgroundListening(on) { backgroundListening = !!on; }, get backgroundListening() { return backgroundListening; },
     get state() { return state; },
     onChange(fn) { listeners.add(fn); return () => listeners.delete(fn); },

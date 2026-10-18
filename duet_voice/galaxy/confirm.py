@@ -248,6 +248,10 @@ def confirmation(tool: str, args: Dict[str, Any], result: Any) -> Optional[str]:
     """A few words saying the action is done, or None when the slow mind should say it.
     Only for a result the phone reported as done (status ok)."""
     template = TEMPLATES.get(tool)
+    if template is None:
+        from .skills import confirmation as skill_confirmation, get as skill
+        if skill(tool) is not None:   # a skill (app/www/skills.json) says its own confirmation
+            template = lambda a, r: skill_confirmation(tool, a) or ""  # noqa: E731
     if template is None or not isinstance(result, dict) or result.get("status", "ok") != "ok":
         return None
     try:

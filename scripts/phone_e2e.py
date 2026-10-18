@@ -151,6 +151,41 @@ WASHER = [
 ]
 
 
+# Skills declared in app/www/skills.json (no code of their own): said, done, and the setting read back
+SKILLS = [
+    ("rotate_off", "Turn off auto-rotate.", {"done": [("set_auto_rotate", {"on": "false"})],
+                                             "after": "setting:accelerometer_rotation:0"}),
+    ("text_big", "Make the text on my phone bigger.", {"done": [("set_text_size", {"size": "large|largest"})],
+                                                       "after": "setting:font_scale:1.15|1.3"}),
+    ("dnd_on", "I'm going into a meeting. Turn on do not disturb.", {"done": [("set_do_not_disturb", {"on": "true"})],
+                                                                    "after": "zen:on"}),
+    ("camera", "Open the camera.", {"done": [("open_camera", {})], "after": "front:camera"}),
+    ("rotate_on", "Turn auto-rotate back on.", {"done": [("set_auto_rotate", {"on": "true"})],
+                                                "after": "setting:accelerometer_rotation:1"}),
+    ("text_back", "Put the text size back to normal.", {"done": [("set_text_size", {"size": "default"})],
+                                                        "after": "setting:font_scale:1.0"}),
+    ("dnd_off", "Turn do not disturb off.", {"done": [("set_do_not_disturb", {"on": "false"})], "after": "zen:off"}),
+]
+
+
+# The scalability check: a skill that is not in the app is added to the laptop's skills.json just before the
+# conversation starts (no new APK, no restart), used, and removed again afterwards
+NEW_SKILL = {"name": "set_touch_vibration", "modes": ["assistant"], "kind": "write", "consent": False,
+             "named": "vibrat|haptic", "group": "touch_vibration",
+             "description": "Turn the small vibration on taps and key presses on or off.",
+             "parameters": {"on": {"type": "boolean", "description": "true to turn touch vibration on."}},
+             "required": ["on"], "label": "Touch vibration {on?on:off}", "confirm": "Touch vibration is {on?on:off}.",
+             "run": {"type": "setting", "namespace": "system", "key": "haptic_feedback_enabled", "value": "{on?1:0}"},
+             "verify": True}
+NEWSKILL = [
+    ("vibration_off", "Turn off touch vibration.", {"done": [("set_touch_vibration", {"on": "false"})],
+                                                    "after": "setting:haptic_feedback_enabled:0"}),
+    ("vibration_on", "Turn touch vibration back on.", {"done": [("set_touch_vibration", {"on": "true"})],
+                                                       "after": "setting:haptic_feedback_enabled:1"}),
+]
+SKILLS_FILE = os.path.join(ROOT, "app", "www", "skills.json")
+
+
 def top_activity() -> str:
     out = adb("shell", "dumpsys", "activity", "activities")
     m = re.search(r"topResumedActivity=ActivityRecord\{\S+ \S+ ([^/\s]+)", out)
@@ -163,12 +198,19 @@ async def duet_alarms() -> list:
     return r or []
 
 
+HOME_LIVE = {"ok": False}   # SmartThings answers (else DUET and these checks use the app's simulated home)
+
+
 async def home_state(device: str) -> str:
-    st._cache.update(devices=None)
-    for d in await st.snapshot():
-        if d["name"] == device:
-            return d["state"]
-    return ""
+    if HOME_LIVE["ok"]:
+        st._cache.update(devices=None)
+        for d in await st.snapshot():
+            if d["name"] == device:
+                return d["state"]
+        return ""
+    # the app's simulated home, as DuetPhone describes it ("on, 22°C cool")
+    return await cdp_eval("(() => { const d = DuetPhone.state.home.find((x) => x.name === %s); "
+                          "return d ? DuetPhone.describe(d) : ''; })()" % json.dumps(device)) or ""
 
 
 def match(ev: dict, tool: str, args: dict) -> bool:
@@ -234,6 +276,21 @@ async def run_case(name: str, text: str, want: dict, limit_s: int = 45) -> dict:
         now = await home_state(device)
         if not now.startswith(state):
             problems.append("SMARTTHINGS SHOWS %s: %s" % (device, now))
+    if after.startswith("setting:"):
+        _, key, want_v = after.split(":", 2)
+        got = adb("shell", "settings", "get", "system", key).strip()
+        if not re.fullmatch(want_v, got):
+            problems.append("SETTING %s IS %s" % (key, got))
+    if after.startswith("zen:"):
+        zen = adb("shell", "settings", "get", "global", "zen_mode").strip()
+        if (zen != "0") != (after == "zen:on"):
+            problems.append("DO NOT DISTURB zen_mode=%s" % zen)
+    if after == "front:camera":
+        await asyncio.sleep(2.0)
+        if "camera" not in top_activity():
+            problems.append("THE CAMERA IS NOT IN FRONT (%s)" % top_activity())
+        adb("shell", "am", "start", "-n", PKG + "/.MainActivity")       # back to DUET for the next request
+        await asyncio.sleep(2.0)
     if after == "maps_front":
         await asyncio.sleep(2.0)
         if "maps" not in top_activity():
@@ -259,11 +316,33 @@ async def main() -> int:
     ap.add_argument("--no-maps", action="store_true")
     ap.add_argument("--mode", default="assistant")
     args = ap.parse_args()
+    if args.mode != "newskill":
+        return await run_all(args)
+    original = open(SKILLS_FILE, encoding="utf-8").read()
+    data = json.loads(original)
+    data["skills"] = [s for s in data["skills"] if s["name"] != NEW_SKILL["name"]] + [NEW_SKILL]
+    with open(SKILLS_FILE, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(data, fh, indent=2, ensure_ascii=False)
+    step("a new skill in the laptop's skills.json", True, "%s (no new app, no restart)" % NEW_SKILL["name"])
+    try:
+        return await run_all(args)
+    finally:
+        with open(SKILLS_FILE, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(original)
+
+
+async def run_all(args) -> int:
     os.makedirs(OUT, exist_ok=True)
-    if st.enabled():   # the SmartThings home starts every run in the same state
+    HOME_LIVE["ok"] = st.enabled() and bool((await st.check()).get("ok"))
+    if HOME_LIVE["ok"]:   # the SmartThings home starts every run in the same state
         from smartthings_setup import reset
         await reset(await st.location_id())
         await asyncio.sleep(1.5)
+    else:
+        step("SmartThings", True, "not available: the app's simulated home is used and checked")
+        if args.mode == "washer":
+            step("end to end", True, "0 of 0 cases · skipped: the washer offer needs the SmartThings home")
+            return 0
     adb("reverse", "tcp:8787", "tcp:8787")
     adb("shell", "am", "force-stop", PKG)
     adb("shell", "am", "start", "-n", PKG + "/.MainActivity")
@@ -286,7 +365,7 @@ async def main() -> int:
             pass
         await asyncio.sleep(1.0)
     await cdp_eval("""(() => { window.__ev = []; DuetApp.hooks.events.push((e) => window.__ev.push(Object.assign({t: Date.now()}, e)));
-        DuetApp.start('%s'); return true; })()""" % ("drive" if args.mode == "arrival" else args.mode))
+        DuetApp.start('%s'); return true; })()""" % {"arrival": "drive", "washer": "assistant", "skills": "assistant", "newskill": "assistant"}.get(args.mode, args.mode))
     greeted = await cdp_eval("""(async () => { for (let i = 0; i < 120; i++) { if (window.__ev.some((e) => e.kind === 'agent_said')) return window.__ev.find((e) => e.kind === 'session_start') || true;
         await new Promise((r) => setTimeout(r, 500)); } return false; })()""", timeout=80)
     if not step("conversation started, DUET greeted", bool(greeted), json.dumps(greeted)[:160] if greeted else "no greeting in 60 s"):
@@ -294,8 +373,8 @@ async def main() -> int:
     # typed requests only: the device's microphone (on the emulator, the laptop's) must not add words
     await cdp_eval("DuetApp.room.localParticipant.setMicrophoneEnabled(false).then(() => true)", 20)
     results = []
-    cases = DRIVE if args.mode == "drive" else ARRIVAL if args.mode == "arrival" else WASHER if args.mode == "washer" else (
-        CASES + DRILL + ([] if args.no_maps else MAPS))
+    cases = {"drive": DRIVE, "arrival": ARRIVAL, "washer": WASHER, "skills": SKILLS, "newskill": NEWSKILL}.get(
+        args.mode, CASES + DRILL + ([] if args.no_maps else MAPS))
     for name, text, want in cases:
         if want.get("behind_maps") and "maps" not in top_activity():
             await asyncio.sleep(1.0)

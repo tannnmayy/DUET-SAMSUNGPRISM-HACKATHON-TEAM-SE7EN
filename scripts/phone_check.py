@@ -126,6 +126,8 @@ async def main() -> int:
             if r:
                 bad.append(op)
         step("permissions granted", not bad, ("not granted: " + ", ".join(bad)) if bad else "all")
+        # Do Not Disturb access, for the skill that turns it on and off
+        adb("shell", "cmd", "notification", "allow_dnd", PKG)
         # Samsung's battery care can put a backgrounded app to sleep: DUET may run in the background and
         # is left out of battery optimisation, so it keeps listening behind Google Maps
         adb("shell", "cmd", "appops", "set", PKG, "RUN_ANY_IN_BACKGROUND", "allow")

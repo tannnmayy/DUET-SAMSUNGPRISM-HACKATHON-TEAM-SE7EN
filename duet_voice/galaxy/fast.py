@@ -186,9 +186,17 @@ _NEEDS_LOOKUP = re.compile(r"arrival time|\beta\b|when (i'?ll|i will|we'?ll|we w
                            r"my location|where i am|the (latest|current) |the time i", re.I)
 
 
+def _named(tool: str) -> Optional[str]:
+    """The words that name an action: the built-in ones, or a skill's `named` (app/www/skills.json)."""
+    if tool in NAMED:
+        return NAMED[tool]
+    from .skills import named as skill_names
+    return skill_names().get(tool)
+
+
 def user_named(tool: str, words: str) -> bool:
     """Do the user's own words name this action ("set the AC to 22", "call Priya")? Then it was asked for."""
-    pattern = NAMED.get(tool)
+    pattern = _named(tool)
     return bool(pattern and re.search(pattern, (words or "").lower()))
 
 
@@ -234,7 +242,7 @@ def vet_plan(calls: List[tuple], words: str, offer=None) -> str:
 def vet(tool: str, args: Dict[str, Any], words: str) -> str:
     """'' when the plan plainly matches the user's words, else why it goes to the cloud mind."""
     w = (words or "").lower()
-    pattern = NAMED.get(tool)
+    pattern = _named(tool)
     if pattern is None:
         return "not a fast action: %s" % tool
     if not re.search(pattern, w):
@@ -313,8 +321,10 @@ def enabled() -> bool:
 
 def fast_specs(mode_tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """What the fast mind sees: the mode's simple actions and ask_expert."""
+    from .skills import named as skill_names
+    fast_skills = skill_names()
     return [{"name": t["name"], "description": t["description"], "parameters": t["parameters"]}
-            for t in mode_tools if t["name"] in FAST_TOOLS] + [ASK_EXPERT_SPEC]
+            for t in mode_tools if t["name"] in FAST_TOOLS or t["name"] in fast_skills] + [ASK_EXPERT_SPEC]
 
 
 def make_fast_thinker(mode_tools: List[Dict[str, Any]], mode_title: str):

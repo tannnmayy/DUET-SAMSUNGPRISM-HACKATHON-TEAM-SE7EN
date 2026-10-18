@@ -852,6 +852,78 @@ public class DuetPhonePlugin extends Plugin {
         });
     }
 
+    // ------------------------------------------------------------------ skills (app/www/skills.json)
+    // The generic executors of DUET's declared skills: a system setting written and read back, an
+    // intent, Do Not Disturb. Only system settings (Android limits apps with "Modify system settings"
+    // to the public ones), so a skill file cannot reach secure or global settings.
+
+    @PluginMethod
+    public void getSetting(PluginCall call) {
+        safely(call, () -> {
+            if (!"system".equals(call.getString("namespace", "system"))) { call.reject("only system settings"); return; }
+            String v = Settings.System.getString(ctx().getContentResolver(), call.getString("key", ""));
+            call.resolve(new JSObject().put("value", v));
+        });
+    }
+
+    @PluginMethod
+    public void putSetting(PluginCall call) {
+        safely(call, () -> {
+            if (!"system".equals(call.getString("namespace", "system"))) { call.reject("only system settings"); return; }
+            if (!Settings.System.canWrite(ctx())) {
+                call.resolve(new JSObject().put("granted", false).put("need", "modify_system_settings"));
+                return;
+            }
+            ContentResolver cr = ctx().getContentResolver();
+            String key = call.getString("key", "");
+            Settings.System.putString(cr, key, call.getString("value", ""));
+            call.resolve(new JSObject().put("granted", true).put("value", Settings.System.getString(cr, key)));
+        });
+    }
+
+    @PluginMethod
+    public void doNotDisturb(PluginCall call) {
+        safely(call, () -> {
+            android.app.NotificationManager nm =
+                (android.app.NotificationManager) ctx().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null || !nm.isNotificationPolicyAccessGranted()) {
+                call.resolve(new JSObject().put("granted", false));
+                return;
+            }
+            Boolean on = call.getBoolean("on", null);
+            if (on != null) {
+                nm.setInterruptionFilter(on ? android.app.NotificationManager.INTERRUPTION_FILTER_PRIORITY
+                                            : android.app.NotificationManager.INTERRUPTION_FILTER_ALL);
+            }
+            int f = nm.getCurrentInterruptionFilter();
+            call.resolve(new JSObject().put("granted", true).put("on",
+                f != android.app.NotificationManager.INTERRUPTION_FILTER_ALL
+                    && f != android.app.NotificationManager.INTERRUPTION_FILTER_UNKNOWN));
+        });
+    }
+
+    @PluginMethod
+    public void openIntent(PluginCall call) {
+        safely(call, () -> {
+            if (!canOpenScreens()) { blocked(call); return; }
+            Intent i = new Intent(call.getString("action", Intent.ACTION_VIEW));
+            String data = call.getString("data", null), type = call.getString("mimeType", null);
+            if (data != null && type != null) i.setDataAndType(Uri.parse(data), type);
+            else if (data != null) i.setData(Uri.parse(data));
+            else if (type != null) i.setType(type);
+            String pkg = call.getString("package", null);
+            if (pkg != null) i.setPackage(pkg);
+            try {
+                start(i);
+            } catch (ActivityNotFoundException e) {
+                if (pkg == null) { call.resolve(new JSObject().put("opened", false)); return; }
+                i.setPackage(null);   // that app is not on this phone: any app that can
+                try { start(i); } catch (ActivityNotFoundException e2) { call.resolve(new JSObject().put("opened", false)); return; }
+            }
+            call.resolve(new JSObject().put("opened", true));
+        });
+    }
+
     // ------------------------------------------------------------------ permissions, audio, device
 
     @PluginMethod
@@ -867,6 +939,9 @@ public class DuetPhonePlugin extends Plugin {
             out.put("notifications", Build.VERSION.SDK_INT < 33 || getPermissionState("notifications") == PermissionState.GRANTED);
             out.put("display_over_apps", Settings.canDrawOverlays(ctx()));
             out.put("alarms_and_reminders", DuetAlarms.allowed(ctx()));
+            android.app.NotificationManager nm =
+                (android.app.NotificationManager) ctx().getSystemService(Context.NOTIFICATION_SERVICE);
+            out.put("do_not_disturb_access", nm != null && nm.isNotificationPolicyAccessGranted());
             call.resolve(out);
         });
     }
@@ -888,6 +963,10 @@ public class DuetPhonePlugin extends Plugin {
                 case "notifications": requestPermissionForAlias("notifications", call, "permissionDone"); break;
                 case "display_over_apps":
                     start(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + ctx().getPackageName())));
+                    call.resolve();
+                    break;
+                case "do_not_disturb_access":
+                    start(new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
                     call.resolve();
                     break;
                 case "alarms_and_reminders":

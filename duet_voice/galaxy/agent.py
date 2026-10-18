@@ -70,7 +70,7 @@ from . import fast, proactive, smartthings  # noqa: E402
 from .confirm import adds_nothing, drop_overclaims  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
-from .tools import PhoneToolbox, rpc_sender  # noqa: E402
+from .tools import PhoneToolbox, cut_off, rpc_sender  # noqa: E402
 
 log = logging.getLogger("duet.galaxy")
 
@@ -258,12 +258,18 @@ class GalaxyAgent(base.DuetAgent):
         return lines_so_far < 1 and not confirmed
 
     def silent_fallback(self, confirmed) -> str:
-        """The guards held a request back (cut off mid-phrase, or undecided) and the model then said
-        nothing: DUET asks for the missing part itself. 18 Oct 2026: after "Call my", the cloud mind
-        replied <silent> although told never to, and the user heard only "One moment."."""
-        held = self._toolbox.unfinished
-        if not held or confirmed:
+        """The request stops mid-phrase ("Call my"), or the guards held it back as undecided, and the model
+        then said nothing: DUET asks for the missing part itself. 18 Oct 2026: after "Call my", the cloud
+        mind replied <silent> although told never to, and the user heard only "One moment." (once with the
+        call held back by the guard, once with no call planned at all)."""
+        if confirmed:
             return ""
+        held = self._toolbox.unfinished
+        if not held:
+            words = self._coord.open_utterance
+            if not cut_off(words):
+                return ""
+            held = (next((t for t in ASK_REST if fast.user_named(t, words)), ""), "cut_off")
         self._toolbox.unfinished = None
         tool, why = held
         if why == "undecided":

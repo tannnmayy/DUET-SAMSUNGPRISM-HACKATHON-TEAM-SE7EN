@@ -1,0 +1,77 @@
+{
+  "_readme": "DUET's skills: a new phone capability is one entry here, with no code. The agent turns each entry into a tool (duet_voice/galaxy/skills.py) that inherits the coordinator's guarantees: the commit gate's hold, the ledger (never twice), the guards (cut off, undecided, dropped), consent when marked, and a confirmation said only after the phone reports it done. The phone app runs it with one generic executor (app/www/phone.js). The laptop's copy of this file is read by the app at each conversation start, so a new skill needs no new APK. Settings are system settings only (what Android lets an app with 'Modify system settings' change). Fields: name, modes, kind (read | write | ui), consent, named (a regular expression for the words that name it: the fast mind may then act on it), description, parameters (JSON schema properties), required, group (the ledger: a later change of the same group replaces an earlier one), label (the timeline), confirm (what DUET says when it is done), run (the executor: setting | intent | dnd), verify (read the setting back: done only if it holds). Templates: {arg} is the value, {arg?A:B} is A when the argument is true, else B.",
+  "skills": [
+    {
+      "name": "set_auto_rotate",
+      "modes": ["assistant"],
+      "kind": "write",
+      "consent": false,
+      "named": "rotat",
+      "group": "auto_rotate",
+      "description": "Turn the screen's auto-rotate on or off.",
+      "parameters": {"on": {"type": "boolean", "description": "true to turn auto-rotate on, false to lock the screen's orientation."}},
+      "required": ["on"],
+      "label": "Auto-rotate {on?on:off}",
+      "confirm": "Auto-rotate is {on?on:off}.",
+      "run": {"type": "setting", "namespace": "system", "key": "accelerometer_rotation", "value": "{on?1:0}"},
+      "verify": true
+    },
+    {
+      "name": "set_text_size",
+      "modes": ["assistant", "care"],
+      "kind": "write",
+      "consent": false,
+      "named": "text|font|letters|words",
+      "group": "text_size",
+      "description": "Make the text on the phone's screen bigger or smaller, for every app.",
+      "parameters": {"size": {"type": "string", "enum": ["small", "default", "large", "largest"], "description": "small, default, large or largest."}},
+      "required": ["size"],
+      "label": "Text size: {size}",
+      "confirm": "Text size set to {size}.",
+      "run": {"type": "setting", "namespace": "system", "key": "font_scale", "value": "{size}",
+              "values": {"small": "0.85", "default": "1.0", "large": "1.15", "largest": "1.3"}},
+      "verify": true
+    },
+    {
+      "name": "set_do_not_disturb",
+      "modes": ["assistant", "drive"],
+      "kind": "write",
+      "consent": false,
+      "named": "disturb|silence|silent|dnd|quiet",
+      "group": "dnd",
+      "description": "Turn Do Not Disturb on (calls and notifications stay quiet, alarms still ring) or off.",
+      "parameters": {"on": {"type": "boolean", "description": "true to turn Do Not Disturb on, false to turn it off."}},
+      "required": ["on"],
+      "label": "Do Not Disturb {on?on:off}",
+      "confirm": "Do Not Disturb is {on?on:off}.",
+      "run": {"type": "dnd", "on": "{on}"},
+      "verify": true
+    },
+    {
+      "name": "open_camera",
+      "modes": ["assistant"],
+      "kind": "ui",
+      "consent": false,
+      "named": "camera|photo|picture|selfie",
+      "description": "Open the camera, ready to take a photo.",
+      "parameters": {},
+      "required": [],
+      "label": "Open the camera",
+      "confirm": "Camera's open.",
+      "run": {"type": "intent", "action": "android.media.action.STILL_IMAGE_CAMERA"}
+    },
+    {
+      "name": "open_wifi_panel",
+      "modes": ["assistant", "care"],
+      "kind": "ui",
+      "consent": false,
+      "named": "wi-?fi|internet",
+      "description": "Show the Wi-Fi panel so the user can pick or switch a network (Android lets apps show it, not switch Wi-Fi by themselves).",
+      "parameters": {},
+      "required": [],
+      "label": "Show the Wi-Fi panel",
+      "confirm": "Here's the Wi-Fi panel.",
+      "run": {"type": "intent", "action": "android.settings.panel.action.WIFI"}
+    }
+  ]
+}

@@ -396,7 +396,14 @@ MODES: Dict[str, Dict[str, Any]] = {
 
 
 def mode(name: str) -> Dict[str, Any]:
-    return MODES.get((name or "").lower(), MODES["assistant"])
+    """A mode with its tools, plus the skills app/www/skills.json gives it (read at each conversation start,
+    so a new skill needs no restart)."""
+    key = (name or "").lower() if (name or "").lower() in MODES else "assistant"
+    base = MODES[key]
+    from .skills import specs_for
+    have = {t["name"] for t in base["tools"]}
+    extra = [s for s in specs_for(key) if s["name"] not in have]
+    return {**base, "tools": base["tools"] + extra} if extra else base
 
 
 def llm_specs(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

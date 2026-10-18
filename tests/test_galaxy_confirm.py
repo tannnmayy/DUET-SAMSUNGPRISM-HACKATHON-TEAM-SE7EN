@@ -295,9 +295,16 @@ def test_a_request_held_back_and_then_met_with_silence_gets_a_question():
     from types import SimpleNamespace
     from duet_voice.galaxy import agent as galaxy_agent
     ask = galaxy_agent.GalaxyAgent.silent_fallback
-    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=("call_contact", "cut_off")))
+    me = SimpleNamespace(_toolbox=SimpleNamespace(unfinished=("call_contact", "cut_off")),
+                         _coord=SimpleNamespace(open_utterance="Turn on the torch."))
     assert ask(me, []) == "Who should I call?"
     assert me._toolbox.unfinished is None and ask(me, []) == ""          # asked once
+    # cut off with no call planned at all (the fast mind handed it on): the words decide
+    me._coord.open_utterance = "Call my"
+    assert ask(me, []) == "Who should I call?"
+    me._coord.open_utterance = "mm"
+    assert ask(me, []) == ""                                              # noise stays silent
+    me._coord.open_utterance = "Turn on the torch."
     me._toolbox.unfinished = ("call_contact", "undecided")
     assert ask(me, []) == "Which one do you want?"
     me._toolbox.unfinished = ("set_brightness", "cut_off")

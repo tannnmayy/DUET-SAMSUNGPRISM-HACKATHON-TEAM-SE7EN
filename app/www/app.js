@@ -106,7 +106,12 @@
   };
   // where each step ran: on the phone, or on DUET's side (its own tools)
   const SERVER_SIDE = new Set(["get_weather", "web_search"]);
-  const toolText = (t, a) => { try { return (TOOL_TEXT[t] || (() => t))(a || {}); } catch (e) { return t; } };
+  const toolText = (t, a) => {
+    try {
+      const s = TOOL_TEXT[t] ? null : (P.skills || []).find((x) => x.name === t);   // a skill labels itself
+      return (TOOL_TEXT[t] || (s ? (x) => P.fill(s.label || s.name, x) : () => t))(a || {});
+    } catch (e) { return t; }
+  };
   const key = (t, a) => t + ":" + JSON.stringify(a || {});
 
   // ---------------------------------------------------------------- the conversation view
@@ -492,6 +497,7 @@
     orb("connecting");
     renderPanel("all");
     if (m === "assistant" && P.acting) P.run("get_battery_report", {});
+    if (base) { try { await P.loadSkills(base); } catch (e) { console.warn("skills:", e); } }
     try {
       let url, token;
       if (creds) ({ url, token } = creds);
