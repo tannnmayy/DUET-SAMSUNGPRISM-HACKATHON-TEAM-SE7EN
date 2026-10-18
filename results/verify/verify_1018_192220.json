@@ -1,0 +1,109 @@
+{
+ "device": "emulator",
+ "quick": false,
+ "verdict": "1 of 13 steps failed",
+ "steps": [
+  {
+   "step": "unit tests",
+   "result": "PASS",
+   "detail": "174 passed",
+   "seconds": 37
+  },
+  {
+   "step": "stack (/api/health)",
+   "result": "PASS",
+   "detail": "fast_mind ok, cloud_mind ok, livekit ok",
+   "seconds": 3
+  },
+  {
+   "step": "SmartThings home",
+   "result": "PASS",
+   "detail": "7 devices",
+   "seconds": 0
+  },
+  {
+   "step": "spoken suite",
+   "result": "FAIL",
+   "detail": "35/39 runs \u00b7 stale 0 \u00b7 duplicates 0 \u00b7 model errors 0 \u00b7 failed: home, home_fix, offer_accept, offer_part",
+   "seconds": 1274,
+   "folder": "results\\galaxy\\suite\\verify_1018_192220"
+  },
+  {
+   "step": "phone: install and self-test",
+   "result": "PASS",
+   "detail": "14 of 14 on this phone in 2.6 s",
+   "seconds": 25
+  },
+  {
+   "step": "phone: end to end (assistant)",
+   "result": "PASS",
+   "detail": "19 of 19 cases",
+   "seconds": 220
+  },
+  {
+   "step": "phone: end to end (drive)",
+   "result": "PASS",
+   "detail": "6 of 6 cases",
+   "seconds": 88
+  },
+  {
+   "step": "phone: end to end (arrival)",
+   "result": "PASS",
+   "detail": "5 of 5 cases",
+   "seconds": 84
+  },
+  {
+   "step": "phone: end to end (washer)",
+   "result": "PASS",
+   "detail": "2 of 2 cases",
+   "seconds": 49
+  },
+  {
+   "step": "phone: end to end (skills)",
+   "result": "PASS",
+   "detail": "7 of 7 cases",
+   "seconds": 88
+  },
+  {
+   "step": "phone: end to end (newskill)",
+   "result": "PASS",
+   "detail": "2 of 2 cases",
+   "seconds": 41
+  },
+  {
+   "step": "phone: end to end (drills)",
+   "result": "PASS",
+   "detail": "9 of 9 cases",
+   "seconds": 129
+  },
+  {
+   "step": "phone: resilience behind Maps",
+   "result": "PASS",
+   "detail": "3 of 3",
+   "seconds": 433
+  },
+  {
+   "step": "demo-day preflight",
+   "result": "NOTE",
+   "detail": "red: Do Not Disturb, media volume on the loudspeaker, call volume on the loudspeaker, demo contacts",
+   "seconds": 7
+  }
+ ],
+ "latency_s": {
+  "ack": {
+   "p50": 1.18,
+   "p90": 1.57,
+   "n": 50
+  },
+  "action": {
+   "p50": 2.66,
+   "p90": 3.8,
+   "n": 39
+  },
+  "answer": {
+   "p50": 3.2,
+   "p90": 6.27,
+   "n": 50
+  }
+ }
+}

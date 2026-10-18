@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DUET for Galaxy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a field manual set like DUET's own timeline. A section rail on wide screens, one reading column,
+   and the app's step list (heard, planned, never ran, done) as the recurring device. Palette: the app's One UI tokens. */
+:root {
+  --bg: #f4f4f6; --surface: #ffffff; --surface-2: #ececf0; --ink: #111114; --muted: #5d5d66; --line: #dcdce3;
+  --accent: #2f6fed; --accent-soft: #e3ecfd; --hold: #6a4fd8; --hold-soft: #ece7fc;
+  --ok: #1d7f45; --ok-soft: #e1f3e8; --bad: #c0362c; --bad-soft: #fbe5e2; --warn: #a15c00; --warn-soft: #fcefd9;
+  --care: #d4497a; --drive: #0f8a6c;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --step--1: 0.875rem; --step-0: 1.0625rem; --step-1: 1.3rem; --step-2: 1.7rem; --step-3: 2.3rem; --step-4: 3.1rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0b0d; --surface: #17171a; --surface-2: #222228; --ink: #f2f2f5; --muted: #a3a3ad; --line: #2e2e36;
+    --accent: #6c9bf6; --accent-soft: #1b2a47; --hold: #a995f6; --hold-soft: #262040;
+    --ok: #62c98b; --ok-soft: #14301f; --bad: #f07b70; --bad-soft: #3a1b18; --warn: #e8a54b; --warn-soft: #36270f;
+    --care: #ee7aa3; --drive: #3fbf9a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0b0d; --surface: #17171a; --surface-2: #222228; --ink: #f2f2f5; --muted: #a3a3ad; --line: #2e2e36;
+  --accent: #6c9bf6; --accent-soft: #1b2a47; --hold: #a995f6; --hold-soft: #262040;
+  --ok: #62c98b; --ok-soft: #14301f; --bad: #f07b70; --bad-soft: #3a1b18; --warn: #e8a54b; --warn-soft: #36270f;
+  --care: #ee7aa3; --drive: #3fbf9a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 var(--step-0)/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+.page { max-width: 1180px; margin: 0 auto; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; }
+nav.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: grid; gap: 4px; font-size: var(--step--1); }
+nav.rail b { font-family: var(--display); font-size: 1.05rem; margin-bottom: 8px; }
+nav.rail a { color: var(--muted); text-decoration: none; padding: 4px 10px; border-radius: 8px; }
+nav.rail a:hover, nav.rail a:focus-visible { color: var(--ink); background: var(--surface-2); outline: none; }
+main { min-width: 0; display: grid; gap: 72px; }
+section { display: grid; gap: 20px; min-width: 0; scroll-margin-top: 24px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.12; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: var(--step-4); }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font: 600 0.75rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: var(--step-1); color: var(--muted); max-width: 62ch; line-height: 1.5; }
+.muted { color: var(--muted); }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--surface-2); padding: 1px 6px; border-radius: 6px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hero { display: grid; gap: 22px; padding-top: 8px; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 400 var(--step--1)/1.4 var(--mono); color: var(--muted); }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.fact { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 4px; }
+.fact b { font: 700 var(--step-2)/1 var(--display); font-variant-numeric: tabular-nums; }
+.fact span { font-size: var(--step--1); color: var(--muted); line-height: 1.35; }
+/* the app's timeline, as a page device */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-width: 640px; }
+.timeline li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 14px;
+  border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.timeline i { font-style: normal; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--surface-2); font-size: 0.85rem; }
+.timeline div { min-width: 0; }
+.timeline small { display: block; color: var(--muted); font-size: var(--step--1); line-height: 1.35; }
+.timeline .heard i { background: var(--surface-2); }
+.timeline .plan { background: var(--accent-soft); border-color: transparent; }
+.timeline .plan i { background: var(--accent); color: #fff; }
+.timeline .drop { background: var(--bad-soft); border-color: transparent; }
+.timeline .drop i { background: var(--bad); color: #fff; }
+.timeline .done { background: var(--ok-soft); border-color: transparent; }
+.timeline .done i { background: var(--ok); color: #fff; }
+.timeline .hold { background: var(--hold-soft); border-color: transparent; }
+.timeline .hold i { background: var(--hold); color: #fff; }
+.timeline .say i { background: var(--ink); color: var(--bg); }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.pair > * { min-width: 0; }
+figure { margin: 0; display: grid; gap: 8px; align-content: start; }
+figure.clip video { max-width: 340px; justify-self: center; border-radius: 28px; }
+figure.clip figcaption { justify-self: center; text-align: center; }
+figure img, figure video { width: 100%; max-width: 100%; height: auto; border-radius: 18px; border: 1px solid var(--line); background: var(--surface-2); display: block; }
+figure.phone img, figure.phone video { max-width: 300px; justify-self: center; border-radius: 28px; }
+figcaption { font-size: var(--step--1); color: var(--muted); max-width: 60ch; }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px; }
+.shots figure img { border-radius: 22px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+th { font: 600 0.72rem/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { display: inline-block; font: 600 0.72rem/1.5 var(--mono); padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.real { background: var(--ok-soft); color: var(--ok); }
+.pill.sim { background: var(--warn-soft); color: var(--warn); }
+.pill.new { background: var(--accent-soft); color: var(--accent); }
+/* architecture */
+.arch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; }
+.zone { border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: grid; gap: 10px; align-content: start; background: var(--surface); }
+.zone.edge { border: 2px solid var(--accent); background: var(--accent-soft); }
+.zone h3 { font: 600 0.74rem/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.mod { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; gap: 2px; }
+.mod b { font-family: var(--display); font-size: 1rem; }
+.mod span { font-size: var(--step--1); color: var(--muted); line-height: 1.4; }
+.mod.coord { border: 2px solid var(--hold); }
+.mod.coord b { color: var(--hold); }
+.mod.fast b { color: var(--ok); }
+.flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; counter-reset: s; }
+.flow li { counter-increment: s; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; font-size: var(--step--1); line-height: 1.35; display: grid; gap: 4px; }
+.flow li::before { content: counter(s); font: 600 0.72rem/1 var(--mono); color: var(--accent); }
+.flow b { font-family: var(--display); font-size: 0.98rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.card h3 { font-size: 1.08rem; }
+.card p { font-size: 0.95rem; }
+.mode-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.mode-head .tag { font: 600 0.74rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; }
+.tag.assistant { background: var(--accent-soft); color: var(--accent); }
+.tag.care { background: var(--bad-soft); color: var(--care); }
+.tag.drive { background: var(--ok-soft); color: var(--drive); }
+pre { margin: 0; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; font: 400 0.82rem/1.55 var(--mono); }
+.note { border-left: 3px solid var(--hold); padding: 4px 0 4px 14px; color: var(--ink); max-width: 68ch; }
+footer { color: var(--muted); font-size: var(--step--1); border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 6px; }
+@media (max-width: 980px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  nav.rail { position: static; display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.rail b { width: 100%; }
+  .arch { grid-template-columns: minmax(0, 1fr); }
+  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  :root { --step-4: 2.2rem; --step-3: 1.75rem; --step-2: 1.4rem; --step-1: 1.15rem; }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pair { grid-template-columns: minmax(0, 1fr); }
+  main { gap: 56px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<nav class="rail" aria-label="Sections">
+  <b>DUET for Galaxy</b>
+  <a href="#problem">The problem</a>
+  <a href="#built">What we built</a>
+  <a href="#caveats">Problems and caveats</a>
+  <a href="#architecture">Architecture and modules</a>
+  <a href="#samsung">Relevance to Samsung</a>
+  <a href="#scale">Scaling to new use cases</a>
+  <a href="#usecases">Every use case</a>
+  <a href="#proof">How it is tested</a>
+  <a href="#limits">Limits and next steps</a>
+</nav>
+<main>
+
+<header class="hero" id="top">
+  <span class="eyebrow">Samsung PRISM GenAI Hackathon 3.0 · Theme 05 · Interruptible Real-Time Agents</span>
+  <h1>DUET for Galaxy</h1>
+  <p class="lede">A voice assistant for Galaxy phones that you can talk over, correct mid-sentence and change your mind with. It acts only on what you finally meant, never does anything twice, and says something is done only after the phone, the car or the home reports it done.</p>
+  <div class="meta"><span>Team SE7EN · SRM</span><span>Round 2 · live jury demo, 21 October 2026</span><span>Galaxy S24 · One UI 8.5 · Android 16</span></div>
+  <div class="facts">
+    <div class="fact"><b>0.81</b><span>Pass@1 on all 100 real recordings of Full-Duplex-Bench v3 (published best: 0.60)</span></div>
+    <div class="fact"><b>0</b><span>actions on words the user took back, and 0 repeats, in five spoken-suite runs on 18 October (one action on a misheard question: fixed)</span></div>
+    <div class="fact"><b>≈ 1 s</b><span>a simple action done on the fast mind; plain readings 0.2–0.8 s (measured on Android 16)</span></div>
+    <div class="fact"><b>{{num:unit}}</b><span>unit tests, plus spoken, end-to-end and resilience suites run in one command</span></div>
+  </div>
+</header>
+
+<section id="problem">
+  <span class="eyebrow">The problem</span>
+  <h2>Voice assistants take turns. People don't.</h2>
+  <p>People interrupt, correct themselves and change their minds while they speak: "Set an alarm for 6:30… no, make it 7." Most voice assistants wait for silence, then act on everything that was said. Once an assistant can act (set alarms, send texts, run the home) that habit becomes dangerous: a setting changed on words the user took back, a message sent twice, "done" said before anything happened.</p>
+  <p>Theme 05 asks for an agent that stays responsive while it works, never claims a false "done", works asynchronously, and recovers cleanly: it throws away stale intent, updates an action's values after a change of mind, and never repeats a state-changing action. Round 1 measured this on Full-Duplex-Bench v3, 100 real recordings with corrections and 12 tools. For Round 2 the jury asked for a real use case on a real phone, and judges five things: the problem and its caveats, the core architecture and modules, the extension and its relevance to Samsung, how it scales to new use cases, and a live demo of all of it.</p>
+  <ol class="timeline" aria-label="What DUET does with a correction">
+    <li class="heard"><i>↓</i><div>Heard: "Set an alarm for 6:30…"<small>the user pauses</small></div></li>
+    <li class="plan"><i>⏸</i><div>Planned: alarm 6:30<small>held until the user has been quiet 1.4 s</small></div></li>
+    <li class="heard"><i>↓</i><div>Heard: "…no, make it 7."</div></li>
+    <li class="drop"><i>✕</i><div>Never ran: alarm 6:30<small>the user corrected it before it committed</small></div></li>
+    <li class="done"><i>✓</i><div>Done: alarm 7:00<small>on the phone · it appears on the lock screen</small></div></li>
+    <li class="say"><i>💬</i><div>"Sure. Alarm set for 7 in the morning."<small>said from the phone's own reply, about 1.5 s after the user stopped</small></div></li>
+  </ol>
+</section>
+
+<section id="built">
+  <span class="eyebrow">What we built</span>
+  <h2>An Android app, a coordinator, and two minds</h2>
+  <p>DUET for Galaxy is an Android app (the screen, the microphone and loudspeaker, and every phone action) connected over LiveKit to an agent on our laptop. The agent hears with Silero VAD and Whisper, speaks with Kokoro, and thinks with two Gemma 4 models: a small one on our GPU for simple actions, the large one in Google's cloud for everything else. One coordinator stands between both minds and the world. The home is a real SmartThings account.</p>
+  <div class="pair">
+    <figure class="phone"><img src="{{img:home}}" alt="DUET's home screen: Assistant, Care and Drive, and the readiness line"><figcaption>The home screen on the Android 16 emulator: three modes, and a readiness line that checks the cloud mind, the fast mind and the home.</figcaption></figure>
+    <div class="cards">
+      <div class="card"><div class="mode-head"><span class="tag assistant">Assistant</span></div><p>Alarms you can correct, battery help from the phone's real readings that you can interrupt, settings, apps, Maps, calls and texts, the torch, music, volume, the calendar, the weather, web answers, the SmartThings home.</p></div>
+      <div class="card"><div class="mode-head"><span class="tag care">Care</span></div><p>For an older person living alone: medicines with a double-dose guard, reminders, calls and texts to family, a daily check-in, a family alert, larger text.</p></div>
+      <div class="card"><div class="mode-head"><span class="tag drive">Drive</span></div><p>Eyes on the road: a destination changed mid-sentence, the route handed to Google Maps, then the home, music and messages while Maps stays in front, and DUET speaking first as you near home.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="caveats">
+  <span class="eyebrow">Problems and caveats identified</span>
+  <h2>What goes wrong, and what DUET does about it</h2>
+  <p>Each row was found by measurement or by a test, and each has a mechanism in the code and a test that would fail without it.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>What goes wrong</th><th>What DUET does</th><th>Shown by</th></tr></thead>
+    <tbody>
+      <tr><td>Acting on words the user takes back a moment later</td><td>Every utterance gets an epoch; a plan made before newer words is void. Nothing runs while the user speaks or until 1.4 s of quiet (1.8 s after a correction word, 2.2 s after a dangling phrase).</td><td>0 stale actions across the spoken suite</td></tr>
+      <tr><td>A correction after the action already ran</td><td>The thinker is told what really happened and undoes it with the matching action.</td><td>Timeline: "Undone"</td></tr>
+      <tr><td>Doing the same thing twice (a model retry, a re-read turn)</td><td>An exactly-once ledger, one spelling per value (7:00 is 07:00). An unknown outcome is never treated as done.</td><td>0 duplicates; "Not repeated"</td></tr>
+      <tr><td>Saying "done" when it isn't</td><td>Confirmations are built from the device's own reply; texts wait for the radio; any sentence that claims more than the device reported, or states a different time, is removed before it is spoken.</td><td>Airplane-mode test; caught live: "I've sent that" after "ready; tap send"</td></tr>
+      <tr><td>A sentence cut off ("Call my…") or undecided ("Rahul, or maybe Priya")</td><td>Guards hold the action whatever the model decides; if the model then says nothing, DUET asks for the rest itself.</td><td>Spoken scenarios cut_off, waver_call</td></tr>
+      <tr><td>Silence where an answer is needed</td><td>A refused or failed action, or an unfinished request, is always said ("The phone didn't let me do that…").</td><td>The refusal drill</td></tr>
+      <tr><td>Latency on a cloud model (about 1.9 s per call, two calls per question)</td><td>Two speeds: the fast mind decides simple actions in 0.24 s; plain readings are answered from the reading itself with no model call.</td><td>0.21–0.83 s against 3.7–4.1 s</td></tr>
+      <tr><td>The cloud is unreachable</td><td>Said within 2 s; simple actions keep working on the fast mind.</td><td>The cloud-cut drill</td></tr>
+      <tr><td>Android's background rules when Google Maps is in front</td><td>A microphone foreground service; "Appear on top" for opening screens; DUET says what to allow instead of pretending.</td><td>5 minutes behind Maps, still listening</td></tr>
+      <tr><td>A dropped connection or a restarted laptop</td><td>The app rejoins on its own for 3 minutes with the same microphone (a new capture opened behind Maps never starts on Android 16).</td><td>Back in ~5 s; 110 s after a full restart</td></tr>
+      <tr><td>Text size changed by DUET restarted DUET itself</td><td>Font scale is now a configuration change the app handles.</td><td>Found by the skills test</td></tr>
+      <tr><td>Readings answered from an earlier request</td><td>A reading is fresh in every request.</td><td>Found by the drills test</td></tr>
+      <tr><td>A yes to a two-part offer that changes one part ("yes, make it 22"), or picks one ("just the AC", which in Drive the fast mind took for the car's AC)</td><td>A plain answer to DUET's own offer is settled from the offer itself, with no model: the AC at 22 and the light, or the AC alone. Each action is read back on its own.</td><td>Found by the screen recording and the spoken suite</td></tr>
+      <tr><td>The smart home limits requests (SmartThings: about 10 a minute per token)</td><td>DUET reads the home sparingly: the panel follows each command's own reply, read-backs back off, the device list is kept, a short limit is waited out. A failed action is never said to have happened.</td><td>Found with the live home: 12 of 16, then 16 of 16</td></tr>
+      <tr><td>What Android does not allow an app</td><td>Per-app battery %, switching power saving or Wi-Fi directly, calling another app's AppFunctions: DUET opens the exact screen and says so.</td><td>Measured on Android 16</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="architecture">
+  <span class="eyebrow">Core architecture and technology modules</span>
+  <h2>The phone is the ears, mouth and hands; two minds share one coordinator</h2>
+  <div class="arch">
+    <div class="zone"><h3>Galaxy S24 · the DUET app</h3>
+      <div class="mod"><b>Microphone and loudspeaker</b><span>WebRTC in the app, echo cancelled; one microphone track kept across reconnects</span></div>
+      <div class="mod"><b>The hands</b><span>A native plugin with 34 phone actions on public Android APIs: DUET's own alarms, timers, Maps, calls, texts confirmed by the radio, settings, battery, apps, torch, media, volume, calendar, contacts, skills</span></div>
+      <div class="mod"><b>The live timeline</b><span>What it heard, planned, held back, did, and which mind did it</span></div>
+      <div class="mod"><b>Behind Google Maps</b><span>A microphone foreground service; DUET as the phone's assistant (assist gesture, side key)</span></div>
+    </div>
+    <div class="zone edge"><h3>Our edge machine · laptop GPU</h3>
+      <div class="mod"><b>Ears</b><span>Silero VAD · Whisper large-v3-turbo · LiveKit turn detector</span></div>
+      <div class="mod fast"><b>Fast mind</b><span>Gemma 4 E2B (llama.cpp): simple actions in 0.24 s; code checks every plan before it runs</span></div>
+      <div class="mod coord"><b>Coordinator</b><span>Epochs · commit gate · exactly-once ledger · guards · consent · offers · failure policy</span></div>
+      <div class="mod"><b>Mouth</b><span>Kokoro-82M; fixed lines pre-rendered</span></div>
+      <div class="mod"><b>Readings, confirmations, skills</b><span>Answers and confirmations said from the device's own reply; skills read from a manifest</span></div>
+    </div>
+    <div class="zone"><h3>Cloud</h3>
+      <div class="mod"><b>Cloud mind</b><span>Gemma 4 26B (Google API, a pool of three keys): questions, explanations, the weather, the web, care</span></div>
+      <div class="mod"><b>SmartThings</b><span>The real home: 7 devices; every change read back before "done"</span></div>
+      <div class="mod"><b>LiveKit Cloud</b><span>Audio and the phone's tool calls; 90 ms round trip at the median</span></div>
+    </div>
+  </div>
+  <h3>One request, start to finish</h3>
+  <ol class="flow">
+    <li><b>Hear</b>The ears close the turn after 0.5 s of quiet and transcribe it.</li>
+    <li><b>Route</b>The fast mind looks first; a plain reading goes straight to its reading; an answer to DUET's own offer ("yes, make it 22") is settled from the offer, with no model.</li>
+    <li><b>Check</b>Code checks the plan: named in the user's words, values they said, the last value said, not a question, nothing dropped.</li>
+    <li><b>Hold</b>The commit gate holds the action until the user has been quiet; newer words void it.</li>
+    <li><b>Act once</b>The ledger lets it run exactly once, on the phone or the home.</li>
+    <li><b>Verify</b>The device reports back; a setting is read back.</li>
+    <li><b>Say</b>"Sure. Torch on." from the device's reply; the cloud mind adds only what is new.</li>
+  </ol>
+  <h3>Where each module runs, chosen by measured latency</h3>
+  <p>We measured moving the AI onto the phone. Gemma 3n E2B on the Galaxy S24 Ultra's GPU runs at about 816 tokens a second of prompt and 16 of output (Google's published LiteRT-LM figures): our fast mind's 1,400-token prompt would take about 3.3 s there, against 0.24 s on our GPU. Speech recognition on the phone would gain at most 0.1–0.3 s and lose accuracy on Indian English. The network costs 90 ms. So the minds stay on the edge machine today; the phone does everything that is the phone's.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Request</th><th class="num">First sound</th><th class="num">Action done</th><th class="num">Answer ready</th></tr></thead>
+    <tbody>
+      <tr><td>Simple action, fast mind ("turn on the torch")</td><td class="num">0.6 s</td><td class="num">0.8–1.0 s</td><td class="num">≈ action</td></tr>
+      <tr><td>Plain reading ("is the front door locked?")</td><td class="num">—</td><td class="num">—</td><td class="num">0.21–0.83 s</td></tr>
+      <tr><td>Answer to DUET's offer ("yes, make it 22": the AC and a light; no model)</td><td class="num">0.24 s</td><td class="num">0.28 s, both</td><td class="num">0.34 s</td></tr>
+      <tr><td>Cloud question ("what's the weather in Chennai?")</td><td class="num">0.7 s</td><td class="num">—</td><td class="num">4–7 s</td></tr>
+      <tr><td>Spoken suite, all requests, from the end of speech (p50)</td><td class="num">{{num:ack}}</td><td class="num">{{num:action}}</td><td class="num">{{num:answer}}</td></tr>
+    </tbody>
+  </table></div>
+  <figure><img src="{{img:slide3}}" alt="The Round 2 deck's architecture slide"><figcaption>From the Round 2 deck: what runs where.</figcaption></figure>
+</section>
+
+<section id="samsung">
+  <span class="eyebrow">Extension and relevance to Samsung</span>
+  <h2>The layer that makes an acting assistant safe to interrupt</h2>
+  <p>One UI 8.5 turned Bixby into a conversational device agent that changes settings from plain speech. The moment an assistant acts, interruption and correction become a safety problem. DUET's coordinator is that safety layer, and it is model-independent: it could sit under Bixby's device agent and in front of every AppFunction call.</p>
+  <div class="cards">
+    <div class="card"><h3>SmartThings, for real</h3><p>DUET controls the account's devices and says "done" only once the device reports the new state. Devices are understood by their capabilities, so a new plug or light works without code.</p></div>
+    <div class="card"><h3>DUET speaks first <span class="pill new">new</span></h3><p>Nearly home, it reads the home and the outside temperature: "You'll be home in about 10 minutes, and it's 31 degrees outside. Shall I start the living room AC at 24 degrees?" (after dark, a light too). Accept it, change one part ("yes, make it 22": the rest is done as offered), take a part ("just the AC"), decline it, or talk over it. Samsung's Car-to-Home does this as a silent routine; DUET asks, explains and can be corrected.</p></div>
+    <div class="card"><h3>The phone's assistant <span class="pill new">new</span></h3><p>DUET answers Android's assist intent: chosen as the digital assistant, the assist gesture or side key opens it straight into a conversation (5 s from a cold start).</p></div>
+    <div class="card"><h3>Galaxy actions on public APIs</h3><p>No root, no hidden APIs: everything a Samsung app team could ship. Permissions are set over USB for the demo; Samsung's own apps already hold them.</p></div>
+    <div class="card"><h3>The on-device path</h3><p>The coordinator is plain code that ports to Kotlin; Gemma 4 E2B already runs on Galaxy phones (Gemma 4 E2B on the S26 Ultra: 3,808 prompt and 52 output tokens a second). When the phone's numbers beat the edge machine's, the minds move; the coordinator does not change.</p></div>
+    <div class="card"><h3>A PRISM worklet</h3><p>Next steps fit a 4–6 month worklet: the Kotlin coordinator, AppFunctions as an executor when privileged, physical SmartThings devices, Hindi and Tamil.</p></div>
+  </div>
+</section>
+
+<section id="scale">
+  <span class="eyebrow">Scalability</span>
+  <h2>A new use case is one entry in a file</h2>
+  <p>A phone capability is declared in <code>app/www/skills.json</code>: its modes, whether it reads, changes or opens a screen, whether it needs consent, the words that name it, its exactly-once group, what DUET says when it is done, and how it runs (an Android setting written and read back, an intent, Do Not Disturb). It inherits the hold, the ledger, the guards, consent and confirmed-when-done with no code. The agent and the app read the file at each conversation start, so a new skill needs no new app and no restart. The format follows Android 16's AppFunctions, which a privileged agent could plug in as one more kind of executor.</p>
+  <div class="pair">
+<pre>{
+  "name": "set_touch_vibration",
+  "modes": ["assistant"],
+  "kind": "write",
+  "named": "vibrat|haptic",
+  "group": "touch_vibration",
+  "description": "Turn touch vibration on or off.",
+  "parameters": {"on": {"type": "boolean"}},
+  "required": ["on"],
+  "confirm": "Touch vibration is {on?on:off}.",
+  "run": {"type": "setting", "namespace": "system",
+          "key": "haptic_feedback_enabled",
+          "value": "{on?1:0}"},
+  "verify": true
+}</pre>
+    <ol class="timeline">
+      <li class="hold"><i>+</i><div>The entry is added to the laptop's skills.json<small>no new APK, no restart</small></div></li>
+      <li class="heard"><i>↓</i><div>A new conversation: "Turn off touch vibration."</div></li>
+      <li class="plan"><i>⚡</i><div>Fast mind: set_touch_vibration(on: false)<small>the entry's words named it, so it may act</small></div></li>
+      <li class="done"><i>✓</i><div>Done and read back: haptic_feedback_enabled = 0<small>0.86 s; confirmed with adb</small></div></li>
+      <li class="say"><i>💬</i><div>"Touch vibration is off."</div></li>
+    </ol>
+  </div>
+  <p class="muted">Shipped skills: auto-rotate, text size, Do Not Disturb, the camera, the Wi-Fi panel. The same idea runs through the rest: SmartThings devices by capability, modes as configuration (tools, instructions, greeting), and the coordinator unchanged for all of them.</p>
+</section>
+
+<section id="usecases">
+  <span class="eyebrow">Every use case, and how to use it</span>
+  <h2>Say it the way you would to a person</h2>
+  <p>Open DUET, tap a mode (or use the assist gesture), and talk. Interrupt it any time; correct yourself freely. The timeline on the phone shows every step. Labels: <span class="pill real">real</span> acts on the phone or the home; <span class="pill sim">simulated</span> runs inside the app and says so.</p>
+
+  <div class="mode-head"><span class="tag assistant">Assistant</span><h3>Everyday phone help</h3></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Say</th><th>What happens</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>"Set an alarm for 6:30… no, make it 7."</td><td>Only 7:00 is set, as DUET's own exact alarm; it rings and shows on the lock screen. A time without AM/PM means the next one.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Set an alarm for 3:30." … "No, cancel that, 4:30."</td><td>3:30 is undone, 4:30 set.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Set a timer for 10 minutes. I mean 15."</td><td>One timer, 15 minutes, in the Clock app.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"My battery drains so fast. What's going on?" (interrupt with your own theory)</td><td>Real readings: charge, temperature, drain, brightness, refresh rate, screen time per app. DUET stops when you cut in and checks your theory.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"How much battery do I have?" · "When is my next alarm?"</td><td>Answered from the reading in under a second.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Bring the brightness down to 40." · "Screen timeout to 30 seconds."</td><td>Changed directly (asked first if you didn't request it).</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Turn on the torch." · "Pause the music." · "Volume to 40 percent."</td><td>Done in about a second by the fast mind.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Turn off auto-rotate." · "Make the text bigger." · "Turn on do not disturb." · "Open the camera." · "Show me Wi-Fi."</td><td>Skills from the manifest; settings read back before "done".</td><td><span class="pill real">real</span> <span class="pill new">new</span></td></tr>
+      <tr><td>"Open WhatsApp." · "Open battery settings." · "Navigate to the airport."</td><td>Opens the app, the exact settings screen, or Google Maps turn-by-turn.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Call Priya." · "Text Rahul I'm running late."</td><td>The dialer or Messages opens ready, or, with "Call and text directly" on, the call is placed and the text sent and confirmed by the radio.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Call Rahul, or maybe Priya, hmm."  · "Call my…"</td><td>Nothing happens; DUET asks which one, or who.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Put a dentist appointment on Monday at 4."</td><td>Added to the phone's calendar.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Will it rain in Chennai tomorrow?" · "Who won the T20 World Cup in 2024?"</td><td>Open-Meteo, or Gemma with Google Search grounding; falls back to the web if the weather service is down.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Turn on the AC and set it to 22. Actually, 21." · "Is the front door locked?"</td><td>SmartThings shows 21; 22 never reached it. The lock is read, never changed by a question.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>(The washer finishes)</td><td>DUET speaks first: "The washer has finished. Shall I set a 10-minute timer to remind you to hang the laundry?"</td><td><span class="pill real">real</span> <span class="pill new">new</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="mode-head"><span class="tag care">Care</span><h3>A companion for someone living alone</h3></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Say</th><th>What happens</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>"Did I take my blood pressure tablet? I'll just take it now."</td><td>The schedule is read; a second dose of the same slot is refused, kindly.</td><td><span class="pill sim">simulated</span> schedule</td></tr>
+      <tr><td>(Medicine time arrives)</td><td>DUET reminds the user by itself.</td><td><span class="pill sim">simulated</span> <span class="pill new">new</span></td></tr>
+      <tr><td>"Remind me at 5 to call the pharmacy. No, at 6."</td><td>One reminder at 6 (a DUET alarm with the label).</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"Can you call my daughter?"</td><td>Calls the contact marked daughter.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"I fell in the bathroom and my hip hurts."</td><td>Stays calm, asks one short question, offers to alert family (texts confirmed by the radio, or the simulated family app); never claims to have called emergency services.</td><td><span class="pill real">real</span> texts</td></tr>
+      <tr><td>"I'm feeling a bit tired today, but fine." · "Make the letters bigger."</td><td>A check-in the family sees; larger text across the phone.</td><td><span class="pill sim">check-in</span> <span class="pill real">text size</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="mode-head"><span class="tag drive">Drive</span><h3>Hands busy, Google Maps in front</h3></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Say</th><th>What happens</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>"Take me to the office. No wait, the airport, I have a flight."</td><td>Only the airport is set; arrival time from the trip.</td><td><span class="pill sim">simulated</span> trip</td></tr>
+      <tr><td>"Hand it to Google Maps."</td><td>Maps opens turn-by-turn; "DUET is listening" stays in the notifications.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>With Maps in front: "Turn on the AC at home." · "Play some music."</td><td>Done while Maps stays in front.</td><td><span class="pill real">real</span></td></tr>
+      <tr><td>"When will I get there?" · "Tell Priya I'm on my way and when I'll get there."</td><td>The arrival time from the trip, in under a second; the text carries the real time in digits.</td><td><span class="pill real">real</span> text</td></tr>
+      <tr><td>(10 minutes from home) "Yes, make it 22." · "No thanks."</td><td>DUET offers to get the home ready; the AC is set to 22 (and an offered light switched on), or nothing runs. "Just the AC" takes that part alone. Talking over the offer works too.</td><td><span class="pill real">real</span> <span class="pill new">new</span></td></tr>
+      <tr><td>"It's hot in here. Set the AC to 22. No, 21."</td><td>The car's climate at 21.</td><td><span class="pill sim">simulated</span> car</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="shots">
+    <figure><img src="{{img:assistant}}" alt="An Assistant conversation with its timeline"><figcaption>Assistant: an alarm, the torch, a home question; each step on the timeline, with the fast mind labelled. (The emulator says "One moment." where a real phone, with the fast mind deciding in 0.24 s, says "Sure.")</figcaption></figure>
+    <figure><img src="{{img:offer}}" alt="Drive mode: DUET's offer, the answer, and both actions confirmed"><figcaption>Drive: DUET spoke first, nearly home. "Yes, make it 22": the AC at 22 and the bedroom light on, each confirmed from the phone's own reply.</figcaption></figure>
+    <figure><img src="{{img:drills}}" alt="The home's devices and the drills panel"><figcaption>The home's devices (the app's simulated home when SmartThings is off) and the drills: cut or slow the cloud, refuse actions, drop the connection.</figcaption></figure>
+    <figure><img src="{{img:maps}}" alt="Android's notification shade with DUET is listening and the green microphone dot"><figcaption>Google Maps in front: Android's shade shows "DUET is listening" and the green microphone dot; DUET keeps hearing and acting.</figcaption></figure>
+  </div>
+  <figure class="clip"><video src="{{video:arrival}}" poster="{{img:arrival_poster}}" controls muted playsinline preload="metadata"></video><figcaption>Screen recording (no sound, real time) on the Android 16 emulator: a trip home, DUET's offer, "No thanks", then the offer again and "Yes, make it 22": the AC and the light, each read back from the phone.</figcaption></figure>
+
+  <h3>Showing how DUET recovers</h3>
+  <p>The Drills panel (under each mode) makes a failure happen on demand, and the timeline shows the recovery: cut the cloud mind (said within 2 s; the torch still works), slow it by 6 s ("One moment… Still working on it", simple actions unaffected), make the phone refuse actions (DUET says what to allow and claims nothing), cut SmartThings, or drop the connection (back in about 4 s).</p>
+</section>
+
+<section id="proof">
+  <span class="eyebrow">How it is tested</span>
+  <h2>Every claim on this page has a test behind it</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Layer</th><th>What it checks</th><th class="num">Latest</th></tr></thead>
+    <tbody>
+      <tr><td>Unit tests</td><td>The coordinator, guards, ledger, confirmations, offers, readings, skills</td><td class="num">{{num:unit}}</td></tr>
+      <tr><td>Spoken suite</td><td>A synthetic voice that interrupts, corrects itself and pauses; checks stale actions, duplicates, false claims and latency</td><td class="num">{{num:suite}}</td></tr>
+      <tr><td>Phone, end to end</td><td>The real app on Android 16: Assistant, Drive, arrival offers, skills, a new skill added live, drills</td><td class="num">{{num:e2e}}</td></tr>
+      <tr><td>Resilience</td><td>Behind Maps: a dropped conversation, 5 minutes, 20 s without network; still listening afterwards</td><td class="num">{{num:resilience}}</td></tr>
+      <tr><td>Full-Duplex-Bench v3 (Round 1)</td><td>100 real recordings, official scoring</td><td class="num">Pass@1 0.81</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">One command runs all of it and writes a dated report: <code>python scripts/verify_all.py</code>. The same command runs against the S24 on the night before the demo.</p>
+  <p class="muted">The last full run's one miss: speech recognition heard "Would lowering my brightness help my battery?" as "With lowering, my brightness helped my battery.", and the fast mind turned on adaptive brightness. A mode the user did not name is now never switched on by the fast mind; typed into the app, both sentences go to the cloud mind and nothing changes, and the scenario passes again (2 of 2).</p>
+</section>
+
+<section id="limits">
+  <span class="eyebrow">Known limits and next steps</span>
+  <h2>What it is today, and where it goes</h2>
+  <div class="cards">
+    <div class="card"><h3>Today</h3><p>An Android app plus our edge machine (the laptop's GPU) and the cloud; it needs internet. The free Gemma tier allows about six cloud questions a minute. Care's medicines and Drive's car are simulated and labelled. SmartThings tokens last 24 hours and allow about 10 requests a minute, so DUET reads the home sparingly: a command's own reply updates the panel, and a short limit is waited out.</p></div>
+    <div class="card"><h3>Only the S24 can answer</h3><p>Loudspeaker echo (fallback: Galaxy Buds), Samsung's background rules, which volume DUET's voice uses, and the side-key setting. All are on the checklist for the night of the 20th.</p></div>
+    <div class="card"><h3>Next</h3><p>The coordinator in Kotlin on the phone; Gemma 4 E2B on the phone when its numbers beat the edge machine's; AppFunctions as an executor; physical devices; Hindi and Tamil; guided troubleshooting of the phone.</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>DUET for Galaxy · Team SE7EN, SRM · Samsung PRISM GenAI Hackathon 3.0, Theme 05 · built {{date}}</span>
+  <span>Screens from the Android 16 emulator (AVD duet_a16); every number from the runs in <code>results/</code>.</span>
+</footer>
+</main>
+</div>
+</body>
+</html>
