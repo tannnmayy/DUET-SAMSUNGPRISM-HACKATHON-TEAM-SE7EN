@@ -71,34 +71,64 @@ async def close() -> None:
 DRILL = {"down": False}
 
 
+# SmartThings allows a token about 10 requests a minute per kind of request (X-RateLimit-Limit: 10, measured
+# 18 Oct 2026). A limit that resets within this many seconds is waited out once; a longer one is reported.
+RATE_WAIT_S = 3.0
+
+
+def _reset_s(headers) -> Optional[float]:
+    """Seconds until SmartThings' rate limit resets (X-RateLimit-Reset is in milliseconds)."""
+    for key, scale in (("X-RateLimit-Reset", 1000.0), ("Retry-After", 1.0)):
+        try:
+            return float(headers.get(key)) / scale
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
 async def request(method: str, path: str, body: Any = None, timeout: float = 6.0) -> Any:
     import aiohttp
     if DRILL["down"]:
         raise HomeError(None, "SmartThings cannot be reached (a drill: the home is cut off)")
     headers = {"Authorization": "Bearer " + token(), "Accept": "application/json"}
-    try:
-        async with _session().request(method, API + path, json=body, headers=headers,
-                                      timeout=aiohttp.ClientTimeout(total=timeout)) as r:
-            if r.status == 401:
-                raise HomeError(401, EXPIRED)
-            if r.status == 403:
-                raise HomeError(403, "the SmartThings token is not allowed to do this; make one with every "
-                                     "Devices and Locations box ticked")
-            if r.status >= 400:
-                raise HomeError(r.status, "SmartThings answered %d: %s" % (r.status, (await r.text())[:160]))
-            return await r.json(content_type=None) if r.content_length != 0 else {}
-    except HomeError:
-        raise
-    except asyncio.TimeoutError:
-        raise HomeError(None, "SmartThings did not answer within %.0f s" % timeout)
-    except Exception as exc:  # no network, DNS, TLS
-        raise HomeError(None, "SmartThings cannot be reached: %s" % (str(exc)[:120] or type(exc).__name__))
+    for attempt in (1, 2):
+        try:
+            async with _session().request(method, API + path, json=body, headers=headers,
+                                          timeout=aiohttp.ClientTimeout(total=timeout)) as r:
+                if r.status == 401:
+                    raise HomeError(401, EXPIRED)
+                if r.status == 403:
+                    raise HomeError(403, "the SmartThings token is not allowed to do this; make one with every "
+                                         "Devices and Locations box ticked")
+                if r.status == 429:
+                    # too many requests in the last minute (18 Oct 2026: the spoken suite, 40 scenarios in a
+                    # row): a short wait is waited out once, so a command still goes through
+                    wait = _reset_s(r.headers)
+                    if attempt == 1 and wait is not None and wait <= RATE_WAIT_S:
+                        log.info("SmartThings rate limit: waiting %.1f s", wait)
+                        await asyncio.sleep(wait + 0.1)
+                        continue
+                    raise HomeError(429, "SmartThings is limiting requests right now (too many in the last "
+                                         "minute)%s" % (": try again in %d s" % round(wait) if wait else ""))
+                if r.status >= 400:
+                    raise HomeError(r.status, "SmartThings answered %d: %s" % (r.status, (await r.text())[:160]))
+                return await r.json(content_type=None) if r.content_length != 0 else {}
+        except HomeError:
+            raise
+        except asyncio.TimeoutError:
+            raise HomeError(None, "SmartThings did not answer within %.0f s" % timeout)
+        except Exception as exc:  # no network, DNS, TLS
+            raise HomeError(None, "SmartThings cannot be reached: %s" % (str(exc)[:120] or type(exc).__name__))
+    raise HomeError(429, "SmartThings is limiting requests right now (too many in the last minute)")
 
 
 # --- the home's devices ------------------------------------------------------------------------
 
 _cache: Dict[str, Any] = {"at": 0.0, "location": None, "devices": None, "rooms": {}}
-CACHE_S = 60.0
+# The list of devices changes rarely (a name nobody has fetches it again at once), and SmartThings allows a
+# token about 10 lists a minute: 18 Oct 2026, a fresh list at every conversation start and readiness check
+# ran out, and the arrival offer could not read the home.
+CACHE_S = 600.0
 
 
 async def location_id() -> str:
@@ -143,13 +173,20 @@ ALIASES = {"ac": "ac aircon air conditioner conditioning cooler", "tv": "tv tele
 
 
 async def devices(fresh: bool = False) -> List[Dict[str, Any]]:
-    """The home's devices: [{id, label, room, kind}], cached for a minute."""
+    """The home's devices: [{id, label, room, kind}], cached for ten minutes. When SmartThings limits
+    requests, the last list is used (devices are rarely added mid-conversation)."""
     now = time.monotonic()
     if not fresh and _cache["devices"] is not None and now - _cache["at"] < CACHE_S:
         return _cache["devices"]
     loc = await location_id()
-    raw, rooms = await asyncio.gather(request("GET", "/devices?locationId=" + loc),
-                                      request("GET", "/locations/%s/rooms" % loc))
+    try:
+        raw, rooms = await asyncio.gather(request("GET", "/devices?locationId=" + loc),
+                                          request("GET", "/locations/%s/rooms" % loc))
+    except HomeError as exc:
+        if exc.code == 429 and _cache["devices"] is not None:
+            log.info("SmartThings limits requests: the last list of devices is used")
+            return _cache["devices"]
+        raise
     names = {r["roomId"]: r["name"] for r in rooms.get("items", [])}
     out = [{"id": d["deviceId"], "label": d.get("label") or d.get("name") or "device",
             "room": names.get(d.get("roomId"), ""), "kind": kind_of(d)} for d in raw.get("items", [])]
@@ -356,16 +393,24 @@ async def control_home_device(args: Dict[str, Any], confirm_s: float = 3.0) -> D
         return {"status": "error", "error": "%s: %s" % (device["label"], why), "can": CAN.get(device["kind"], [])}
     try:
         await request("POST", "/devices/%s/commands" % device["id"], {"commands": commands})
-        deadline = time.monotonic() + confirm_s
-        st: Dict[str, Any] = {}
+    except HomeError as exc:
+        return _fail(exc, device=device["label"])
+    deadline = time.monotonic() + confirm_s
+    st: Dict[str, Any] = {}
+    # read back with growing pauses: a device usually reports at the first or second look, and every look
+    # counts against SmartThings' ~10 requests a minute (every 0.25 s for 3 s could be 12 looks)
+    pauses = iter((0.3, 0.5, 0.8, 1.2))
+    try:
         while True:
             st = await status(device["id"])
             if _reached(st, want) or time.monotonic() >= deadline:
                 break
-            await asyncio.sleep(0.25)
+            await asyncio.sleep(min(next(pauses, 1.2), max(0.05, deadline - time.monotonic())))
     except HomeError as exc:
-        return _fail(exc, device=device["label"])
-    now = describe(device["kind"], st)
+        # the command went out, and only the read-back failed: sent, not confirmed (never "failed", and
+        # never "done")
+        log.warning("SmartThings read-back of %s failed: %s", device["label"], exc)
+    now = describe(device["kind"], st) if st else "unknown"
     if not _reached(st, want):
         return {"status": "sent", "device": device["label"], "now": now, "source": "SmartThings",
                 "note": "SmartThings accepted the command, but the device has not confirmed the change yet",
@@ -376,9 +421,9 @@ async def control_home_device(args: Dict[str, Any], confirm_s: float = 3.0) -> D
 TOOLS = {"get_home_status": get_home_status, "control_home_device": control_home_device}
 
 
-async def snapshot() -> List[Dict[str, Any]]:
-    """Every device and its state, for the phone's home panel."""
-    items = await devices()
+async def snapshot(kinds: Optional[set] = None) -> List[Dict[str, Any]]:
+    """Every device and its state, for the phone's home panel; only these kinds of device, when given."""
+    items = [d for d in await devices() if kinds is None or d["kind"] in kinds]
     states = await asyncio.gather(*(status(d["id"]) for d in items))
     out = []
     for d, st in zip(items, states):
@@ -408,7 +453,7 @@ async def check() -> Dict[str, Any]:
     if not token():
         return {"ok": False, "why": "no SmartThings token: the home is simulated"}
     try:
-        items = await devices(fresh=True)
+        items = await devices()      # the cached list when it is recent: a check must not spend the home's quota
     except HomeError as exc:
         return {"ok": False, "why": str(exc)}
     return {"ok": True, "devices": len(items), "location": _cache["location"]}

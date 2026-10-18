@@ -109,8 +109,13 @@ async def create(loc):
         print("  device created: %s (%s)" % (s["label"], d["deviceId"]))
 
 
+_HAVE: dict = {}   # the devices by label, looked up once per run: SmartThings allows about 10 lists a minute
+
+
 async def reset(loc):
-    have = await by_label(loc)
+    if not _HAVE.get(loc):
+        _HAVE[loc] = await by_label(loc)
+    have = _HAVE[loc]
     for s in demo_devices():
         d = have.get(s["label"])
         if d is None:

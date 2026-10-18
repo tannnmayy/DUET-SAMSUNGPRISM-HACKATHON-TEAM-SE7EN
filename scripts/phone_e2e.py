@@ -241,11 +241,9 @@ HOME_LIVE = {"ok": False}   # SmartThings answers (else DUET and these checks us
 
 async def home_state(device: str) -> str:
     if HOME_LIVE["ok"]:
-        st._cache.update(devices=None)
-        for d in await st.snapshot():
-            if d["name"] == device:
-                return d["state"]
-        return ""
+        # that one device (SmartThings allows about 10 requests a minute; the whole home is seven)
+        d = next((d for d in await st.devices() if d["label"] == device), None)
+        return st.describe(d["kind"], await st.status(d["id"])) if d else ""
     # the app's simulated home, as DuetPhone describes it ("on, 22°C cool")
     return await cdp_eval("(() => { const d = DuetPhone.state.home.find((x) => x.name === %s); "
                           "return d ? DuetPhone.describe(d) : ''; })()" % json.dumps(device)) or ""

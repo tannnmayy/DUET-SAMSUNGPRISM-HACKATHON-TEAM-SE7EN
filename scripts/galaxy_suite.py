@@ -70,6 +70,14 @@ def scenario(name: str, mode: str, lines: List[Tuple[str, float]], **expect) -> 
     S[name] = {"mode": mode, "lines": lines, "expect": expect}
 
 
+def uses_home(sc: dict) -> bool:
+    """Does a scenario touch the SmartThings home? Only those start from a reset home: SmartThings allows
+    about 10 requests a minute, and a reset before every scenario spent it (18 Oct 2026: 429s)."""
+    text = (repr(sc["lines"]) + repr(sc["expect"])).lower()
+    return any(w in text for w in ("home_device", "home_status", "#event:near", " ac ", " a.c.", "light", "door",
+                                   "lock", "washer", "vacuum", " tv"))
+
+
 # Assistant: alarms and timers
 scenario("alarm", "assistant", [
     ("@Set an alarm for 3:30.", 0.4),
@@ -653,7 +661,7 @@ async def main() -> int:
             print("\n=== %s (run %d of %d)" % (name, rep + 1, args.repeat), flush=True)
             run = None
             for attempt in (1, 2):
-                if home_loc:
+                if home_loc and uses_home(sc):
                     try:
                         await reset(home_loc)
                     except st.HomeError as exc:

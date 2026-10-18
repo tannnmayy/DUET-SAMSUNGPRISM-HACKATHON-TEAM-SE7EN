@@ -225,6 +225,56 @@ def clock_times(text: str) -> set:
     return found
 
 
+# a clause that says an action happened ("The AC is on", "I've set the alarm", "turned it off")
+_SAYS_DONE = re.compile(
+    r"\b(is|are|'s|was|were)\s+(now\s+)?(on|off|set|locked|unlocked|running|started|playing|sent|cooling)\b|"
+    r"\b(i'?ve|i have|i)\s+(set|turned|switched|started|sent|locked|unlocked|played|called|changed|put|opened)\b|"
+    r"\b(turned|switched)\s+(it\s+|them\s+)?(on|off)\b|\bset (to|at|for) \d", re.I)
+_NEGATED = re.compile(r"\b(not|cannot|unable|failed|no longer|may not|might not)\b|n't\b", re.I)
+# the words that name what a failed action was about, beyond its device (a tool's own noun)
+_TOOL_WORDS = {"set_alarm": "alarm", "cancel_alarm": "alarm", "set_timer": "timer", "send_message": "message text",
+               "call_contact": "call calling", "set_torch": "torch flashlight", "set_car_climate": "car",
+               "set_volume": "volume", "set_brightness": "brightness", "control_media": "music song"}
+
+
+def _about(tool: str, args: Dict[str, Any]) -> set:
+    if tool == "control_home_device":
+        from .smartthings import ALIASES
+        name = set(re.findall(r"[a-z]+", str((args or {}).get("device", "")).lower()))
+        kinds = [a.split() for a in ALIASES.values() if name & set(a.split())]
+        return set().union(*kinds) if kinds else (name - {"the", "room", "living", "bedroom", "kitchen"})
+    return set(_TOOL_WORDS.get(tool, "").split())
+
+
+def drop_failed_claims(answer: str, failed: List[tuple], confirmations: List[str]) -> str:
+    """The answer without a clause that says a failed action happened. 18 Oct 2026: SmartThings refused
+    the AC command (too many requests) and the cloud mind said "The AC is on, but I can't reach your smart
+    home devices right now"; what is spoken is "I can't reach your smart home devices right now." A
+    clause about something that was confirmed in this reply after all (a retry that worked) is kept."""
+    if not failed or not (answer or "").strip():
+        return answer
+    said = " ".join(confirmations or []).lower()
+    words = set()
+    for tool, args in failed:
+        about = _about(tool, args)
+        if about and not any(re.search(r"\b%s\b" % re.escape(w), said) for w in about):
+            words |= about
+    if not words:
+        return answer
+    out = []
+    for sentence in re.split(r"(?<=[.!?])\s+", answer.strip()):
+        clauses = re.split(r",?\s+but\s+|;\s*", sentence)
+        kept = [c for c in clauses if not (_SAYS_DONE.search(c) and not _NEGATED.search(c)
+                                           and set(re.findall(r"[a-z]+", c.lower())) & words)]
+        if len(kept) == len(clauses):
+            out.append(sentence)
+        elif kept:
+            text = " ".join(kept)
+            text = text[0].upper() + text[1:]
+            out.append(text if re.search(r"[.!?]$", text) else text + ".")
+    return " ".join(out)
+
+
 def drop_overclaims(answer: str, confirmations: List[str]) -> str:
     """The answer without the sentences that claim more than the phone reported, or contradict it:
     - a message "sent" that only waits for the user's tap, a call "ringing" in a dialer nobody tapped;

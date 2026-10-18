@@ -67,7 +67,7 @@ from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
 from . import fast, proactive, smartthings  # noqa: E402
-from .confirm import adds_nothing, drop_overclaims  # noqa: E402
+from .confirm import adds_nothing, drop_failed_claims, drop_overclaims  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, cut_off, rpc_sender  # noqa: E402
@@ -313,12 +313,14 @@ class GalaxyAgent(base.DuetAgent):
         - drop a leading "OK." and a closing filler sentence ("Let me know if you need anything
           else."), which models add however often they are told not to;
         - drop a sentence that claims more than the phone reported ("I've sent it" after "ready; tap send");
+        - drop a clause that says a failed action happened ("The AC is on, but I can't reach your home");
         - drop an answer that only repeats what was already confirmed aloud in this reply."""
         text = re.sub(r"^\s*(ok(ay)?|alright)[.,!]\s*", "", " ".join((words or "").split()), flags=re.I)
         parts = [p for p in re.split(r"(?<=[.!?])\s+", text) if p]
         while len(parts) > 1 and FILLER.match(parts[-1]):
             parts.pop()
-        text = drop_overclaims(" ".join(parts), self._confirmed_now)
+        text = drop_failed_claims(" ".join(parts), getattr(self._toolbox, "failed_calls", []), self._confirmed_now)
+        text = drop_overclaims(text, self._confirmed_now)
         if adds_nothing(text, self._confirmed_now):
             return ""
         return text
@@ -449,18 +451,31 @@ async def entrypoint(ctx: JobContext) -> None:
             log.warning("SmartThings unavailable, using the app's simulated home: %s", home["why"])
     trace("home", source="SmartThings" if home["live"] else "simulated", why=home["why"])
 
+    home_view: Dict[str, Dict[str, Any]] = {}   # the phone's home panel: device name -> its state
+
     async def publish_home() -> None:
-        """The home's devices as they are now, for the phone's home panel."""
+        """The home's devices as they are now, for the phone's home panel (read once, at the start)."""
         try:
-            publish({"kind": "home", "source": "SmartThings", "devices": await smartthings.snapshot()})
+            for d in await smartthings.snapshot():
+                home_view[d["name"]] = d
+            publish({"kind": "home", "source": "SmartThings", "devices": list(home_view.values())})
         except Exception as exc:
             publish({"kind": "home", "source": "SmartThings", "error": str(exc)[:160]})
 
+    def home_changed(result: Any) -> None:
+        """A command's own reply says the device's new state ("on, 22°C cool"): the panel is updated from
+        it, with no request. 18 Oct 2026: re-reading the whole home after every action (seven requests)
+        ran out SmartThings' ~10 requests a minute."""
+        if not isinstance(result, dict) or result.get("device") not in home_view or not result.get("now"):
+            return
+        now = str(result["now"])
+        home_view[result["device"]].update(state=now, on=now.startswith(("on", "unlocked", "cleaning", "running")))
+        publish({"kind": "home", "source": "SmartThings", "devices": list(home_view.values())})
+
     def emit(msg: Dict[str, Any]) -> None:
         publish(msg)
-        if home["live"] and msg.get("kind") in ("tool_done", "tool_failed", "tool_unknown") \
-                and msg.get("tool") in smartthings.TOOLS:
-            asyncio.ensure_future(publish_home())
+        if home["live"] and msg.get("kind") == "tool_done" and msg.get("tool") == "control_home_device":
+            home_changed(msg.get("result"))
         if msg.get("kind") == "tool_done":
             taken = agent.offers.done(str(msg.get("tool")), msg.get("args") or {})
             if taken is not None:
@@ -576,7 +591,8 @@ async def entrypoint(ctx: JobContext) -> None:
 
         async def home_now() -> list:
             if home["live"]:
-                return await smartthings.snapshot()
+                # only what an arrival offer can offer: every read counts against SmartThings' limit
+                return await smartthings.snapshot(kinds={"ac", "light"})
             reply = json.loads(await rpc_send("get_home_status", {}, 8.0))
             return proactive.devices_from_phone(reply.get("devices") or [])
 
@@ -596,13 +612,16 @@ async def entrypoint(ctx: JobContext) -> None:
         await speak_first(proactive.arrival_offer(minutes, devices, outside, dt.datetime.now().hour))
 
     async def watch_home() -> None:
-        """What the home reports by itself: a washer that has finished gets an offer (Assistant mode)."""
+        """What the home reports by itself: a washer that has finished gets an offer (Assistant mode). Only
+        the washer is asked: SmartThings allows about 10 requests a minute, and a whole-home check every
+        10 s (18 Oct 2026) left too few for the user's own commands and their read-backs."""
         last: Dict[str, str] = {}
         while ctx.room.isconnected():
             try:
-                for d in await smartthings.snapshot():
-                    was, last[d["name"]] = last.get(d["name"]), d["state"]
-                    if d["kind"] == "washer" and was and was.startswith("running") and d["state"] == "finished":
+                for d in [d for d in await smartthings.devices() if d["kind"] == "washer"]:
+                    state = smartthings.describe("washer", await smartthings.status(d["id"]))
+                    was, last[d["label"]] = last.get(d["label"]), state
+                    if was and was.startswith("running") and state == "finished":
                         asyncio.ensure_future(speak_first(proactive.washer_offer()))
             except Exception as exc:  # the home's news is a bonus; never let it break the conversation
                 log.debug("home check: %s", exc)

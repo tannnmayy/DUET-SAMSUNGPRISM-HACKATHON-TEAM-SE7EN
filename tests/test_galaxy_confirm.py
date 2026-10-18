@@ -349,3 +349,23 @@ def test_each_action_is_read_back_from_its_own_event():
     assert [galaxy_agent.GalaxyAgent.confirm(me, e) for e in (ac, on)] == [ac.text, light]
     # a call that failed never borrows another call's read-back
     assert galaxy_agent.GalaxyAgent.confirm(me, ThinkEvent("tool_done", name="control_home_device", outcome="error")) == ""
+
+
+def test_a_failed_action_is_never_said_to_have_happened():
+    """18 Oct 2026: SmartThings refused the AC (too many requests); the cloud mind said "The AC is on, but I
+    can't reach your smart home devices right now"."""
+    from duet_voice.galaxy.confirm import drop_failed_claims
+    ac = [("control_home_device", {"device": "AC", "action": "turn_on"})]
+    said = "The AC is on, but I can't reach your smart home devices right now."
+    assert drop_failed_claims(said, ac, []) == "I can't reach your smart home devices right now."
+    assert drop_failed_claims("I've turned on the air conditioner.", ac, []) == ""
+    # an honest sentence, another device, or no failure: untouched
+    assert drop_failed_claims("I couldn't turn on the AC; the home isn't answering.", ac, []) == \
+        "I couldn't turn on the AC; the home isn't answering."
+    assert drop_failed_claims("The bedroom light is on, but the AC didn't respond.", ac, []) == \
+        "The bedroom light is on, but the AC didn't respond."
+    assert drop_failed_claims(said, [], []) == said
+    # it failed, then a retry worked and was confirmed: the claim is true
+    assert drop_failed_claims("The AC is on now.", ac, ["The air conditioner is now on."]) == "The AC is on now."
+    alarm = [("set_alarm", {"time": "07:00"})]
+    assert drop_failed_claims("Your alarm is set for 7. Anything else?", alarm, []) == "Anything else?"

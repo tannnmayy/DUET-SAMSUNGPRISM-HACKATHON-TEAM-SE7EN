@@ -187,3 +187,101 @@ def test_the_home_is_simulated_without_a_token(monkeypatch):
     assert not st.enabled()
     monkeypatch.setenv("DUET_HOME", "smartthings")
     assert st.enabled()
+
+
+class Counting(FakeSmartThings):
+    """Counts status reads; can refuse them with SmartThings' 429 after the command went out."""
+
+    def __init__(self, refuse_reads=False, **kw):
+        super().__init__(**kw)
+        self.reads, self.refuse_reads = 0, refuse_reads
+
+    async def __call__(self, method, path, body=None, timeout=6.0):
+        if path.endswith("/status"):
+            self.reads += 1
+            if self.refuse_reads:
+                raise st.HomeError(429, "SmartThings is limiting requests right now (too many in the last minute)")
+        return await super().__call__(method, path, body, timeout)
+
+
+def test_a_slow_device_is_read_back_a_few_times_not_every_quarter_second(monkeypatch):
+    """SmartThings allows about 10 requests a minute (18 Oct 2026): a read-back every 0.25 s for 3 s could
+    spend 12 of them on one command."""
+    f = Counting(applies=False)
+    monkeypatch.setattr(st, "request", f)
+    monkeypatch.setenv("SMARTTHINGS_TOKEN", "test-token")
+    st._cache.update(at=0.0, location=None, devices=None)
+    r = run(st.control_home_device({"device": "TV", "action": "turn_on"}, confirm_s=3.0))
+    assert r["status"] == "sent" and f.reads <= 6
+
+
+def test_a_command_whose_read_back_is_refused_is_sent_not_failed(monkeypatch):
+    f = Counting(refuse_reads=True)
+    monkeypatch.setattr(st, "request", f)
+    monkeypatch.setenv("SMARTTHINGS_TOKEN", "test-token")
+    st._cache.update(at=0.0, location=None, devices=None)
+    r = run(st.control_home_device({"device": "AC", "action": "turn_on"}))
+    assert r["status"] == "sent" and "not confirmed" in r["note"] and len(f.sent) == 1
+
+
+class Response:
+    def __init__(self, status, headers=None, body="{}"):
+        self.status, self.headers, self._body = status, headers or {}, body
+        self.content_length = len(body)
+
+    async def text(self):
+        return self._body
+
+    async def json(self, content_type=None):
+        import json
+        return json.loads(self._body)
+
+
+class Session:
+    """aiohttp's session as request() uses it, answering from a list."""
+
+    def __init__(self, answers):
+        self.answers, self.calls = list(answers), 0
+
+    def request(self, method, url, **kw):
+        session = self
+
+        class Ctx:
+            async def __aenter__(self):
+                session.calls += 1
+                return session.answers.pop(0)
+
+            async def __aexit__(self, *exc):
+                return False
+        return Ctx()
+
+
+def test_too_many_requests_is_waited_out_once_when_the_wait_is_short(monkeypatch):
+    monkeypatch.setenv("SMARTTHINGS_TOKEN", "test-token")
+    s = Session([Response(429, {"X-RateLimit-Reset": "200"}), Response(200, body='{"ok": 1}')])
+    monkeypatch.setattr(st, "_session", lambda: s)
+    assert run(st.request("GET", "/devices")) == {"ok": 1} and s.calls == 2
+    # a long wait is not waited: an honest error, with how long
+    s = Session([Response(429, {"X-RateLimit-Reset": "31207"})])
+    monkeypatch.setattr(st, "_session", lambda: s)
+    with pytest.raises(st.HomeError) as err:
+        run(st.request("GET", "/devices"))
+    assert err.value.code == 429 and "try again in 31 s" in str(err.value) and s.calls == 1
+
+
+def test_the_device_list_is_kept_and_a_limited_refresh_uses_the_last_one(fake):
+    f = fake()
+    first = run(st.devices())
+    calls = []
+
+    async def limited(method, path, body=None, timeout=6.0):
+        calls.append(path)
+        raise st.HomeError(429, "SmartThings is limiting requests right now (too many in the last minute)")
+    import pytest as _p
+    mp = _p.MonkeyPatch()
+    mp.setattr(st, "request", limited)
+    try:
+        assert run(st.check())["ok"] and calls == []                   # a recent list: no request at all
+        assert run(st.devices(fresh=True)) == first and calls          # limited: the last list
+    finally:
+        mp.undo()

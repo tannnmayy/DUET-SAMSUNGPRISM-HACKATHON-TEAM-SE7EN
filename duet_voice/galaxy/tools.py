@@ -149,6 +149,8 @@ class PhoneToolbox:
         # the actions of this request the phone refused or failed, as (tool, "needs_permission" or "error"):
         # if the model then says nothing, the agent says so itself
         self.failed: List[tuple] = []
+        # the same, as (tool, args): what the answer must not say happened
+        self.failed_calls: List[tuple] = []
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -160,6 +162,7 @@ class PhoneToolbox:
         self.asked = set()
         self.unfinished = None
         self.failed = []
+        self.failed_calls = []
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
@@ -297,9 +300,11 @@ class PhoneToolbox:
             result = json.loads(reply)
             self.failed.append((tool, "needs_permission" if isinstance(result, dict) and
                                 result.get("status") == "needs_permission" else "error"))
+            self.failed_calls.append((tool, args))
             self.emit({"kind": "tool_failed", "tool": tool, "args": args, "result": result})
             return reply
         self.failed.append((tool, "error"))
+        self.failed_calls.append((tool, args))
         self.emit({"kind": "tool_failed", "tool": tool, "args": args, "error": record.error})
         return json.dumps({"status": "error", "error": record.error, "instruction":
                            "tell the user this step failed and what they can do next"})
