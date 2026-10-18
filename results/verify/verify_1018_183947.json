@@ -1,0 +1,109 @@
+{
+ "device": "emulator",
+ "quick": false,
+ "verdict": "1 of 12 steps failed",
+ "steps": [
+  {
+   "step": "unit tests",
+   "result": "PASS",
+   "detail": "174 passed",
+   "seconds": 45
+  },
+  {
+   "step": "stack (/api/health)",
+   "result": "PASS",
+   "detail": "fast_mind ok, cloud_mind ok, livekit ok",
+   "seconds": 2
+  },
+  {
+   "step": "SmartThings home",
+   "result": "NOTE",
+   "detail": "the SmartThings token was refused; tokens last 24 hours, so make a new one at account.smar",
+   "seconds": 0
+  },
+  {
+   "step": "spoken suite",
+   "result": "FAIL",
+   "detail": "38/39 runs \u00b7 stale 0 \u00b7 duplicates 0 \u00b7 model errors 1 \u00b7 failed: timer_fix",
+   "seconds": 1181,
+   "folder": "results\\galaxy\\suite\\verify_1018_183947"
+  },
+  {
+   "step": "phone: install and self-test",
+   "result": "PASS",
+   "detail": "14 of 14 on this phone in 1.4 s",
+   "seconds": 10
+  },
+  {
+   "step": "phone: end to end (assistant)",
+   "result": "PASS",
+   "detail": "19 of 19 cases",
+   "seconds": 217
+  },
+  {
+   "step": "phone: end to end (drive)",
+   "result": "PASS",
+   "detail": "6 of 6 cases",
+   "seconds": 87
+  },
+  {
+   "step": "phone: end to end (arrival)",
+   "result": "PASS",
+   "detail": "5 of 5 cases",
+   "seconds": 79
+  },
+  {
+   "step": "phone: end to end (washer)",
+   "result": "PASS",
+   "detail": "0 of 0 cases",
+   "seconds": 1
+  },
+  {
+   "step": "phone: end to end (skills)",
+   "result": "PASS",
+   "detail": "7 of 7 cases",
+   "seconds": 82
+  },
+  {
+   "step": "phone: end to end (newskill)",
+   "result": "PASS",
+   "detail": "2 of 2 cases",
+   "seconds": 38
+  },
+  {
+   "step": "phone: end to end (drills)",
+   "result": "PASS",
+   "detail": "7 of 7 cases",
+   "seconds": 104
+  },
+  {
+   "step": "phone: resilience behind Maps",
+   "result": "PASS",
+   "detail": "3 of 3",
+   "seconds": 433
+  },
+  {
+   "step": "demo-day preflight",
+   "result": "NOTE",
+   "detail": "red: SmartThings home, Do Not Disturb, media volume on the loudspeaker, call volume on the loudspeaker, demo contacts",
+   "seconds": 6
+  }
+ ],
+ "latency_s": {
+  "ack": {
+   "p50": 0.95,
+   "p90": 1.37,
+   "n": 49
+  },
+  "action": {
+   "p50": 2.51,
+   "p90": 3.75,
+   "n": 41
+  },
+  "answer": {
+   "p50": 3.88,
+   "p90": 6.4,
+   "n": 49
+  }
+ }
+}

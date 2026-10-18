@@ -39,7 +39,7 @@ def token(query) -> dict:
     mode = query.get("mode", "assistant")
     mode = mode if mode in MODES else "assistant"
     room = "duet-%s-%s" % (mode, secrets.token_hex(3))
-    meta = {"mode": mode, "user_name": _clip(query.get("name"), 40),
+    meta = {"mode": mode, "user_name": _clip(query.get("name"), 40), "city": _clip(query.get("city"), 60),
             "device": _clip(query.get("device"), 80), "contacts": _clip(query.get("contacts"), 300)}
     identity = "galaxy-" + secrets.token_hex(3)
     jwt = (api.AccessToken(key, secret)
@@ -67,6 +67,58 @@ async def handle_token(request):
     return web.json_response(token(request.query))
 
 
+_health: dict = {"at": 0.0, "out": None}
+
+
+async def health() -> dict:
+    """Is everything DUET needs up? The phone shows it before a conversation starts (cached 20 s)."""
+    import asyncio
+    import time
+    import aiohttp
+    if _health["out"] is not None and time.monotonic() - _health["at"] < 20:
+        return _health["out"]
+    from . import smartthings
+    from .. import gemma_api
+
+    async def fast_mind():
+        if os.environ.get("DUET_FAST", "0") != "1":
+            return {"ok": None, "why": "not running (cloud mind only)"}
+        url = os.environ.get("DUET_FAST_BASE_URL", "http://127.0.0.1:18002/v1").rstrip("/") + "/models"
+        try:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=3)) as s:
+                async with s.get(url) as r:
+                    return {"ok": r.status == 200, "why": "" if r.status == 200 else "answered %d" % r.status}
+        except Exception as exc:
+            return {"ok": False, "why": "not answering (%s)" % type(exc).__name__}
+
+    async def cloud_mind():
+        if not gemma_api.api_keys():
+            return {"ok": False, "why": "no Google API key"}
+        try:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4)) as s:
+                async with s.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
+                                 headers={"x-goog-api-key": gemma_api.api_keys()[0]}) as r:
+                    return {"ok": r.status == 200, "why": "" if r.status == 200 else "Google answered %d" % r.status}
+        except Exception as exc:
+            return {"ok": False, "why": "cannot reach Google (%s)" % type(exc).__name__}
+
+    async def home():
+        if not smartthings.enabled():
+            return {"ok": None, "why": "simulated in the app"}
+        out = await smartthings.check()
+        return {"ok": out.get("ok"), "why": out.get("why", ""), "devices": out.get("devices")}
+
+    f, c, h = await asyncio.gather(fast_mind(), cloud_mind(), home())
+    out = {"fast_mind": f, "cloud_mind": c, "smartthings": h,
+           "livekit": {"ok": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"))}}
+    _health.update(at=time.monotonic(), out=out)
+    return out
+
+
+async def handle_health(request):
+    return web.json_response(await health())
+
+
 async def handle_index(request):
     return web.FileResponse(os.path.join(WWW, "index.html"))
 
@@ -90,9 +142,11 @@ def lan_addresses() -> list:
 
 def main() -> None:
     load_dotenv(os.path.join(ROOT, ".env.livekit"))
+    load_dotenv(os.path.join(ROOT, ".env.local"))   # the Google keys and the SmartThings token, for /api/health
     port = int(os.environ.get("DUET_APP_PORT", "8787"))
     app = web.Application(middlewares=[cors])
     app.router.add_get("/api/token", handle_token)
+    app.router.add_get("/api/health", handle_health)
     app.router.add_get("/", handle_index)
     app.router.add_static("/", WWW)
     print("DUET for Galaxy: token server and web app on port %d" % port, flush=True)

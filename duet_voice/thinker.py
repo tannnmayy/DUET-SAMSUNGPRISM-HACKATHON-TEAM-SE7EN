@@ -60,6 +60,14 @@ class ThinkEvent:
     usage: Dict[str, int] = field(default_factory=dict)
 
 
+def said_of(parsed: Any) -> str:
+    """The confirmation the toolbox already gave for a call (the phone app's "already_said_to_user"), carried
+    on its tool_done event: the thinker runs ahead of the voice, so by the time one action's event is spoken
+    the next action may have run (18 Oct 2026: "Yes, make it 22" ran the AC and the light, and only the
+    light was read back)."""
+    return str(parsed.get("already_said_to_user") or "") if isinstance(parsed, dict) else ""
+
+
 def usage_of(resp) -> Dict[str, int]:
     """Token counts of one response, for the cost analysis. Audio input is
     counted separately because it is billed at a higher rate than text."""
@@ -221,7 +229,7 @@ class Thinker:
                     # and asking the model to continue it would only waste a call
                     raise Superseded()
                 parsed = json.loads(out)
-                yield ThinkEvent("tool_done", name=fc.name, args=args,
+                yield ThinkEvent("tool_done", name=fc.name, args=args, text=said_of(parsed),
                                  outcome=str(parsed.get("status", "ok")) if isinstance(parsed, dict) else "ok")
                 responses.append(types.Part.from_function_response(name=fc.name, response={"result": parsed}))
             contents.append(types.Content(role="user", parts=responses))

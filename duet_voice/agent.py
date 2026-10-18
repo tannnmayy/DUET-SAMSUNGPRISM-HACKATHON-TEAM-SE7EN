@@ -162,6 +162,7 @@ class DuetAgent(Agent):
         # must not mark the request answered.
         self._consumed = 0
         self._pending_consumed: Optional[int] = None
+        self._confirmed_now: List[str] = []   # confirmations spoken in the reply being made
 
     # ears: keep a copy of the audio for the thinker, pass it on to STT unchanged
     async def stt_node(self, audio: AsyncIterable[rtc.AudioFrame], model_settings: ModelSettings):
@@ -204,6 +205,37 @@ class DuetAgent(Agent):
         """Extra context for the thinker on this turn; none for the benchmark. The phone
         app adds the time and what the user heard of an answer they interrupted."""
         return ""
+
+    def confirm(self, ev: Any) -> str:
+        """Words to speak the moment an action is done; none for the benchmark (its answer
+        comes from the thinker). The phone app confirms phone actions from the phone's reply."""
+        return ""
+
+    def progress_allowed(self, lines_so_far: int, confirmed: List[str]) -> bool:
+        """May another "Still working on it." be said? The benchmark: every few seconds."""
+        return True
+
+    def error_line(self, confirmed: List[str], why: str = "") -> str:
+        """What to say when the thinker fails. `confirmed`: what was already confirmed in this
+        reply (always empty for the benchmark); `why`: the failure."""
+        return "Sorry, something went wrong on my side. Could you say that once more?"
+
+    def silent_fallback(self, confirmed: List[str]) -> str:
+        """What to say when the thinker's reply is empty or <silent>. The benchmark: nothing."""
+        return ""
+
+    def silent_answers(self, confirmed: List[str]) -> bool:
+        """Does a <silent> reply close the request? The benchmark: always (it is noise)."""
+        return True
+
+    def error_answers(self, why: str) -> bool:
+        """Is the error line a final answer that closes the request (rather than asking the user to say
+        it again, which keeps it open)? Never for the benchmark."""
+        return False
+
+    def ack_line(self) -> str:
+        """The fixed line that covers the wait; the benchmark's is always "One moment."."""
+        return FALLBACK_ACK
 
     def _user_messages(self, chat_ctx: llm.ChatContext) -> List[str]:
         return [item.text_content.strip() for item in chat_ctx.items
@@ -292,7 +324,11 @@ class DuetAgent(Agent):
         graced = False  # the talker was asked to cover a slow thinker (traced once)
         listening = False
         decided_tools: Optional[bool] = None
+        cover_now = False   # the request went to a slower mind (the phone app's two speeds): cover it now
         last_speech = started
+        progress_lines = 0
+        confirmed: List[str] = []   # actions confirmed aloud in this reply (the phone app)
+        self._confirmed_now = confirmed
 
         async def speak_ack(wait_s: float) -> Optional[str]:
             try:
@@ -304,7 +340,7 @@ class DuetAgent(Agent):
         try:
             while True:
                 if not spoke and decided_tools is None and not listening:
-                    timeout = max(0.05, ACK_GRACE_S - (time.time() - started))
+                    timeout = 0.0 if cover_now else max(0.05, ACK_GRACE_S - (time.time() - started))
                 elif decided_tools and not spoke:
                     timeout = 0.0
                 else:
@@ -317,7 +353,7 @@ class DuetAgent(Agent):
                     if not spoke and decided_tools:
                         ack = await speak_ack(0.6)
                         fallback = not ack
-                        ack = ack or FALLBACK_ACK
+                        ack = ack or self.ack_line()
                         self._trace("talker", text=ack, reason="tools", fallback=fallback)
                         if ack:
                             yield ack + " "
@@ -332,7 +368,7 @@ class DuetAgent(Agent):
                             ack = await speak_ack(0.3)
                             # with no talker model, the fixed line covers the wait
                             fallback = not ack and not CONFIG.talker_enabled
-                            ack = FALLBACK_ACK if fallback else ack
+                            ack = self.ack_line() if fallback else ack
                             if ack or not graced:
                                 self._trace("talker", text=ack, reason="grace", fallback=fallback)
                             graced = True
@@ -340,10 +376,12 @@ class DuetAgent(Agent):
                                 yield ack + " "
                                 yield FlushSentinel()
                                 spoke, last_speech = True, time.time()
-                    elif spoke and decided_tools and time.time() - last_speech >= PROGRESS_AFTER_S:
+                    elif spoke and decided_tools and time.time() - last_speech >= PROGRESS_AFTER_S \
+                            and self.progress_allowed(progress_lines, confirmed):
                         yield "Still working on it. "
                         yield FlushSentinel()
                         last_speech = time.time()
+                        progress_lines += 1
                     continue
                 if ev is None:
                     break
@@ -352,6 +390,11 @@ class DuetAgent(Agent):
                     self._trace("listen_done", quiet_s=round(self._quiet_for(), 2))
                     continue
                 kind = ev.kind
+                if kind == "route":
+                    # only the phone app's two speeds send this: the request went to the cloud mind,
+                    # so the wait is seconds and is covered at once rather than after the grace
+                    cover_now = ev.text == "cloud"
+                    continue
                 if kind == "listen":
                     listening = True
                     self._trace("thinker_listen", reason=ev.text, after_s=round(time.time() - started, 2),
@@ -365,20 +408,43 @@ class DuetAgent(Agent):
                     self._trace("tool_start", name=ev.name, args=ev.args)
                 elif kind == "tool_done":
                     self._trace("tool_done", name=ev.name, args=ev.args, outcome=ev.outcome)
+                    done = self.confirm(ev)
+                    if done:
+                        self._trace("confirmed", text=done)
+                        confirmed.append(done)
+                        yield done + " "
+                        yield FlushSentinel()
+                        spoke, last_speech = True, time.time()
                 elif kind == "error":
                     self._trace("thinker_error", text=ev.text)
-                    yield "Sorry, something went wrong on my side. Could you say that once more?"
-                    spoke = True
+                    if confirmed or self.error_answers(ev.text or ""):
+                        # The action ran and was confirmed aloud, and only the wording of the answer
+                        # failed (asking for it again would invite a repeat); or the line is itself
+                        # the answer ("I can't reach my cloud mind"). Either way the request is answered,
+                        # and must not be read again with the user's next words.
+                        self._pending_consumed = answered_upto
+                    line = self.error_line(confirmed, ev.text or "")
+                    if line:
+                        yield line
+                        spoke = True
                 elif kind == "say":
                     # spoken, not displayed: markdown symbols would be read aloud
                     words = self.polish(re.sub(r"[*#`]+", "", ev.text or "").replace("_", " ").strip())
                     self._trace("thinker_say", text=words, after_s=round(time.time() - started, 2),
                                 usage=getattr(ev, "usage", {}), model=self._thinker.model)
-                    # the thinker finished: this request is answered once the reply lands
-                    self._pending_consumed = answered_upto
+                    # the thinker finished: this request is answered once the reply lands (a silent
+                    # reply too, unless the agent keeps it open for the user's next words)
+                    if "<silent>" not in words or self.silent_answers(confirmed):
+                        self._pending_consumed = answered_upto
                     if words and "<silent>" not in words:
                         yield words
                         spoke = True
+                    else:
+                        line = self.silent_fallback(confirmed)
+                        if line:
+                            self._trace("silent_fallback", text=line)
+                            yield line
+                            spoke = True
         finally:
             worker.cancel()
             if not ack_task.done():

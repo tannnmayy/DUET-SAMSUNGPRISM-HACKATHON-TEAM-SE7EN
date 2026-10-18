@@ -17,14 +17,29 @@
   $("set-name").value = S.name || "";
   $("set-contacts").value = S.contacts;
   $("set-direct").checked = !!S.direct;
+  $("set-city").value = S.city || "";
+  $("set-simulate").checked = !!S.simulate;
+  $("set-alarms").value = S.alarms === "clock" ? "clock" : "duet";
   writeSettings(S);
   for (const [id, key, prop] of [["set-server", "server", "value"], ["set-name", "name", "value"],
-    ["set-contacts", "contacts", "value"], ["set-direct", "direct", "checked"]]) {
+    ["set-contacts", "contacts", "value"], ["set-direct", "direct", "checked"], ["set-city", "city", "value"],
+    ["set-simulate", "simulate", "checked"], ["set-alarms", "alarms", "value"]]) {
     $(id).addEventListener("change", () => { S[key] = $(id)[prop]; writeSettings(S); });
   }
   const servedHere = !P.NATIVE && /^https?:$/.test(location.protocol);
   if (servedHere) $("server-field").hidden = true;
   $("reset-demo").addEventListener("click", () => { P.reset(); toast("Demo data reset"); });
+
+  // the phone self-test: every real action, tried safely (phone.js selfTest)
+  $("self-test").addEventListener("click", async () => {
+    const list = $("selftest-results");
+    list.hidden = false;
+    list.innerHTML = "<li>Running…</li>";
+    const r = await P.selfTest();
+    list.innerHTML = "<li><b>" + r.passed + " of " + r.total + " work on " + esc(r.device) + "</b></li>" +
+      r.results.map((x) => "<li class='" + (x.ok ? "ok" : "bad") + "'>" + (x.ok ? "✓ " : "✕ ") + esc(x.name) +
+        " <small>" + x.ms + " ms · " + esc(x.detail) + "</small></li>").join("");
+  });
 
   // ---------------------------------------------------------------- phone permissions (Android app)
   async function refreshPerms() {
@@ -82,13 +97,27 @@
     add_stop: (a) => "Add a stop: " + a.place,
     set_car_climate: (a) => "Car AC " + (a.on === false ? "off" : "on") + (a.temperature ? " at " + a.temperature + "°C" : ""),
     open_navigation: () => "Hand the route to Google Maps",
+    set_torch: (a) => "Torch " + (a.on ? "on" : "off"),
+    control_media: (a) => ({ play: "Play", pause: "Pause", next: "Next track", previous: "Previous track" }[a.action] || "Media"),
+    set_volume: (a) => "Volume to " + a.percent + "%",
+    create_event: (a) => "Calendar: " + a.title + " on " + a.date + " at " + P.spoken(a.time),
+    get_weather: (a) => "Weather in " + a.place + (a.day && a.day !== "today" ? " (" + a.day + ")" : ""),
+    web_search: (a) => "Search the web: “" + a.question + "”",
   };
-  const toolText = (t, a) => { try { return (TOOL_TEXT[t] || (() => t))(a || {}); } catch (e) { return t; } };
+  // where each step ran: on the phone, or on DUET's side (its own tools)
+  const SERVER_SIDE = new Set(["get_weather", "web_search"]);
+  const toolText = (t, a) => {
+    try {
+      const s = TOOL_TEXT[t] ? null : (P.skills || []).find((x) => x.name === t);   // a skill labels itself
+      return (TOOL_TEXT[t] || (s ? (x) => P.fill(s.label || s.name, x) : () => t))(a || {});
+    } catch (e) { return t; }
+  };
   const key = (t, a) => t + ":" + JSON.stringify(a || {});
 
   // ---------------------------------------------------------------- the conversation view
   const chat = $("chat"), timeline = $("timeline");
   let lastUser = null, duetOpen = null, toolRows = new Map();
+  const setAlarms = new Set();   // alarms DUET set in this conversation (a later cancel is an undo)
 
   function addChat(cls, text) {
     const li = document.createElement("li");
@@ -142,8 +171,40 @@
     toParent({ type: "duet", ev });
     switch (ev.kind) {
       case "session_start":
+        reconnects = 0; rejoinUntil = 0;   // a fresh conversation: a later drop gets its own 3 minutes
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
+        homeLive = null;
+        homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
+        twoSpeeds = /\(fast\)/.test(ev.model || "");
+        cloudOff = false; slowCloud = false; homeDown = false;   // a new conversation starts with no drill
+        renderPanel("all");
         break;
+      case "drill": {
+        const what = ev.what || "cloud_off", on = ev.what ? !!ev.on : !!ev.cloud_off;
+        if (what === "cloud_off") cloudOff = on;
+        if (what === "slow_cloud") slowCloud = on;
+        if (what === "home_down") homeDown = on;
+        const T = {
+          cloud_off: ["☁✕", "Drill: the cloud mind is cut off", "simple actions stay on the fast mind on our own machine", "Drill over: the cloud mind is back"],
+          slow_cloud: ["⏳", "Drill: the cloud mind answers " + (ev.seconds || 6) + " s later", "variable latency: DUET covers the wait, simple actions stay fast", "Drill over: the cloud mind's normal speed"],
+          home_down: ["⌂✕", "Drill: SmartThings is unreachable", "DUET says so and claims nothing", "Drill over: SmartThings is back"],
+        }[what] || ["⚠", "Drill: " + what, "", "Drill over: " + what];
+        addStep(on ? "t-fail" : "t-done", on ? T[0] : "✓", on ? T[1] : T[3], on ? T[2] : "");
+        renderPanel("all");
+        break;
+      }
+      case "home": {
+        const was = homeLive && homeLive.devices ? new Map(homeLive.devices.map((d) => [d.name, d.state])) : null;
+        homeLive = ev;
+        renderPanel("all");
+        if (was && ev.devices) {   // flash what just changed
+          ev.devices.filter((d) => was.get(d.name) !== d.state).forEach((d) => {
+            const el = document.querySelector('#panel .device[data-name="' + CSS.escape(d.name) + '"]');
+            if (el) el.classList.add("flash");
+          });
+        }
+        break;
+      }
       case "agent_state":
         orb(ev.state);
         break;
@@ -164,7 +225,18 @@
       case "talker":
         if (ev.text) {
           duetOpen = addChat("duet ack", ev.text); lastUser = null;
-          addStep("t-say", "⚡", "Fast mind: “" + esc(ev.text) + "”", "spoken while the slow mind works");
+          addStep("t-say", "💬", "Quick voice: “" + esc(ev.text) + "”", "said at once while DUET thinks");
+        }
+        break;
+      case "route":
+        addStep("t-route", ev.where === "edge" ? "⚡" : "☁",
+          ev.where === "edge" ? "Fast mind: Gemma 4 E2B on our own GPU" : "Cloud mind: Gemma 4 26B",
+          esc(ev.why || ""));
+        break;
+      case "confirmed":
+        if (ev.text) {
+          duetOpen = addChat("duet", ev.text); lastUser = null;
+          addStep("t-say", "✓", "Confirmed: “" + esc(ev.text) + "”", "from the phone's reply, no model call");
         }
         break;
       case "thinker_say":
@@ -183,7 +255,23 @@
         duetOpen = null;
         break;
       case "thinker_error":
-        addStep("t-fail", "!", "Something went wrong in the slow mind", esc(ev.text || ""));
+        if (/cannot reach|offline drill/i.test(ev.text || "")) {
+          addStep("t-fail", "☁✕", "Cloud mind unreachable: DUET said so at once", esc(ev.text || ""));
+        } else addStep("t-fail", "!", "Something went wrong in the slow mind", esc(ev.text || ""));
+        break;
+      case "offer":
+        addStep("t-offer", "💡", "DUET spoke first: “" + esc(ev.text) + "”",
+          esc(ev.why || "") + (ev.items && ev.items.length ? " · it waits for your answer; silence never acts" : ""));
+        moment("t-offer", "💡  " + ev.text);
+        break;
+      case "offer_accepted":
+        addStep("t-done", "✓", "You took up DUET's offer", esc(ev.text || ""));
+        break;
+      case "offer_declined":
+        addStep("t-cached", "✕", "You declined DUET's offer: nothing was done", esc(ev.text || ""));
+        break;
+      case "offer_expired":
+        addStep("t-cached", "⌛", "No answer: DUET's offer lapsed, nothing was done", esc(ev.text || ""));
         break;
       case "superseded":
         addStep("t-drop", "↺", "Plan dropped: you kept talking", "nothing was done with the old words");
@@ -200,9 +288,20 @@
         const li = toolRows.get(k) || addStep("", "", "");
         toolRows.delete(k);
         const what = esc(toolText(ev.tool, ev.args));
+        const r0 = ev.result || {};
+        const where = r0.source === "SmartThings" ? "in your SmartThings home"
+          : SERVER_SIDE.has(ev.tool) ? "looked up by DUET" : "on the phone";
+        if (ev.kind === "tool_done" && ev.tool === "set_alarm") setAlarms.add(String(ev.args.time));
         if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && ev.result && ev.result.cancelled === false) {
           setStep(li, "t-cached", "=", "Nothing to cancel: " + esc(P.spoken(ev.args.time)) + " was never set", "DUET had held it back");
-        } else if (ev.kind === "tool_done") setStep(li, "t-done", "✓", "Done: " + what, esc(summary(ev.result)));
+        } else if (ev.kind === "tool_done" && ev.tool === "cancel_alarm" && setAlarms.has(String(ev.args.time))) {
+          setAlarms.delete(String(ev.args.time));
+          setStep(li, "t-undo", "↶", "Undone: the " + esc(P.spoken(ev.args.time)) + " alarm", "you took it back after it was set, so DUET reversed it");
+        } else if (ev.kind === "tool_done" && r0.status === "sent") {
+          setStep(li, "t-fail", "?", "Sent, not confirmed yet: " + what, [where, esc(r0.note || "")].filter(Boolean).join(" · "));
+        } else if (ev.kind === "tool_done") {
+          setStep(li, "t-done", "✓", "Done: " + what, [where, esc(summary(ev.result))].filter(Boolean).join(" · "));
+        }
         if (ev.kind === "tool_dropped") setStep(li, "t-drop", "✕", "Never ran: " + what, "you corrected yourself before it committed");
         if (ev.kind === "tool_cached") setStep(li, "t-cached", "=", "Not repeated: " + what, "it already ran for this request");
         if (ev.kind === "tool_asked") setStep(li, "t-cached", "?", "Asked first: " + what, "you hadn't asked for this, so DUET offers it instead");
@@ -220,10 +319,38 @@
   // ---------------------------------------------------------------- mode panels
   let mode = "assistant";
   let battery = null;
-  P.onChange((what) => { if (what && what.battery) battery = what.battery; renderPanel(what); });
+  P.onChange((what) => {
+    if (what && what.battery) battery = what.battery;
+    // the trip and the medicine schedule tell DUET by themselves (it may then speak first)
+    if (what && what.trip_event === "near" && mode === "drive") {
+      const v = what.view;
+      phoneEvent("The car is " + v.minutes_left + " minutes from " + v.destination + ".",
+        { event: "near_destination", destination: v.destination, minutes: v.minutes_left });
+    }
+    if (what && what.med_due && mode === "care") {
+      const evening = parseInt(what.med_due.time, 10) >= 12;
+      phoneEvent("It is medicine time: the " + (evening ? "evening" : "morning") + " dose of " + what.med_due.name + " is due now.",
+        { event: "medicine_due" });
+    }
+    renderPanel(what);
+  });
 
+  let twoSpeeds = false;      // a fast mind runs next to the cloud mind (the drill needs it)
+  let drillsOpen = false;     // the drills panel stays open while the presenter uses it
+  let cloudOff = false;       // the offline drill is on
+  let slowCloud = false, homeDown = false;   // the slow-cloud and SmartThings-offline drills
+  // the home: live from SmartThings when DUET has a token (the "home" events), else simulated in the app
+  let homeLive = null;        // {source, devices: [{name, room, kind, state, on}], error}
+  let homeNote = "";          // why the home is simulated, from the session start
   function devicesHTML() {
-    return '<p class="sub">Home · SmartThings (simulated)</p><div class="devices">' + P.state.home.map((d) => {
+    if (homeLive && homeLive.devices) {
+      return '<p class="sub">Home · SmartThings (live)</p><div class="devices">' + homeLive.devices.map((d) =>
+        '<div class="device' + (d.on ? " on" : "") + '" data-name="' + esc(d.name) + '"><b>' + esc(d.name) + "</b><small>" +
+        esc(d.state) + (d.room ? " · " + esc(d.room) : "") + "</small></div>").join("") + "</div>";
+    }
+    const label = homeLive && homeLive.error ? "Home · SmartThings unavailable: " + esc(homeLive.error)
+      : "Home · simulated" + (homeNote ? " <small>(" + esc(homeNote) + ")</small>" : "");
+    return '<p class="sub">' + label + '</p><div class="devices">' + P.state.home.map((d) => {
       const on = d.on || d.locked === false || d.state === "cleaning" || d.state === "running";
       return '<div class="device' + (on ? " on" : "") + '" data-id="' + d.id + '"><b>' + esc(d.name) + "</b><small>" + esc(P.describe(d)) + "</small></div>";
     }).join("") + "</div>";
@@ -264,10 +391,41 @@
           (t.stops.length ? '<span class="eta">via ' + esc(t.stops.join(", ")) + "</span>" : "") + '</div><div class="progress"><span style="width:' + Math.round(t.done * 100) + '%"></span></div>';
       } else html += '<p class="note">No trip yet. Try: “Take me to the office, no wait, the airport.”</p>';
       html += '<div class="stats">' + stat("Car AC", P.state.car.ac ? "on" : "off") + stat("Cabin", P.state.car.temp + "°C") + stat("Range", P.state.car.rangeKm + " km") + "</div>";
-      html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Simulate: 10 min from destination</button></div>';
+      html += '<div class="row-btns"><button class="chip" id="ev-near"' + (t ? "" : " disabled") + '>Skip ahead: 10 min from destination</button></div>';
       html += devicesHTML();
     }
+    // Drills: a failure on demand, and how DUET recovers from it (each one shows on the timeline)
+    html += '<details class="drills"' + (drillsOpen ? " open" : "") + '><summary>Drills: show how DUET recovers</summary><div class="row-btns">' +
+      (twoSpeeds ? '<button class="chip' + (cloudOff ? " on" : "") + '" id="drill">' + (cloudOff ? "Restore the cloud mind" : "Cut the cloud mind") + "</button>" +
+        '<button class="chip' + (slowCloud ? " on" : "") + '" id="drill-slow">' + (slowCloud ? "Cloud back to normal" : "Slow cloud (+6 s)") + "</button>" : "") +
+      '<button class="chip' + (P.drill.refuse ? " on" : "") + '" id="drill-refuse">' + (P.drill.refuse ? "Phone acts again" : "Phone refuses actions") + "</button>" +
+      (homeLive && homeLive.devices ? '<button class="chip' + (homeDown ? " on" : "") + '" id="drill-home">' + (homeDown ? "SmartThings back" : "SmartThings offline") + "</button>" : "") +
+      '<button class="chip" id="drill-drop">Drop the connection</button></div></details>';
     el.innerHTML = html;
+    const det = el.querySelector("details.drills");
+    if (det) det.addEventListener("toggle", () => { drillsOpen = det.open; });
+    const send = (msg) => {
+      if (room) room.localParticipant.publishData(enc.encode(JSON.stringify(Object.assign({ kind: "drill" }, msg))),
+        { reliable: true, topic: "duet.phone" });
+    };
+    const drill = $("drill");
+    if (drill) drill.onclick = () => send({ cloud_off: !cloudOff });
+    const slow = $("drill-slow");
+    if (slow) slow.onclick = () => send({ slow_cloud_s: slowCloud ? 0 : 6 });
+    const homeBtn = $("drill-home");
+    if (homeBtn) homeBtn.onclick = () => send({ home_down: !homeDown });
+    $("drill-refuse").onclick = () => {
+      P.drill.refuse = !P.drill.refuse;
+      addStep(P.drill.refuse ? "t-fail" : "t-done", P.drill.refuse ? "⚠" : "✓",
+        P.drill.refuse ? "Drill: the phone refuses DUET's actions" : "Drill over: the phone acts again",
+        P.drill.refuse ? "as if a permission were off: DUET must say what to allow, and claim nothing" : "");
+      renderPanel("all");
+    };
+    $("drill-drop").onclick = () => {
+      if (!room) return;
+      addStep("t-fail", "⚠", "Drill: the connection is dropped", "DUET rejoins by itself, with the same microphone");
+      room.disconnect(false);
+    };
     if (what && what.device) { const d = el.querySelector('[data-id="' + what.device + '"]'); if (d) d.classList.add("flash"); }
     const near = $("ev-near");
     if (near) near.onclick = () => simulate("near");
@@ -276,10 +434,7 @@
   }
   // the demo buttons: a phone or car event DUET reacts to without being asked
   function simulate(kind) {
-    if (kind === "near") {
-      const v = P.skipAhead(10);
-      if (v) phoneEvent("The car is 10 minutes from " + v.destination + ".");
-    }
+    if (kind === "near") P.skipAhead(10);   // the trip itself then tells DUET (P.onChange above)
     if (kind === "medicine") phoneEvent("It is medicine time: the evening dose of Metformin 500 mg is due now.");
   }
   function stat(label, value, hot) { return '<div class="stat' + (hot ? " hot" : "") + '"><small>' + label + "</small><b>" + esc(value) + "</b></div>"; }
@@ -297,43 +452,103 @@
     return s.replace(/\/$/, "");
   }
 
+  // ---------------------------------------------------------------- is everything up? (home screen)
+  async function refreshHealth() {
+    const el = $("health"), base = serverBase();
+    if (!base || !$("session").hidden) return;
+    try {
+      const h = await (await fetch(base + "/api/health", { cache: "no-store" })).json();
+      const part = (name, x) => x.ok === null ? "" : (x.ok ? "✓ " : "✕ ") + name + (x.ok ? "" : " <small>(" + esc(x.why || "") + ")</small>");
+      const parts = [part("Cloud mind", h.cloud_mind), part("Fast mind", h.fast_mind),
+        h.smartthings.ok === null ? "" : part("SmartThings" + (h.smartthings.devices ? " · " + h.smartthings.devices + " devices" : ""), h.smartthings)]
+        .filter(Boolean);
+      const allOk = [h.cloud_mind, h.fast_mind, h.smartthings].every((x) => x.ok !== false);
+      el.className = "health " + (allOk ? "ok" : "bad");
+      el.innerHTML = (allOk ? "Ready · " : "Check · ") + parts.join(" · ");
+    } catch (e) {
+      el.className = "health bad";
+      el.textContent = "✕ The laptop running DUET does not answer at " + base;
+    }
+    el.hidden = false;
+  }
+  refreshHealth();
+  setInterval(refreshHealth, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshHealth(); });
+  $("set-server").addEventListener("change", refreshHealth);
+
   async function deviceLine() {
     if (P.NATIVE) { try { const d = await P.native.deviceInfo(); return d.line; } catch (e) { return "Android phone"; } }
     return "a laptop browser (phone actions simulated)";
   }
 
-  function phoneEvent(text) {
+  function phoneEvent(text, extra) {
     if (!room) return;
-    room.localParticipant.publishData(enc.encode(JSON.stringify({ kind: "event", text })), { reliable: true, topic: "duet.phone" });
+    room.localParticipant.publishData(enc.encode(JSON.stringify(Object.assign({ kind: "event", text }, extra || {}))),
+      { reliable: true, topic: "duet.phone" });
     addStep("t-heard", "⚙", "Phone event sent to DUET", esc(text));
   }
 
-  async function start(m, creds) {
+  // The user wants a conversation: after a drop (the network, or DUET's laptop restarting, which takes about
+  // a minute), the app rejoins on its own for up to 3 minutes, then leaves it to the user.
+  let wantRoom = false, reconnects = 0, rejoinUntil = 0, rejoinTimer = null;
+  // One microphone for the whole conversation: a rejoin publishes the same one again. A new capture opened
+  // while another app is in front (Google Maps) never starts on Android 16, so DUET would stop hearing.
+  let micTrack = null;
+  function rejoinSoon(why, ms) {
+    if (!wantRoom || rejoinTimer) return;
+    if (!rejoinUntil) rejoinUntil = Date.now() + 180000;
+    if (Date.now() > rejoinUntil) {
+      $("conn").textContent = "Could not reconnect";
+      addStep("t-fail", "!", "Could not reconnect", "tap End, then start the conversation again");
+      return;
+    }
+    reconnects++;
+    addStep("t-fail", "↻", why + ": reconnecting", "attempt " + reconnects);
+    if (reconnects === 1) toast(why + ", reconnecting…");
+    rejoinTimer = setTimeout(() => { rejoinTimer = null; if (wantRoom && !room) start(mode, null, true); }, ms);
+  }
+
+  async function start(m, creds, again) {
     const base = serverBase();
     if (!creds && !base) { $("settings").open = true; $("set-server").focus(); toast("Enter the server address first, or scan the laptop's code"); return; }
+    wantRoom = true;
+    if (!again) {   // a new conversation: a fresh rejoin window, and the microphone starts unmuted
+      reconnects = 0; rejoinUntil = 0;
+      $("mute").setAttribute("aria-pressed", "false"); $("mute").setAttribute("aria-label", "Mute microphone");
+    }
+    if (P.NATIVE && !P.backgroundListening) {
+      // First, while DUET is surely on screen (the user just started it): Android lets the microphone service
+      // start only then, and without it DUET behind Google Maps is silenced, then frozen (18 Oct 2026: the
+      // service, started after connecting, lost the race to a Maps opened 2 s after the start)
+      try { await P.native.listenInBackground({ on: true }); P.backgroundListening = true; }
+      catch (e) { P.backgroundListening = false; console.warn("background listening:", e); }
+    }
     mode = m;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
     document.body.classList.add("mode-" + m);
     $("home").hidden = true; $("session").hidden = false;
     $("mode-title").textContent = { assistant: "Assistant", care: "Care", drive: "Drive" }[m];
     $("conn").textContent = "Connecting…";
-    chat.innerHTML = ""; timeline.innerHTML = ""; toolRows = new Map(); lastUser = duetOpen = null;
+    if (again) addStep("t-route", "↻", "Rejoining: a new conversation with DUET", "the timeline above is kept");
+    else { chat.innerHTML = ""; timeline.innerHTML = ""; setAlarms.clear(); }
+    toolRows = new Map(); lastUser = duetOpen = null;
     $("moment").hidden = true;
     orb("connecting");
     renderPanel("all");
-    if (m === "assistant" && P.NATIVE) P.run("get_battery_report", {});
+    if (m === "assistant" && P.acting) P.run("get_battery_report", {});
+    if (base) { try { await P.loadSkills(base); } catch (e) { console.warn("skills:", e); } }
     try {
       let url, token;
       if (creds) ({ url, token } = creds);
       else {
         const names = P.contacts().map((c) => c.name).join("; ");
-        const q = new URLSearchParams({ mode: m, name: S.name || "", device: await deviceLine(), contacts: names });
+        const q = new URLSearchParams({ mode: m, name: S.name || "", city: S.city || "", device: await deviceLine(), contacts: names });
         const resp = await fetch(base + "/api/token?" + q.toString());
         if (!resp.ok) throw new Error("server said " + resp.status + ": " + (await resp.text()).slice(0, 120));
         ({ url, token } = await resp.json());
       }
 
-      room = new LK.Room({ adaptiveStream: false, dynacast: false,
+      room = new LK.Room({ adaptiveStream: false, dynacast: false, stopLocalTrackOnUnpublish: false,
         audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
       room.registerRpcMethod("duet.tool", async (data) => {
         let req = {};
@@ -351,35 +566,89 @@
           if (hooks.remoteAudio) hooks.remoteAudio(track);
         }
       });
-      room.on(LK.RoomEvent.Disconnected, () => { orb("ended"); $("conn").textContent = "Disconnected"; room = null; });
-      room.on(LK.RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /agent/.test(p.identity)) { orb("ended"); $("conn").textContent = "DUET left the room"; } });
+      room.on(LK.RoomEvent.TrackUnsubscribed, (track) => { track.detach().forEach((a) => a.remove()); });
+      const thisRoom = room;
+      let up = false;   // this room was connected (a room that never connected leaves through the catch below)
+      room.on(LK.RoomEvent.Disconnected, () => {
+        if (room === thisRoom) room = null;
+        orb("ended"); $("conn").textContent = "Disconnected";
+        // the connection dropped (not the user ending it): join a new conversation
+        if (up) rejoinSoon("Connection lost", 1500);
+      });
+      room.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
+        if (p.isAgent || /agent/.test(p.identity)) {
+          orb("ended"); $("conn").textContent = "DUET left the room";
+          // the agent restarted or failed: leave, and the rejoin above starts a fresh conversation
+          if (wantRoom && room === thisRoom) thisRoom.disconnect(false);   // false: keep the microphone
+        }
+      });
 
       await room.connect(url, token);
+      up = true;
+      // DUET joins within seconds; a room it never joins (its laptop was still starting) is left for a new one
+      setTimeout(() => {
+        const here = [...thisRoom.remoteParticipants.values()].some((p) => p.isAgent || /agent/.test(p.identity));
+        if (wantRoom && room === thisRoom && !here) {
+          addStep("t-fail", "!", "DUET did not join", "trying a new conversation");
+          thisRoom.disconnect(false);
+        }
+      }, 30000);
       await room.startAudio();
       if (hooks.mic) await hooks.mic(room);
-      else await room.localParticipant.setMicrophoneEnabled(true);
+      else {
+        if (!micTrack || micTrack.mediaStreamTrack.readyState === "ended") {
+          micTrack = await LK.createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
+        }
+        await room.localParticipant.publishTrack(micTrack, { source: LK.Track.Source.Microphone });
+      }
       if (P.NATIVE) {  // after the microphone: WebRTC has switched the phone to call audio by now
-        try { await P.native.audioRoute({}); await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
+        try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
+        try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
       }
       $("conn").textContent = "Connected · waiting for DUET…";
       orb("initializing");
     } catch (e) {
       console.error(e);
+      if (room && room.state !== "connected") { const r = room; room = null; try { await r.disconnect(false); } catch (x) { /* never connected */ } }
       orb("ended");
       $("conn").textContent = "Could not connect";
       addStep("t-fail", "!", "Could not connect", esc(e.message || String(e)));
+      if (again) rejoinSoon("DUET's laptop did not answer", 3000);   // it may be restarting
+      else if (P.NATIVE && P.backgroundListening) {   // no conversation after all: no "DUET is listening" either
+        try { await P.native.listenInBackground({ on: false }); } catch (x) { /* ignore */ }
+        P.backgroundListening = false;
+      }
     }
   }
 
   async function end() {
+    wantRoom = false;
+    if (rejoinTimer) { clearTimeout(rejoinTimer); rejoinTimer = null; }
     if (room) { try { await room.disconnect(); } catch (e) { /* already gone */ } room = null; }
-    if (P.NATIVE) { try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ } }
+    if (micTrack) { micTrack.stop(); micTrack = null; }
+    if (P.NATIVE) {
+      try { await P.native.keepAwake({ on: false }); } catch (e) { /* ignore */ }
+      try { await P.native.listenInBackground({ on: false }); } catch (e) { /* ignore */ }
+      P.backgroundListening = false;
+    }
     document.querySelectorAll("body > audio").forEach((a) => a.remove());
     $("session").hidden = true; $("home").hidden = false;
     document.body.classList.remove("mode-assistant", "mode-care", "mode-drive");
   }
 
   document.querySelectorAll(".mode-card").forEach((b) => b.addEventListener("click", () => start(b.dataset.mode)));
+
+  // ---------------------------------------------------------------- the phone's assistant
+  // Opened as the digital assistant (the assist gesture, the side key): straight into a conversation,
+  // or, in one already, the microphone on.
+  async function assistLaunch() {
+    if (!room && !wantRoom) { toast("DUET is listening"); start("assistant"); return; }
+    if (room && $("mute").getAttribute("aria-pressed") === "true") $("mute").click();
+  }
+  if (P.NATIVE) {
+    try { P.native.addListener("assist", () => assistLaunch()); } catch (e) { console.warn(e); }
+    P.native.launchReason().then((r) => { if (r && r.assist) assistLaunch(); }).catch(() => {});
+  }
 
   // ---------------------------------------------------------------- pairing by QR code
   // The laptop's pair page shows "DUET1|mode|livekit url|room token": the phone joins with it

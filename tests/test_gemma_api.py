@@ -45,7 +45,17 @@ def fake_clients(monkeypatch, script):
 def with_keys(monkeypatch, n, tpm=15000):
     monkeypatch.setenv("GOOGLE_API_KEYS", ",".join("key%d" % i for i in range(n)))
     monkeypatch.setenv("DUET_GEMMA_TPM", str(tpm))
+    # the benchmark's settings: importing the phone app's agent (another test) sets its own
+    for name in ("DUET_GEMMA_EST_TOKENS", "DUET_GEMMA_OFFLINE_AFTER_S"):
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(gemma_api, "_pool", None)
+
+
+def test_a_fresh_pool_books_the_agents_own_call_size(monkeypatch):
+    with_keys(monkeypatch, 1)
+    assert gemma_api.pool().estimate("m") == 2600.0                 # the benchmark's thinker call
+    monkeypatch.setenv("DUET_GEMMA_EST_TOKENS", "3800")             # the phone app's
+    assert gemma_api.pool().estimate("m") == 3800.0
 
 
 def run(coro):
@@ -83,6 +93,15 @@ def test_transient_server_errors_are_retried(monkeypatch):
     with_keys(monkeypatch, 1)
     fake_clients(monkeypatch, {0: [ApiError(500, "INTERNAL"), ApiError(503), 2300]})
     assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
+
+
+def test_server_errors_do_not_use_up_the_budget(monkeypatch):
+    # room for two calls a minute: a burst of four 500s must not leave the pool "full" (16 Oct 2026)
+    with_keys(monkeypatch, 1, tpm=6000)
+    fake_clients(monkeypatch, {0: [ApiError(500, "INTERNAL")] * 4 + [2300]})
+    start = time.monotonic()
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
+    assert time.monotonic() - start < 6.0
 
 
 def test_a_request_that_hangs_gets_a_backup_on_another_key(monkeypatch):
@@ -129,6 +148,35 @@ def test_nothing_waits_past_the_deadline(monkeypatch):
     with pytest.raises(RuntimeError):
         run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=1.0))
     assert time.monotonic() - start < 1.5
+
+
+class ConnectError(Exception):
+    """What the HTTP client raises when Google cannot be reached at all (no network, DNS)."""
+
+
+def test_an_unreachable_cloud_is_given_up_quickly_when_asked(monkeypatch):
+    # the phone app: no network means a spoken answer in about 2 s, not retries to the deadline
+    with_keys(monkeypatch, 1)
+    monkeypatch.setenv("DUET_GEMMA_OFFLINE_AFTER_S", "1.0")
+    fake_clients(monkeypatch, {0: [ConnectError("[Errno 11001] getaddrinfo failed")] * 50})
+    start = time.monotonic()
+    with pytest.raises(gemma_api.CloudUnreachable, match="cannot reach"):
+        run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=15))
+    assert 0.9 < time.monotonic() - start < 2.5
+
+
+def test_the_benchmark_still_retries_an_unreachable_cloud_to_the_deadline(monkeypatch):
+    with_keys(monkeypatch, 1)
+    monkeypatch.delenv("DUET_GEMMA_OFFLINE_AFTER_S", raising=False)
+    fake_clients(monkeypatch, {0: [ConnectError("getaddrinfo failed")] * 3 + [2300]})
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
+
+
+def test_a_server_error_is_not_mistaken_for_an_unreachable_cloud(monkeypatch):
+    with_keys(monkeypatch, 1)
+    monkeypatch.setenv("DUET_GEMMA_OFFLINE_AFTER_S", "0.5")
+    fake_clients(monkeypatch, {0: [ApiError(503)] * 4 + [2300]})
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 0
 
 
 def test_the_delay_a_429_asks_for_is_read():

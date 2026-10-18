@@ -80,6 +80,17 @@ def _hedge_s() -> float:
     return float(os.environ.get("DUET_GEMMA_HEDGE_S", "6"))
 
 
+def _offline_after_s() -> float:
+    """Give up after failing to reach Google at all (no network, no DNS) for this long, rather than
+    retrying to the deadline. 0 (the benchmark's default): retry to the deadline. The phone app sets it,
+    so a user hears at once that the cloud cannot be reached."""
+    return float(os.environ.get("DUET_GEMMA_OFFLINE_AFTER_S", "0"))
+
+
+class CloudUnreachable(RuntimeError):
+    """Google's API cannot be reached at all (as opposed to answering with an error)."""
+
+
 MAX_IN_FLIGHT = 4  # requests for one call at once: the first and up to three backups
 
 
@@ -121,9 +132,11 @@ class Pool:
         self.average: Dict[str, float] = {}
 
     def estimate(self, model: str) -> float:
-        """Input tokens the next call to `model` will likely use: the recent average,
-        or the size of one DUET thinker call (the instructions and 13 tools)."""
-        return self.average.get(model, 2600.0)
+        """Input tokens the next call to `model` will likely use: the recent average, or
+        before any call the size of one thinker call (the benchmark's: its instructions and 13
+        tools, about 2,600; DUET_GEMMA_EST_TOKENS for another agent's, so a fresh process does
+        not book too little and draw 429s)."""
+        return self.average.get(model, float(os.environ.get("DUET_GEMMA_EST_TOKENS", "2600")))
 
     def _window(self, i: int, model: str) -> _Window:
         return self.windows.setdefault((i, model), _Window())
@@ -241,6 +254,14 @@ def _transient(exc: BaseException) -> bool:
     return any(w in name for w in ("timeout", "connect", "remoteprotocol", "readerror", "network"))
 
 
+def _unreachable(exc: BaseException) -> bool:
+    """A failure to reach the server at all (no network, DNS, connection refused), not a slow answer."""
+    name, text = type(exc).__name__.lower(), str(exc).lower()
+    return "connect" in name or any(w in text for w in ("getaddrinfo", "name or service not known", "nodename",
+                                                        "network is unreachable", "no route to host",
+                                                        "connection refused"))
+
+
 async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[float] = None):
     """One generate_content call through the key pool (see the module notes)."""
     p = pool()
@@ -251,6 +272,8 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
     flights: Dict[Any, Tuple[int, list, float]] = {}   # request -> (key index, booking, time sent)
     pause_until = 0.0                                    # a short pause after a server error
     answered = False
+    unreachable_since: Optional[float] = None            # first failure to reach Google at all
+    offline_after = _offline_after_s()
 
     def send(i: int, booking: list) -> None:
         task = asyncio.ensure_future(
@@ -319,6 +342,17 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
                              retry_delay(exc))
                 elif _transient(exc):
                     last = exc
+                    # A request the server answered with an error frees its booking: on a bad night
+                    # (16 Oct 2026) bursts of 500s kept every retry booked, and the budget this pool
+                    # keeps for itself ran dry while Google had refused nothing.
+                    if error_code(exc) is not None:
+                        p.settle(model, booking, 0)
+                        unreachable_since = None
+                    elif _unreachable(exc):   # Google was not reached at all: no tokens were used
+                        p.settle(model, booking, 0)
+                        unreachable_since = unreachable_since or sent
+                        if offline_after > 0 and time.monotonic() - unreachable_since >= offline_after:
+                            raise CloudUnreachable("cannot reach Google's API (%s)" % (str(exc)[:120] or type(exc).__name__))
                     log.info("gemma: %s on key %d failed (%s); asking again", model, i + 1, str(exc)[:80])
                     pause_until = time.monotonic() + 0.3 + random.random() * 0.4
                 else:
@@ -371,7 +405,13 @@ def sampling(model: str) -> dict:
 
 
 def thinking_config(model: str, level: str):
-    """Gemma 4 thinks on its own; the API refuses a thinking budget or level for it."""
+    """Gemma 4 reasons before it answers unless told otherwise. Google's API accepts one setting
+    for it, "minimal" (answer without the reasoning step: a simple phone action in about 1.6 s
+    instead of about 5 s, measured 16 Oct 2026). It refuses "low" and token budgets. Unset (the
+    benchmark's default), nothing is sent."""
+    if (level or "").strip().lower() == "minimal":
+        from google.genai import types
+        return types.ThinkingConfig(thinking_level="minimal")
     return None
 
 

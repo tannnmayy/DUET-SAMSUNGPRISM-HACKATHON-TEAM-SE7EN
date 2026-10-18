@@ -346,9 +346,16 @@ messages; the smart home, the medicine schedule and the car are simulated inside
 app. Build, run and demo instructions: [app/README.md](app/README.md). The submission
 demo video is in this [Google Drive folder](https://drive.google.com/drive/folders/1VA8tbpwyIQrz-USTfc_LUibM5IOoRX3O).
 
+**Round 2 (live jury demo, 21 Oct 2026; branch `round2`):** two speeds (Gemma 4 E2B on our own GPU for
+simple phone actions, Gemma 4 26B in the cloud for the rest, one coordinator for both), a real SmartThings
+home, DUET's own exact alarms, actions that keep working while Google Maps is in front, and honest
+answers when the cloud, the phone or a device does not respond. The plan:
+[docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the demo kit: [docs/ROUND2_DEMO.md](docs/ROUND2_DEMO.md); the design:
+[docs/ARCHITECTURE.md §10.1](docs/ARCHITECTURE.md#101-round-2-two-speeds-real-actions-honest-failures).
+
 ## Engineering quality
 
-- **75 unit tests** (`python -m pytest tests -q`): the coordinator's gate, epochs and
+- **144 unit tests** (`python -m pytest tests -q`): the coordinator's gate, epochs and
   ledger; the key pool, backups and deadlines; the speaking rules; tool argument
   handling; the phone bridge.
 - **No benchmark item is written into the agent.** `tests/test_voice_integrity.py`
@@ -381,7 +388,7 @@ duet_voice/              the agent
 bench/                   live runner, warm-up, offline evaluators, judge adapter, reports
 scripts/                 machine check, offline evaluation, the extension's demo tools
 app/                     DUET for Galaxy: Android app, web build, demo recorder
-tests/                   75 unit tests
+tests/                   144 unit tests
 docs/                    architecture, results, engineering notes, requirements, research
 AI disclosure/           LangAI 3.0 AI disclosure form (PDF)
 results/reported/        the reported run: reports, traces and logs

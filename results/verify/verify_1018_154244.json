@@ -1,0 +1,67 @@
+{
+ "device": "emulator",
+ "quick": true,
+ "verdict": "1 of 5 steps failed",
+ "steps": [
+  {
+   "step": "unit tests",
+   "result": "PASS",
+   "detail": "154 passed",
+   "seconds": 36
+  },
+  {
+   "step": "stack (/api/health)",
+   "result": "PASS",
+   "detail": "fast_mind ok, cloud_mind ok, livekit ok",
+   "seconds": 2
+  },
+  {
+   "step": "SmartThings home",
+   "result": "NOTE",
+   "detail": "the SmartThings token was refused; tokens last 24 hours, so make a new one at account.smar",
+   "seconds": 0
+  },
+  {
+   "step": "spoken suite",
+   "result": "FAIL",
+   "detail": "9/10 runs \u00b7 stale 0 \u00b7 duplicates 0 \u00b7 model errors 0 \u00b7 failed: cut_off",
+   "seconds": 328,
+   "folder": "results\\galaxy\\suite\\verify_1018_154244"
+  },
+  {
+   "step": "phone: install and self-test",
+   "result": "PASS",
+   "detail": "14 of 14 on this phone in 1.6 s",
+   "seconds": 15
+  },
+  {
+   "step": "phone: end to end (assistant)",
+   "result": "PASS",
+   "detail": "19 of 19 cases",
+   "seconds": 225
+  },
+  {
+   "step": "demo-day preflight",
+   "result": "NOTE",
+   "detail": "red: SmartThings home, Do Not Disturb, media volume on the loudspeaker, call volume on the loudspeaker, demo contacts",
+   "seconds": 4
+  }
+ ],
+ "latency_s": {
+  "ack": {
+   "p50": 1.33,
+   "p90": 2.64,
+   "n": 13
+  },
+  "action": {
+   "p50": 1.8,
+   "p90": 4.06,
+   "n": 9
+  },
+  "answer": {
+   "p50": 1.86,
+   "p90": 5.66,
+   "n": 13
+  }
+ }
+}

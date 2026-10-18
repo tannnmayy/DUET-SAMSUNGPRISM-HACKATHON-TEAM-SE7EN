@@ -58,6 +58,24 @@ if [ -n "${LLAMA_SERVER:-}" ]; then
 else
   echo "== language model: Gemma 4 through Google's API"
   "$PY" -m duet_voice.gemma_api >/dev/null || { echo "No usable Google API key: set GOOGLE_API_KEY in .env.local"; exit 1; }
+  # Two speeds (duet_voice/galaxy/fast.py): with FAST_MODEL set to a Gemma 4 E2B .gguf, a fast mind
+  # on this machine's GPU handles simple phone actions in under a second; the cloud mind the rest.
+  if [ -n "${FAST_MODEL:-}" ]; then
+    fport="${FAST_PORT:-18002}"
+    export DUET_FAST=1 DUET_FAST_BASE_URL="http://127.0.0.1:$fport/v1" DUET_FAST_MODEL="${DUET_FAST_MODEL:-gemma-4-e2b}"
+    if ! curl -sf "$DUET_FAST_BASE_URL/models" >/dev/null 2>&1; then
+      echo "== fast mind: $(basename "$FAST_MODEL") on this GPU"
+      "${LLAMA_SERVER:-/e/duet_local/llama/llama-server.exe}" -m "$FAST_MODEL" --alias "$DUET_FAST_MODEL" --jinja \
+        --reasoning off -ngl 99 -c 8192 -np 2 -fa on -t "${LLAMA_THREADS:-6}" --host 127.0.0.1 --port "$fport" \
+        --no-webui > results/galaxy/fast-server.log 2>&1 &
+      pids+=($!)
+      for _ in $(seq 1 120); do curl -sf "$DUET_FAST_BASE_URL/models" >/dev/null 2>&1 && break; sleep 1; done
+    fi
+    curl -sf "$DUET_FAST_BASE_URL/models" >/dev/null 2>&1 || { echo "The fast mind did not start; see results/galaxy/fast-server.log"; exit 1; }
+    # the speech models share the GPU with it: recognition in 8-bit
+    export DUET_ASR_COMPUTE="${DUET_ASR_COMPUTE:-int8_float16}"
+    echo "== fast mind ready at $DUET_FAST_BASE_URL (cloud mind: Gemma 4 26B)"
+  fi
 fi
 
 # --- 2. the agent ------------------------------------------------------------------------------

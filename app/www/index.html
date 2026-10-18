@@ -39,6 +39,8 @@
     </button>
   </section>
 
+  <p class="health" id="health" hidden></p>
+
   <button class="scan-btn" id="scan">
     <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
     <span><b>Scan the laptop's code</b><small>Pair in one step: open localhost:8787/pair.html on the laptop</small></span>
@@ -55,6 +57,10 @@
       <input id="set-name" placeholder="e.g. Asha" autocomplete="off">
     </label>
     <label class="field">
+      <span>Your city <small>(for the weather when you don't name a place)</small></span>
+      <input id="set-city" placeholder="e.g. Chennai" autocomplete="off">
+    </label>
+    <label class="field">
       <span>Contacts DUET may call or message <small>(one per line: name, number)</small></span>
       <textarea id="set-contacts" rows="3" placeholder="Priya (daughter), +91 98xxxxxx01"></textarea>
     </label>
@@ -68,11 +74,30 @@
       <button class="perm" data-perm="modify_system_settings"><span>Change brightness and timeout</span><em>Allow</em></button>
       <button class="perm" data-perm="call_phone"><span>Place calls directly</span><em>Allow</em></button>
       <button class="perm" data-perm="send_sms"><span>Send texts directly</span><em>Allow</em></button>
+      <button class="perm" data-perm="contacts"><span>Find people in your contacts</span><em>Allow</em></button>
+      <button class="perm" data-perm="calendar"><span>Add events to your calendar</span><em>Allow</em></button>
+      <button class="perm" data-perm="notifications"><span>Show that DUET is listening, and ring DUET's alarms</span><em>Allow</em></button>
+      <button class="perm" data-perm="display_over_apps"><span>Act while another app is open (Appear on top)</span><em>Allow</em></button>
+      <button class="perm" data-perm="do_not_disturb_access"><span>Turn Do Not Disturb on and off</span><em>Allow</em></button>
+      <button class="perm" data-perm="alarms_and_reminders"><span>Exact alarms (DUET's own alarms)</span><em>Allow</em></button>
     </div>
+    <label class="field">
+      <span>Alarms <small>(DUET's own are exact: set, cancel and list, even behind other apps. The Clock app gives other apps no way to check a cancel)</small></span>
+      <select id="set-alarms">
+        <option value="duet">DUET's own alarms</option>
+        <option value="clock">The phone's Clock app</option>
+      </select>
+    </label>
+    <label class="switch-row">
+      <input type="checkbox" id="set-simulate">
+      <span>Simulate phone actions <small>(DUET acts on a pretend phone inside the app instead of this one)</small></span>
+    </label>
+    <button class="text-btn" id="self-test">Run the phone self-test</button>
+    <ol class="selftest" id="selftest-results" hidden></ol>
     <button class="text-btn" id="reset-demo">Reset the demo home, medicines and trip</button>
   </details>
 
-  <p class="foot">Samsung PRISM GenAI Hackathon · Team SE7EN · the brain runs on your own machine, not a cloud AI</p>
+  <p class="foot">Samsung PRISM GenAI Hackathon · Team SE7EN · speech is processed on our own machine; Gemma 4 does the reasoning, on our machine or in Google's cloud</p>
 </main>
 
 <!-- ============ session ============ -->

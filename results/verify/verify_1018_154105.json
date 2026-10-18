@@ -1,0 +1,20 @@
+{
+ "device": "emulator",
+ "quick": true,
+ "verdict": "1 of 2 steps failed",
+ "steps": [
+  {
+   "step": "unit tests",
+   "result": "PASS",
+   "detail": "154 passed",
+   "seconds": 39
+  },
+  {
+   "step": "stack (/api/health)",
+   "result": "FAIL",
+   "detail": "fast_mind ok, cloud_mind ok, smartthings DOWN, livekit ok",
+   "seconds": 2
+  }
+ ],
+ "latency_s": {}
+}

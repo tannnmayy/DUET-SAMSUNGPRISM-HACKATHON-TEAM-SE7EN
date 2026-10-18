@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density|fontScale|fontWeightAdjustment"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
@@ -24,7 +24,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- DUET as the phone's digital assistant: chosen in Settings > Apps > Default apps, it opens
+                 straight into a conversation from the assist gesture or the side key -->
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
+
+        <!-- keeps listening while another app (Google Maps) is in front; started only during a conversation -->
+        <service
+            android:name=".DuetListenService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!-- DUET's own alarms (the fallback when the Clock app ignores a cancel request) ring here -->
+        <receiver
+            android:name=".DuetAlarms"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -64,4 +82,21 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <!-- people in the address book, and events in the calendar (each asked for in DUET's settings) -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <!-- listening while Google Maps is in front: a visible foreground service of type microphone -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+    <!-- open the Clock, the dialer, Messages or Maps while Google Maps is in front: Android allows it only
+         to an app the user lets "appear on top" (the microphone service alone does not count) -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- the Do Not Disturb skill (app/www/skills.json): access the user grants in Settings, or over USB -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- DUET's own alarms: exact alarm times -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 </manifest>

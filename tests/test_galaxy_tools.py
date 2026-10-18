@@ -132,3 +132,85 @@ def test_a_held_back_call_is_remembered_for_the_request_only():
     assert box.held_back == [{"tool": "set_alarm", "args": {"time": "15:30"}}]
     box.new_request()
     assert box.held_back == []
+
+
+def test_an_action_the_phone_never_confirmed_stays_unconfirmed_when_tried_again():
+    """17 Oct 2026: the phone did not answer a timer in time; the cloud mind tried it again, was told
+    already_done, and said the timer was set. A second try now hears unknown_outcome again."""
+    sent = []
+
+    async def silent_phone(tool, args, timeout):
+        sent.append(tool)
+        await asyncio.sleep(5)
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    events = []
+    box = PhoneToolbox(coord, MODES["assistant"]["tools"], silent_phone, emit=events.append)
+    box.specs["set_timer"] = dict(box.specs["set_timer"], timeout=0.2)
+    first = json.loads(asyncio.run(box.call("set_timer", {"minutes": 3})))
+    again = json.loads(asyncio.run(box.call("set_timer", {"minutes": 3})))
+    assert first["status"] == again["status"] == "unknown_outcome" and sent == ["set_timer"]
+    assert "do not retry" in again["instruction"] and box.last_done is None
+    assert [e["kind"] for e in events if e["kind"] != "tool_planned"] == ["tool_unknown", "tool_unknown"]
+
+
+def test_a_call_refused_by_the_consent_check_is_not_retried_in_a_loop():
+    asked = []
+
+    async def consent(tool, args):
+        asked.append(tool)
+        return False
+    box, sent, events = make()
+    box.consent = consent
+    first = call(box, "call_contact", {"name": "Priya"})
+    again = call(box, "call_contact", {"name": "Priya"})
+    assert first["status"] == again["status"] == "not_executed" and sent == [] and asked == ["call_contact"]
+    assert "STOP calling tools" in again["reason"]
+    box.new_request()                            # a new request may ask again
+    call(box, "call_contact", {"name": "Priya"})
+    assert asked == ["call_contact", "call_contact"]
+
+
+def test_a_time_has_one_spelling_so_cancel_and_set_again_work():
+    """17 Oct 2026: cancel_alarm("7:00") did not clear set_alarm("07:00") in the ledger."""
+    box, sent, _ = make()
+    call(box, "set_alarm", {"time": "07:00"})
+    call(box, "cancel_alarm", {"time": "7:00"})
+    assert call(box, "set_alarm", {"time": "7.00"})["status"] == "ok"           # set again, really
+    assert sent == [("set_alarm", {"time": "07:00"}), ("cancel_alarm", {"time": "07:00"}), ("set_alarm", {"time": "07:00"})]
+
+
+def test_a_call_the_guards_held_back_is_remembered_until_the_request_is_answered():
+    """If the model then says nothing, the agent asks for the missing part itself (18 Oct 2026)."""
+    box, sent, _ = make()
+    box.coord.heard("Call my")
+    box.coord.turn_committed()
+    assert call(box, "call_contact", {"name": "my"})["status"] == "not_executed" and sent == []
+    assert box.unfinished == ("call_contact", "cut_off")
+    box.new_request()
+    assert box.unfinished is None
+
+
+def test_times_in_a_text_message_are_sent_in_digits():
+    """18 Oct 2026, Drive mode: the arrival time went out as "about half past three"."""
+    from duet_voice.galaxy.tools import message_times
+    assert message_times("I'll be there at about half past three.") == "I'll be there at about 3:30."
+    assert message_times("See you at quarter to five") == "See you at 4:45"
+    assert message_times("quarter to one") == "12:45"
+    assert message_times("Meet at six o'clock") == "Meet at 6:00"
+    assert message_times("Quarter past 12 works") == "12:15 works"
+    for same in ("half past caring", "around 3:25 AM", "I'll be 10 minutes late", "half past 13"):
+        assert message_times(same) == same
+    box, sent, _ = make()
+    call(box, "send_message", {"to": "Priya", "text": "On my way, there at half past three."})
+    assert sent == [("send_message", {"to": "Priya", "text": "On my way, there at 3:30."})]
+
+
+def test_a_reading_is_fresh_in_every_request():
+    """18 Oct 2026: a battery question asked a minute after another got the first one's reading."""
+    box, sent, events = make({"get_battery_report": {"status": "ok", "level": 80}})
+    call(box, "get_battery_report", {})
+    assert call(box, "get_battery_report", {})["status"] == "already_done"      # within one request: read once
+    box.new_request()
+    assert call(box, "get_battery_report", {})["status"] == "ok"                # a new request: read again
+    assert sent == [("get_battery_report", {}), ("get_battery_report", {})]
