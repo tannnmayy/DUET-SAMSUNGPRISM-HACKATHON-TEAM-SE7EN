@@ -499,6 +499,10 @@ def _match(call: dict, tool: str, args: dict) -> bool:
     return call.get("tool") == tool and all(_match_value(p, (call.get("args") or {}).get(k)) for k, p in args.items())
 
 
+# the key pool's answer when every free-tier key's per-minute input budget is spent (duet_voice/gemma_api.py)
+QUOTA = re.compile(r"no key has room|budget is spent", re.I)
+
+
 def check(run: dict, expect: dict) -> dict:
     ev = run["events"]
     done = [e for e in ev if e.get("kind") == "tool_done"]
@@ -585,6 +589,7 @@ def summarize(results: List[dict], folder: str) -> dict:
         s["runs"] += 1
         s["passed"] += r["check"]["ok"]
         s["problems"] += r["check"]["problems"]
+    out["quota_retries"] = [r["name"] for r in results if r.get("quota_retry")]
     with open(os.path.join(folder, "summary.json"), "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1)
     return out
@@ -646,20 +651,34 @@ async def main() -> int:
         for name in names:
             sc = S[name]
             print("\n=== %s (run %d of %d)" % (name, rep + 1, args.repeat), flush=True)
-            if home_loc:
+            run = None
+            for attempt in (1, 2):
+                if home_loc:
+                    try:
+                        await reset(home_loc)
+                    except st.HomeError as exc:
+                        print("SmartThings reset failed: %s" % exc)
                 try:
-                    await reset(home_loc)
-                except st.HomeError as exc:
-                    print("SmartThings reset failed: %s" % exc)
-            try:
-                run = await run_one(name, sc, prepare(sc, pipe, args.voice), quiet=args.quiet)
-            except Exception as exc:  # one broken run must not stop the suite
-                print("RUN FAILED: %s" % exc, flush=True)
+                    run = await run_one(name, sc, prepare(sc, pipe, args.voice), quiet=args.quiet)
+                except Exception as exc:  # one broken run must not stop the suite
+                    print("RUN FAILED: %s" % exc, flush=True)
+                    run = None
+                    break
+                quota = [e for e in run["events"] if e.get("kind") == "thinker_error" and QUOTA.search(e.get("text", ""))]
+                if not quota or check(run, sc["expect"])["ok"] or attempt == 2:
+                    break
+                # the free Gemma tier's per-minute token budget was spent by the scenarios before this one (it
+                # runs about 40 back to back; a person talks far slower): wait for the next minute, run it again,
+                # and say so in the summary
+                print("the cloud's per-minute budget was spent: running %s again in 61 s" % name, flush=True)
+                await asyncio.sleep(61.0)
+            if run is None:
                 continue
+            run["quota_retry"] = attempt == 2
             path = os.path.join(folder, "%s_%d.json" % (name, rep + 1))
             with open(path, "w", encoding="utf-8") as fh:
                 json.dump(run, fh, indent=1)
-            result = {"name": name, "run": run, "check": check(run, sc["expect"])}
+            result = {"name": name, "run": run, "check": check(run, sc["expect"]), "quota_retry": attempt == 2}
             results.append(result)
             c = result["check"]
             print("--> %s  %s" % ("PASS" if c["ok"] else "FAIL", "; ".join(c["problems"]) or ", ".join(c["writes"])),

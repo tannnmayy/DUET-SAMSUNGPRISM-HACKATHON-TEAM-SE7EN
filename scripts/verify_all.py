@@ -110,9 +110,12 @@ def main() -> int:
             latency = sm.get("latency_s", {})
             failed = [n for n, v in sm.get("by_scenario", {}).items() if v["passed"] < v["runs"]]
             ok = sm["passed"] == sm["runs"] and sm["stale_actions"] == 0 and sm["duplicates"] == 0
-            step("spoken suite", ok, "%d/%d runs · stale %d · duplicates %d · model errors %d%s" % (
+            retried = sm.get("quota_retries") or []
+            step("spoken suite", ok, "%d/%d runs · stale %d · duplicates %d · model errors %d%s%s" % (
                 sm["passed"], sm["runs"], sm["stale_actions"], sm["duplicates"], sm.get("model_errors", 0),
-                (" · failed: " + ", ".join(failed)) if failed else ""), s, folder=os.path.relpath(os.path.dirname(summary_path), ROOT))
+                (" · failed: " + ", ".join(failed)) if failed else "",
+                (" · run again after the free tier's per-minute budget ran out: " + ", ".join(retried)) if retried else ""),
+                s, folder=os.path.relpath(os.path.dirname(summary_path), ROOT))
         else:
             step("spoken suite", False, "no summary (exit %d): %s" % (code, out.strip().splitlines()[-1:] or ""), s)
 
