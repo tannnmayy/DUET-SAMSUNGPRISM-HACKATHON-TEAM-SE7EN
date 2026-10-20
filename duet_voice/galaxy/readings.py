@@ -80,8 +80,16 @@ def _when(next_alarm: str) -> str:
     return "%s at %s" % (_DAYS[m.group(1)], m.group(2)) if m and m.group(1) in _DAYS else (next_alarm or "")
 
 
+def _clock(alarm: str) -> str:
+    """A time as the phone wrote it, as it is said: "04:30" -> "4:30 in the morning" (the app already sends
+    "4:30 AM"; any other phone, and the test phone, send the 24-hour time)."""
+    from .confirm import spoken_time
+    m = re.match(r"\s*(\d{1,2}:\d{2})\s*(\(.*\))?\s*$", str(alarm))
+    return (spoken_time(m.group(1)) + (" " + m.group(2) if m.group(2) else "")) if m else str(alarm)
+
+
 def _alarms(r: Dict[str, Any], w: str) -> Optional[str]:
-    duet = [a for a in (r.get("set_by_duet") or []) if a]
+    duet = [_clock(a) for a in (r.get("set_by_duet") or []) if a]
     nxt = r.get("phone_next_alarm")
     if "next" in w and nxt:
         return "Your next alarm is %s." % _when(nxt)

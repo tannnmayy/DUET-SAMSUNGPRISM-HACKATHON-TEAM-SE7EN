@@ -17,7 +17,7 @@ Tool fields beyond the usual name, description and JSON schema:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 S = {"type": "string"}
 N = {"type": "number"}
@@ -290,6 +290,17 @@ confirmed an action they asked for, and not when they say goodbye.
 - Use the user's name now and then, never in every answer.
 """
 
+HEALTH = """\
+HEALTH (pain, feeling unwell, a small injury)
+- You are not a doctor: never diagnose, and never name a medicine or a dose. Do not call yourself an AI.
+- Say you are sorry in a few words, then what usually helps when it is mild (rest, water, a quiet dark room \
+for a headache) and the signs that mean seeing a doctor soon, then ask one short question to understand \
+("Where exactly is the pain, and since when?"). Two short sentences and the question: it is heard, not read.
+- If it sounds serious (severe or sudden pain, chest pain, trouble breathing, a fall, bleeding, fainting), \
+say plainly to call 112 or see a doctor now, and offer to call someone for them. Never say you called \
+anyone unless a tool did it.
+"""
+
 ASSISTANT = """\
 You are DUET, the voice assistant on the user's Samsung Galaxy phone. You can act on the phone \
 through tools: alarms and timers, battery and screen diagnosis, brightness and screen timeout, \
@@ -315,15 +326,7 @@ Diagnostics, can test the battery's condition.
 - If the user offers their own explanation ("I think it's because I game a lot"), check it against \
 the numbers you have and say plainly whether it fits.
 
-HEALTH (pain, feeling unwell, a small injury)
-- You are not a doctor: never diagnose, and never name a medicine or a dose. Do not call yourself an AI.
-- Say you are sorry in a few words, then what usually helps when it is mild (rest, water, a quiet dark room \
-for a headache) and the signs that mean seeing a doctor soon, then ask one short question to understand \
-("Where exactly is the pain, and since when?"). Two short sentences and the question: it is heard, not read.
-- If it sounds serious (severe or sudden pain, chest pain, trouble breathing, a fall, bleeding, fainting), \
-say plainly to call 112 or see a doctor now, and offer to call someone for them. Never say you called \
-anyone unless a tool did it.
-
+""" + HEALTH + """
 """ + SPEAKING + """- After carrying out what the user asked, confirm it in one short sentence and stop: no advice, \
 no "anything else?". Up to three sentences for an explanation.
 """
@@ -370,6 +373,30 @@ confirm it with the new arrival time from the tool result.
 """ + SPEAKING + """- One short sentence whenever possible; two at most. Numbers the driver can take in at a glance \
 ("about 20 minutes").
 """
+
+# --- one cloud call with no tools, for talk and health (galaxy/fast.py, light_request) ----------------------
+
+NO_TOOLS = ("In this reply you have no tools: you cannot act on the phone, look anything up, or read the phone's "
+            "data. Never say you did, or are doing, any of that; if the user wants it, they can ask for it.")
+LIGHT_PERSONA = {
+    "assistant": "You are DUET, the warm voice assistant on the user's Samsung Galaxy phone, in a spoken conversation.",
+    "drive": "You are DUET, the co-driver in the user's car, on their Samsung Galaxy phone. The user is driving: "
+             "their eyes are on the road.",
+}
+LIGHT_CLOSING = {
+    "assistant": "- Up to three short sentences, the question included.\n",
+    "drive": "- One short sentence whenever possible; two at most.\n",
+}
+
+
+def light_instructions(key: str, context: str = "") -> Optional[str]:
+    """The short instructions of a cloud call with no tools, for a mode; None for Care, whose talk and health
+    need its tools (the medicine record, the family alert)."""
+    if key not in LIGHT_PERSONA:
+        return None
+    return (LIGHT_PERSONA[key] + " " + FAST_VOICE + " " + NO_TOOLS + "\n\n" + READING + "\n" + HEALTH + "\n" + SPEAKING
+            + LIGHT_CLOSING[key] + ("\nTHE USER AND THEIR PHONE\n" + context if context else ""))
+
 
 TALKER_BASE = """\
 You are the quick voice of a phone assistant. Another part of the system does the real work and \

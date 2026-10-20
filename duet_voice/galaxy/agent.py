@@ -69,8 +69,8 @@ from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
 from . import fast, proactive, smartthings  # noqa: E402
-from .confirm import adds_nothing, drop_failed_claims, drop_false_undo, drop_overclaims  # noqa: E402
-from .modes import llm_specs, mode as get_mode  # noqa: E402
+from .confirm import adds_nothing, drop_failed_claims, drop_false_undo, drop_overclaims, drop_restated  # noqa: E402
+from .modes import light_instructions, llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, cut_off, rpc_sender  # noqa: E402
 
@@ -230,16 +230,38 @@ class GalaxyAgent(base.DuetAgent):
         self.recent: Deque[Tuple[str, str]] = collections.deque(maxlen=2 * fast.RECENT_TURNS)
         self._request_text = ""         # the open request the current reply answers
         self._asked_at = 0.0            # when its reply began
+        self._answer_now = ""           # the answer of the current reply, as spoken (polish)
+        self._last_reply = ""           # DUET's last reply in full: its confirmations and its answer
+        self._cut_heard = ""            # what the user heard of that reply, if they cut it off
         if isinstance(self._thinker, fast.HybridThinker):
             self._thinker.offers = self.offers
             self._thinker.recent = self.recent
+            # talk and health with nothing on the phone in them: one cloud call with no tools (Care: never)
+            self._thinker.light_instructions = light_instructions(str(mode["title"]).lower(), context)
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         self._route_now = None
         self._request_text = self._open_request(chat_ctx)
         self._asked_at = time.time()
+        if isinstance(self._thinker, fast.HybridThinker):
+            # "say that again" and "go on" are answered from DUET's last reply (fast.control)
+            self._thinker.last_answer = self._last_reply
+            # (what was cut stays known through a "Wait.", which says nothing, until DUET next speaks)
+            self._thinker.resume_text = fast.remainder(self._last_reply, self._cut_heard)
+        self._answer_now = ""
+        spoke = False
         async for chunk in super().llm_node(chat_ctx, tools, model_settings):
+            spoke = spoke or (isinstance(chunk, str) and bool(chunk.strip()))
+            # kept as it is made: a reply the user cuts off is closed before it ends
+            full = " ".join(self._confirmed_now + ([self._answer_now] if self._answer_now else []))
+            if full.strip():
+                self._last_reply = full.strip()
             yield chunk
+        if not spoke and self._pending_consumed is not None:
+            # A reply that says nothing ("Wait.", background talk) answers its request, but no message reaches the
+            # conversation, so nothing would close it: it is closed here. 21 Oct 2026: "Wait." then "Go on." was
+            # read as the one request "Wait. Go on.", so "go on" was not recognised.
+            self.reply_delivered("")
 
     def ack_line(self) -> str:
         """"Sure." when the fast mind is doing a simple action (its confirmation follows in about a
@@ -347,11 +369,15 @@ class GalaxyAgent(base.DuetAgent):
             parts.pop()
         text = drop_failed_claims(" ".join(parts), getattr(self._toolbox, "failed_calls", []), self._confirmed_now)
         text = drop_overclaims(text, self._confirmed_now)
+        text = drop_restated(text, self._confirmed_now)
+        text = fast.drop_second_apology(text, getattr(self._thinker, "bridge_said", ""))
         if not any(r.outcome == "ok" for r in self._coord.history[self._seen:]):
             # nothing ran in this request, so nothing was cancelled ("never mind" is not an undo)
             text = drop_false_undo(text, fast.drops_something(self._coord.open_utterance))
         if adds_nothing(text, self._confirmed_now):
             return ""
+        if text and "<silent>" not in text:
+            self._answer_now = text
         return text
 
     def turn_note(self) -> str:
@@ -397,7 +423,7 @@ class GalaxyAgent(base.DuetAgent):
 
 # --- the voice: the fixed lines are synthesized once ------------------------------------------------
 
-FIXED_LINES = ("Sure.", "One moment.", "Still working on it.")
+FIXED_LINES = ("Sure.", "One moment.", "Still working on it.") + tuple(sorted(set(fast.BRIDGE_LINES.values())))
 _fixed_audio: Dict[str, Any] = {}
 
 
@@ -552,6 +578,11 @@ async def entrypoint(ctx: JobContext) -> None:
     ) if x)
     agent = GalaxyAgent(trace, coord, toolbox, mode, context, user_name=name)
 
+    interruption: Dict[str, Any] = {}
+    if os.environ.get("DUET_INTERRUPT_MIN_S"):
+        interruption["min_duration"] = float(os.environ["DUET_INTERRUPT_MIN_S"])
+    if os.environ.get("DUET_INTERRUPT_MODE") in ("adaptive", "vad"):
+        interruption["mode"] = os.environ["DUET_INTERRUPT_MODE"]
     session = AgentSession(
         vad=ctx.proc.userdata.get("vad") or base.build_vad(),
         stt=WhisperSTT(),
@@ -564,9 +595,10 @@ async def entrypoint(ctx: JobContext) -> None:
                                       "max_speech_duration": CONFIG.preempt_max_speech_s,
                                       "max_retries": CONFIG.preempt_max_retries},
             # how much speech cuts DUET off (LiveKit's default 0.5 s): the lever for a loudspeaker whose
-            # echo interrupts DUET (DUET_INTERRUPT_MIN_S=0.8); speech with no words within 2 s resumes it
-            **({"interruption": {"min_duration": float(os.environ["DUET_INTERRUPT_MIN_S"])}}
-               if os.environ.get("DUET_INTERRUPT_MIN_S") else {}),
+            # echo interrupts DUET (DUET_INTERRUPT_MIN_S=0.8); speech with no words within 2 s resumes it.
+            # DUET_INTERRUPT_MODE=adaptive: LiveKit's own model tells a real interruption from "mm-hm" (it runs
+            # on LiveKit Cloud's inference; LiveKit leaves it off by default in production mode)
+            **({"interruption": interruption} if interruption else {}),
         },
         user_away_timeout=None,
     )
@@ -675,6 +707,7 @@ async def entrypoint(ctx: JobContext) -> None:
             if interrupted and item.text_content:
                 agent.cut_off = item.text_content.strip()
             agent.reply_delivered(said=item.text_content or "")
+            agent._cut_heard = (item.text_content or "") if interrupted else ""   # for "go on"
 
     @ctx.room.on("data_received")
     def _from_phone(packet: rtc.DataPacket) -> None:

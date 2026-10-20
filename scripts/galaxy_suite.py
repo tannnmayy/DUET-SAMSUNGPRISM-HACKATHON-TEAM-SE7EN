@@ -62,6 +62,7 @@ KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["too
 #   say    [regex]                   something DUET must say
 #   claim  [regex]                   something DUET must never say
 #   no_bare_ack  True: no message of DUET's is only "One moment." (or another fixed line) with nothing after it
+#   no_cut True: no message of DUET's was cut off (a backchannel such as "mm-hm" must not stop it)
 # patterns: "@4:30" means that clock time, morning or afternoon; "=18:00" exactly; else a regex.
 
 S = {}
@@ -154,6 +155,17 @@ scenario("s24_correction", "assistant", [
     reads=["web_search"], do=[], only=True, say=[r"iPhone"])
 scenario("s24_apple", "assistant", [("@Can you check when is the next Apple event?", 25.0)],
          reads=["web_search"], do=[], only=True, say=[r"Apple|event"])
+# Conversation controls (21 Oct 2026): "Wait." stops it and nothing is said; "Go on." finishes the answer from the
+# sentence it was cut in; "What?" says the last answer again
+scenario("controls", "assistant", [
+    ("@My battery drains super fast these days. What's going on?", 6.0), ("!Wait.", 3.0), ("Go on.", 12.0),
+    ("@What?", 12.0)],
+    reads=["get_battery_report"], do=[], only=True, say=[r"brightness|refresh|warm|hot|screen|game"])
+# A backchannel while DUET explains: ChatGPT Live keeps talking through "mm-hm"; with LiveKit's VAD interruption any
+# speech over 0.5 s stops DUET (DUET_INTERRUPT_MODE=adaptive is LiveKit's backchannel detector)
+scenario("backchannel", "assistant", [
+    ("@My battery drains super fast these days. What's going on?", 6.0), ("!Mm-hm, okay.", 14.0)],
+    reads=["get_battery_report"], do=[], only=True, no_cut=True)
 # 20 Oct 2026, the S24: each of these got "One moment." and then silence
 scenario("chat", "assistant", [
     ("@Good morning.", 6.0), ("@How are you?", 6.0), ("@I am not good.", 6.0), ("@Okay, thank you.", 6.0),
@@ -576,11 +588,22 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("claim", []):
         if re.search(rx, spoken, re.I):
             problems.append("FALSE CLAIM /%s/" % rx)
+    if expect.get("no_cut"):
+        for e in ev:
+            if e.get("kind") == "agent_said" and e.get("interrupted"):
+                problems.append('CUT OFF "%s"' % " ".join((e.get("text") or "").split())[-80:])
     if expect.get("no_bare_ack"):
+        # a message that is only the quick line (fixed, or the fast mind's bridge) with nothing after it
+        quick = {" ".join((e.get("text") or "").split()) for e in ev if e.get("kind") == "talker"}
+        quick |= {"One moment.", "Sure.", "Still working on it.", "Let me check.", "Let me look that up.",
+                  "Let me think about that."}
         for e in ev:
             text = " ".join((e.get("text") or "").split())
-            if e.get("kind") == "agent_said" and not e.get("interrupted") and text and \
-                    not re.sub(r"(One moment\.|Sure\.|Still working on it\.)\s*", "", text):
+            rest = text
+            for line in sorted(quick, key=len, reverse=True):
+                if line:
+                    rest = rest.replace(line, "")
+            if e.get("kind") == "agent_said" and not e.get("interrupted") and text and not rest.strip():
                 problems.append('ONLY A FIXED LINE "%s"' % text)
     errors = [e for e in ev if e.get("kind") == "thinker_error"
               and not (expect.get("errors_ok") and re.search(r"cannot reach|offline drill", e.get("text", "")))]

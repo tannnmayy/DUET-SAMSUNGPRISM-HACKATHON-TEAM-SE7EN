@@ -163,7 +163,7 @@ def test_an_answer_to_duets_own_question_is_never_small_talk():
     hybrid = fast.HybridThinker(fast_mind, slow)
     hybrid.recent = [("assistant", "Should I go ahead and set the brightness to 40 percent?")]
     events = collect(hybrid, "Okay.")
-    assert slow.calls == 1 and "Great!" not in [e.text for e in events]
+    assert slow.calls == 1 and "Great!" not in [e.text for e in events if e.kind in ("say", "bridge")]
 
 
 def test_the_fast_mind_sees_the_conversation_and_its_hand_over_is_kept():
@@ -364,6 +364,245 @@ def test_nothing_ran_so_nothing_was_cancelled(monkeypatch):
     assert a.polish("I've cancelled that.") == "I've cancelled that."      # a real cancel: the words stand
     assert drop_false_undo("I couldn't cancel it, sorry.", True) == "I couldn't cancel it, sorry."
     assert drop_false_undo("I've removed it.", False) == ""
+
+
+# --- Phase 3: the bridge, conversation controls, no restated confirmations ------------------------------------
+
+def test_the_bridge_is_the_fast_minds_line_if_it_promises_nothing_else_a_fixed_line_or_nothing():
+    b = fast.bridge_line
+    assert b({"say": "Let me check when the next Apple event is for you.", "kind": "web"},
+             "Can you check when is the next Apple event?") == "Let me check when the next Apple event is for you."
+    assert b({"say": "I'm sorry you're feeling unwell. I'm not able to give medical advice."},
+             "What do I do? I have a stomach pain.") == "I'm sorry you're feeling unwell."
+    assert b({"say": "I can look into that. What kind of phone do you have?", "kind": "phone"},
+             "My battery drains fast.") == "I can look into that."                     # never a question
+    assert b({"say": "Let me set your alarm.", "kind": "phone"}, "An alarm for 6:30, or maybe 7.") == "Let me check."
+    assert b({"say": "It's 31 degrees in Chennai.", "kind": "web"}, "Is it hot in Chennai?") == "Let me look that up."
+    assert b({"say": "keep_listening"}, "Will it rain?") == "Let me check."
+    assert b({"say": "The next Apple event is in September."}, "When is the Apple event?") == "Let me check."
+    assert b({}, "Good night.") == "" and b({}, "Call my") == ""          # small talk, cut-off words: nothing
+    assert b({"kind": "health"}, "I fell down.") == "Let me think about that."
+
+
+def bridge_run(fast_script, words="Can you check when is the next Apple event?"):
+    from duet_voice.agent import FlushSentinel  # noqa: F401  (the turn loop's own marker)
+    hybrid = fast.HybridThinker(Script("e2b", fast_script), Script("26b", CLOUD))
+    return collect(hybrid, words)
+
+
+def test_a_cloud_request_starts_with_the_bridge_before_its_route():
+    events = bridge_run([ThinkEvent("escalate", args={"say": "Let me check when the next Apple event is.",
+                                                        "kind": "web", "reason": "x"})])
+    kinds = [e.kind for e in events]
+    assert kinds[:2] == ["bridge", "route"] and events[0].text == "Let me check when the next Apple event is."
+    hybrid = fast.HybridThinker(Script("e2b", []), Script("26b", CLOUD))
+    hybrid.cloud_off = True
+    assert [e.kind for e in collect(hybrid, "What's the weather?")] == ["error"]   # no bridge with no cloud
+
+
+@pytest.mark.parametrize("words, kind", [("Wait.", "stop"), ("Hold on.", "stop"), ("Okay, stop.", "stop"),
+                                         ("Go on.", "resume"), ("Sorry, go on.", "resume"), ("Continue.", "resume"),
+                                         ("What?", "repeat"), ("Sorry?", "repeat"), ("Say that again.", "repeat"),
+                                         ("Go ahead.", None), ("Wait, set it for 7.", None), ("What is the time?", None)])
+def test_conversation_controls_are_whole_utterances(words, kind):
+    assert fast.control(words) == kind
+
+
+def test_stop_says_nothing_go_on_finishes_the_cut_answer_what_says_it_again():
+    def run(words, **state):
+        hybrid = fast.HybridThinker(Script("e2b", [ThinkEvent("chat", text="Sure!")]), Script("26b", CLOUD))
+        for k, v in state.items():
+            setattr(hybrid, k, v)
+        return [e.text for e in collect(hybrid, words) if e.kind == "say"], hybrid
+    assert run("Wait.")[0] == ["<silent>"]
+    assert run("Go on.", resume_text="For mild pain, rest and water help.")[0] == ["For mild pain, rest and water help."]
+    assert run("What?", last_answer="The next Apple event is on October 28.")[0] == [
+        "The next Apple event is on October 28."]
+    says, hybrid = run("Go on.")                         # nothing was cut off: an ordinary request
+    assert says == ["Sure!"]
+
+
+def test_what_the_user_did_not_hear_starts_at_the_sentence_they_cut():
+    full = "I'm sorry you're in pain. For mild pain, rest and water help. Where exactly is the pain?"
+    assert fast.remainder(full, "Let me think about that. I'm sorry you're in pain. For mild") == \
+        "For mild pain, rest and water help. Where exactly is the pain?"
+    assert fast.remainder(full, "I'm sorry") == full
+    assert fast.remainder(full, full) == "" and fast.remainder("", "x") == "" and fast.remainder(full, "") == ""
+
+
+def test_the_agent_keeps_its_last_reply_for_go_on_and_what(monkeypatch):
+    gagent, a = galaxy_agent(monkeypatch)
+    a._confirmed_now = []
+    assert a.polish("I'm sorry you're in pain. For mild pain, rest and water help.") != ""
+    assert a._answer_now == "I'm sorry you're in pain. For mild pain, rest and water help."
+    a.polish("<silent>")
+    assert a._answer_now == "I'm sorry you're in pain. For mild pain, rest and water help."   # silence keeps it
+    assert "Let me look that up." in gagent.FIXED_LINES and "Let me check." in gagent.FIXED_LINES
+
+
+def test_a_sentence_that_only_restates_a_confirmed_action_is_not_said_twice():
+    from duet_voice.galaxy.confirm import drop_restated
+    assert drop_restated("I've turned on the AC.", ["The air conditioner is now on."]) == ""
+    assert drop_restated("I've changed that to 4:30 in the morning.",
+                         ["Cancelled the 3:30 in the morning alarm.", "Alarm set for 4:30 in the morning."]) == ""
+    assert drop_restated("Brightness set. That should help your battery last longer.",
+                         ["Brightness set to 40 percent."]) == "That should help your battery last longer."
+    assert drop_restated("It will cool the room in about ten minutes.", ["The air conditioner is now on."]) == \
+        "It will cool the room in about ten minutes."
+    assert drop_restated("Anything.", []) == "Anything."
+
+
+def test_after_a_wait_go_on_still_finishes_the_answer_and_a_bridge_apologises_once(monkeypatch):
+    # cut off before any of the answer was heard (only "I can check..." and "Still working on it."): all of it
+    full = "It looks like your battery drains from the brightness. The phone is warm too."
+    assert fast.remainder(full, "I can check your battery usage for you. Still working on it.") == full
+    assert fast.drop_second_apology("I'm sorry to hear that you're in pain. For mild pain, rest helps.",
+                                    "I'm sorry to hear you have a stomach pain.") == "For mild pain, rest helps."
+    assert fast.drop_second_apology("I'm sorry, I can't.", "Let me check.") == "I'm sorry, I can't."
+    assert fast.drop_second_apology("I'm sorry to hear that.", "I'm sorry.") == "I'm sorry to hear that."  # the only line
+    assert fast.bridge_line({}, "No, no, cancel that. Could you set it for 4.30 instead?",
+                            ASSISTANT) == "Sure."                          # an action named: as the fast mind says
+    assert fast.bridge_line({}, "Should I turn on the torch?", ASSISTANT) == "Let me check."   # a question
+
+
+def test_an_alarm_reading_says_its_time_as_people_do():
+    from duet_voice.galaxy import readings
+    assert readings.answer("list_alarms", {"status": "ok", "set_by_duet": ["04:30"]}, "what alarms do i have?") == \
+        "Your alarm is set for 4:30 in the morning."
+    assert readings.answer("list_alarms", {"status": "ok", "set_by_duet": ["7:00 AM (gym)"]},
+                           "what alarms do i have?") == "Your alarm is set for 7:00 AM (gym)."
+
+
+def test_a_reply_that_says_nothing_still_closes_its_request(monkeypatch):
+    """21 Oct 2026: "Wait." got no reply (as it should), but nothing closed the request, so "Go on." was read as
+    "Wait. Go on." and not recognised."""
+    from livekit.agents import llm
+    _, a = galaxy_agent(monkeypatch)
+
+    class Silent:
+        model, history, thinking = "fake", [], ""
+
+        async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+            yield ThinkEvent("decided", tools=False)
+            yield ThinkEvent("say", text="<silent>")
+    a._thinker = Silent()
+    ctx = llm.ChatContext.empty()
+    ctx.add_message(role="user", content="Wait.")
+
+    async def go():
+        return [c async for c in a.llm_node(ctx, [], None)]
+    assert [c for c in asyncio.run(go()) if isinstance(c, str) and c.strip()] == []
+    assert a._consumed == 1 and a._pending_consumed is None          # closed: the next words stand alone
+    ctx.add_message(role="user", content="Go on.")
+    assert a._open_request(ctx) == "Go on."
+
+
+# --- Phase 4: one cloud call where one is enough --------------------------------------------------------------
+
+WEB_SPECS = {"web_search": {}, "get_weather": {}}
+
+
+def test_only_a_plain_web_question_goes_straight_to_the_search():
+    hand = {"kind": "web", "question": "When was the latest iPhone launched?", "say": "Let me check."}
+    words = "When was the latest Samsung phone launched? No, check for the latest iPhone launch."
+    assert fast.web_question(hand, words, WEB_SPECS) == "When was the latest iPhone launched?"
+    assert fast.web_question(hand, words, {}) == ""                                  # no web tool in this mode
+    assert fast.web_question({**hand, "question": "iPhone"}, words, WEB_SPECS) == ""   # not written out whole
+    assert fast.web_question({**hand, "kind": "phone"}, words, WEB_SPECS) == ""
+    assert fast.web_question({"kind": "web", "question": "Will it rain in Chennai today?"},
+                             "Will it rain in Chennai today?", WEB_SPECS) == ""      # the weather has its own tool
+    assert fast.web_question({"kind": "web", "question": "Who won the match yesterday?"},
+                             "Who won the match yesterday? And set an alarm for 7.", WEB_SPECS) == ""
+
+
+def test_only_talk_and_health_with_nothing_on_the_phone_get_the_light_call():
+    assert fast.light_request({"kind": "health"}, "What do I do? I have a stomach pain.")
+    assert fast.light_request({"kind": "talk"}, "I'm bored, any ideas?")
+    assert not fast.light_request({"kind": "health"}, "My battery drains super fast these days.")
+    assert not fast.light_request({"kind": "health"}, "Did I take my blood pressure tablet?")
+    assert not fast.light_request({"kind": "web"}, "Who won the match?")
+    assert not fast.light_request({"kind": "talk"}, "Call my mom, I feel lonely.")
+
+
+class WebBox:
+    def __init__(self, answer):
+        self.coord = Coordinator()
+        self.specs = WEB_SPECS
+        self.answer, self.calls = answer, []
+
+    async def call(self, tool, args, epoch=None):
+        self.calls.append((tool, args))
+        return json.dumps(self.answer)
+
+
+def hybrid_with(handover_args, slow_script=None):
+    fast_mind = Script("e2b", [ThinkEvent("escalate", text="x", args=handover_args)])
+    return fast.HybridThinker(fast_mind, Script("26b", slow_script or CLOUD))
+
+
+def test_a_web_question_is_answered_from_one_search():
+    hybrid = hybrid_with({"kind": "web", "say": "Let me check when the next Apple event is.",
+                          "question": "When is the next Apple event?"})
+    box = WebBox({"status": "ok", "answer": "Apple's next event is on October 28."})
+    events = collect(hybrid, "Can you check when is the next Apple event?", box)
+    assert [e.kind for e in events][:2] == ["bridge", "route"]
+    assert [e.text for e in events if e.kind == "say"] == ["Apple's next event is on October 28."]
+    assert box.calls == [("web_search", {"question": "When is the next Apple event?"})]
+    assert hybrid.slow.calls == 0 and "web search" in hybrid.edge_log[-1]
+
+
+def test_a_search_with_no_answer_leaves_it_to_the_full_cloud_mind():
+    hybrid = hybrid_with({"kind": "web", "say": "Let me look.", "question": "When is the next Apple event?"})
+    events = collect(hybrid, "Can you check when is the next Apple event?",
+                     WebBox({"status": "no_answer", "error": "nothing"}))
+    assert hybrid.slow.calls == 1 and [e.text for e in events if e.kind == "say"] == ["From the cloud."]
+
+
+def test_talk_and_health_get_one_call_with_no_tools(monkeypatch):
+    from duet_voice import gemma_api
+    sent = []
+
+    async def generate(model, contents, config, deadline_s=None):
+        sent.append((contents, config))
+        return NS(candidates=[NS(content=NS(parts=[NS(text="I'm sorry. Where exactly is the pain?", thought=False)]))],
+                  usage_metadata=None)
+    monkeypatch.setattr(gemma_api, "generate", generate)
+    hybrid = hybrid_with({"kind": "health", "say": "I'm sorry to hear that."})
+    hybrid.light_instructions = "LIGHT"
+    hybrid.recent = [("user", "I am not good."), ("assistant", "I'm sorry. What's going on?")]
+    events = collect(hybrid, "What do I do? I have a stomach pain.")
+    assert [e.text for e in events if e.kind == "say"] == ["I'm sorry. Where exactly is the pain?"]
+    assert hybrid.slow.calls == 0 and sent[0][1].system_instruction == "LIGHT" and not sent[0][1].tools
+    assert "User: I am not good." in sent[0][0] and "The user now says: What do I do?" in sent[0][0]
+    assert 'just said to the user: "I\'m sorry to hear that."' in sent[0][0]
+
+
+def test_a_light_call_that_fails_or_cannot_reach_google(monkeypatch):
+    from duet_voice import gemma_api
+
+    async def broken(model, contents, config, deadline_s=None):
+        raise RuntimeError("500 INTERNAL")
+
+    async def offline(model, contents, config, deadline_s=None):
+        raise gemma_api.CloudUnreachable("cannot reach Google's API (getaddrinfo failed)")
+    monkeypatch.setattr(gemma_api, "generate", broken)
+    hybrid = hybrid_with({"kind": "talk", "say": "Let me think about that."})
+    hybrid.light_instructions = "LIGHT"
+    events = collect(hybrid, "I'm bored, any ideas?")
+    assert hybrid.slow.calls == 1 and [e.text for e in events if e.kind == "say"] == ["From the cloud."]
+    monkeypatch.setattr(gemma_api, "generate", offline)
+    hybrid = hybrid_with({"kind": "talk", "say": "Let me think about that."})
+    hybrid.light_instructions = "LIGHT"
+    events = collect(hybrid, "I'm bored, any ideas?")
+    assert hybrid.slow.calls == 0 and fast.cloud_unreachable([e.text for e in events if e.kind == "error"][0])
+
+
+def test_the_light_instructions_have_no_tools_and_care_has_none():
+    from duet_voice.galaxy.modes import light_instructions
+    text = light_instructions("assistant", "Their name is Tanmay.")
+    assert "no tools" in text and "HEALTH" in text and "Tanmay" in text and "follow-up question" in text
+    assert light_instructions("care") is None and "eyes are on the road" in light_instructions("drive")
+    assert len(text) < 6000                     # a fraction of the full prompt (instructions and 22 tools)
 
 
 def test_the_greetings_use_the_name_and_read_well_without_one():

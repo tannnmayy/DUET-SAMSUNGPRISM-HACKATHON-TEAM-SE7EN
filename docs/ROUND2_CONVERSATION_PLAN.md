@@ -18,6 +18,7 @@ cloud mind (Gemma 4 26B). Probe scripts: the session scratchpad, `tools/probe_fa
 - [8. Risks](#8-risks)
 - [9. Naman's issues and recommendations](#9-namans-issues-and-recommendations)
 - [10. What I need from you](#10-what-i-need-from-you)
+- [11. Compared with ChatGPT Live: what is missing](#11-compared-with-chatgpt-live-what-is-missing)
 
 ---
 
@@ -331,6 +332,16 @@ No commits without your OK; no AI attribution in commits.
 - `galaxy/agent.py`: the fallback lines in `FIXED_LINES`.
 - **Check:** in a suite run, no cloud turn starts with the bare "One moment." unless the fast mind gave no usable line;
   the UI shows the bridge in its own bubble.
+- **Done 21 Oct, with Phase 4 (one commit):**
+  - bridge lines: "Let me check when the next Apple event is." (+1.3 s), "I'm sorry to hear you have a stomach
+    pain." (+1.1 s), after a correction "Let me check when the latest iPhone was launched."; only lines that open as a
+    bridge ("Let me…", "I'm sorry…", "Sure…") and promise nothing; "Sure." for an action; nothing for small talk;
+    the cloud mind is told the line, and an opening apology is not said twice;
+  - conversation controls: "Wait." says nothing; "Go on." finishes the cut answer (+0.67 s, no model); "What?" says
+    it again; found on the way: a reply that says nothing never closed its request ("Wait. Go on." was one request);
+  - a sentence that only restates a confirmed action is dropped ("The air conditioner is now on." is no longer
+    followed by "I've turned on the AC.");
+  - alarm readings say their time as people do ("4:30 in the morning", whatever the phone sends).
 
 **Phase 4 · 1.5 h · One cloud call where one is enough (P4, P5)**
 - `galaxy/fast.py`: the web route (search through the toolbox, answer spoken, failure falls back to the cloud mind);
@@ -339,6 +350,12 @@ No commits without your OK; no AI attribution in commits.
 - Optional if time allows: battery questions pre-read the battery report into the cloud's note, saving one call.
 - **Check:** web p50 ≤ 7 s and health p50 ≤ 4.5 s on this laptop; the Samsung → iPhone correction answers for the
   iPhone; the cloud-cut drill still says "I can't reach my cloud mind" at once.
+- **Done 21 Oct:** web questions in one grounded search: the Apple event 5.6 s (10.5 s in Phase 3, 15.6 s on the
+  S24), the iPhone correction 5.3 s, the T20 question 5.5 s; health in one call with no tools: 3.8 s; the weather,
+  the phone, the home and Care keep the full cloud mind (the Care fall still alerts the family). Spoken suite 15 of
+  15 (controls twice, s24_apple, s24_correction, web, s24_smalltalk, care_fall, care, weather, question_only, drill,
+  battery, alarm, cut_off, chat), 0 stale, 0 duplicates, 0 model errors; 259 unit tests. Battery pre-read and
+  sentence-by-sentence streaming not built (the one-call routes took most of the wait).
 
 **Phase 5 · 30 min · Ears and UI (P9, P11)**
 - `DUET_ASR_BEAM` (phone 1, benchmark 5) and end-of-turn 0.35 s, each kept only if the suite's word check holds.
@@ -384,3 +401,51 @@ To add when you send them. Each becomes a row in section 4 with its cause and fi
    `results/galaxy/traces/` (zipped), plus which GPU it has. Or tell me the demo runs on this laptop.
 3. **The demo time tomorrow**, and whether the S24 is with you tonight or tomorrow morning for Phase 6.
 4. **Your go-ahead** to start Phase 1.
+
+## 11. Compared with ChatGPT Live: what is missing
+
+Written 21 Oct after Phases 1 and 2, from the code, LiveKit 1.8.3's source, 996 emulator requests, 78 measured
+barge-ins, the suite runs and your ChatGPT Live video.
+
+### The verdict
+
+**The architecture is not what made DUET feel mechanical.** DUET is already full duplex where it counts:
+- the audio runs both ways at once over WebRTC;
+- DUET listens while it speaks and while it thinks;
+- talking over it stops it: 78 of 78 overlaps in the traces, **0.40 s p50 (0.45 s p90) after the speech detector
+  heard the user**;
+- it knows how much of a cut-off answer the user heard and answers from there (ChatGPT does the same, with
+  "truncation");
+- a correction made while it is thinking voids the old plan, and the new turn re-reads everything.
+
+What made it feel mechanical were **behaviour rules**: the fast mind was forbidden to talk, the cloud mind was told
+not to greet, a fixed "One moment." covered every cloud turn before anything was decided, and web questions took
+three cloud calls in a row. Phases 1 and 2 fixed the first two; Phases 3 and 4 fix the rest.
+
+**There are real architectural differences**, and they are what remains between DUET and ChatGPT Live. Ranked by how
+much a user feels them:
+
+| # | | ChatGPT Live | DUET today | Kind of gap | What closes it |
+|---|---|---|---|---|---|
+| A1 | **Hearing** | One model hears the audio itself, while you speak | A cascade: the speech detector waits 0.35 s of quiet, then Whisper transcribes the whole segment (no words until then), then the end-of-turn rule waits at least 0.5 s. About **1 s after your last word before any thinking starts** | Architecture: no streaming recogniser | Today: greedy Whisper and a 0.35 s end-of-turn minimum, if the word checks hold (Phase 5). After: a streaming recogniser with partial words (sherpa-onnx streaming Zipformer, on the laptop or the phone) |
+| A2 | **Cloud answers** | One model, audio streamed out within about half a second | Gemma 4 26B on the free tier, 1.5–2 s a call, the whole answer before the first word; a web question was three calls (10–11 s) | Design (fixable) plus compute | Phase 4: one call per turn; then stream the cloud answer sentence by sentence; a paid, low-latency tier after the demo |
+| A3 | **Barge-in judgement** | Tells a real interruption from "mm-hm" | Any sound over 0.5 s stops DUET: a cough or "mm-hm" cuts it off, and it resumes 2 s later only if no words came. LiveKit 1.8.3 has an **adaptive** (ML) interruption mode with backchannel detection, but turns it off in production mode: the agent log says "adaptive interruption is disabled by default in production mode" | Configuration | Turn on adaptive interruption (it runs on LiveKit Cloud's inference with our project's keys) and measure; else a 0.3 s minimum with Galaxy Buds |
+| A4 | **Conversation control** | "Wait" or "hold on": it stops and waits. "Go on": it carries on. "What?": it says it again | Nothing special for any of these: "hold on" can get a reply; "go on" after a cut-off answer does not continue it, though the cut-off text is known | Missing behaviour | Deterministic controls: wait (stop, say nothing), go on (finish the cut-off answer from where the user stopped hearing it), repeat (say the last answer again) |
+| A5 | **Voice and language** | Expressive, and in your video it spoke Hindi with you | Kokoro, one English voice; Whisper forced to English | Model choice | After the demo: language detection plus an Indian-English or Hindi voice. For the demo: English |
+| A6 | **Where it runs** | Phone to OpenAI | Phone → LiveKit Cloud → laptop GPU → Google's free tier: two network hops and three machines | Deployment | Track B (the engine on the phone, Gemma E2B on-device) and a paid cloud key, after the demo |
+| A7 | **Measured at the phone** | — | Every number is the agent's own clock; nothing measures when the phone actually plays the first word. The S24 was about 2 s slower than the emulator, cause still unknown | Missing measurement | Naman's logs (section 10); a phone-side timestamp on the first audio frame |
+
+**Where DUET is ahead of ChatGPT Live**, and should say so to the jury:
+- **Corrections:** it never acts on words you took back. On Full-Duplex-Bench v3 the best published system
+  (GPT-Realtime) has Pass@1 0.60; DUET's Round 1 run had 0.81 (judged by Gemma 4 in place of gpt-4o, as disclosed).
+- **Actions:** it never acts twice, and never claims what the phone did not confirm.
+- **The phone:** it really acts on it (alarms, calls, Maps, SmartThings), and speaks first with offers.
+
+### What this changes in the plan
+
+- **Phase 3:** the bridge lines; also the cloud mind's repeated confirmations ("The air conditioner is now on. I've
+  turned on the AC."), and the conversation controls of A4.
+- **Phase 4:** one cloud call where one is enough; then sentence-by-sentence streaming of the cloud answer (A2).
+- **Phase 5:** greedy Whisper and the shorter end-of-turn wait (A1); adaptive interruption tested (A3).
+- **After the demo, the roadmap to say to the jury:** streaming recogniser (A1), the engine on the phone (A6), Hindi
+  and Hinglish (A5).

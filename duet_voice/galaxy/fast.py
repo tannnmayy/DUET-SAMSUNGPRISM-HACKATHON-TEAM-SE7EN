@@ -347,6 +347,146 @@ def awaiting_answer(last_said: str) -> bool:
     return bool(_DUET_ASKED.search(last_said or ""))
 
 
+# --- the bridge: what DUET says the moment a request goes to the cloud mind -------------------------------
+
+# fixed lines by kind, for when the fast mind gave no line DUET may say (synthesized once at start-up)
+BRIDGE_LINES = {"web": "Let me look that up.", "health": "Let me think about that.", "talk": "Let me think about that.",
+                "phone": "Let me check.", "other": "Let me check."}
+# a line that promises an action: the action's own confirmation speaks once it is done (the fast voice never
+# claims a result, nor names a value a correction could still change)
+_PROMISES = re.compile(r"\b(let me|i'?ll|i will|i'?m going to|going to)\s+(set|turn|switch|call|text|send|open|cancel|"
+                       r"change|book|add|start|stop|lock|unlock|play|pause|remind|navigate|dim|lower|raise)\b", re.I)
+BRIDGE_MAX_WORDS = 16
+# how a line that only covers the wait begins; anything else could be a statement of fact the small model made up
+_BRIDGE_OPENERS = re.compile(r"^(let me|let's|i'?ll (check|look|find|see|get)|i can (check|look|help|find|see)|"
+                             r"i'?m (so |very |really )?sorry|sorry to hear|oh no|sure|okay|ok|got it|good question|"
+                             r"hmm+|checking|looking|give me a (sec|second|moment))\b", re.I)
+
+
+def bridge_line(handover: Dict[str, Any], words: str, tools: List[str] = ()) -> str:
+    """What DUET says when a request goes to the cloud mind, in place of the fixed "One moment.":
+    - the first sentence of the fast mind's own line that only covers the wait ("Let me...", "I'm sorry...") and
+      promises nothing (no question, no number, no claim, no action promised, no tool name): "Let me check when
+      the next Apple event is.";
+    - else "Sure." for an action the user named (one of `tools`), and not a question: "No, cancel that, set it
+      for 4:30" is acknowledged as the fast mind's own actions are;
+    - else a fixed line by kind ("Let me look that up.");
+    - nothing for small talk or words cut off mid-phrase: the cloud mind answers those in a second or two, and
+      "Let me check." before "Good night, Tanmay." or "Who should I call?" would be wrong."""
+    kind = str((handover or {}).get("kind") or "other").lower()
+    for sentence in re.split(r"(?<=[.!?])\s+", _REPLY_LABEL.sub("", str((handover or {}).get("say") or ""))):
+        if re.search(r"\b[a-z]+_[a-z_]+\b", sentence, re.I):
+            continue                    # a tool's name written out ("keep_listening")
+        s = clean_reply(sentence)
+        if not s or s.endswith("?") or re.search(r"\d", s) or _CLAIMS.search(s) or _PROMISES.search(s) \
+                or "<silent>" in s or len(s.split()) > BRIDGE_MAX_WORDS or not _BRIDGE_OPENERS.search(s):
+            continue
+        return s if s[-1] in ".!" else s + "."
+    from .tools import cut_off
+    if not (words or "").strip() or cut_off(words) or not_small_talk(words, []) == "":
+        return ""
+    from .readings import ACTION
+    if not asks_question(words) and (ACTION.search(words) or any(
+            t not in (ASK_EXPERT, CHAT_REPLY) and user_named(t, words) for t in tools)):
+        return "Sure."
+    return BRIDGE_LINES.get(kind, BRIDGE_LINES["other"])
+
+
+_SORRY = re.compile(r"^\W*(i'?m|i am)?\s*(so |very |really )?sorry\b|^\W*sorry to hear\b|^\W*oh no\b", re.I)
+
+
+def drop_second_apology(answer: str, bridge: str) -> str:
+    """The cloud mind's answer without its opening apology when the bridge already apologised (21 Oct 2026: "I'm
+    sorry to hear you have a stomach pain." and then "I'm sorry to hear that you're in pain. For mild...")."""
+    if not bridge or not _SORRY.search(bridge):
+        return answer
+    parts = [p for p in re.split(r"(?<=[.!?])\s+", (answer or "").strip()) if p]
+    if len(parts) > 1 and _SORRY.search(parts[0]):
+        parts = parts[1:]
+    return " ".join(parts)
+
+
+# --- conversation controls: stop, go on, say it again ------------------------------------------------------
+
+# the whole utterance asks DUET to stop or wait: it says nothing (talking over it has already stopped its voice)
+_STOP = re.compile(r"^\W*(ok(ay)?\W+)?(stop|stop it|stop talking|wait|wait a (sec|second|minute|moment)|hold on|"
+                   r"hang on|one (sec|second|moment)|just a (sec|second|minute|moment)|sh+|quiet|be quiet|shut up|"
+                   r"enough|that'?s enough)\W*$", re.I)
+# ...asks it to carry on with the answer it was cut off in ("go ahead" is left out: it says yes to an offer)
+_RESUME = re.compile(r"^\W*(sorry\W+)?(go on|continue|carry on|keep going|please continue|you were saying|"
+                     r"what were you saying)\W*$", re.I)
+# ...asks it to say its last answer again
+_REPEAT = re.compile(r"^\W*((what|sorry|huh|pardon)\s*\?|pardon( me)?|come again|say (that|it) again|repeat (that|it)|"
+                     r"can you repeat (that|it)|could you repeat (that|it)|what did you (just )?say|"
+                     r"i didn'?t (get|catch) that)\W*$", re.I)
+
+
+def control(words: str) -> Optional[str]:
+    """"stop", "resume" or "repeat" when the user's whole utterance is one of those, else None."""
+    w = (words or "").strip()
+    if _STOP.match(w):
+        return "stop"
+    if _RESUME.match(w):
+        return "resume"
+    if _REPEAT.match(w):
+        return "repeat"
+    return None
+
+
+def remainder(full: str, heard: str) -> str:
+    """What the user did not hear of an answer they cut off, from the start of the sentence they stopped in.
+    `full`: the whole answer; `heard`: the part played before they spoke."""
+    full, heard = " ".join((full or "").split()), " ".join((heard or "").split())
+    if not full or not heard:
+        return ""                       # nothing is known
+    # what was played can start with a line that is not part of the answer ("Let me check."): the cut is where
+    # the last words heard are found in the answer
+    tail = " ".join(heard.split()[-4:])
+    at = full.find(tail)
+    cut = at + len(tail) if at >= 0 else 0      # none of the answer was heard (only "Let me check." and the like)
+    if cut >= len(full):
+        return ""                       # they heard all of it
+    start = max([m.end() for m in re.finditer(r"[.!?]\s+", full[:cut])] or [0])
+    return full[start:].strip()
+
+
+# --- one cloud call where one is enough ---------------------------------------------------------------------
+
+# the weather has its own tool (Open-Meteo, exact): those questions stay with the full cloud mind
+_WEATHER = re.compile(r"\b(weather|rain\w*|forecast|temperature|humid\w*|sunny|cloudy|storm\w*|snow\w*|hot|cold|"
+                      r"degrees|umbrella)\b", re.I)
+# this phone, its readings and the home: the full cloud mind, which has their tools ("the latest Samsung phone"
+# is a web question, "my phone" is not)
+_PHONE_WORDS = re.compile(r"\b((my|this|the) (phone|mobile)|battery|charg\w*|apps?|screen|brightness|storage|alarms?|"
+                          r"timers?|reminders?|calendar|home|lights?|ac|air ?con\w*|door|lock|tv|washer|vacuum|trip|"
+                          r"route|car|settings?|wi-?fi|bluetooth|volume|music|torch|medicines?|tablets?|pills?|"
+                          r"doses?)\b", re.I)
+
+
+def web_question(handover: Dict[str, Any], words: str, specs: Optional[Dict[str, Any]]) -> str:
+    """The question to search the web with directly, in one grounded call, or '' for the full cloud mind (which
+    decides on a search, makes it, then words the answer: three calls, 10-11 s on 20 Oct 2026). Only a web
+    question the fast mind wrote out whole, with no phone action, no phone data and no weather in it."""
+    if str((handover or {}).get("kind") or "") != "web" or "web_search" not in (specs or {}):
+        return ""
+    q = " ".join(str((handover or {}).get("question") or "").split())
+    if len(q.split()) < 3:
+        return ""
+    from .readings import ACTION
+    if ACTION.search(words or "") or _WEATHER.search(words or "") or _WEATHER.search(q) or _PHONE_WORDS.search(words or ""):
+        return ""
+    return q
+
+
+def light_request(handover: Dict[str, Any], words: str) -> bool:
+    """Health or talk with nothing on the phone in it: one cloud call with no tools (a few hundred input tokens,
+    against about four thousand with the tools) is enough."""
+    if str((handover or {}).get("kind") or "") not in ("health", "talk"):
+        return False
+    from .readings import ACTION
+    return not (ACTION.search(words or "") or _PHONE_WORDS.search(words or ""))
+
+
 RECENT_TURNS = 12      # what the fast mind sees of the conversation: the last six exchanges
 
 
@@ -559,6 +699,13 @@ class HybridThinker:
         self.recent: List[tuple] = []
         # the fast mind's hand-over of the current request: reason, say, kind, question (ask_expert's arguments)
         self.handover: Dict[str, Any] = {}
+        # set by the agent before each request: DUET's last answer in full, and what the user did not hear of
+        # it if they cut it off (for "say that again" and "go on")
+        self.last_answer = ""
+        self.resume_text = ""
+        self.bridge_said = ""           # the line said when this request went to the cloud mind
+        # the short instructions of a cloud call with no tools, for talk and health (modes.light); None: never
+        self.light_instructions: Optional[str] = None
 
     @property
     def history(self):
@@ -575,6 +722,7 @@ class HybridThinker:
                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         coord = toolbox.coord
         done_before = len(coord.history)
+        self.bridge_said = ""
         if not allow_listen:
             # the second look, after waiting for a user who had not finished: these are the unclear
             # requests by nature, so the cloud mind takes them (17 Oct 2026: the fast mind, told to respond
@@ -582,6 +730,17 @@ class HybridThinker:
             async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before,
                                         "a second look after the user finished"):
                 yield ev
+            return
+        asked = control(text)
+        said = {"stop": "<silent>", "resume": self.resume_text, "repeat": self.last_answer}.get(asked or "")
+        if said:
+            # "wait" / "stop": nothing more is said (talking over DUET already stopped its voice); "go on": the
+            # rest of the answer they cut off, from the sentence they stopped it in; "what?": the last answer again
+            self._route("edge", {"stop": "the user asked DUET to stop or wait", "resume": "the user asked DUET to go on",
+                                 "repeat": "the user asked DUET to say it again"}[asked])
+            yield ThinkEvent("route", text="edge")
+            yield ThinkEvent("decided", tools=False)
+            yield ThinkEvent("say", text=said)
             return
         offer = self.offers.active() if self.offers is not None else None
         if offer is not None:
@@ -717,6 +876,69 @@ class HybridThinker:
                                     escalate_why or "nothing for the fast mind to do"):
             yield ev
 
+    async def _web(self, question: str, text: str, toolbox) -> AsyncIterator[ThinkEvent]:
+        """A web question in one grounded search, through the toolbox (the coordinator's gate and ledger, the
+        timeline), its answer spoken as it comes (the search is told to answer in two spoken sentences). No
+        answer: nothing is yielded but the search's own events, and the full cloud mind takes over."""
+        coord = toolbox.coord
+        epoch = coord.epoch
+        args = {"question": question}
+        yield ThinkEvent("decided", tools=True)
+        yield ThinkEvent("tool_start", name="web_search", args=args)
+        out = json.loads(await toolbox.call("web_search", dict(args), epoch=epoch))
+        if coord.overtaken(epoch):
+            from ..coordinator import Superseded
+            raise Superseded()
+        status = str(out.get("status", "ok")) if isinstance(out, dict) else "ok"
+        yield ThinkEvent("tool_done", name="web_search", args=args, outcome=status)
+        answer = " ".join(str(out.get("answer") or "").split()) if isinstance(out, dict) else ""
+        if status != "ok" or not answer:
+            log.info("web search gave no answer (%s); the full cloud mind takes over", status)
+            return
+        self.edge_log.append('User: "%s" -> answered from a web search: %s' % (text[-160:], answer[:240]))
+        self.cloud_down_until = 0.0
+        yield ThinkEvent("say", text=answer)
+
+    async def _light(self, text: str, note: str, coord) -> AsyncIterator[ThinkEvent]:
+        """Talk or health with nothing on the phone in it: one cloud call with no tools and short instructions,
+        with the recent conversation. No answer: nothing is yielded and the full cloud mind takes over; Google
+        not reachable: the error, as the full cloud mind would give it."""
+        from google.genai import types
+        from .. import gemma_api
+        from ..config import CONFIG
+        epoch = coord.epoch
+        model = gemma_api.resolved("thinker", CONFIG.thinker_model)
+        said_before = "\n".join("%s: %s" % ("User" if t["role"] == "user" else "DUET", t["content"])
+                                for t in chat_turns(self.recent))
+        prompt = (("The conversation so far:\n%s\n\n" % said_before) if said_before else "") + \
+            "The user now says: " + text + ("\n\n" + note if note else "") + \
+            ('\n\nThe fast voice has just said to the user: "%s" Carry on from it; do not say it again.'
+             % self.bridge_said if self.bridge_said else "")
+        config = types.GenerateContentConfig(system_instruction=self.light_instructions,
+                                             thinking_config=gemma_api.thinking_config(model, "minimal"),
+                                             **gemma_api.sampling(model))
+        try:
+            resp = await gemma_api.generate(model, prompt, config)
+        except gemma_api.CloudUnreachable as exc:
+            self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
+            yield ThinkEvent("error", text=str(exc))
+            return
+        except Exception as exc:  # a light call that fails leaves it to the full cloud mind
+            log.warning("light cloud call failed (%s); the full cloud mind takes over", str(exc)[:120])
+            return
+        if coord.overtaken(epoch):
+            from ..coordinator import Superseded
+            raise Superseded()
+        parts = (resp.candidates[0].content.parts or []) if resp.candidates and resp.candidates[0].content else []
+        answer = " ".join(p.text for p in parts if getattr(p, "text", None) and not getattr(p, "thought", False)).strip()
+        if not answer or "<silent>" in answer:
+            return
+        self.edge_log.append('User: "%s" -> DUET answered: "%s"' % (text[-160:], answer[:240]))
+        self.cloud_down_until = 0.0
+        from ..thinker import usage_of
+        yield ThinkEvent("decided", tools=False)
+        yield ThinkEvent("say", text=answer, usage=usage_of(resp))
+
     def _chat_check(self, words: str, reply: str, offer) -> str:
         """'' when the fast mind's own reply may be spoken (see chat_ok)."""
         last = next((t for role, t in reversed(list(self.recent or [])) if role == "assistant"), "")
@@ -750,6 +972,10 @@ class HybridThinker:
             # no cloud mind: say so at once (the agent's offline line), never wait for it
             yield ThinkEvent("error", text=CLOUD_OFF if self.cloud_off else CLOUD_DOWN)
             return
+        # DUET says what it understood, at once, in place of "One moment." (an empty line: nothing to say, as for
+        # small talk the cloud mind answers in a second). Before the route: the turn loop covers a cloud route at once.
+        self.bridge_said = bridge_line(self.handover, text, tool_names(self.fast))
+        yield ThinkEvent("bridge", text=self.bridge_said)
         # the cloud mind takes over: it is told what the fast mind already did, for this request
         # and for earlier ones it handled alone
         self._route("cloud", why)
@@ -757,7 +983,29 @@ class HybridThinker:
         if self.cloud_delay_s > 0:
             # the slow-cloud drill: variable latency, live ("One moment.", then "Still working on it.")
             await asyncio.sleep(self.cloud_delay_s)
+        if not any(r.outcome == "ok" for r in coord.history[done_before:]):
+            # one cloud call where one is enough (nothing ran yet in this request; else the full cloud mind,
+            # which hears what ran): a web question goes straight to the search, talk and health to one call
+            # with no tools. Either falls back to the full cloud mind if it gets no answer.
+            q = web_question(self.handover, text, getattr(toolbox, "specs", None))
+            if q:
+                answered = False
+                async for ev in self._web(q, text, toolbox):
+                    answered = answered or ev.kind in ("say", "error")
+                    yield ev
+                if answered:
+                    return
+            elif self.light_instructions and light_request(self.handover, text):
+                answered = False
+                async for ev in self._light(text, note, coord):
+                    answered = True
+                    yield ev
+                if answered:
+                    return
         extra = []
+        if self.bridge_said:
+            extra.append('The fast voice has just said to the user: "%s" Carry on from it; do not say it again.'
+                         % self.bridge_said)
         if self.edge_log:
             extra.append("Handled quickly by the phone since you last answered (already done; do not repeat): "
                          + " | ".join(self.edge_log[-6:]))

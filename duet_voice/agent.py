@@ -390,6 +390,19 @@ class DuetAgent(Agent):
                     self._trace("listen_done", quiet_s=round(self._quiet_for(), 2))
                     continue
                 kind = ev.kind
+                if kind == "bridge":
+                    # only the phone app's two speeds send this: what the fast mind understood, said the moment
+                    # the request goes to the cloud mind, in place of the fixed line. Empty: nothing to say and
+                    # nothing to cover (small talk the cloud mind answers in a second). The benchmark never sends it.
+                    if not spoke:
+                        line = (ev.text or "").strip()
+                        self._trace("talker", text=line, reason="bridge", fallback=False)
+                        if line:
+                            yield line + " "
+                            yield FlushSentinel()
+                            last_speech = time.time()
+                        spoke = True
+                    continue
                 if kind == "route":
                     # only the phone app's two speeds send this: the request went to the cloud mind,
                     # so the wait is seconds and is covered at once rather than after the grace
