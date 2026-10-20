@@ -69,7 +69,7 @@ from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
 from . import fast, proactive, smartthings  # noqa: E402
-from .confirm import adds_nothing, drop_failed_claims, drop_overclaims  # noqa: E402
+from .confirm import adds_nothing, drop_failed_claims, drop_false_undo, drop_overclaims  # noqa: E402
 from .modes import llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, cut_off, rpc_sender  # noqa: E402
@@ -309,10 +309,16 @@ class GalaxyAgent(base.DuetAgent):
         return ASK_REST.get(tool, "Sorry, I didn't catch the end of that. Could you finish it?")
 
     def silent_answers(self, confirmed) -> bool:
-        """A silent reply closes the request only when something was done in it (the fast mind's
-        confirmations said it all). Otherwise the words stay open for what the user says next: 17 Oct
-        2026, "Call my" got a silent reply, and the "My daughter" that followed lost its "call"."""
-        return bool(confirmed) or any(r.outcome == "ok" for r in self._coord.history[self._seen:])
+        """Does a silent reply close the request? Yes, unless something in it is still unfinished: words cut
+        off mid-phrase (17 Oct 2026: "Call my" got a silent reply, and the "My daughter" that followed lost its
+        "call"), an action a guard held back, or one the phone refused. Those stay open for what the user says
+        next. Before 21 Oct 2026 every silent reply with nothing done stayed open, and on the S24 "Good night.
+        I said good night. Good morning. How are you. Thank you. I am not good." piled up into one request."""
+        if confirmed or any(r.outcome == "ok" for r in self._coord.history[self._seen:]):
+            return True
+        unfinished = cut_off(self._coord.open_utterance) or self._toolbox.unfinished or getattr(
+            self._toolbox, "failed", [])
+        return not unfinished
 
     def error_answers(self, why: str) -> bool:
         """"I can't reach my cloud mind" answers the request: it is not kept open for the next words
@@ -341,6 +347,9 @@ class GalaxyAgent(base.DuetAgent):
             parts.pop()
         text = drop_failed_claims(" ".join(parts), getattr(self._toolbox, "failed_calls", []), self._confirmed_now)
         text = drop_overclaims(text, self._confirmed_now)
+        if not any(r.outcome == "ok" for r in self._coord.history[self._seen:]):
+            # nothing ran in this request, so nothing was cancelled ("never mind" is not an undo)
+            text = drop_false_undo(text, fast.drops_something(self._coord.open_utterance))
         if adds_nothing(text, self._confirmed_now):
             return ""
         return text

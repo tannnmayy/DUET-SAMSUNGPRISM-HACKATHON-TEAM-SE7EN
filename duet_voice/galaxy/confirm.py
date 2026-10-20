@@ -294,6 +294,26 @@ def drop_overclaims(answer: str, confirmations: List[str]) -> str:
     return " ".join(p for p in parts if not contradicts(p))
 
 
+# a sentence saying something was cancelled or undone
+_UNDONE = re.compile(r"\b(i'?ve|i have|i)\s+(cancel+ed|undone|undid|removed|deleted|called off)\b|"
+                     r"\b(it|that|this|the \w+)\s+(is|was|has been)\s+(cancel+ed|removed|deleted|undone)\b", re.I)
+LEFT_ALONE = "Okay, I'll leave it."
+
+
+def drop_false_undo(answer: str, dropped: bool) -> str:
+    """For a request in which nothing ran: the answer without a sentence that says something was cancelled or
+    undone, since nothing was. 21 Oct 2026: "Set an alarm for 6 tomorrow morning. Actually, never mind, forget it."
+    was answered "I've cancelled that." 3 times out of 3, though no alarm was ever set. If that was the whole answer
+    and the user dropped their request (`dropped`), it is said plainly instead."""
+    parts = [p for p in re.split(r"(?<=[.!?])\s+", (answer or "").strip()) if p]
+    kept = [p for p in parts if not _UNDONE.search(p)]
+    if len(kept) == len(parts):
+        return answer
+    if not kept and dropped:
+        return LEFT_ALONE
+    return " ".join(kept)
+
+
 def confirmation(tool: str, args: Dict[str, Any], result: Any) -> Optional[str]:
     """A few words saying the action is done, or None when the slow mind should say it.
     Only for a result the phone reported as done (status ok)."""

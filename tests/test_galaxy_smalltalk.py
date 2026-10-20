@@ -331,3 +331,43 @@ def test_one_moment_waits_while_the_fast_mind_decides(monkeypatch):
 def test_a_spoken_answer_starts_with_a_capital_after_its_okay_is_dropped(monkeypatch):
     _, a = galaxy_agent(monkeypatch)
     assert a.polish("Okay, what can I do for you?") == "What can I do for you?"
+
+
+# --- the cloud mind's instructions (Phase 2) ----------------------------------------------------------------
+
+def test_no_mode_tells_the_cloud_mind_not_to_greet_and_small_talk_is_meant_for_it():
+    """20 Oct 2026: told "do not greet them", Gemma 4 26B replied <silent> to "Good morning." 3 times of 3."""
+    for key, m in MODES.items():
+        text = m["thinker"].lower()
+        assert "do not greet" not in text and "already acknowledged" not in text, key
+        assert "greet them back" in text and "small talk are meant for you" in text, key
+        assert "<silent> only to background talk or noise" in text, key
+        assert "follow-up question" in text and "name now and then" in text, key
+
+
+def test_the_assistant_answers_health_with_care_and_a_question():
+    text = MODES["assistant"]["thinker"]
+    assert "HEALTH" in text and "never diagnose" in text and "112" in text
+    assert "Do not call yourself an AI" in text and "Where exactly is the pain" in text
+
+
+def test_nothing_ran_so_nothing_was_cancelled(monkeypatch):
+    """21 Oct 2026: "Set an alarm for 6 tomorrow morning. Actually, never mind, forget it." was answered "I've
+    cancelled that." 3 times of 3, though no alarm was set."""
+    from duet_voice.coordinator import CallRecord
+    from duet_voice.galaxy.confirm import drop_false_undo
+    _, a = galaxy_agent(monkeypatch)
+    a._coord.heard("Set an alarm for 6 tomorrow morning. Actually, never mind, forget it.")
+    assert a.polish("I've cancelled that.") == "Okay, I'll leave it."
+    assert a.polish("Got it. The alarm was cancelled.") == "Got it."
+    a._coord.history.append(CallRecord("cancel_alarm", {"time": "06:00"}, 0, 0.0, outcome="ok"))
+    assert a.polish("I've cancelled that.") == "I've cancelled that."      # a real cancel: the words stand
+    assert drop_false_undo("I couldn't cancel it, sorry.", True) == "I couldn't cancel it, sorry."
+    assert drop_false_undo("I've removed it.", False) == ""
+
+
+def test_the_greetings_use_the_name_and_read_well_without_one():
+    for key in ("assistant", "drive"):
+        g = MODES[key]["greeting"]
+        assert g.format(name="Tanmay").startswith("Hi Tanmay,")
+        assert g.format(name="there").startswith("Hi there,")

@@ -306,6 +306,24 @@ No commits without your OK; no AI attribution in commits.
 - `galaxy/agent.py`: `silent_answers` closes the request unless the words are cut off or an action was held back.
 - **Check:** the full prompt with "Good morning." answers instead of `<silent>`, 5 of 5; the "Call my" scenarios still
   ask "Who should I call?"; unit tests pass.
+- **Done 21 Oct (Phase 1 committed as bb519fc):**
+  - the real Assistant prompt (instructions, user context, 22 tools, turn note): "Good morning." answered 5 of 5
+    ("Good morning, Tanmay. How can I help you today?"), against `<silent>` 3 of 3 before; background talk ("Rahul,
+    did you take the car keys from the table?") still `<silent>` 2 of 2; health answers in two sentences and a
+    follow-up question ("Where exactly is the pain, and since when have you been feeling it?"), no "I am an AI";
+  - 230 unit tests pass (the old silent-reply test rewritten to the new rule: cut-off words, held-back and
+    refused actions stay open, anything else closes);
+  - nine full-prompt calls in a minute spent the three free keys' per-minute budget: Phase 4's light calls matter;
+  - spoken suite 12 of 12 (cut_off, waver_call, dropped, smalltalk, chat, s24_smalltalk, question_only, battery,
+    care, care_fall, drill, alarm), 0 stale, 0 duplicates; greetings with the name ("Hi Tanmay, I'm DUET. What can
+    I do for you?");
+  - found: a dropped request ("Set an alarm for 6 tomorrow morning. Actually, never mind, forget it.") answered "I've
+    cancelled that." 3 of 3, instructions or not. Fixed in code (`confirm.drop_false_undo`): when nothing ran in the
+    request, a sentence saying something was cancelled is dropped, and a dropped request is answered "Okay, I'll
+    leave it." Re-run: dropped 2 of 2 "Okay, I'll leave it."; alarm_late keeps its real "Cancelled the 3:30 in the
+    morning alarm."; home 2 of 2. 231 unit tests.
+  - Seen, older than tonight, for Phase 3: after an action the cloud mind repeats the confirmation ("The air
+    conditioner is now on. I've turned on the AC.").
 
 **Phase 3 · 45 min · Bridge lines (P3)**
 - `duet_voice/agent.py`: a `bridge` event spoken at once if nothing was said yet (no-op for the benchmark).
