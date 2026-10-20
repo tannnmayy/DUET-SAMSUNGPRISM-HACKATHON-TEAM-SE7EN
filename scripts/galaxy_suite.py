@@ -63,6 +63,7 @@ KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["too
 #   claim  [regex]                   something DUET must never say
 #   no_bare_ack  True: no message of DUET's is only "One moment." (or another fixed line) with nothing after it
 #   no_cut True: no message of DUET's was cut off (a backchannel such as "mm-hm" must not stop it)
+#   route_why [regex]                a reason DUET must give for where a request went (the timeline's route)
 # patterns: "@4:30" means that clock time, morning or afternoon; "=18:00" exactly; else a regex.
 
 S = {}
@@ -161,11 +162,12 @@ scenario("controls", "assistant", [
     ("@My battery drains super fast these days. What's going on?", 6.0), ("!Wait.", 3.0), ("Go on.", 12.0),
     ("@What?", 12.0)],
     reads=["get_battery_report"], do=[], only=True, say=[r"brightness|refresh|warm|hot|screen|game"])
-# A backchannel while DUET explains: ChatGPT Live keeps talking through "mm-hm"; with LiveKit's VAD interruption any
-# speech over 0.5 s stops DUET (DUET_INTERRUPT_MODE=adaptive is LiveKit's backchannel detector)
+# A backchannel while DUET explains: ChatGPT Live keeps talking through "mm-hm". DUET's voice stops for it (LiveKit
+# hears speech), and then the answer goes on from the sentence it was cut in (fast.control)
 scenario("backchannel", "assistant", [
-    ("@My battery drains super fast these days. What's going on?", 6.0), ("!Mm-hm, okay.", 14.0)],
-    reads=["get_battery_report"], do=[], only=True, no_cut=True)
+    ("@My battery drains super fast these days. What's going on?", 6.0), ("!Right, I see.", 14.0)],
+    reads=["get_battery_report"], do=[], only=True, route_why=[r"only listening"])
+# (the suite's synthetic voice says "Mm-hm" so that the recogniser writes "Mom okay.": "Right, I see." is used here)
 # 20 Oct 2026, the S24: each of these got "One moment." and then silence
 scenario("chat", "assistant", [
     ("@Good morning.", 6.0), ("@How are you?", 6.0), ("@I am not good.", 6.0), ("@Okay, thank you.", 6.0),
@@ -588,6 +590,9 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("claim", []):
         if re.search(rx, spoken, re.I):
             problems.append("FALSE CLAIM /%s/" % rx)
+    for rx in expect.get("route_why", []):
+        if not any(re.search(rx, e.get("why") or "", re.I) for e in ev if e.get("kind") == "route"):
+            problems.append("NO ROUTE /%s/" % rx)
     if expect.get("no_cut"):
         for e in ev:
             if e.get("kind") == "agent_said" and e.get("interrupted"):

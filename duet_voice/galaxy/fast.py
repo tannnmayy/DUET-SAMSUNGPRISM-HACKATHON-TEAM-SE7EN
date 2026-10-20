@@ -421,8 +421,15 @@ _REPEAT = re.compile(r"^\W*((what|sorry|huh|pardon)\s*\?|pardon( me)?|come again
                      r"i didn'?t (get|catch) that)\W*$", re.I)
 
 
+# ...is only a backchannel: said over an answer, it means "I'm listening", so the answer goes on from the sentence it
+# was cut in. 21 Oct 2026: "Mm-hm, okay." said over an answer stopped DUET, in LiveKit's VAD and adaptive modes alike,
+# and the answer was lost. ("Yes" and "sure" are left out: they can say yes to an offer.)
+_BACKCHANNEL = re.compile(r"^\W*((m+-?h?m+|mhm+|hmm+|uh-?huh|okay|ok|right|yeah|yep|i see|got it|alright|cool)\W*){1,3}$",
+                          re.I)
+
+
 def control(words: str) -> Optional[str]:
-    """"stop", "resume" or "repeat" when the user's whole utterance is one of those, else None."""
+    """"stop", "resume", "repeat" or "backchannel" when the user's whole utterance is one of those, else None."""
     w = (words or "").strip()
     if _STOP.match(w):
         return "stop"
@@ -430,6 +437,8 @@ def control(words: str) -> Optional[str]:
         return "resume"
     if _REPEAT.match(w):
         return "repeat"
+    if _BACKCHANNEL.match(w):
+        return "backchannel"
     return None
 
 
@@ -732,12 +741,15 @@ class HybridThinker:
                 yield ev
             return
         asked = control(text)
-        said = {"stop": "<silent>", "resume": self.resume_text, "repeat": self.last_answer}.get(asked or "")
+        said = {"stop": "<silent>", "resume": self.resume_text, "repeat": self.last_answer,
+                "backchannel": self.resume_text}.get(asked or "")
         if said:
-            # "wait" / "stop": nothing more is said (talking over DUET already stopped its voice); "go on": the
-            # rest of the answer they cut off, from the sentence they stopped it in; "what?": the last answer again
+            # "wait" / "stop": nothing more is said (talking over DUET already stopped its voice); "go on", or only
+            # "mm-hm" over an answer: the rest of the answer they cut off, from the sentence they stopped it in;
+            # "what?": the last answer again. (A backchannel with nothing cut off is ordinary small talk.)
             self._route("edge", {"stop": "the user asked DUET to stop or wait", "resume": "the user asked DUET to go on",
-                                 "repeat": "the user asked DUET to say it again"}[asked])
+                                 "repeat": "the user asked DUET to say it again",
+                                 "backchannel": "the user was only listening: the answer goes on"}[asked])
             yield ThinkEvent("route", text="edge")
             yield ThinkEvent("decided", tools=False)
             yield ThinkEvent("say", text=said)

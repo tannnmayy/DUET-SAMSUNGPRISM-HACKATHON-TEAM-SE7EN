@@ -422,6 +422,23 @@ def test_stop_says_nothing_go_on_finishes_the_cut_answer_what_says_it_again():
     assert says == ["Sure!"]
 
 
+@pytest.mark.parametrize("words", ["Mm-hmm.", "Mm-hm, okay.", "Mhm.", "Uh-huh.", "Okay.", "Right.", "Yeah, okay.",
+                                   "I see.", "Got it."])
+def test_a_backchannel_over_an_answer_lets_it_go_on(words):
+    assert fast.control(words) == "backchannel"
+    hybrid = fast.HybridThinker(Script("e2b", [ThinkEvent("chat", text="Okay!")]), Script("26b", CLOUD))
+    hybrid.resume_text = "The phone is warm too."
+    assert [e.text for e in collect(hybrid, words) if e.kind == "say"] == ["The phone is warm too."]
+    hybrid.resume_text = ""         # nothing was cut off: answered as any other words (small talk, or the cloud
+    says = [e.text for e in collect(hybrid, words) if e.kind == "say"]   # mind for a "yeah" that may answer something)
+    assert says in (["Okay!"], ["From the cloud."])
+
+
+@pytest.mark.parametrize("words", ["Yes.", "Sure.", "Okay, set it to 40.", "Right, call Priya."])
+def test_a_yes_or_a_request_is_not_a_backchannel(words):
+    assert fast.control(words) is None
+
+
 def test_what_the_user_did_not_hear_starts_at_the_sentence_they_cut():
     full = "I'm sorry you're in pain. For mild pain, rest and water help. Where exactly is the pain?"
     assert fast.remainder(full, "Let me think about that. I'm sorry you're in pain. For mild") == \

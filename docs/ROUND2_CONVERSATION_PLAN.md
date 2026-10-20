@@ -361,6 +361,21 @@ No commits without your OK; no AI attribution in commits.
 - `DUET_ASR_BEAM` (phone 1, benchmark 5) and end-of-turn 0.35 s, each kept only if the suite's word check holds.
 - `session_start` sent again; bridge bubble.
 - **Check:** the top bar shows the brain; first-word time down by the measured amount, no new mishearings.
+- **Done 21 Oct:**
+  - **Backchannels:** "Mm-hm, okay." said over an answer cut DUET off 2 of 2 (LiveKit's VAD mode). LiveKit's
+    adaptive interruption (LiveKit Cloud inference, works with our keys) did not tell the test voice's "Mm-hm" from an
+    interruption either, but it stops DUET faster: **0.21 s p50 after the speech began, against 0.40 s** (5 against 48
+    overlaps). It is now the default (`DUET_INTERRUPT_MODE=vad` turns it off; it falls back to VAD by itself). And a
+    backchannel over an answer ("right, I see", "mm-hmm", "okay") now lets the answer go on from the sentence it was
+    cut in: 2 of 2 in the spoken suite.
+  - **Greedy Whisper: measured, not changed.** On the S24 videos' real speech, beam 1 saves about 0.03 s a segment
+    (0.27 s against 0.30 s) and the user's words came out the same. Not worth the risk; the ears' wait is the
+    speech detector and the end of turn. The 0.35 s end-of-turn minimum was left at 0.5 s for the same reason (a
+    shorter wait answers people in their pauses).
+  - **The top bar:** on the S24, DUET's `session_start` came while the app was still setting up the microphone and
+    audio route, and the app then wrote "Connected · waiting for DUET…" over it for good. Fixed in `app/www/app.js`;
+    the web app loads with no console errors; a new APK is built (`app/android/app/build/outputs/apk/debug/app-debug.apk`,
+    copied to `E:\duet_local\DUET-galaxy-debug.apk`). **Not yet installed on the S24**: `python scripts/phone_check.py`.
 
 **Phase 6 · 1.5–2 h · Verify, on this laptop, then on the S24**
 - Unit tests; `galaxy_fast_eval.py --repeat 3`; `galaxy_suite.py` with the new conversation scenarios;
