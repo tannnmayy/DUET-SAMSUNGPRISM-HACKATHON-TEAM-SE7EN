@@ -172,6 +172,7 @@
     switch (ev.kind) {
       case "session_start":
         reconnects = 0; rejoinUntil = 0;   // a fresh conversation: a later drop gets its own 3 minutes
+        brainShown = true;
         $("conn").textContent = "Connected · brain: " + (ev.model || "?");
         homeLive = null;
         homeNote = ev.home === "simulated" ? (ev.home_why || "") : "";
@@ -336,6 +337,7 @@
   });
 
   let twoSpeeds = false;      // a fast mind runs next to the cloud mind (the drill needs it)
+  let brainShown = false;     // DUET's session_start arrived in this room (it can come before the microphone is up)
   let drillsOpen = false;     // the drills panel stays open while the presenter uses it
   let cloudOff = false;       // the offline drill is on
   let slowCloud = false, homeDown = false;   // the slow-cloud and SmartThings-offline drills
@@ -583,6 +585,7 @@
         }
       });
 
+      brainShown = false;
       await room.connect(url, token);
       up = true;
       // DUET joins within seconds; a room it never joins (its laptop was still starting) is left for a new one
@@ -605,8 +608,12 @@
         try { await P.native.audioRoute({}); } catch (e) { console.warn(e); }
         try { await P.native.keepAwake({ on: true }); } catch (e) { console.warn(e); }
       }
-      $("conn").textContent = "Connected · waiting for DUET…";
-      orb("initializing");
+      // 20 Oct 2026, the S24: DUET's session_start came while the microphone and audio route were still being
+      // set up, and this line then hid it for the whole conversation
+      if (!brainShown) {
+        $("conn").textContent = "Connected · waiting for DUET…";
+        orb("initializing");
+      }
     } catch (e) {
       console.error(e);
       if (room && room.state !== "connected") { const r = room; room = null; try { await r.disconnect(false); } catch (x) { /* never connected */ } }

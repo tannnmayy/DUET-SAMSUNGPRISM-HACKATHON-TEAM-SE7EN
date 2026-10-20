@@ -1,15 +1,18 @@
-"""How well does the fast mind judge? Its decisions on 42 requests, text only, in about a minute.
+"""How well does the fast mind judge? Its decisions on 95 requests, text only, in about a minute.
 
     python scripts/galaxy_fast_eval.py                 # the fast mind at DUET_FAST_BASE_URL (llama.cpp)
     python scripts/galaxy_fast_eval.py --repeat 3
+    python scripts/galaxy_fast_eval.py --only chat     # the small-talk cases alone
 
 For each request the fast mind (duet_voice/galaxy/fast.py) must either:
   - act: carry out exactly the expected simple phone actions, with the final values;
-  - hand over: call ask_expert (or reply without a tool, which the phone app also hands over);
+  - chat: answer small talk itself, with words the app lets it speak (fast.chat_ok);
+  - hand over: call ask_expert (or reply with words the app would not speak, which it also hands over);
   - keep listening: when the sentence is cut off.
-The two failures that matter most are counted apart:
+The failures that matter most are counted apart:
   wrong action: it acted with a wrong or stale value, or acted on something it should have handed over;
-  missed: it handed over a simple action it should have done (slower, but not wrong).
+  wrong chat: the app would have spoken its own words where the cloud mind had to answer;
+  missed: it handed over a simple action or small talk it should have done (slower, but not wrong).
 """
 
 from __future__ import annotations
@@ -30,6 +33,7 @@ from duet_voice.galaxy import fast  # noqa: E402
 from duet_voice.galaxy.modes import MODES  # noqa: E402
 
 ACT, HAND, LISTEN, NOTHING = "act", "hand", "listen", "nothing"   # NOTHING: hand over, listen, or a quiet no-op
+CHAT, EITHER = "chat", "chat|hand"                                 # EITHER: small talk or the cloud mind, both fine
 
 CASES = [
     # (mode, words, expected, [(tool, {arg: pattern})])
@@ -71,10 +75,10 @@ CASES = [
     ("assistant", "What's the weather tomorrow?", HAND, []),
     ("assistant", "Who won the cricket match yesterday?", HAND, []),
     ("assistant", "Would lowering my brightness help my battery?", HAND, []),
-    ("assistant", "Hi DUET, how are you?", HAND, []),
+    ("assistant", "Hi DUET, how are you?", CHAT, []),
     ("care", "Did I take my blood pressure tablet today?", HAND, []),
     ("care", "I fell down and my hip really hurts.", HAND, []),
-    ("care", "I'm feeling a bit lonely today.", HAND, []),
+    ("care", "I'm feeling a bit lonely today.", EITHER, []),
     ("assistant", "Set an alarm for 6 tomorrow. Actually, never mind.", NOTHING, []),
     ("assistant", "Add a dentist appointment on Monday at 4.", HAND, []),
     ("assistant", "Is it going to rain in Chennai today?", HAND, []),
@@ -114,6 +118,50 @@ RECOGNISER = [
     ("assistant", "Is the AC on at home?", HAND, []),
 ]
 
+# Small talk, from the S24 runs of 20 Oct 2026 (where every one of these got "One moment." and then silence)
+# and like them; and its neighbours that are not small talk. The fifth field is the conversation so far.
+IPHONE = [("user", "When was the latest iPhone launched?"),
+          ("assistant", "The iPhone 18 Pro was announced on September 9, 2026.")]
+CHAT_CASES = [
+    ("assistant", "Good morning.", CHAT, [], []),
+    ("assistant", "Good night.", CHAT, [], []),
+    ("assistant", "How are you?", CHAT, [], []),
+    ("assistant", "How's it going?", CHAT, [], []),
+    ("assistant", "Hey DUET.", CHAT, [], []),
+    ("assistant", "Good afternoon, DUET.", CHAT, [], []),
+    ("assistant", "What can you do?", CHAT, [], []),
+    ("assistant", "Who are you?", CHAT, [], []),
+    ("assistant", "Thank you.", CHAT, [], [("assistant", "Alarm set for 7 in the morning.")]),
+    ("assistant", "Thanks a lot, that's really helpful.", CHAT, [], IPHONE),
+    ("assistant", "Okay.", CHAT, [], IPHONE),
+    ("assistant", "That's great.", CHAT, [], IPHONE),
+    ("assistant", "I am not good.", CHAT, [], [("user", "How are you?"),
+                                              ("assistant", "I'm doing well, thanks! How about you?")]),
+    ("assistant", "I'm doing well, how about you?", CHAT, [], [("assistant", "Good morning! How are you today?")]),
+    ("assistant", "I'm so tired today.", CHAT, [], []),
+    ("assistant", "I'm bored.", CHAT, [], []),
+    ("assistant", "Nothing much, I just want to rest today.", CHAT, [],
+     [("user", "Good morning."), ("assistant", "Good morning, Tanmay! Any plans today?")]),
+    ("assistant", "Bye, talk to you later.", CHAT, [], []),
+    ("assistant", "Okay, good night.", CHAT, [], IPHONE),
+    ("drive", "Good evening.", CHAT, [], []),
+    ("care", "Good morning, dear.", CHAT, [], []),
+    # not small talk: the cloud mind answers, or the fast mind acts
+    ("assistant", "What do I do? I have a stomach pain.", HAND, [], [("user", "I am not good."),
+                                                                    ("assistant", "I'm sorry to hear that. What's wrong?")]),
+    ("assistant", "Can you check when is the next Apple event?", HAND, [], []),
+    ("assistant", "When was the latest Samsung phone launched? No, check for the latest iPhone launch.", HAND, [], []),
+    ("assistant", "My battery drains super fast these days. What's going on?", HAND, [], []),
+    ("assistant", "Tell me a joke.", EITHER, [], []),
+    ("assistant", "Yes.", HAND, [], [("assistant", "Should I go ahead and set the brightness to 40 percent?")]),
+    ("assistant", "4:30.", HAND, [], [("assistant", "3:30 or 4:30?")]),
+    ("assistant", "Okay, do that.", HAND, [], [("assistant", "Would you like me to lower the brightness?")]),
+    ("assistant", "Good morning. Set an alarm for 7 tomorrow.", ACT, [("set_alarm", {"time": "@7:00"})], []),
+    ("assistant", "Thanks. Now turn on the torch.", ACT, [("set_torch", {"on": "true"})], []),
+    ("care", "Good morning. I have a headache today.", HAND, [], []),
+    ("assistant", "Hi, what's the weather like today?", HAND, [], []),
+]
+
 
 def match_value(pattern, value):
     v = str(value).lower() if value is not None else ""
@@ -144,21 +192,33 @@ class Box:
         return await self.box.call(tool, args, epoch=epoch)
 
 
-async def judge(mode, words, expected, wanted):
-    thinker = fast.make_fast_thinker(MODES[mode]["tools"], MODES[mode]["title"])
-    thinker.vet = lambda calls: fast.vet_plan(calls, words)   # as the phone app does
+NAME = {"user": ""}     # the user's name, as the phone app passes it (--name)
+
+
+async def judge(mode, words, expected, wanted, history=()):
+    thinker = fast.make_fast_thinker(MODES[mode]["tools"], MODES[mode]["title"], NAME["user"])
     box = Box(mode, words)
+    thinker.vet = lambda calls: fast.vet_plan(calls, words, specs=box.box.specs)   # as the phone app does
+    thinker.history = fast.chat_turns(history)                                    # as HybridThinker does
+    last = next((t for role, t in reversed(list(history)) if role == "assistant"), "")
     t0 = time.time()
     first = None
     outcome = "silent"
+    plain, said, why = False, "", ""
     async for ev in thinker.run(words, box, note="Now: Friday 17 October 2026, 23:50."):
         first = first or time.time() - t0
         if ev.kind == "escalate":
             outcome = "hand"
+            said = (ev.args or {}).get("say", "")
         elif ev.kind == "listen":
             outcome = "listen"
         elif ev.kind == "decided" and not ev.tools:
-            outcome = "hand"          # a reply without a tool goes to the cloud mind in the app
+            plain = True
+        elif ev.kind == "chat" or (plain and ev.kind == "say"):
+            # spoken only if the app's check agrees; otherwise the app hands it to the cloud mind
+            said = ev.text
+            why = fast.chat_ok(words, ev.text, fast.tool_names(thinker), awaiting=fast.awaiting_answer(last))
+            outcome = "hand" if why else "chat"
         elif ev.kind == "error":
             outcome = "error"
     total = time.time() - t0
@@ -168,37 +228,64 @@ async def judge(mode, words, expected, wanted):
             any(t == wt and all(match_value(p, a.get(k)) for k, p in wa.items()) for t, a in acted)
             for wt, wa in wanted)
         verdict = "ok" if right else ("missed" if not acted else "WRONG ACTION")
+    elif acted:
+        verdict = "WRONG ACTION"
+    elif expected == CHAT:
+        verdict = "ok" if outcome == "chat" else "missed"
+    elif outcome == "chat" and expected != EITHER:
+        verdict = "WRONG CHAT"
     else:
-        verdict = "ok" if not acted else "WRONG ACTION"
+        verdict = "ok"
     return {"mode": mode, "words": words, "expected": expected, "outcome": outcome, "acted": acted,
-            "verdict": verdict, "first_s": round(first or total, 2), "total_s": round(total, 2)}
+            "said": said, "why": why, "verdict": verdict, "first_s": round(first or total, 2),
+            "total_s": round(total, 2)}
 
 
 async def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repeat", type=int, default=1)
+    ap.add_argument("--only", choices=["chat", "actions"], help="only the small-talk cases, or only the others")
+    ap.add_argument("--name", default="", help="the user's name, as the phone app passes it")
     args = ap.parse_args()
+    NAME["user"] = args.name
+    sets = [("dev", c) for c in CASES + RECOGNISER] + [("held out", c) for c in HELD_OUT] + [
+        ("chat", c) for c in CHAT_CASES]
+    if args.only:
+        sets = [(s, c) for s, c in sets if (s == "chat") == (args.only == "chat")]
     rows = []
     for _ in range(args.repeat):
-        for held, case in [(False, c) for c in CASES + RECOGNISER] + [(True, c) for c in HELD_OUT]:
+        await fast.warm_up(fast.make_fast_thinker(MODES["assistant"]["tools"], MODES["assistant"]["title"],
+                                                  NAME["user"]))
+        for part, case in sets:
             r = await judge(*case)
-            r["held_out"] = held
+            r["part"] = part
             rows.append(r)
-            print("%-13s %-9s %-7s %5.2fs  %-40s %s" % (r["verdict"], r["expected"], r["outcome"], r["total_s"],
-                                                       r["words"][:40], json.dumps(r["acted"])[:90]), flush=True)
-    for name, part in (("dev set", [r for r in rows if not r["held_out"]]), ("held out", [r for r in rows if r["held_out"]])):
+            shown = json.dumps(r["acted"]) if r["acted"] else (('"%s"' % r["said"]) if r["said"] else "")
+            print("%-13s %-9s %-7s %5.2fs  %-40s %s%s" % (r["verdict"], r["expected"], r["outcome"], r["total_s"],
+                                                         r["words"][:40], shown[:110],
+                                                         ("  [%s]" % r["why"]) if r["why"] else ""), flush=True)
+    for name in ("dev", "held out", "chat"):
+        part = [r for r in rows if r["part"] == name]
+        if not part:
+            continue
         w = sum(r["verdict"] == "WRONG ACTION" for r in part)
+        c = sum(r["verdict"] == "WRONG CHAT" for r in part)
         m = sum(r["verdict"] == "missed" for r in part)
-        print("%-9s %d decisions: %d right, %d wrong actions, %d missed" % (name, len(part), len(part) - w - m, w, m))
+        print("%-9s %d decisions: %d right, %d wrong actions, %d wrong chats, %d missed" % (
+            name, len(part), len(part) - w - c - m, w, c, m))
     n = len(rows)
-    wrong = [r for r in rows if r["verdict"] == "WRONG ACTION"]
+    wrong = [r for r in rows if r["verdict"] in ("WRONG ACTION", "WRONG CHAT")]
     missed = [r for r in rows if r["verdict"] == "missed"]
     acts = [r for r in rows if r["expected"] == ACT and r["verdict"] == "ok"]
     times = sorted(r["total_s"] for r in acts)
-    print("\n%d decisions: %d right, %d wrong actions, %d missed (handed over)" % (
+    chats = sorted(r["total_s"] for r in rows if r["outcome"] == "chat")
+    print("\n%d decisions: %d right, %d wrong (actions or chats), %d missed (handed over)" % (
         n, n - len(wrong) - len(missed), len(wrong), len(missed)))
     if times:
         print("time to act (decision and every tool call): p50 %.2f s, max %.2f s" % (times[len(times) // 2], times[-1]))
+    if chats:
+        print("time to a small-talk reply: p50 %.2f s, max %.2f s (%d replies)" % (
+            chats[len(chats) // 2], chats[-1], len(chats)))
     return 1 if wrong else 0
 
 

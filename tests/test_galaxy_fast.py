@@ -82,7 +82,8 @@ def test_a_fast_reply_without_a_tool_goes_to_the_cloud_mind():
     fast = Script("e2b", [ThinkEvent("decided", tools=False), ThinkEvent("say", text="Sure!")])
     slow = Script("26b", CLOUD)
     events, _ = collect(HybridThinker(fast, slow))
-    assert slow.calls == 1 and "Sure!" not in [e.text for e in events]
+    # the answer is the cloud mind's (the fast mind's "Sure!" may only cover the wait, as the bridge)
+    assert slow.calls == 1 and [e.text for e in events if e.kind == "say"] == ["7 or 6:30?"]
 
 
 def test_a_failed_or_slow_fast_mind_hands_over_in_time():

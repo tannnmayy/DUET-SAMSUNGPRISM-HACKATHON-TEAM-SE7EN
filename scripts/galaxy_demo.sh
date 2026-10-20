@@ -80,6 +80,10 @@ fi
 
 # --- 2. the agent ------------------------------------------------------------------------------
 export DUET_TRACE_DIR="${DUET_TRACE_DIR:-$(pwd)/results/galaxy/traces}" PYTHONUNBUFFERED=1
+# LiveKit's adaptive interruption (its own model, on LiveKit Cloud's inference; it falls back to plain voice detection
+# by itself if that fails): DUET stopped 0.21 s after the user's speech began, against 0.40 s (21 Oct 2026).
+# DUET_INTERRUPT_MODE=vad turns it off.
+export DUET_INTERRUPT_MODE="${DUET_INTERRUPT_MODE:-adaptive}"
 "$PY" -m duet_voice.galaxy.agent start --log-level info > results/galaxy/agent.log 2>&1 &
 pids+=($!)
 for _ in $(seq 1 120); do grep -q "registered worker" results/galaxy/agent.log 2>/dev/null && break; sleep 2; done

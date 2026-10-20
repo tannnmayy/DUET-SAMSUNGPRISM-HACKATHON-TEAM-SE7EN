@@ -255,17 +255,31 @@ def test_the_benchmark_still_apologises_when_the_thinker_fails():
     assert speak(a, "track my order")[-1] == "Sorry, something went wrong on my side. Could you say that once more?"
 
 
-def test_a_silent_reply_keeps_the_request_open_unless_something_was_done():
-    """17 Oct 2026: "Call my" got a silent reply; the "My daughter" that followed lost its "call"."""
+def test_a_silent_reply_closes_the_request_unless_something_in_it_is_unfinished():
+    """17 Oct 2026: "Call my" got a silent reply; the "My daughter" that followed lost its "call", so cut-off
+    words stay open. 20 Oct 2026, the S24: small talk met with silence piled up into one request, so anything
+    else closes."""
     from types import SimpleNamespace as NS
     from duet_voice.coordinator import CallRecord
     from duet_voice.galaxy import agent as galaxy_agent
-    me = NS(_coord=Coordinator(), _seen=0)
-    assert galaxy_agent.GalaxyAgent.silent_answers(me, []) is False
-    assert galaxy_agent.GalaxyAgent.silent_answers(me, ["Torch on."]) is True
+    silent_answers = galaxy_agent.GalaxyAgent.silent_answers
+    me = NS(_coord=Coordinator(), _seen=0, _toolbox=NS(unfinished=None, failed=[]))
+    me._coord.heard("Good night.")
+    assert silent_answers(me, []) is True                       # nothing left to finish
+    me._coord.heard("Call my")
+    assert silent_answers(me, []) is False                      # cut off: the rest is still to come
+    me._coord.open_utterance = "Call Rahul, or maybe Priya."
+    me._toolbox.unfinished = ("call_contact", "undecided")
+    assert silent_answers(me, []) is False                      # a guard held the call back: they choose next
+    me._toolbox.unfinished, me._toolbox.failed = None, [("set_brightness", "needs_permission")]
+    assert silent_answers(me, []) is False                      # the phone refused: "try again" follows
+    me._toolbox.failed = []
+    assert silent_answers(me, []) is True
+    me._coord.open_utterance = "Call my"
+    assert silent_answers(me, ["Torch on."]) is True            # something was done and said
     me._coord.history.append(CallRecord("set_torch", {"on": True}, 0, 0.0, outcome="ok"))
-    assert galaxy_agent.GalaxyAgent.silent_answers(me, []) is True
-    assert agent_mod.DuetAgent.silent_answers(me, []) is True      # the benchmark: silence answers noise
+    assert silent_answers(me, []) is True
+    assert agent_mod.DuetAgent.silent_answers(me, []) is True   # the benchmark: silence answers noise
 
 
 def test_old_readings_are_not_kept_for_later_questions():

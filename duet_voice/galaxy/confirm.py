@@ -193,6 +193,34 @@ def adds_nothing(answer: str, confirmations: List[str]) -> bool:
     return not (_content(answer) - said - _FILLER)
 
 
+# the verbs an answer restates an action with ("I've turned on the AC" after "The air conditioner is now on.")
+_RESTATING = {"turned", "switched", "changed", "updated", "moved", "started", "made", "put", "got", "them", "they"}
+# the same thing in other words: the short form is covered when the long one was said, and back
+_SAME = [("ac", ("air", "conditioner")), ("tv", ("television",)), ("aircon", ("air", "conditioner"))]
+
+
+def _restates(sentence: str, said: set) -> bool:
+    rest = _content(sentence) - said - _FILLER - _RESTATING
+    for short, long in _SAME:
+        if short in rest and all(w in said for w in long):
+            rest.discard(short)
+        if short in said and all(w in rest for w in long):
+            rest -= set(long)
+    return not rest
+
+
+def drop_restated(answer: str, confirmations: List[str]) -> str:
+    """The answer without its sentences that only restate an action already confirmed aloud in this reply.
+    21 Oct 2026: "The air conditioner is now on." was followed by the cloud mind's "I've turned on the AC.", and
+    "Alarm set for 4:30 in the morning." by "I've changed that to 4:30 in the morning." A sentence with anything
+    new in it stays."""
+    if not confirmations or not (answer or "").strip():
+        return answer
+    said = set().union(*(_content(c) for c in confirmations))
+    parts = [p for p in re.split(r"(?<=[.!?])\s+", answer.strip()) if p]
+    return " ".join(p for p in parts if not _restates(p, said))
+
+
 # What a confirmation says was NOT (yet) done, and the claims in the slow mind's answer that would
 # contradict it. The slow mind sometimes words a result its own way (18 Oct 2026, Drive mode: after
 # "Your message to Priya is ready; tap send." it added "I've sent that to Priya.").
@@ -292,6 +320,26 @@ def drop_overclaims(answer: str, confirmations: List[str]) -> str:
         times = clock_times(sentence)
         return bool(confirmed_times and times and not times & confirmed_times)
     return " ".join(p for p in parts if not contradicts(p))
+
+
+# a sentence saying something was cancelled or undone
+_UNDONE = re.compile(r"\b(i'?ve|i have|i)\s+(cancel+ed|undone|undid|removed|deleted|called off)\b|"
+                     r"\b(it|that|this|the \w+)\s+(is|was|has been)\s+(cancel+ed|removed|deleted|undone)\b", re.I)
+LEFT_ALONE = "Okay, I'll leave it."
+
+
+def drop_false_undo(answer: str, dropped: bool) -> str:
+    """For a request in which nothing ran: the answer without a sentence that says something was cancelled or
+    undone, since nothing was. 21 Oct 2026: "Set an alarm for 6 tomorrow morning. Actually, never mind, forget it."
+    was answered "I've cancelled that." 3 times out of 3, though no alarm was ever set. If that was the whole answer
+    and the user dropped their request (`dropped`), it is said plainly instead."""
+    parts = [p for p in re.split(r"(?<=[.!?])\s+", (answer or "").strip()) if p]
+    kept = [p for p in parts if not _UNDONE.search(p)]
+    if len(kept) == len(parts):
+        return answer
+    if not kept and dropped:
+        return LEFT_ALONE
+    return " ".join(kept)
 
 
 def confirmation(tool: str, args: Dict[str, Any], result: Any) -> Optional[str]:

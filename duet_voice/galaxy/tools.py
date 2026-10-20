@@ -117,6 +117,24 @@ def _norm(v: Any) -> Any:
     return " ".join(v.lower().split()) if isinstance(v, str) else v
 
 
+# The words people use for a tool's fixed choices, when a model writes them as they were said (20 Oct 2026:
+# "Skip this song" came as control_media(action="skip"); the phone takes "next")
+ENUM_SYNONYMS = {"skip": "next", "forward": "next", "back": "previous", "prev": "previous", "resume": "play",
+                 "unpause": "play", "stop": "pause", "on": "turn_on", "off": "turn_off"}
+
+
+def enum_value(prop: Optional[Dict[str, Any]], value: Any) -> Any:
+    """A value for a property with fixed choices: itself if it is one, else its plain synonym if that is one,
+    else unchanged (the caller decides what to do with it)."""
+    allowed = (prop or {}).get("enum")
+    if not allowed or not isinstance(value, str) or value in allowed:
+        return value
+    v = "_".join(value.strip().lower().split())
+    if v in allowed:
+        return v
+    return ENUM_SYNONYMS[v] if ENUM_SYNONYMS.get(v) in allowed else value
+
+
 class PhoneToolbox:
     """One per conversation. `send(tool, args, timeout)` delivers a call to the phone
     and returns its JSON reply (LiveKit RPC in the app, a fake in tests)."""
@@ -139,6 +157,8 @@ class PhoneToolbox:
         self.last_tool_end = 0.0
         # calls of this request that the gate held back (the user kept talking): they never ran
         self.held_back: List[Dict[str, Any]] = []
+        # every call of this request that was planned, run or not
+        self.planned: List[Dict[str, Any]] = []
         # calls of this request the consent check refused (the user is asked first, once)
         self.asked: set = set()
         # the last call that ran: (tool, args, the phone's reply, its spoken confirmation or None)
@@ -159,6 +179,7 @@ class PhoneToolbox:
         request's copy (18 Oct 2026: "how much battery?" asked a minute later got the old reading, from
         the ledger, and was answered with it)."""
         self.held_back = []
+        self.planned = []
         self.asked = set()
         self.unfinished = None
         self.failed = []
@@ -167,6 +188,16 @@ class PhoneToolbox:
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
                 del self.coord.ledger[key]
+
+    def _never_set(self, time: Any) -> bool:
+        """An alarm at this time was planned in this request and held back at the gate, and no alarm at this time
+        was ever set in this conversation."""
+        setting = ("set_alarm", "set_reminder")
+        # held back at the gate, or planned in a reply the user cut off (LiveKit cancels that reply, gate and all)
+        held = any(c["tool"] in setting and (c.get("args") or {}).get("time") == time
+                   for c in self.held_back + self.planned)
+        ran = any(r.tool in setting and r.outcome == "ok" and r.args.get("time") == time for r in self.coord.history)
+        return bool(time) and held and not ran
 
     def _target(self, spec: Dict[str, Any], args: Dict[str, Any]) -> List[Any]:
         return [_norm(args.get(k)) for k in spec.get("target", [])]
@@ -191,7 +222,8 @@ class PhoneToolbox:
             log.warning("model called an unknown tool: %s", tool)
             return json.dumps({"status": "error", "error": "unknown tool '%s'" % tool,
                                "instruction": "use only the tools you were given"})
-        args = coerce_props(spec["parameters"]["properties"], raw_args)
+        props = spec["parameters"]["properties"]
+        args = {k: enum_value(props.get(k), v) for k, v in coerce_props(props, raw_args).items()}
         if isinstance(args.get("time"), str):
             # one spelling of a time: "7:00" and "07:00" are the same alarm to the ledger (17 Oct 2026: a
             # cancel of "7:00" did not clear the "07:00" it cancelled, so setting 07:00 again read "already done")
@@ -205,6 +237,16 @@ class PhoneToolbox:
         if tool in ("set_alarm", "set_reminder") and args.get("time"):
             args["time"] = next_occurrence(args["time"], self.coord.open_utterance, dt.datetime.now())
         timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))
+        if tool == "cancel_alarm" and self._never_set(args.get("time")):
+            # The alarm the user takes back was only planned in this request, and the gate held it back: it never
+            # ran, so there is nothing to cancel and nothing goes to the phone. 21 Oct 2026: "Set an alarm for 3:30.
+            # No, no, cancel that. Could you set it for 4:30 instead?" sent a cancel of 3:30 to the phone, which
+            # said there was no such alarm.
+            self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
+                       "why": "that alarm was never set, so there is nothing to cancel"})
+            return json.dumps({"status": "ok", "note": "that alarm was never set (the user's correction came before "
+                                                       "it ran): nothing to cancel, and nothing was done"})
+        self.planned.append({"tool": tool, "args": dict(args)})
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
             self.unfinished = (tool, "cut_off")

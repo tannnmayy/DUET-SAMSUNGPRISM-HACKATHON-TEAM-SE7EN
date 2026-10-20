@@ -90,6 +90,9 @@ limits with Maps in front (6). Each has a fallback that is already built: DUET's
 
 ## 3. The morning of the 21st
 
+0. **The new app on the S24** (built 21 Oct with the top-bar fix): `python scripts/phone_check.py` installs
+   `app/android/app/build/outputs/apk/debug/app-debug.apk` and grants its permissions. On a laptop that pulled
+   `round2`, rebuild it first (`ROUND2_SETUP.md` §7).
 1. **A fresh SmartThings token** (they last 24 hours): account.smartthings.com/tokens › Generate new token › tick
    every box under Devices, Locations and Scenes › copy it into `E:\duet_fdb\.env.local` as
    `SMARTTHINGS_TOKEN=...` (replace the old line).
@@ -124,6 +127,12 @@ limits with Maps in front (6). Each has a fallback that is already built: DUET's
 
 About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *italics* is what to point at.
 
+**Beat 0 · Just talk to it (20 s)** *(Assistant mode)*
+- **"Good morning, DUET."** It greets you back by name and asks something, in about a second, from the fast mind on
+  our own GPU (no cloud). **"I'm a bit tired today."** A caring reply and a question back.
+- *The timeline:* "Fast mind: small talk, answered by the fast mind". Say: "It talks like a person; the cloud is only
+  for what needs it."
+
 **Beat 1 · The hook: a correction (Assistant mode, 45 s)**
 - **"Set an alarm for 6:30… no, make it 7."**
 - *The timeline:* the 6:30 plan is **Never ran**; "Fast mind: Gemma 4 E2B on our own GPU"; 7:00 **Done**; DUET
@@ -139,6 +148,8 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 - While DUET explains, cut in: **"Wait, I think it's my brightness and gaming. Is that it?"**
 - DUET stops at once and checks your theory against the phone's real readings (*the panel: battery, temperature,
   brightness, most-used apps*).
+- **While it explains, say "mm-hm" or "right, I see":** it carries on from the sentence it was in. **Say "wait":** it
+  stops and says nothing. **"Go on.":** it finishes the answer, from where you stopped it. **"What?":** it says it again.
 - **"Okay, bring the brightness down to 40."** *The screen dims.*
 
 **Beat 4 · The real home (SmartThings, 60 s)**
@@ -176,6 +187,8 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 | The connection drops | "It rejoins by itself." | The app keeps rejoining for 3 minutes, also behind Maps, with the same microphone (tested: about 5 s after a drop, 20 s after the network returns); otherwise tap End and the mode again |
 | The agent hangs or crashes | "Let me restart its brain; the phone reconnects on its own." | `bash scripts/galaxy_stop.sh`, then the start command (section 3): about 2 minutes, and the phone rejoins by itself (tested: 110 s) |
 | An action is blocked behind Maps | DUET says what to allow: that is the honest behaviour | Come back to DUET, ask again |
+| The cloud mind hangs (free tier, seen at night: no answer in 15 s) | "That's the free cloud tier; DUET says so rather than going silent." ("Sorry, I couldn't get that done just now.") | Ask again; small talk and phone actions never wait for the cloud |
+| DUET stops itself on the loudspeaker (its own voice) | "It heard itself; that's the room, not the logic." | Galaxy Buds; or restart the stack with `DUET_INTERRUPT_MODE=vad` (plain voice detection) |
 | SmartThings token expired | "The home is simulated in the app now; the screen says so." | New token (section 3, step 1), restart the stack |
 | Everything fails | "Here is the recording from last night." | Play the backup recording |
 
@@ -195,15 +208,19 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
    Galaxy phones; the coordinator is 250 lines of deterministic code that ports to Kotlin; Samsung could bind it to
    Bixby's device agents and SmartThings directly.
 
-**The numbers** (17 Oct 2026; refresh with the night-of-the-20th runs):
+**The numbers** (21 Oct 2026, this laptop; the S24 run of the 20th is in `ROUND2_CONVERSATION_PLAN.md` §2):
 - Round 1: FDB-v3 Pass@1 0.81 (judge: Gemma 4 standing in for gpt-4o, disclosed); 75/100 by exact match.
-- Galaxy Correction Suite, 36 spoken scenarios, two speeds (`results/galaxy/suite/final_r2`): 34/36 passed,
-  **0 stale and 0 duplicate actions**, 0 model errors; the two misses (a misheard time, an extra no-op) were fixed and
-  re-run 10/10. From the end of speech (p50): "Sure."/"One moment." 0.9 s, action done 2.5 s, answer ready 4.1 s.
+- Galaxy Correction Suite, all 45 spoken scenarios (`results/galaxy/suite/phase6_full`): 44/45, **0 stale and 0
+  duplicate actions**, 0 model errors; the miss (a needless cancel of an alarm that had never run) fixed and re-run
+  6/6. From the end of speech (p50): first words 1.0 s, action done 2.4 s.
+- Small talk, answered by the fast mind on our GPU: the reply is ready 0.8–1.0 s after the user stops (the model
+  itself 0.28 s). Web answers 5.3–5.6 s (15.6 s on the S24 on 20 Oct, before one-call routing); health 3.8 s.
+- Talking over DUET stops it 0.21 s after the speech begins (median, adaptive interruption).
+- The fast mind: 0 wrong actions and 0 wrong small-talk replies in 190 decisions (124 action cases, 66 small talk).
+- 273 unit tests.
+- Earlier (17 Oct), 36 scenarios: 34/36, the two misses fixed and re-run 10/10.
 - End to end on Android 16 (the emulator), the real app: Assistant 19 cases (also behind Google Maps and with the cloud
   cut) and Drive 6 cases; the last failure was a test expecting "07:00" where the model wrote "7:00" (now one spelling).
-- The fast mind alone: 0 wrong actions in 62 decisions, 14/14 held out, 0.23 s to decide (p50).
-- 144 unit tests.
 
 ## 8. Questions the jury may ask
 
@@ -223,8 +240,11 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
    model's thinking. A simple action is confirmed in about 1.5 s.
 5. *What if the user corrects after the action ran?* The coordinator tells the model what really happened; it undoes
    it with the matching tool (the alarm example: **Undone**).
-6. *Why is "One moment." a fixed line?* Anything that names a value could be wrong a second later ("setting 6:30" while
-   the user says "no, 7"). The fixed lines never claim a value or a result.
+6. *Does it just say "One moment."?* Not any more (it did on our first S24 run, 20 Oct). The fast mind answers small
+   talk itself in about a second, in context and by name. When the cloud mind is needed, DUET says at once what it
+   understood, in its own words ("Let me check when the next Apple event is."); code checks that line first: no
+   question, no number, no claim, no promised action, because a value said now could be wrong a second later
+   ("setting 6:30" while the user says "no, 7"). Actions still get a plain "Sure." and their confirmation.
 7. *Why not end-to-end speech-to-speech (Gemini Live, GPT-Realtime)?* They act on partial words; FDB-v3 measures it:
    Gemini Live 3.1 passes 35% of self-corrections. A cascade lets a coordinator sit between understanding and acting.
    It costs latency, which the fast mind wins back.
@@ -291,3 +311,22 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
 29. *What doesn't work yet?* The phone app runs its brain on a laptop today; the phone is the ears, mouth and hands. The
     car is simulated. English only.
 30. *What surprised you?* Most failures were not the model's understanding but timing: acting a second too early.
+
+**Full duplex and interruptions (measured 21 Oct)**
+
+31. *Is it really full duplex?* The audio runs both ways at once (WebRTC); DUET listens while it speaks and while it
+    thinks. Talk over it and it stops: 0.21 s after your speech begins (median, LiveKit's adaptive interruption;
+    0.40 s with plain voice detection). Correct yourself while it thinks and the old plan is void; the new turn
+    re-reads everything you said.
+32. *What if I just say "mm-hm"?* The voice pauses for a moment, then the answer carries on from the sentence it was
+    in. "Wait" stops it and it says nothing; "go on" finishes the answer from where you stopped it; "what?" says it
+    again. These need no model: the coordinator knows what you heard.
+33. *How does it compare with ChatGPT Live?* Small talk comes back in about a second, as ChatGPT's does in our
+    recording (1 to 2.5 s). Web answers take about 5.5 s (ChatGPT is faster: one model hears and speaks; ours is a
+    cascade on a free-tier cloud). Where DUET is ahead: it never acts on words you took back, never acts twice, never
+    claims what the phone did not confirm, and really acts on the phone.
+34. *Why not a speech-to-speech model like ChatGPT's?* They act on partial words; there is no place for a coordinator
+    between understanding and acting. A cascade costs about a second of hearing; a streaming recogniser on the phone
+    is the next step (it lets thinking start while you still speak).
+35. *What is still missing?* A streaming recogniser (about a second after your last word before thinking starts);
+    expressive, multilingual speech (Hindi and Hinglish); the engine on the phone itself instead of a laptop.

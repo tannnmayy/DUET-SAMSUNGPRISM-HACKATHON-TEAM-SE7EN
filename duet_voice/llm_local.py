@@ -126,7 +126,8 @@ class LocalThinker:
                  specs: Optional[List[Dict[str, Any]]] = None, instructions: Optional[str] = None,
                  review: Optional[str] = None, base_url: Optional[str] = None,
                  sampler: Optional[Dict[str, Any]] = None, escalate: Optional[set] = None,
-                 note_role: str = "user", vet=None, one_step: bool = False) -> None:
+                 note_role: str = "user", vet=None, one_step: bool = False,
+                 reply_tool: Optional[str] = None) -> None:
         self.model = model or CONFIG.thinker_model
         self.thinking = "none (non-thinking model)"
         # the benchmark's twelve tools and instructions unless a use case brings its own
@@ -150,8 +151,23 @@ class LocalThinker:
         # step's plan before any of it runs; one_step: act once, then stop (no second model call)
         self.vet = vet
         self.one_step = one_step
+        # the phone app's fast mind: a tool whose call is the model's own answer to the user (small talk).
+        # Called alone, it ends the run with a "chat" event; next to real actions, it is dropped
+        self.reply_tool = reply_tool
         # completed exchanges only, as chat messages; an interrupted turn never lands here
         self.history: List[Dict[str, Any]] = []
+
+    def _tools_for(self, step: int, allow_listen: bool) -> List[Dict[str, Any]]:
+        return self.tools + [LISTEN_TOOL] if (allow_listen and step == 1) else self.tools
+
+    async def warm_up(self) -> None:
+        """One tiny request with the instructions and tools a first look uses, so the server has
+        processed them before the user's first words (measured 20 Oct 2026: the first call 1.2-2.4 s,
+        then 0.25-0.45 s)."""
+        await client(self.base_url).chat.completions.create(
+            model=self.model, tools=self._tools_for(1, True), tool_choice="auto", max_tokens=1,
+            messages=[{"role": "system", "content": self.instructions}, {"role": "user", "content": "Hello."}],
+            **(self.sampler or sampling()))
 
     async def _create(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]):
         return await client(self.base_url).chat.completions.create(
@@ -174,7 +190,7 @@ class LocalThinker:
         draft, review_at = "", None
         usage = {"input": 0, "input_audio": 0, "output": 0, "thinking": 0, "calls": 0}
         for step in range(1, CONFIG.max_tool_steps + 1):
-            tools = self.tools + [LISTEN_TOOL] if (allow_listen and step == 1) else self.tools
+            tools = self._tools_for(step, allow_listen)
             calls: List[Dict[str, str]] = []
             content = ""
             for attempt in (1, 2):
@@ -204,13 +220,30 @@ class LocalThinker:
             handoff = [c for c in calls if c["name"] in self.escalate]
             if handoff:
                 # Hand the request on before anything else in this step runs: whatever the fast
-                # mind planned next to the hand-off is the cloud mind's to decide.
+                # mind planned next to the hand-off is the cloud mind's to decide. Its arguments go
+                # with it (the phone app's fast mind: what to say meanwhile, what kind of request).
                 try:
-                    why = json.loads(handoff[0]["arguments"] or "{}").get("reason", "")
-                except (ValueError, AttributeError):
-                    why = ""
-                yield ThinkEvent("escalate", text=str(why), usage=usage)
+                    hand = json.loads(handoff[0]["arguments"] or "{}")
+                    hand = hand if isinstance(hand, dict) else {}
+                except ValueError:
+                    hand = {}
+                yield ThinkEvent("escalate", text=str(hand.get("reason", "")), name=handoff[0]["name"],
+                                 args=hand, usage=usage)
                 return
+            if self.reply_tool and step == 1 and any(c["name"] == self.reply_tool for c in calls):
+                rest = [c for c in calls if c["name"] not in (self.reply_tool, KEEP_LISTENING)]
+                if not rest:
+                    # the model answers the user itself: nothing runs, and the caller decides
+                    # whether these words may be spoken
+                    try:
+                        said = json.loads(next(c for c in calls if c["name"] == self.reply_tool)["arguments"]
+                                          or "{}").get("text", "")
+                    except (ValueError, AttributeError):
+                        said = ""
+                    yield ThinkEvent("chat", text=str(said or ""), usage=usage)
+                    return
+                # next to real actions, the actions are the answer (and their confirmations say so)
+                calls = [c for c in calls if c["name"] != self.reply_tool]
             if self.vet is not None and step == 1:
                 # the fast mind's whole plan is checked before anything runs; a plan that fails
                 # hands the request on (the cloud mind can still do it)
