@@ -157,6 +157,8 @@ class PhoneToolbox:
         self.last_tool_end = 0.0
         # calls of this request that the gate held back (the user kept talking): they never ran
         self.held_back: List[Dict[str, Any]] = []
+        # every call of this request that was planned, run or not
+        self.planned: List[Dict[str, Any]] = []
         # calls of this request the consent check refused (the user is asked first, once)
         self.asked: set = set()
         # the last call that ran: (tool, args, the phone's reply, its spoken confirmation or None)
@@ -177,6 +179,7 @@ class PhoneToolbox:
         request's copy (18 Oct 2026: "how much battery?" asked a minute later got the old reading, from
         the ledger, and was answered with it)."""
         self.held_back = []
+        self.planned = []
         self.asked = set()
         self.unfinished = None
         self.failed = []
@@ -185,6 +188,16 @@ class PhoneToolbox:
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
                 del self.coord.ledger[key]
+
+    def _never_set(self, time: Any) -> bool:
+        """An alarm at this time was planned in this request and held back at the gate, and no alarm at this time
+        was ever set in this conversation."""
+        setting = ("set_alarm", "set_reminder")
+        # held back at the gate, or planned in a reply the user cut off (LiveKit cancels that reply, gate and all)
+        held = any(c["tool"] in setting and (c.get("args") or {}).get("time") == time
+                   for c in self.held_back + self.planned)
+        ran = any(r.tool in setting and r.outcome == "ok" and r.args.get("time") == time for r in self.coord.history)
+        return bool(time) and held and not ran
 
     def _target(self, spec: Dict[str, Any], args: Dict[str, Any]) -> List[Any]:
         return [_norm(args.get(k)) for k in spec.get("target", [])]
@@ -224,6 +237,16 @@ class PhoneToolbox:
         if tool in ("set_alarm", "set_reminder") and args.get("time"):
             args["time"] = next_occurrence(args["time"], self.coord.open_utterance, dt.datetime.now())
         timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))
+        if tool == "cancel_alarm" and self._never_set(args.get("time")):
+            # The alarm the user takes back was only planned in this request, and the gate held it back: it never
+            # ran, so there is nothing to cancel and nothing goes to the phone. 21 Oct 2026: "Set an alarm for 3:30.
+            # No, no, cancel that. Could you set it for 4:30 instead?" sent a cancel of 3:30 to the phone, which
+            # said there was no such alarm.
+            self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
+                       "why": "that alarm was never set, so there is nothing to cancel"})
+            return json.dumps({"status": "ok", "note": "that alarm was never set (the user's correction came before "
+                                                       "it ran): nothing to cancel, and nothing was done"})
+        self.planned.append({"tool": tool, "args": dict(args)})
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
             self.unfinished = (tool, "cut_off")

@@ -213,7 +213,8 @@ Expected on 18 Oct (emulator, live SmartThings): every phone step passes; the sp
 | "Sorry, I couldn't get that done just now" on cloud questions | free Gemma tier: about 6 cloud questions a minute; add keys to `GOOGLE_API_KEYS` |
 | Phone can't reach the laptop | re-run `adb reverse tcp:8787 tcp:8787`; check the stack says `Ready.` |
 | DUET silent behind Google Maps | the "DUET is listening" notification must be present; restart the conversation from DUET's screen |
-| Echo / DUET interrupts itself on loudspeaker | use Galaxy Buds |
+| Echo / DUET interrupts itself on loudspeaker | use Galaxy Buds; or start the stack with `DUET_INTERRUPT_MODE=vad` (the default since 21 Oct is LiveKit's adaptive interruption, which stops DUET faster) |
+| "Connected · waiting for DUET…" never changes | an APK from before 21 Oct: rebuild it (section 7) and install it (section 9) |
 | torch error "paging file is too small" | close the Android emulator / other GPU apps; free RAM |
 
 ## 13. Where things are

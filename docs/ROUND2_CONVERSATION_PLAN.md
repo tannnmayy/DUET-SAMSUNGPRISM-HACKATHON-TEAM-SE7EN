@@ -385,10 +385,23 @@ No commits without your OK; no AI attribution in commits.
   ChatGPT video.
 - **Check:** gates C1–C8.
 
+- **Done 21 Oct, on this laptop (not yet on the S24):** fast-mind eval, two rounds: 190 decisions, 0 wrong actions,
+  0 wrong chats, the same 2 misses as the 20 Oct baseline. The whole spoken suite, 45 scenarios: 44 of 45, 0 stale,
+  0 duplicates, 0 model errors. The miss: "Set an alarm for 3:30. No, no, cancel that. Could you set it for 4:30
+  instead?" sent a cancel of 3:30 to the phone though the 3:30 alarm never ran (the user cut DUET off, and LiveKit
+  cancels that reply with its plan). Fixed in the toolbox (a cancel of an alarm only planned in the request goes
+  nowhere); re-run alarm 3/3, alarm_late 3/3 (its real cancel still sent), alarm_three, reminder_fix, two_actions,
+  timer_fix pass. 273 unit tests.
+
 **Phase 7 · 30 min · Demo kit**
 - `ROUND2_DEMO.md`: the script opens with a short natural exchange ("Good morning, DUET" → it greets you by name and
   asks back) before the correction hook; Q&A answer 6 ("Why is 'One moment.' a fixed line?") becomes "the fast mind
   talks; it never says a value an action could use and never claims a result"; the numbers from Phase 6.
+
+- **Done 21 Oct:** `ROUND2_DEMO.md`: Beat 0 (just talk to it), the interruption moves in Beat 3 (mm-hm, wait, go on,
+  what?), the new answer to Q6, Q&A 31–35 on full duplex and ChatGPT Live, the morning step that installs the new
+  APK, two new rows in "If something goes wrong", tonight's numbers. `ROUND2_SETUP.md`: the interruption switch and
+  the old-APK symptom.
 
 **Cut line.** If time runs short, Phases 1–3 alone fix what the jury notices first (silence, "One moment.", no
 small talk); Phase 4's web route is the next most visible. Phases 5 and the battery pre-read can wait.

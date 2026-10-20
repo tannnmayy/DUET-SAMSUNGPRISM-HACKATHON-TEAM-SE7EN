@@ -286,6 +286,38 @@ def test_a_plain_word_for_a_fixed_choice_is_that_choice():
     assert "choices" in fast.vet_plan([("control_media", {"action": "rewind"})], "Skip this song.", specs=specs)
 
 
+def test_a_cancel_of_an_alarm_that_never_ran_goes_nowhere():
+    """21 Oct 2026: "Set an alarm for 3:30. No, no, cancel that. Could you set it for 4:30 instead?": the 3:30 plan
+    was held back at the gate, then a cancel of 3:30 went to the phone anyway."""
+    from duet_voice.coordinator import CallRecord
+    sent = []
+
+    async def send(tool, args, timeout):
+        sent.append((tool, args))
+        return json.dumps({"status": "ok"})
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    box = PhoneToolbox(coord, MODES["assistant"]["tools"], send)
+    box.held_back.append({"tool": "set_alarm", "args": {"time": "03:30"}})
+    out = json.loads(asyncio.run(box.call("cancel_alarm", {"time": "3:30"})))
+    assert out["status"] == "ok" and "never set" in out["note"] and sent == []
+    # an alarm that really was set earlier is cancelled as asked
+    coord.history.append(CallRecord("set_alarm", {"time": "03:30"}, 0, 0.0, outcome="ok"))
+    asyncio.run(box.call("cancel_alarm", {"time": "03:30"}))
+    assert sent == [("cancel_alarm", {"time": "03:30"})]
+    box2 = PhoneToolbox(Coordinator(commit_hold_s=0.0), MODES["assistant"]["tools"], send)
+    box2.coord.turn_committed()
+    asyncio.run(box2.call("cancel_alarm", {"time": "07:00"}))     # nothing held back: the user's own alarm
+    assert sent[-1] == ("cancel_alarm", {"time": "07:00"})
+    # planned in a reply the user cut off (LiveKit cancels the reply, so the gate never held it back): never set
+    box2.planned.append({"tool": "set_alarm", "args": {"time": "06:15"}})
+    n = len(sent)
+    assert "never set" in json.loads(asyncio.run(box2.call("cancel_alarm", {"time": "06:15"})))["note"]
+    assert len(sent) == n
+    box2.new_request()
+    assert box2.planned == []
+
+
 # --- the agent ----------------------------------------------------------------------------------------------
 
 def galaxy_agent(monkeypatch):
