@@ -117,6 +117,24 @@ def _norm(v: Any) -> Any:
     return " ".join(v.lower().split()) if isinstance(v, str) else v
 
 
+# The words people use for a tool's fixed choices, when a model writes them as they were said (20 Oct 2026:
+# "Skip this song" came as control_media(action="skip"); the phone takes "next")
+ENUM_SYNONYMS = {"skip": "next", "forward": "next", "back": "previous", "prev": "previous", "resume": "play",
+                 "unpause": "play", "stop": "pause", "on": "turn_on", "off": "turn_off"}
+
+
+def enum_value(prop: Optional[Dict[str, Any]], value: Any) -> Any:
+    """A value for a property with fixed choices: itself if it is one, else its plain synonym if that is one,
+    else unchanged (the caller decides what to do with it)."""
+    allowed = (prop or {}).get("enum")
+    if not allowed or not isinstance(value, str) or value in allowed:
+        return value
+    v = "_".join(value.strip().lower().split())
+    if v in allowed:
+        return v
+    return ENUM_SYNONYMS[v] if ENUM_SYNONYMS.get(v) in allowed else value
+
+
 class PhoneToolbox:
     """One per conversation. `send(tool, args, timeout)` delivers a call to the phone
     and returns its JSON reply (LiveKit RPC in the app, a fake in tests)."""
@@ -191,7 +209,8 @@ class PhoneToolbox:
             log.warning("model called an unknown tool: %s", tool)
             return json.dumps({"status": "error", "error": "unknown tool '%s'" % tool,
                                "instruction": "use only the tools you were given"})
-        args = coerce_props(spec["parameters"]["properties"], raw_args)
+        props = spec["parameters"]["properties"]
+        args = {k: enum_value(props.get(k), v) for k, v in coerce_props(props, raw_args).items()}
         if isinstance(args.get("time"), str):
             # one spelling of a time: "7:00" and "07:00" are the same alarm to the ledger (17 Oct 2026: a
             # cancel of "7:00" did not clear the "07:00" it cancelled, so setting 07:00 again read "already done")

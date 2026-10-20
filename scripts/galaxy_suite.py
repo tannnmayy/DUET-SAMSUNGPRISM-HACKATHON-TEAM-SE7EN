@@ -61,6 +61,7 @@ KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["too
 #   ask    True: DUET's first answer is a question, and nothing changes before it
 #   say    [regex]                   something DUET must say
 #   claim  [regex]                   something DUET must never say
+#   no_bare_ack  True: no message of DUET's is only "One moment." (or another fixed line) with nothing after it
 # patterns: "@4:30" means that clock time, morning or afternoon; "=18:00" exactly; else a regex.
 
 S = {}
@@ -139,7 +140,25 @@ scenario("waver_call", "assistant", [
     ask=True, do=[("call_contact", {"name": "priya"})], never=[("call_contact", {"name": "rahul"})], only=True)
 scenario("smalltalk", "assistant", [
     ("@Hi DUET, how are you doing today?", 7.0)],
-    do=[], only=True)
+    do=[], only=True, say=[r"\b(good|great|well|fine|doing)\b"], no_bare_ack=True)
+# The three S24 videos of 20 Oct 2026, line for line (video 4: small talk, then health with a barge-in; video 2:
+# a question corrected mid-wait, then "Okay."; video 1: a web question)
+scenario("s24_smalltalk", "assistant", [
+    ("@Good night.", 6.0), ("@I said good night.", 6.0), ("@Good morning.", 6.0), ("@How are you?", 6.0),
+    ("@Thank you.", 6.0), ("@I am not good.", 6.0), ("@What do I do? I have a stomach pain.", 0.5),
+    ("!But I also have a headache.", 12.0), ("@Okay, good night.", 6.0)],
+    do=[], only=True, say=[r"night", r"morning", r"sorry"])
+scenario("s24_correction", "assistant", [
+    ("@When was the latest Samsung phone launched?", 3.5), ("No, check for the latest iPhone launch.", 25.0),
+    ("@Okay.", 8.0)],
+    reads=["web_search"], do=[], only=True, say=[r"iPhone"])
+scenario("s24_apple", "assistant", [("@Can you check when is the next Apple event?", 25.0)],
+         reads=["web_search"], do=[], only=True, say=[r"Apple|event"])
+# 20 Oct 2026, the S24: each of these got "One moment." and then silence
+scenario("chat", "assistant", [
+    ("@Good morning.", 6.0), ("@How are you?", 6.0), ("@I am not good.", 6.0), ("@Okay, thank you.", 6.0),
+    ("@Good night.", 6.0)],
+    do=[], only=True, say=[r"morning", r"sorry|hear|what'?s (going on|wrong)", r"night"], no_bare_ack=True)
 
 # Assistant: the home
 scenario("home", "assistant", [
@@ -557,6 +576,12 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("claim", []):
         if re.search(rx, spoken, re.I):
             problems.append("FALSE CLAIM /%s/" % rx)
+    if expect.get("no_bare_ack"):
+        for e in ev:
+            text = " ".join((e.get("text") or "").split())
+            if e.get("kind") == "agent_said" and not e.get("interrupted") and text and \
+                    not re.sub(r"(One moment\.|Sure\.|Still working on it\.)\s*", "", text):
+                problems.append('ONLY A FIXED LINE "%s"' % text)
     errors = [e for e in ev if e.get("kind") == "thinker_error"
               and not (expect.get("errors_ok") and re.search(r"cannot reach|offline drill", e.get("text", "")))]
     for e in errors:

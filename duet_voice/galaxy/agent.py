@@ -19,12 +19,14 @@ benchmark recording:
 from __future__ import annotations
 
 import asyncio
+import collections
 import datetime as dt
 import json
 import logging
 import os
 import re
-from typing import Any, Dict, Optional
+import time
+from typing import Any, Deque, Dict, Optional, Tuple
 
 from dotenv import load_dotenv
 
@@ -83,6 +85,8 @@ speech_models.ASR_PROMPT = (
 
 AGENT_NAME = os.environ.get("DUET_GALAXY_AGENT", "duet-galaxy")
 HOME_POLL_S = float(os.environ.get("DUET_HOME_POLL_S", "10"))   # how often the home is asked what changed
+# how long "One moment." waits for the fast mind to decide (it answers small talk itself in about half a second)
+FAST_WAIT_S = float(os.environ.get("DUET_FAST_WAIT_S", "1.5"))
 
 # the second look before an answer is spoken (DUET_REVIEW=0 turns it off)
 REVIEW = ("Second look before your answer is spoken. Actions carried out in this turn: {done}. "
@@ -200,7 +204,8 @@ class RoomTrace(base.Trace):
 
 
 class GalaxyAgent(base.DuetAgent):
-    def __init__(self, trace, coord, toolbox: PhoneToolbox, mode: Dict[str, Any], context: str) -> None:
+    def __init__(self, trace, coord, toolbox: PhoneToolbox, mode: Dict[str, Any], context: str,
+                 user_name: str = "") -> None:
         instructions = mode["thinker"] + ("\nTHE USER AND THEIR PHONE\n" + context if context else "")
         thinker = make_thinker(specs=llm_specs(mode["tools"]), instructions=instructions,
                                review=REVIEW if os.environ.get("DUET_REVIEW", "1") == "1" else None)
@@ -211,7 +216,7 @@ class GalaxyAgent(base.DuetAgent):
             trace("route", where=where, why=why)
         if fast.enabled():
             # two speeds: the small Gemma on our GPU looks first (duet_voice/galaxy/fast.py)
-            thinker = fast.HybridThinker(fast.make_fast_thinker(mode["tools"], mode["title"]), thinker,
+            thinker = fast.HybridThinker(fast.make_fast_thinker(mode["tools"], mode["title"], user_name), thinker,
                                          on_route=on_route)
         super().__init__(trace, coord, toolbox, thinker=thinker,
                          instructions=instructions, talker_instructions=mode["talker"])
@@ -220,18 +225,32 @@ class GalaxyAgent(base.DuetAgent):
         # what DUET offered by itself (proactive.py): its note goes to both minds, and the consent gate
         # and the fast mind's check accept an answer that takes it up
         self.offers = proactive.Offers(on_status=lambda o: trace("offer_" + o.status, text=o.text))
+        # the conversation as it was really heard and said, [(role, text), ...]: the fast mind answers small
+        # talk in context, and the cloud mind hears what the fast mind said
+        self.recent: Deque[Tuple[str, str]] = collections.deque(maxlen=2 * fast.RECENT_TURNS)
+        self._request_text = ""         # the open request the current reply answers
+        self._asked_at = 0.0            # when its reply began
         if isinstance(self._thinker, fast.HybridThinker):
             self._thinker.offers = self.offers
+            self._thinker.recent = self.recent
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         self._route_now = None
+        self._request_text = self._open_request(chat_ctx)
+        self._asked_at = time.time()
         async for chunk in super().llm_node(chat_ctx, tools, model_settings):
             yield chunk
 
     def ack_line(self) -> str:
         """"Sure." when the fast mind is doing a simple action (its confirmation follows in about a
-        second); "One moment." when the request needs the cloud mind, or nobody knows yet."""
-        return "Sure." if self._route_now == "edge" else "One moment."
+        second); "One moment." when the request needs the cloud mind. Nothing while the fast mind is still
+        deciding (half a second, as a rule): it may answer by itself, and "One moment." before "Good morning!"
+        would be wrong. If it is slow, the line comes after FAST_WAIT_S."""
+        if self._route_now == "edge":
+            return "Sure."
+        if self._route_now is None and fast.enabled() and time.time() - self._asked_at < FAST_WAIT_S:
+            return ""
+        return "One moment."
 
     def done_note(self, done_before) -> str:
         """What a plan the user overtook had already done on the phone. It happened, so the
@@ -316,6 +335,7 @@ class GalaxyAgent(base.DuetAgent):
         - drop a clause that says a failed action happened ("The AC is on, but I can't reach your home");
         - drop an answer that only repeats what was already confirmed aloud in this reply."""
         text = re.sub(r"^\s*(ok(ay)?|alright)[.,!]\s*", "", " ".join((words or "").split()), flags=re.I)
+        text = text[:1].upper() + text[1:]     # "Okay, what can I do?" is shown as "What can I do?"
         parts = [p for p in re.split(r"(?<=[.!?])\s+", text) if p]
         while len(parts) > 1 and FILLER.match(parts[-1]):
             parts.pop()
@@ -347,7 +367,8 @@ class GalaxyAgent(base.DuetAgent):
             lines.append(offer.note())
         return "\n".join(lines)
 
-    def reply_delivered(self) -> None:
+    def reply_delivered(self, said: str = "") -> None:
+        """`said`: what DUET's message said (as far as the user heard it)."""
         closed = self._pending_consumed is not None
         super().reply_delivered()
         self.offers.answered()
@@ -355,6 +376,14 @@ class GalaxyAgent(base.DuetAgent):
             self._seen = len(self._coord.history)
             self._toolbox.new_request()
             stale_readings(self._thinker.history)
+            if self._request_text:
+                self.recent.append(("user", self._request_text))
+            self._request_text = ""
+        # the fixed lines say nothing about the conversation
+        words = re.sub(r"^\s*((%s)\s*)+" % "|".join(re.escape(x) for x in FIXED_LINES), "", " ".join(
+            (said or "").split()))
+        if words:
+            self.recent.append(("assistant", words))
 
 
 # --- the voice: the fixed lines are synthesized once ------------------------------------------------
@@ -512,7 +541,7 @@ async def entrypoint(ctx: JobContext) -> None:
         ("Phone: %s." % meta["device"]) if meta.get("device") else "",
         ("Their contacts: %s." % meta["contacts"]) if meta.get("contacts") else "",
     ) if x)
-    agent = GalaxyAgent(trace, coord, toolbox, mode, context)
+    agent = GalaxyAgent(trace, coord, toolbox, mode, context, user_name=name)
 
     session = AgentSession(
         vad=ctx.proc.userdata.get("vad") or base.build_vad(),
@@ -636,7 +665,7 @@ async def entrypoint(ctx: JobContext) -> None:
             said["last"] = (item.text_content or "").strip()
             if interrupted and item.text_content:
                 agent.cut_off = item.text_content.strip()
-            agent.reply_delivered()
+            agent.reply_delivered(said=item.text_content or "")
 
     @ctx.room.on("data_received")
     def _from_phone(packet: rtc.DataPacket) -> None:
@@ -686,6 +715,8 @@ async def entrypoint(ctx: JobContext) -> None:
         asyncio.ensure_future(publish_home())
     await session.start(room=ctx.room, agent=agent)
     session.say(mode["greeting"].format(name=name or "there").replace("Hello there", "Hello"))
+    if isinstance(agent._thinker, fast.HybridThinker):
+        asyncio.ensure_future(fast.warm_up(agent._thinker.fast))   # while the greeting plays
     if home["live"] and "set_timer" in names:
         watcher = asyncio.ensure_future(watch_home())
 

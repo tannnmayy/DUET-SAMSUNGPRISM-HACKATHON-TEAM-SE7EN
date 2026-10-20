@@ -33,13 +33,38 @@ ASK_EXPERT = "ask_expert"
 ASK_EXPERT_SPEC = {
     "name": ASK_EXPERT,
     "description": "Hand this request to DUET's expert mind instead of acting or answering. Call it for any "
-                   "question, explanation or advice; anything about health, medicines, feelings, safety or an "
-                   "emergency; the weather, news or facts; counting, comparing or reading the phone's data; any "
+                   "question, explanation or advice; anything about health, medicines, feeling unwell, safety or "
+                   "an emergency; the weather, news or facts; counting, comparing or reading the phone's data; any "
                    "request where the user wavers between options or a value is unclear; and whenever you are not "
                    "sure. Nothing is done; the expert takes over.",
     "parameters": {"type": "object", "properties": {
-        "reason": {"type": "string", "description": "In a few words, why the expert should handle it."}},
-        "required": ["reason"]},
+        "reason": {"type": "string", "description": "In a few words, why the expert should handle it."},
+        "say": {"type": "string", "description": "One short, natural sentence to say to the user right now, while "
+                                                 "the expert works, showing you understood (\"Let me check when the "
+                                                 "next Apple event is.\"). Never a question. No times, numbers or "
+                                                 "values of an action."},
+        "kind": {"type": "string", "enum": ["web", "phone", "health", "talk", "other"],
+                 "description": "web: facts, news, dates, places from the internet; phone: about this phone, its "
+                                "data or the home; health: the body, medicines, feeling unwell; talk: advice or a "
+                                "longer chat; other: anything else."},
+        "question": {"type": "string", "description": "For web only: the user's final question, complete and "
+                                                      "self-contained."}},
+        "required": ["reason", "say", "kind"]},
+}
+
+# The fast mind answers small talk itself: a greeting, thanks, "how are you", "I'm not good". Its words are
+# spoken only after small_talk() and chat_ok() agree (20 Oct 2026, the S24: "Good night", "Good morning",
+# "How are you?" and "Thank you" got "One moment." and then silence, because nothing but the cloud mind
+# could answer, and the cloud mind replied <silent> to greetings).
+CHAT_REPLY = "chat_reply"
+CHAT_REPLY_SPEC = {
+    "name": CHAT_REPLY,
+    "description": "Answer the user yourself, for small talk only: greetings, goodbyes, thanks, 'how are you', "
+                   "'okay', 'what can you do', the user saying how they feel. Nothing is done on the phone.",
+    "parameters": {"type": "object", "properties": {
+        "text": {"type": "string", "description": "What you say back: warm and natural, one or two short sentences, "
+                                                  "at most 25 words, like a friend on a phone call."}},
+        "required": ["text"]},
 }
 
 # Simple, clear phone actions the fast mind may carry out itself. Everything else (readings that
@@ -53,19 +78,27 @@ FAST_TOOLS = {"set_alarm", "cancel_alarm", "set_timer", "set_reminder", "set_bri
               "open_navigation", "set_torch", "control_media", "set_volume"}
 
 FAST_INSTRUCTIONS = """\
-You are the quick mind of DUET, a voice assistant on the user's Samsung Galaxy phone. The user message \
-is an automatic transcript of natural speech. Do exactly one of these:
+You are the quick mind of DUET, a voice assistant on the user's Samsung Galaxy phone. The last user \
+message is an automatic transcript of natural speech; the messages before it are the conversation so \
+far, already handled (never act on them again). Do exactly one of these:
 1. If the user has clearly not finished speaking (cut off mid-sentence, "and...", "the number is..."), \
 call keep_listening.
 2. If they asked for a simple, clear phone action that your tools can do, do it: one tool call per \
 action, with the FINAL values the user settled on. A self-correction replaces what came before \
 ("6:30, no, make it 7" means 7; "text her, actually call her" means call). A dropped request \
 ("never mind") is not done. Then reply with at most five words, or exactly <silent>.
-3. Otherwise call ask_expert: questions, explanations, advice, health, medicines, feelings, safety, \
-the weather, news, facts, counting or comparing, reading the phone's data, a value that is unclear, \
-a user who wavers between options ("6:30 or maybe 7"), or anything you are not completely sure about.
-Never answer a question yourself, never guess a value the user did not say, and never reply without \
-calling a tool.
+3. If they are only making small talk (a greeting, goodbye, thanks, "how are you", "okay", "what can \
+you do", or telling you how they feel, such as "I'm not good" or "I'm tired"), call chat_reply with what \
+you say back: warm and natural, like a friend on a call. When they feel bad, show you care and ask what \
+is wrong; otherwise, when it keeps the conversation going, end with a short question. Never state facts \
+about the world, never give health advice, never say you did something.
+4. Otherwise call ask_expert: questions, explanations, advice, health, medicines, feeling unwell, \
+safety, the weather, news, facts, counting or comparing, reading the phone's data, a value that is \
+unclear, a user who wavers between options ("6:30 or maybe 7"), or anything you are not completely sure \
+about. Give `say`: one short sentence to say right away that shows you understood; it is never a \
+question. Questions about this phone (battery, heat, apps, storage) are kind "phone".
+Never answer a question about the world yourself, never guess a value the user did not say, and never \
+reply without calling a tool.
 
 Examples of when to call ask_expert: "how much storage is left?" (reading the phone), "put lunch \
 with Sam on Friday in my calendar" (the calendar), "set a timer for 5, or maybe 10" (wavering), "is it \
@@ -217,13 +250,132 @@ def asks_question(words: str) -> bool:
     return last.rstrip().endswith("?") or bool(_QUESTION.search(last))
 
 
-def vet_plan(calls: List[tuple], words: str, offer=None) -> str:
+# --- small talk: what the fast mind may answer itself ----------------------------------------------------
+
+# The body, medicines, safety and fear: never small talk, whatever the model thinks; the cloud mind answers
+# (Care mode's medicines need the schedule, and every mode's health answer needs care)
+_HEALTH = re.compile(
+    r"\b(pain|pains|hurts?|hurting|ache|aches|aching|headache|stomach|sick|ill|fever|dizzy|faint|fell|fall|fallen|"
+    r"bleed\w*|blood|breath\w*|chest|heart|medicines?|tablets?|pills?|doses?|doctor|hospit\w*|emergency|ambulance|"
+    r"injur\w*|vomit\w*|nause\w*|cough\w*|pressure|sugar|scared|afraid|frightened|panic\w*|suicid\w*|die|dying|"
+    r"kill|unsafe|danger\w*)\b", re.I)
+# questions that are themselves small talk ("how are you?", "what can you do?")
+_SMALL_TALK_Q = re.compile(
+    r"\b(how (are|r) (you|u)|how('?s| is) it going|how (have|'ve) you been|how was your|how do you do|what'?s up|"
+    r"what'?s new|what can you do|what do you do|who are you|what'?s your name|are you there|can you hear me|"
+    r"how about you|and you|what about you)\b", re.I)
+# any other sentence asking for something to be found out or explained is the cloud mind's
+_WANTS_INFO = re.compile(r"\b(know|find|look (it |that |this )?up|search|google|check|latest|news|explain|tell me|"
+                         r"why|when|where|which|who|whom|whose|what|how|help|fix|can you|could you|would you|"
+                         r"will you)\b", re.I)
+# a bare yes or no answers something: the cloud mind (or DUET's offer) decides what it agrees to
+_ANSWER = re.compile(r"^\W*(yes|yeah|yep|yup|no|nope|nah|sure|please|go ahead|do it|of course|correct|right)\b", re.I)
+# DUET's last line asked about an action or a choice: what the user says now answers it, it is not small talk
+_DUET_ASKED = re.compile(r"\b(should i|shall i|do you want me to|would you like me to|want me to|go ahead|which one|"
+                         r"who should|what time|how long|where to|did you mean|is that right|ok(ay)? to)\b"
+                         r"|\bor [^.?!]{1,40}\?\s*$", re.I)
+# a reply that says something was done (or will be): only a tool's own result may say that
+_CLAIMS = re.compile(r"\b(i'?ve|i have|i'?ll|i will|i just|i)\s+(set|turned|switched|started|sent|called|changed|opened|"
+                     r"booked|ordered|added|cancel+ed|scheduled|reminded|texted|messaged|locked|unlocked|played|"
+                     r"paused)\b|\b(done|all set)\b", re.I)
+SMALL_TALK_MAX_WORDS = 16
+CHAT_MAX_WORDS = 40
+
+
+def not_small_talk(words: str, tools: List[str]) -> str:
+    """'' when the user's words are only small talk the fast mind may answer itself, else why not. Precision
+    first: anything that names one of the mode's actions, says a number, asks for information, or touches on
+    health goes to the cloud mind, which answers it a second or two later."""
+    from .tools import cut_off
+    w = " ".join((words or "").split())
+    if not w:
+        return "no words"
+    if len(w.split()) > SMALL_TALK_MAX_WORDS:
+        return "too long for small talk"
+    if cut_off(w):
+        return "the words stop mid-phrase"     # "Turn on the": the user has not finished
+    if _HEALTH.search(w):
+        return "about health or safety"
+    if re.search(r"\d", w) or any(re.search(r"\b%s\b" % n, w, re.I) for n in NUMBER_WORDS):
+        return "a number"
+    if _ANSWER.search(w):
+        return "a yes or no answers something"
+    named = [t for t in tools if t not in (ASK_EXPERT, CHAT_REPLY) and user_named(t, w)]
+    if named:
+        return "the words name %s" % named[0]
+    for sentence in [s for s in re.split(r"(?<=[.?!])\s+", w) if s.strip()]:
+        # a small-talk question excuses only itself, not the rest of its sentence
+        rest = _SMALL_TALK_Q.sub(" ", sentence)
+        if _WANTS_INFO.search(rest) or (sentence.rstrip().endswith("?") and rest == sentence):
+            return "asks for information"
+    return ""
+
+
+_REPLY_LABEL = re.compile(r"^\s*chat[\s_]*reply\s*[:\-]\s*", re.I)
+
+
+def clean_reply(text: str) -> str:
+    """The words to speak. A reply written as text sometimes names the tool it meant ("Chat reply: What else can
+    I help you with?", 20 Oct 2026): that label is dropped."""
+    return " ".join(re.sub(r"[*#`_\"]+", "", _REPLY_LABEL.sub("", text or "")).split()).strip()
+
+
+def chat_ok(words: str, reply: str, tools: List[str], awaiting: bool = False) -> str:
+    """'' when the fast mind's own reply to small talk may be spoken, else why it goes to the cloud mind."""
+    if awaiting:
+        return "the user may be answering DUET's question"
+    why = not_small_talk(words, tools)
+    if why:
+        return why
+    if re.search(r"\b[a-z]+_[a-z_]+\b", _REPLY_LABEL.sub("", reply or ""), re.I):
+        # a tool's name written out as the reply ("keep_listening" for "Turn on the", 20 Oct 2026)
+        return "the reply names a tool"
+    said = clean_reply(reply)
+    if not said or "<silent>" in said:
+        return "no words to say"
+    if re.search(r"\d", said):
+        return "a number in the reply"
+    if _CLAIMS.search(said):
+        return "the reply says something was done"
+    if len(said.split()) > CHAT_MAX_WORDS:
+        return "too long for small talk"
+    return ""
+
+
+def awaiting_answer(last_said: str) -> bool:
+    """Did DUET's last line ask the user about an action or a choice?"""
+    return bool(_DUET_ASKED.search(last_said or ""))
+
+
+RECENT_TURNS = 12      # what the fast mind sees of the conversation: the last six exchanges
+
+
+def chat_turns(recent) -> List[Dict[str, str]]:
+    """The recent conversation, [(role, text), ...] with role "user" or "assistant", as chat messages: one
+    message per turn, the same speaker's lines joined. As real turns (not inside the system message) the
+    server keeps the instructions and tools it has already processed (20 Oct 2026: 0.24-0.44 s a reply,
+    against 0.84-0.96 s with the conversation in the system message)."""
+    out: List[Dict[str, str]] = []
+    for role, text in list(recent or [])[-RECENT_TURNS:]:
+        text = " ".join((text or "").split())
+        if not text or role not in ("user", "assistant"):
+            continue
+        if out and out[-1]["role"] == role:
+            out[-1]["content"] += " " + text
+        else:
+            out.append({"role": role, "content": text})
+    return out
+
+
+def vet_plan(calls: List[tuple], words: str, offer=None, specs: Optional[Dict[str, Any]] = None) -> str:
     """The fast mind's whole first step: every call must pass `vet`, and when the user said a
     number, the last one they said (the value a correction settled on) must be in the plan.
     "3:30, no, cancel that, set it for 430 instead" planned as cancel_alarm(03:30) alone is
     handed on (measured 16 Oct 2026, live).
     An answer to DUET's own open offer ("yes", "make it 22", "just the AC") names no action, yet asks
-    for one: a plan that stays inside the offer, with only values offered or said, may run."""
+    for one: a plan that stays inside the offer, with only values offered or said, may run.
+    `specs` (tool name -> spec, the toolbox's): a value a tool does not take, even as a plain synonym,
+    is handed on too."""
     from .proactive import covers
     if offer is not None and covers(offer, calls, words):
         return ""
@@ -233,12 +385,25 @@ def vet_plan(calls: List[tuple], words: str, offer=None) -> str:
     if calls and drops_something(words):
         return "the user dropped something: the cloud mind decides what is left"
     for tool, args in calls:
-        why = vet(tool, args, w)
+        why = vet(tool, args, w) or off_choice(tool, args, specs)
         if why:
             return why
     last = _last_value(w)
     if last and calls and not (last & _plan_values(calls)):
         return "the last value the user said is not in the plan"
+    return ""
+
+
+def off_choice(tool: str, args: Dict[str, Any], specs: Optional[Dict[str, Any]]) -> str:
+    """'' unless an argument with fixed choices has a value that is none of them (nor a plain synonym of one)."""
+    if not specs or tool not in specs:
+        return ""
+    from .tools import enum_value
+    props = (specs[tool].get("parameters") or {}).get("properties") or {}
+    for k, v in (args or {}).items():
+        allowed = (props.get(k) or {}).get("enum")
+        if allowed and enum_value(props.get(k), v) not in allowed:
+            return "%s '%s' is not one of the choices %s takes" % (k, v, tool)
     return ""
 
 
@@ -337,21 +502,41 @@ def fast_specs(mode_tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     from .skills import named as skill_names
     fast_skills = skill_names()
     return [{"name": t["name"], "description": t["description"], "parameters": t["parameters"]}
-            for t in mode_tools if t["name"] in FAST_TOOLS or t["name"] in fast_skills] + [ASK_EXPERT_SPEC]
+            for t in mode_tools if t["name"] in FAST_TOOLS or t["name"] in fast_skills] + [ASK_EXPERT_SPEC,
+                                                                                          CHAT_REPLY_SPEC]
 
 
-def make_fast_thinker(mode_tools: List[Dict[str, Any]], mode_title: str):
+def make_fast_thinker(mode_tools: List[Dict[str, Any]], mode_title: str, user_name: str = ""):
     from ..llm_local import LocalThinker
+    # the same for the whole conversation, so the server keeps its processed copy of these instructions
+    who = (" The user's name is %s: use it now and then in small talk, not every time." % user_name
+           if user_name else "")
     return LocalThinker(
         model=os.environ.get("DUET_FAST_MODEL", "gemma-4-e2b"),
         specs=fast_specs(mode_tools),
-        instructions=FAST_INSTRUCTIONS + "\nYou are in %s mode." % mode_title,
+        instructions=FAST_INSTRUCTIONS + "\nYou are in %s mode.%s" % (mode_title, who),
         base_url=os.environ.get("DUET_FAST_BASE_URL", "http://127.0.0.1:18002/v1"),
         # Gemma's own recommendation is temperature 1.0; a router that must pick the same action
         # for the same words every time is better near-greedy
         sampler={"temperature": float(os.environ.get("DUET_FAST_TEMPERATURE", "0.2")), "top_p": 0.95,
                  "seed": int(os.environ.get("DUET_SEED", "7")), "extra_body": {"top_k": 64}},
-        escalate={ASK_EXPERT}, note_role="system", one_step=True)
+        escalate={ASK_EXPERT}, note_role="system", one_step=True, reply_tool=CHAT_REPLY)
+
+
+def tool_names(thinker) -> List[str]:
+    """The names of the tools a local thinker was given."""
+    return [t["function"]["name"] for t in getattr(thinker, "tools", []) or [] if isinstance(t, dict)]
+
+
+async def warm_up(thinker) -> None:
+    """The fast mind's instructions and tools processed once, while DUET greets the user, so the first answer
+    is as quick as the rest."""
+    started = time.time()
+    try:
+        await asyncio.wait_for(thinker.warm_up(), 20.0)
+        log.info("fast mind warmed up in %.1f s", time.time() - started)
+    except Exception as exc:  # a cold first answer is slower, never broken
+        log.warning("fast mind warm-up failed: %s", exc)
 
 
 class HybridThinker:
@@ -370,6 +555,10 @@ class HybridThinker:
         self.cloud_down_until = 0.0     # it could not be reached moments ago: do not wait for it again
         self.offers = None              # DUET's open offer, if any (proactive.Offers, set by the agent)
         self.cloud_delay_s = 0.0        # the slow-cloud drill: every cloud answer comes this much later
+        # the conversation so far, [(role, text), ...], kept by the agent from what was really said
+        self.recent: List[tuple] = []
+        # the fast mind's hand-over of the current request: reason, say, kind, question (ask_expert's arguments)
+        self.handover: Dict[str, Any] = {}
 
     @property
     def history(self):
@@ -444,8 +633,12 @@ class HybridThinker:
                 self.edge_log.append('User: "%s" -> answered from %s: %s' % (text[-160:], reading, said))
                 yield ThinkEvent("say", text=said)
                 return
-        self.fast.history = []          # stateless: each request is judged on its own words
-        self.fast.vet = lambda calls: vet_plan(calls, text, offer)
+        # The conversation so far, as chat turns, so small talk is answered in context. Acting stays on the
+        # current words alone: vet_plan checks them, and the ledger never runs an action twice.
+        self.fast.history = chat_turns(self.recent)
+        self.fast.vet = lambda calls: vet_plan(calls, text, offer, getattr(toolbox, "specs", None))
+        self.handover = {}
+        epoch = coord.epoch
         # The fast mind does not need the clock: it acts only on values the user said, and the toolbox
         # settles a time without AM or PM itself. Without the minute-by-minute "Now:" line its instructions
         # stay the same from request to request, so the server reuses its processed copy of them.
@@ -454,6 +647,7 @@ class HybridThinker:
         agen = self.fast.run(text, toolbox, note=fast_note, allow_listen=allow_listen)
         escalate_why = ""
         acted_at: Optional[float] = None
+        plain = False                   # the fast mind replied without a tool: small talk, if the check agrees
         started = time.time()
         try:
             while True:
@@ -476,6 +670,7 @@ class HybridThinker:
                     break
                 if ev.kind == "escalate":
                     escalate_why = ev.text or "the fast mind handed it over"
+                    self.handover = dict(ev.args or {})
                     break
                 if ev.kind == "error":
                     escalate_why = "the fast mind failed: %s" % (ev.text or "")[:80]
@@ -484,10 +679,26 @@ class HybridThinker:
                     self._route("edge", "the user has not finished")
                     yield ev
                     return
+                if ev.kind == "chat" or (plain and ev.kind == "say"):
+                    why = self._chat_check(text, ev.text, offer)
+                    if why:
+                        escalate_why = "small talk the fast mind may not answer itself: %s" % why
+                        self.handover = {"say": ev.text or ""}
+                        break
+                    if coord.overtaken(epoch):
+                        from ..coordinator import Superseded
+                        raise Superseded()      # the user said more while it was answering
+                    said = clean_reply(ev.text)
+                    self._route("edge", "small talk, answered by the fast mind")
+                    yield ThinkEvent("route", text="edge")
+                    yield ThinkEvent("decided", tools=False)
+                    yield ThinkEvent("say", text=said, usage=ev.usage)
+                    self.edge_log.append('User: "%s" -> DUET said: "%s"' % (text[-160:], said))
+                    return
                 if ev.kind == "decided":
                     if not ev.tools:
-                        escalate_why = "nothing for the fast mind to do"
-                        break
+                        plain = True
+                        continue
                     acted_at = time.time()
                     self._route("edge", "a simple phone action")
                     yield ThinkEvent("route", text="edge")
@@ -502,8 +713,14 @@ class HybridThinker:
                     return
         finally:
             await agen.aclose()
-        async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before, escalate_why):
+        async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before,
+                                    escalate_why or "nothing for the fast mind to do"):
             yield ev
+
+    def _chat_check(self, words: str, reply: str, offer) -> str:
+        """'' when the fast mind's own reply may be spoken (see chat_ok)."""
+        last = next((t for role, t in reversed(list(self.recent or [])) if role == "assistant"), "")
+        return chat_ok(words, reply, tool_names(self.fast), awaiting=offer is not None or awaiting_answer(last))
 
     async def _offer_rest(self, text: str, toolbox, done_before: int) -> AsyncIterator[ThinkEvent]:
         """A yes to DUET's whole offer that changed one part ("yes, make it 22") takes up its other parts
