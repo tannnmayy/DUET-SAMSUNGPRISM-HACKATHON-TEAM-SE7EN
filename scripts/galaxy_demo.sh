@@ -37,7 +37,9 @@ wait_ready() {
 }
 
 # --- 1. the language model --------------------------------------------------------------------
-if [ -n "${LLAMA_SERVER:-}" ]; then
+# Both LLAMA_SERVER and LLAMA_MODEL: the whole agent on llama.cpp. LLAMA_SERVER alone (with FAST_MODEL) only says where
+# llama-server is for the fast mind (21 Oct 2026: LLAMA_SERVER alone took this branch and stopped, asking for LLAMA_MODEL).
+if [ -n "${LLAMA_SERVER:-}" ] && [ -n "${LLAMA_MODEL:-}" ]; then
   export DUET_LLM_BACKEND=local
   port="${LLAMA_PORT:-18001}"
   export DUET_LLM_BASE_URL="${DUET_LLM_BASE_URL:-http://127.0.0.1:$port/v1}"
