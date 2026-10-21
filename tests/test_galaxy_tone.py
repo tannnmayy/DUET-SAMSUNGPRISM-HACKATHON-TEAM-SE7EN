@@ -383,6 +383,27 @@ def test_a_slow_reply_after_the_held_action_still_asks(monkeypatch):
     assert says(hybrid, "Set a timer for 15 minutes, maybe.", box) == ["15 minutes, right?"]
 
 
+def test_a_hand_over_for_the_held_value_alone_is_answered_with_the_question_at_once():
+    """21 Oct 2026: the fast mind held the unsure alarm, set the timer, then handed over ("not simply done"), and the
+    cloud mind said the same question 5.8 s later."""
+    box = NS(coord=Coordinator(), confirming=None, failed=[])
+
+    def held():
+        box.confirming = ("set_alarm", {"time": "16:30"}, "4:30 in the afternoon, right?")
+    plan = [ThinkEvent("decided", tools=True), held,
+            ThinkEvent("tool_done", name="set_alarm", args={"time": "16:30"}, outcome="not_executed"),
+            ThinkEvent("tool_done", name="set_timer", args={"minutes": 10}, outcome="ok"),
+            ThinkEvent("escalate", text="the phone did not simply do it (not_executed, ok)")]
+    cloud = Script("26b", [ThinkEvent("say", text="From the cloud.")])
+    hybrid = fast.HybridThinker(Script("e2b", plan), cloud)
+    assert says(hybrid, "Set an alarm for 4:30, I think, and a timer for 10 minutes.", box) == [
+        "4:30 in the afternoon, right?"]
+    box.confirming, box.failed = None, [("set_timer", "error")]       # something else failed too: the cloud explains
+    hybrid = fast.HybridThinker(Script("e2b", plan), cloud)
+    assert says(hybrid, "Set an alarm for 4:30, I think, and a timer for 10 minutes.", box)[-1] == \
+        "4:30 in the afternoon, right?"
+
+
 def test_a_question_from_a_plan_the_user_overtook_is_not_asked():
     box = NS(coord=Coordinator(), confirming=("set_alarm", {"time": "16:30"}, "4:30 in the afternoon, right?"))
     hybrid = fast.HybridThinker(Script("e2b", [ThinkEvent("chat", text="Good morning!")]), Script("26b", CLOUD))

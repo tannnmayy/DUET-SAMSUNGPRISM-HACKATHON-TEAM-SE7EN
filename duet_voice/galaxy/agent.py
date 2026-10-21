@@ -269,7 +269,7 @@ class GalaxyAgent(base.DuetAgent):
         self._route_now = None
         self._request_text = self._open_request(chat_ctx)
         self._asked_at = time.time()
-        self._asked_clock = self._coord.clock()
+        self._asked_seq = self._coord.heard_count       # what is heard from now on is the next request's
         if isinstance(self._thinker, fast.HybridThinker):
             # "say that again" and "go on" are answered from DUET's last reply (fast.control)
             self._thinker.last_answer = self._last_reply
@@ -458,7 +458,7 @@ class GalaxyAgent(base.DuetAgent):
             # The reply's own request is done with, but what the user said after the reply began is the next one's.
             # 21 Oct 2026: "Wait, make the alarm 7." was heard, then the reply it cut off was delivered and emptied
             # the coordinator's words, so every guard of the correction read nothing (the next 7 was set for 7 am).
-            self._coord.open_utterance = self._coord.words_since(getattr(self, "_asked_clock", float("inf")))
+            self._coord.open_utterance = self._coord.words_from(getattr(self, "_asked_seq", 1 << 60))
             self._seen = len(self._coord.history)
             self._toolbox.new_request()
             stale_readings(self._thinker.history)

@@ -553,7 +553,20 @@ def vet_plan(calls: List[tuple], words: str, offer=None, specs: Optional[Dict[st
     last = _last_value(w)
     if last and calls and not (last & _plan_values(calls)):
         return "the last value the user said is not in the plan"
+    if any(t in _VALUED for t, _ in calls) and _CHANGES_EARLIER.search(w) and len(re.findall(_VALUE, w)) <= 1:
+        return "a change to an earlier action: the cloud mind knows what it changes"
     return ""
+
+
+# "make the alarm 7", "change it to 22", "move it to 8" with no first value in the same words: a change to something
+# done in an earlier request. The fast mind does not see earlier actions (chat_turns), so it would add a second
+# alarm and leave the first (21 Oct 2026: "Wait, make the alarm 7." set 7 pm and kept the 6:30 just set).
+_CHANGES_EARLIER = re.compile(
+    r"\b((make|change|move|push) (it|that|them|the (alarm|timer|reminder|brightness|volume|ac|temperature))|"
+    r"(set|put) (it|that))\s+(back\s+)?((to|for|at|by)\s+)?(\d|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"eleven|twelve|fifteen|twenty|thirty|forty|fifty|half|quarter)\b", re.I)
+_VALUED = {"set_alarm", "set_reminder", "set_timer", "set_brightness", "set_volume", "set_screen_timeout",
+           "control_home_device", "set_car_climate", "create_event"}
 
 
 def off_choice(tool: str, args: Dict[str, Any], specs: Optional[Dict[str, Any]]) -> str:
@@ -890,6 +903,11 @@ class HybridThinker:
                     escalate_why = "the fast mind took longer than %.1f s" % self.deadline_s
                     break
                 if ev.kind == "escalate":
+                    if getattr(toolbox, "confirming", None) and not getattr(toolbox, "failed", None):
+                        # all that was held back is the value the user sounded unsure of: its question is the whole
+                        # answer, now (21 Oct 2026: the cloud mind was asked and said the same question 5.8 s later)
+                        yield ThinkEvent("say", text="<silent>")
+                        return
                     escalate_why = ev.text or "the fast mind handed it over"
                     self.handover = dict(ev.args or {})
                     break

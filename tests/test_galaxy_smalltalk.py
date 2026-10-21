@@ -382,22 +382,34 @@ def test_the_agent_remembers_what_was_really_said_and_shares_it(monkeypatch):
     assert "Tanmay" in a._thinker.fast.instructions
 
 
+def test_a_change_to_an_earlier_action_goes_to_the_cloud_mind():
+    """21 Oct 2026: "Wait, make the alarm 7." (the 6:30 set in the request before) was planned by the fast mind as a
+    second alarm, and the 6:30 stayed. The fast mind does not see earlier actions; the cloud mind does."""
+    assert "earlier action" in fast.vet_plan([("set_alarm", {"time": "19:00"})], "Wait make the alarm 7.")
+    assert fast.vet_plan([("set_alarm", {"time": "16:30"})], "Could you set it for 4:30 instead?") != ""
+    assert fast.vet_plan([("set_volume", {"percent": 30})], "Make it 30 instead.") != ""      # handed over either way
+    # naming the action is a request of its own
+    assert fast.vet_plan([("set_alarm", {"time": "04:30"})], "Could you set an alarm for 430 instead?") == ""
+    # a correction inside the same words stays with the fast mind
+    assert fast.vet_plan([("set_alarm", {"time": "07:00"})], "Set an alarm for 5, no, 6, no wait, make it 7.") == ""
+    assert fast.vet_plan([("set_brightness", {"percent": 30})],
+                         "Turn the brightness down to 40. Actually, make it 30.") == ""
+    assert fast.vet_plan([("call_contact", {"name": "Priya"})],
+                         "Text Priya that I'm running late. Actually, just call her instead.") == ""
+
+
 def test_words_said_over_a_reply_survive_its_delivery(monkeypatch):
     """21 Oct 2026, edge_bargein_fix: "Wait, make the alarm 7." was heard, then the reply it cut off was delivered
     and emptied the coordinator's words: every guard of the correction read nothing, and the next 7 was 7 am."""
     _, a = galaxy_agent(monkeypatch)
     coord = a._coord
-    now = [100.0]
-    coord.clock = lambda: now[0]
     coord.heard("Set an alarm for 6:30 and tell me the weather.")
-    now[0] += 1.0
-    a._asked_clock = coord.clock()                  # the reply to it begins
-    now[0] += 3.0
+    a._asked_seq = coord.heard_count                # the reply to it begins (in the same clock tick, often)
     coord.heard("Wait, make the alarm 7.")          # said over that reply
     a._request_text, a._pending_consumed = "Set an alarm for 6:30 and tell me the weather.", 1
     a.reply_delivered(said="Alarm set for 6:30 in the evening.")
     assert coord.open_utterance == "Wait, make the alarm 7."
-    a._asked_clock = coord.clock() + 1.0            # a reply with nothing said over it clears everything
+    a._asked_seq = coord.heard_count                # a reply with nothing said over it clears everything
     a._request_text, a._pending_consumed = "Wait, make the alarm 7.", 2
     a.reply_delivered(said="Alarm set for 7 in the evening.")
     assert coord.open_utterance == ""

@@ -66,7 +66,7 @@ py -3.11 -m venv .venv
 Check:
 ```bash
 .venv/Scripts/python.exe -c "import torch; print(torch.cuda.is_available())"   # True
-.venv/Scripts/python.exe -m pytest -q tests                                       # all pass (317 on 21 Oct)
+.venv/Scripts/python.exe -m pytest -q tests                                       # all pass (343 on 21 Oct)
 .venv/Scripts/python.exe -c "from duet_voice.galaxy import tone; tone.prewarm(); print(tone._session() is not None)"   # True
 ```
 The first real run downloads Whisper large-v3-turbo, Kokoro and the turn detector from Hugging Face (a few GB,
@@ -225,6 +225,8 @@ Expected on 18 Oct (emulator, live SmartThings): every phone step passes; the sp
 | Echo / DUET interrupts itself on loudspeaker | use Galaxy Buds; or start the stack with `DUET_INTERRUPT_MODE=vad` (the default since 21 Oct is LiveKit's adaptive interruption, which stops DUET faster) |
 | "Connected · waiting for DUET…" never changes | an APK from before 21 Oct: rebuild it (section 7) and install it (section 9) |
 | torch error "paging file is too small" | close the Android emulator / other GPU apps; free RAM |
+| At a venue, on shared Wi-Fi | the token server answers anyone on the same network (anyone could join and reach the SmartThings home): use the USB cable and start the stack with `DUET_APP_HOST=127.0.0.1 bash scripts/galaxy_demo.sh` |
+| `/api/health` says a key is refused | that key is not valid or has expired; DUET rests it and uses the others. Replace it in `GOOGLE_API_KEYS` |
 | DUET asks "…, right?" when you did not want it | you said a hedge next to the value ("4:30, I think", "maybe 15 minutes"): say it plainly, or answer "yes". Turn the tone channel off with `DUET_TONE=0 bash scripts/galaxy_demo.sh` |
 | Tone never shows on the timeline | an APK from before the tone channel: rebuild it (section 7). Each measured segment is in the run log (`results/galaxy/traces/<room>.jsonl`, kind `tone_segment`); `agent.log` says "tone: no emotion model" if the model could not be loaded |
 
@@ -239,5 +241,6 @@ Expected on 18 Oct (emulator, live SmartThings): every phone step passes; the sp
 | `scripts/` | `galaxy_demo.sh` (stack), `phone_check.py`, `verify_all.py`, `smartthings_setup.py`, `demo_preflight.py` |
 | `docs/ROUND2_DEMO.md` | the demo night checklist and script |
 | `docs/ROUND2_TONE_PLAN.md` | the tone channel: research, measurements, design, how it was tested |
+| `docs/ROUND2_TEST_REPORT.md` | the failure hunt of 21 Oct: what was tested, what broke and was fixed, the verdict |
 | `docs/DUET_Project.html` | the project page (open in a browser) |
 | `docs/ROUND2_WORK_REPORT.md` | what changed on 18 Oct and how it was verified |
