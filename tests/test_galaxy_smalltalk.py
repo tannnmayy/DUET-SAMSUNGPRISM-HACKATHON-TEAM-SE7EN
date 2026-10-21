@@ -382,6 +382,26 @@ def test_the_agent_remembers_what_was_really_said_and_shares_it(monkeypatch):
     assert "Tanmay" in a._thinker.fast.instructions
 
 
+def test_an_exchange_that_ran_a_tool_is_kept_from_the_fast_minds_history(monkeypatch):
+    """21 Oct 2026, the emulator: after "Turn on the torch." / "Torch on." in its history, the fast mind answered
+    "Turn the torch off." in words 5 times out of 5 (the check sent it to the cloud mind; with the cloud cut off,
+    the torch stayed on). Small talk stays in its history; the cloud mind keeps everything."""
+    from duet_voice.coordinator import CallRecord
+    _, a = galaxy_agent(monkeypatch)
+    a._request_text, a._pending_consumed = "Good morning.", 1
+    a.reply_delivered(said="Good morning, Tanmay!")
+    a._coord.history.append(CallRecord("set_torch", {"on": True}, 0, 0.0, outcome="ok"))
+    a._request_text, a._pending_consumed = "Turn on the torch.", 2
+    a.reply_delivered(said="Sure. Torch on.")
+    assert list(a.recent)[-2:] == [("user", "Turn on the torch.", True), ("assistant", "Torch on.", True)]
+    assert fast.chat_turns(a.recent, skip_acted=True) == [
+        {"role": "user", "content": "Good morning."}, {"role": "assistant", "content": "Good morning, Tanmay!"}]
+    assert len(fast.chat_turns(a.recent)) == 4                            # everyone else still sees it all
+    a._request_text, a._pending_consumed = "How are you?", 3              # nothing ran since: not marked
+    a.reply_delivered(said="Doing well!")
+    assert list(a.recent)[-1] == ("assistant", "Doing well!")
+
+
 def test_one_moment_waits_while_the_fast_mind_decides(monkeypatch):
     gagent, a = galaxy_agent(monkeypatch)
     a._route_now, a._asked_at = None, time.time()
@@ -533,6 +553,10 @@ def test_a_sentence_that_only_restates_a_confirmed_action_is_not_said_twice():
     assert drop_restated("It will cool the room in about ten minutes.", ["The air conditioner is now on."]) == \
         "It will cool the room in about ten minutes."
     assert drop_restated("Anything.", []) == "Anything."
+    # 21 Oct 2026, the emulator: "Camera's open. I've opened the camera."
+    assert drop_restated("I've opened the camera.", ["Camera's open."]) == ""
+    assert drop_restated("I've turned auto-rotate back on.", ["Auto-rotate is on."]) == ""
+    assert drop_restated("I've unlocked the front door.", ["The front door is locked."]) != ""   # says the opposite
 
 
 def test_after_a_wait_go_on_still_finishes_the_answer_and_a_bridge_apologises_once(monkeypatch):

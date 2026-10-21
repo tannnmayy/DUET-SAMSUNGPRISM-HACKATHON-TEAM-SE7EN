@@ -211,7 +211,9 @@ DRILLS = [
      {"drill": {"slow_cloud_s": 6}, "reads": ["get_weather"], "say": r"still working on it"}),
     ("slow_torch", "Turn on the torch.", {"done": [("set_torch", {"on": "true"})], "max_action_s": 3.0}),
     ("slow_off", "Turn the torch off.", {"drill": {"slow_cloud_s": 0}, "done": [("set_torch", {"on": "false"})]}),
-    ("refuses", "Turn on the torch.", {"phone_refuses": True, "failures_ok": True, "no_say": r"torch (is )?on",
+    # (a claim that it is on: "Torch on.", "the torch is on now"; not "I couldn't turn the torch on")
+    ("refuses", "Turn on the torch.", {"phone_refuses": True, "failures_ok": True,
+                                       "no_say": r"(?<!turn the )\btorch (is )?(now )?on\b",
                                        "say": r"allow|permission|didn'?t|did not|couldn'?t|could not|wasn'?t able|unable"}),
     ("refuses_off", "Turn on the torch.", {"phone_refuses": False, "done": [("set_torch", {"on": "true"})]}),
     ("drop", None, {"drop": True}),

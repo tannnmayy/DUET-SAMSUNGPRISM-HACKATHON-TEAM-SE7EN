@@ -142,6 +142,13 @@ async def user_agreed(tool: str, args: Dict[str, Any], asked: str, offered: str)
     return answer.startswith("yes")
 
 
+def agreed_without_model(words: str, last_said: str) -> bool:
+    """The consent check when its model cannot answer (the fast mind is down, or slower than 3 s): only a plain yes
+    right after DUET asked a question counts. Anything else is asked first: a call, a text or a change the user did
+    not name never runs on a failed check (before 21 Oct 2026 it did)."""
+    return proactive.accepts(words) and (last_said or "").rstrip().endswith("?")
+
+
 # The question for a request cut off mid-phrase, when the model asks nothing itself
 ASK_REST = {"call_contact": "Who should I call?", "send_message": "Who should I text?",
             "set_alarm": "For what time?", "set_reminder": "For what time?", "set_timer": "For how long?",
@@ -442,6 +449,8 @@ class GalaxyAgent(base.DuetAgent):
     def reply_delivered(self, said: str = "") -> None:
         """`said`: what DUET's message said (as far as the user heard it)."""
         closed = self._pending_consumed is not None
+        # an exchange in which a tool ran is marked: the fast mind's history leaves it out (fast.chat_turns)
+        mark = (True,) if self._coord.history[self._seen:] else ()
         super().reply_delivered()
         self.offers.answered()
         if closed:
@@ -449,7 +458,7 @@ class GalaxyAgent(base.DuetAgent):
             self._toolbox.new_request()
             stale_readings(self._thinker.history)
             if self._request_text:
-                self.recent.append(("user", self._request_text))
+                self.recent.append(("user", self._request_text) + mark)
             self._request_text = ""
             if self.listener is not None:
                 self.listener.close(self._asked_at)
@@ -457,7 +466,7 @@ class GalaxyAgent(base.DuetAgent):
         words = re.sub(r"^\s*((%s)\s*)+" % "|".join(re.escape(x) for x in FIXED_LINES), "", " ".join(
             (said or "").split()))
         if words:
-            self.recent.append(("assistant", words))
+            self.recent.append(("assistant", words) + mark)
 
 
     # -- the tone channel ----------------------------------------------------------------------------------
@@ -661,8 +670,14 @@ async def entrypoint(ctx: JobContext) -> None:
             # ("is it my brightness?") is still checked.
             trace("consent", tool=tool, args=args, allowed=True, by="named")
             return True
-        ok = await user_agreed(tool, args, words, said["last"])
-        trace("consent", tool=tool, args=args, allowed=ok, by="model")
+        try:
+            ok = await user_agreed(tool, args, words, said["last"])
+            by = "model"
+        except Exception as exc:
+            ok, by = agreed_without_model(words, said["last"]), "fallback"
+            log.warning("consent model failed (%s); %s", str(exc)[:80] or type(exc).__name__,
+                        "a plain yes to DUET's question" if ok else "the user is asked first")
+        trace("consent", tool=tool, args=args, allowed=ok, by=by)
         return ok
 
     names = {t["name"] for t in mode["tools"]}

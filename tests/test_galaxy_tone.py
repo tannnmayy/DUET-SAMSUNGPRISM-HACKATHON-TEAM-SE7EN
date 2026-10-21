@@ -335,13 +335,66 @@ def test_the_question_ends_the_reply_whichever_mind_planned_the_action():
                    ThinkEvent("say", text="I've set it for 4:30.")]
     hybrid = fast.HybridThinker(Script("e2b", fast_script), Script("26b", CLOUD))
     assert says(hybrid, "Set an alarm for 4:30, I think.", box) == ["4:30 in the afternoon, right?"]
-    assert "nothing was done yet" in hybrid.edge_log[-1]
+    assert "nothing was done with it yet" in hybrid.edge_log[-1]
     box.confirming = None
     cloud_script = [ThinkEvent("decided", tools=True), held,
                     ThinkEvent("tool_done", name="set_alarm", args={"time": "16:30"}, outcome="not_executed"),
                     ThinkEvent("say", text="Done.")]
     hybrid = fast.HybridThinker(Script("e2b", [ThinkEvent("escalate", text="cloud")]), Script("26b", cloud_script))
     assert says(hybrid, "Set an alarm for 4:30, I think.", box)[-1] == "4:30 in the afternoon, right?"
+
+
+def test_the_other_actions_of_the_plan_still_run_before_the_question():
+    """"Set an alarm for 4:30, I think, and a timer for 10 minutes": the timer is set, the alarm is asked about."""
+    box = NS(coord=Coordinator(), confirming=None)
+    events = []
+
+    def held():
+        box.confirming = ("set_alarm", {"time": "16:30"}, "4:30 in the afternoon, right?")
+    plan = [ThinkEvent("decided", tools=True), held,
+            ThinkEvent("tool_done", name="set_alarm", args={"time": "16:30"}, outcome="not_executed"),
+            ThinkEvent("tool_start", name="set_timer", args={"minutes": 10}),
+            ThinkEvent("tool_done", name="set_timer", args={"minutes": 10}, outcome="ok"),
+            ThinkEvent("say", text="I set the timer and the alarm.")]
+    hybrid = fast.HybridThinker(Script("e2b", plan), Script("26b", CLOUD))
+
+    async def go():
+        return [e async for e in hybrid.run("Set an alarm for 4:30, I think, and a timer for 10 minutes.", box)]
+    for e in asyncio.run(go()):
+        events.append((e.kind, e.text if e.kind == "say" else getattr(e, "name", "")))
+    assert ("tool_done", "set_timer") in events
+    assert [t for k, t in events if k == "say"] == ["4:30 in the afternoon, right?"]
+
+
+def test_a_slow_reply_after_the_held_action_still_asks(monkeypatch):
+    """The fast mind's reply after acting can time out; the reply then ends with the question, not in silence."""
+    monkeypatch.setattr(fast, "AFTER_ACTION_S", 0.05)
+    box = NS(coord=Coordinator(), confirming=None)
+
+    class Slow(Script):
+        async def run(self, text, toolbox, audio=None, note="", allow_listen=True):
+            yield ThinkEvent("decided", tools=True)
+            box.confirming = ("set_timer", {"minutes": 15}, "15 minutes, right?")
+            yield ThinkEvent("tool_done", name="set_timer", args={"minutes": 15}, outcome="not_executed")
+            await asyncio.sleep(1.0)
+            yield ThinkEvent("say", text="too late")
+    hybrid = fast.HybridThinker(Slow("e2b", []), Script("26b", CLOUD))
+    assert says(hybrid, "Set a timer for 15 minutes, maybe.", box) == ["15 minutes, right?"]
+
+
+def test_a_question_from_a_plan_the_user_overtook_is_not_asked():
+    box = NS(coord=Coordinator(), confirming=("set_alarm", {"time": "16:30"}, "4:30 in the afternoon, right?"))
+    hybrid = fast.HybridThinker(Script("e2b", [ThinkEvent("chat", text="Good morning!")]), Script("26b", CLOUD))
+    assert says(hybrid, "Good morning.", box) == ["Good morning!"]
+
+
+def test_a_mind_that_calls_the_held_action_again_is_told_the_same_quietly():
+    box, sent, events, asked = toolbox(tone.read([], "Set an alarm for 4:30, I think."))
+    box.coord.open_utterance = "Set an alarm for 4:30, I think."
+    for _ in range(2):
+        out = json.loads(asyncio.run(box.call("set_alarm", {"time": "16:30"})))
+        assert out["status"] == "not_executed"
+    assert sent == [] and len(asked) == 1 and len([e for e in events if e["kind"] == "tool_asked"]) == 1
 
 
 # --- the agent ----------------------------------------------------------------------------------------------

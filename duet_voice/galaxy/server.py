@@ -92,15 +92,27 @@ async def health() -> dict:
             return {"ok": False, "why": "not answering (%s)" % type(exc).__name__}
 
     async def cloud_mind():
-        if not gemma_api.api_keys():
+        """Every key is asked (a list of models: no tokens used). Usable while one key works; the bad ones are
+        named, by position in GOOGLE_API_KEYS, never by value."""
+        keys = gemma_api.api_keys()
+        if not keys:
             return {"ok": False, "why": "no Google API key"}
         try:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4)) as s:
-                async with s.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
-                                 headers={"x-goog-api-key": gemma_api.api_keys()[0]}) as r:
-                    return {"ok": r.status == 200, "why": "" if r.status == 200 else "Google answered %d" % r.status}
+                async def status(key: str) -> int:
+                    async with s.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
+                                     headers={"x-goog-api-key": key}) as r:
+                        return r.status
+                codes = await asyncio.gather(*(status(k) for k in keys), return_exceptions=True)
         except Exception as exc:
             return {"ok": False, "why": "cannot reach Google (%s)" % type(exc).__name__}
+        if all(isinstance(c, Exception) for c in codes):
+            return {"ok": False, "why": "cannot reach Google (%s)" % type(codes[0]).__name__}
+        bad = ["key %d (%s)" % (n + 1, c if isinstance(c, int) else type(c).__name__)
+               for n, c in enumerate(codes) if c != 200]
+        working = len(keys) - len(bad)
+        return {"ok": working > 0, "keys": "%d of %d work" % (working, len(keys)),
+                "why": ("refused: " + ", ".join(bad)) if bad else ""}
 
     async def home():
         if not smartthings.enabled():

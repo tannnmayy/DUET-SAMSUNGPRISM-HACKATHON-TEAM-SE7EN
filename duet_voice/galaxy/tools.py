@@ -316,9 +316,9 @@ class PhoneToolbox:
                                    "question offering this; act only on their yes"})
             try:
                 allowed = await self.consent(tool, args)
-            except Exception as exc:  # a failed check never blocks what the user asked for
+            except Exception as exc:  # a broken check never lets an unasked call or change through: ask first
                 log.warning("consent check failed: %s", exc)
-                allowed = True
+                allowed = False
             if not allowed:
                 self.asked.add(key)
                 self.emit({"kind": "tool_asked", "tool": tool, "args": args})
@@ -417,11 +417,13 @@ class PhoneToolbox:
         if reading is None or not reading.about(tool, args):
             return ""
         question, action = asked
+        again = self.confirming is not None and self.confirming[:2] == (tool, dict(args))
         self.unfinished = (tool, "unsure")
         self.confirming = (tool, dict(args), question)
-        self.emit({"kind": "tool_asked", "tool": tool, "args": args,
-                   "why": "you sounded unsure (%s), so DUET checks first" % "; ".join(reading.cues)})
-        if self.on_unsure is not None:
+        if not again:   # a mind that calls it once more is told the same, with nothing new on the timeline
+            self.emit({"kind": "tool_asked", "tool": tool, "args": args,
+                       "why": "you sounded unsure (%s), so DUET checks first" % "; ".join(reading.cues)})
+        if self.on_unsure is not None and not again:
             try:
                 self.on_unsure(tool, dict(args), question, action, reading)
             except Exception as exc:  # the offer is a convenience; the question is still asked

@@ -67,6 +67,8 @@ KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["too
 #   route_why [regex]                a reason DUET must give for where a request went (the timeline's route)
 #   tone   [regex]                   how DUET must have heard the user (the timeline's tone labels), in any order
 #   no_tone_ask True: DUET never asked back a value because the user sounded unsure
+#   all_edge True: every request was handled by the fast mind (none went to the cloud mind)
+#   alarms [pattern]                 the alarms set at the end, exactly (sets, minus the cancels that cancelled)
 # patterns: "@4:30" means that clock time, morning or afternoon; "=18:00" exactly; else a regex.
 
 S = {}
@@ -285,6 +287,55 @@ scenario("tone_raised_ok", "assistant", [
 scenario("tone_frustrated", "assistant", [
     ("@Good morning.", 5.0), ("@Turn on the torch.", 7.0), ("@^It's still not working!", 12.0)],
     do=[("set_torch", {"on": "true"})], tone=[r"frustrated"], never=[("set_torch", {"on": "false"})])
+
+# Added 21 Oct 2026, the failure hunt: what a person does that the scenarios above do not. Several simple actions in
+# one conversation stay on the fast mind (on the emulator they went to the cloud mind after the first one); requests
+# back to back; a long story before the request; times in words; a contact that does not exist; something DUET
+# cannot do; Hinglish; a barge-in that corrects an action already planned; two actions with one unsure value.
+scenario("edge_many_actions", "assistant", [
+    ("@Turn on the torch.", 6.0), ("@Set the volume to 40 percent.", 6.0), ("@Set a timer for 5 minutes.", 6.0),
+    ("@Turn the torch off.", 7.0)],
+    do=[("set_torch", {"on": "true"}), ("set_volume", {"percent": "^40$"}), ("set_timer", {"minutes": "^5(\\.0)?$"}),
+        ("set_torch", {"on": "false"})], only=True, all_edge=True)
+scenario("edge_rapid", "assistant", [
+    ("@Turn on the torch.", 0.4), ("Set a timer for 5 minutes.", 0.4), ("And pause the music.", 10.0)],
+    do=[("set_torch", {"on": "true"}), ("set_timer", {"minutes": "^5(\\.0)?$"}), ("control_media", {"action": "pause"})],
+    only=True)
+scenario("edge_long", "assistant", [
+    ("@So yesterday I was at my cousin's place for dinner, and we ended up talking about old school friends for "
+     "hours, and I completely lost track of time, and today I have a big presentation at work. Anyway, can you set "
+     "a timer for 10 minutes?", 10.0)],
+    do=[("set_timer", {"minutes": "^10(\\.0)?$"})], only=True)
+scenario("edge_unknown_contact", "assistant", [("@Call Bob.", 9.0)],
+         do=[], only=True, say=[r"Bob|contact|find|saved|Priya|Rahul"], claim=[r"\b(calling|called) Bob\b"])
+scenario("edge_words_time", "assistant", [("@Wake me up at half past six in the morning.", 8.0)],
+         do=[("set_alarm", {"time": "=06:30"})], only=True)
+scenario("edge_quarter_to", "assistant", [("@Set an alarm for quarter to eight in the evening.", 8.0)],
+         do=[("set_alarm", {"time": "=19:45"})], only=True)
+scenario("edge_impossible", "assistant", [("@Book me a flight to Delhi for tomorrow.", 10.0)],
+         do=[], only=True, claim=[r"\b(I've booked|I have booked|booked your|reserved)\b"])
+scenario("edge_hinglish", "assistant", [("@Kal subah saat baje ka alarm laga do.", 10.0)],
+         never=[("set_alarm", {"time": "^(?!(0?7|19):00)"}), ("call_contact", {}), ("send_message", {})])
+scenario("edge_bargein_fix", "assistant", [
+    ("@Set an alarm for 6:30, and tell me the weather in Chennai tomorrow.", 5.0), ("!Wait, make the alarm 7.", 14.0)],
+    alarms=["@7:00"], reads=["get_weather"])
+scenario("edge_fix_second", "assistant", [
+    ("@Set an alarm for 7 and a timer for 10 minutes. Actually, make the timer 15.", 10.0)],
+    do=[("set_alarm", {"time": "@7:00"}), ("set_timer", {"minutes": "^15(\\.0)?$"})],
+    never=[("set_timer", {"minutes": "^10(\\.0)?$"})], only=True)
+scenario("edge_tone_two", "assistant", [
+    ("@Set an alarm for 4:30, I think, and a timer for 10 minutes.", 9.0), ("@Yes.", 8.0)],
+    do=[("set_timer", {"minutes": "^10(\\.0)?$"}), ("set_alarm", {"time": "@4:30"})], only=True,
+    say=[r"right\?"], tone=[r"unsure"])
+scenario("edge_read_and_act", "assistant", [("@How much battery do I have, and turn on do not disturb.", 10.0)],
+         reads=["get_battery_report"], do=[("set_do_not_disturb", {"on": "true"})], only=True)
+scenario("edge_message", "assistant", [("@Text Priya that I'll be 20 minutes late.", 10.0)],
+         do=[("send_message", {"to": "priya", "text": "20"})], only=True)
+scenario("edge_double_dose", "care", [
+    ("@I already took my blood pressure tablet this morning. Should I take another one now?", 10.0)],
+    never=[("log_medication", {})], say=[r"already|don'?t|do not|no need|wait|not"])
+scenario("edge_drive_eta", "drive", [("@Take me to the airport.", 8.0), ("@When will I get there?", 9.0)],
+         do=[("set_destination", {"place": "airport"})], only=True, say=[r"8:12|\d+ ?(min|minutes)"])
 
 
 # --- a simulated phone (the same answers as the app's browser build, app/www/phone.js) --------
@@ -640,6 +691,21 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("route_why", []):
         if not any(re.search(rx, e.get("why") or "", re.I) for e in ev if e.get("kind") == "route"):
             problems.append("NO ROUTE /%s/" % rx)
+    if expect.get("all_edge"):
+        for e in ev:
+            if e.get("kind") == "route" and e.get("where") != "edge":
+                problems.append("CLOUD ROUTE (%s)" % (e.get("why") or "")[:70])
+    if "alarms" in expect:
+        left: List[str] = []
+        for d in done:
+            t = str((d.get("args") or {}).get("time") or "")
+            if d.get("tool") == "set_alarm" and t:
+                left.append(t)
+            elif d.get("tool") == "cancel_alarm" and (d.get("result") or {}).get("cancelled") is not False:
+                left = [a for a in left if a != t]
+        want_alarms = list(expect["alarms"])
+        if len(left) != len(want_alarms) or not all(any(_match_value(p, a) for a in left) for p in want_alarms):
+            problems.append("ALARMS LEFT %s (want %s)" % (left, want_alarms))
     heard_as = [e.get("label") or "" for e in ev if e.get("kind") == "tone"]
     for rx in expect.get("tone", []):
         if not any(re.search(rx, label, re.I) for label in heard_as):

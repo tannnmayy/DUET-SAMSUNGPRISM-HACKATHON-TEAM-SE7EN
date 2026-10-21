@@ -114,13 +114,26 @@ def test_the_consent_gate_holds_back_a_change_nobody_asked_for():
     assert asked == ["set_brightness"] and sent == [("set_alarm", {"time": "07:00"})]
 
 
-def test_a_failed_consent_check_does_not_block_the_user():
+def test_a_broken_consent_check_asks_first_and_never_lets_an_unasked_action_through():
+    """21 Oct 2026: a check that crashed let the action run. The agent's own check no longer fails on a model that
+    is down (agent.agreed_without_model, and the user's named actions never need the model); a check that still
+    breaks is a bug, and a call or a text then waits for the user's yes."""
     box, sent, _ = make()
 
     async def broken(tool, args):
-        raise RuntimeError("model server down")
+        raise RuntimeError("a bug in the check")
     box.consent = broken
-    assert call(box, "send_message", {"to": "Priya", "text": "running late"})["status"] == "ok"
+    assert call(box, "send_message", {"to": "Priya", "text": "running late"})["status"] == "not_executed"
+    assert sent == []
+
+
+def test_without_its_model_the_consent_check_takes_only_a_plain_yes_to_a_question(monkeypatch):
+    monkeypatch.setenv("DUET_FAST", "1")
+    from duet_voice.galaxy.agent import agreed_without_model
+    assert agreed_without_model("Yes, please.", "Shall I turn on the AC at 24 degrees?")
+    assert not agreed_without_model("Yes, please.", "The AC is off.")                 # no question was asked
+    assert not agreed_without_model("I'm feeling cold.", "Anything else?")             # not a yes
+    assert not agreed_without_model("No thanks.", "Shall I call Priya?")
 
 
 def test_a_held_back_call_is_remembered_for_the_request_only():

@@ -176,11 +176,14 @@ _FILLER = {"ok", "okay", "alright", "sure", "done", "great", "all", "right", "no
            "to", "at", "in", "on", "of", "and", "that", "this", "there", "so", "as", "with", "set", "new",
            "again", "instead", "up", "o'clock", "oclock", "am", "pm", "successfully", "already", "requested",
            "one", "you'll", "youll", "be", "will", "arriving", "arrive", "around", "about", "heading"}
-_SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes", "second": "seconds"}
+_SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes", "second": "seconds",
+             # 21 Oct 2026, the emulator: "Camera's open." then "I've opened the camera."
+             "opened": "open", "closed": "close", "paused": "pause", "locked": "lock", "unlocked": "unlock"}
 
 
 def _content(text: str) -> set:
     words = re.findall(r"[a-z0-9']+", (text or "").lower().replace(":", " "))
+    words = [w[:-2] if w.endswith("'s") and len(w) > 4 else w for w in words]     # "camera's" is the camera
     return {_SPELLING.get(w, _NUMBER_WORDS.get(w, w)) for w in words}
 
 
@@ -194,7 +197,8 @@ def adds_nothing(answer: str, confirmations: List[str]) -> bool:
 
 
 # the verbs an answer restates an action with ("I've turned on the AC" after "The air conditioner is now on.")
-_RESTATING = {"turned", "switched", "changed", "updated", "moved", "started", "made", "put", "got", "them", "they"}
+_RESTATING = {"turned", "switched", "changed", "updated", "moved", "started", "made", "put", "got", "them", "they",
+              "back"}
 # the same thing in other words: the short form is covered when the long one was said, and back
 _SAME = [("ac", ("air", "conditioner")), ("tv", ("television",)), ("aircon", ("air", "conditioner"))]
 

@@ -499,13 +499,21 @@ def light_request(handover: Dict[str, Any], words: str) -> bool:
 RECENT_TURNS = 12      # what the fast mind sees of the conversation: the last six exchanges
 
 
-def chat_turns(recent) -> List[Dict[str, str]]:
+def chat_turns(recent, skip_acted: bool = False) -> List[Dict[str, str]]:
     """The recent conversation, [(role, text), ...] with role "user" or "assistant", as chat messages: one
     message per turn, the same speaker's lines joined. As real turns (not inside the system message) the
     server keeps the instructions and tools it has already processed (20 Oct 2026: 0.24-0.44 s a reply,
-    against 0.84-0.96 s with the conversation in the system message)."""
+    against 0.84-0.96 s with the conversation in the system message).
+
+    An exchange in which a tool ran is marked (role, text, True). `skip_acted` leaves those out, for the fast
+    mind: shown "Turn on the torch." then "Torch on." as plain words, it answers the next action in words too
+    (21 Oct 2026, the emulator: "Turn the torch off." 0 of 5 acted on with such a history, 5 of 5 without it), and
+    in the cloud drill the torch then stayed on. It acts on the current words alone anyway."""
     out: List[Dict[str, str]] = []
-    for role, text in list(recent or [])[-RECENT_TURNS:]:
+    for item in list(recent or [])[-RECENT_TURNS:]:
+        role, text = item[0], item[1]
+        if skip_acted and len(item) > 2 and item[2]:
+            continue
         text = " ".join((text or "").split())
         if not text or role not in ("user", "assistant"):
             continue
@@ -731,6 +739,25 @@ class HybridThinker:
 
     async def run(self, text: str, toolbox, audio=None, note: str = "",
                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
+        """The request, through whichever route takes it. A value the phone held back because the user sounded
+        unsure of it (tools.PhoneToolbox._unsure) makes the reply's words its one question ("4:30 in the
+        afternoon, right?"), whichever mind planned it; the plan's other actions still run (21 Oct 2026: "an
+        alarm for 4:30, I think, and a timer for 10 minutes" must still set the timer)."""
+        if hasattr(toolbox, "confirming"):
+            toolbox.confirming = None       # a plan the user overtook leaves no question behind
+        asked = None
+        async for ev in self._run(text, toolbox, audio, note, allow_listen):
+            if ev.kind == "say" and getattr(toolbox, "confirming", None):
+                asked = toolbox.confirming
+                ev = ThinkEvent("say", text=asked[2], usage=getattr(ev, "usage", None))
+            yield ev
+        if asked:   # last, so the cloud mind reads it after what the fast mind did
+            tool, args, question = asked
+            self.edge_log.append('User: "%s" -> DUET asked "%s" before %s(%s): the value sounded unsure; nothing '
+                                 'was done with it yet' % (text[-160:], question, tool, json.dumps(args)))
+
+    async def _run(self, text: str, toolbox, audio=None, note: str = "",
+                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         coord = toolbox.coord
         done_before = len(coord.history)
         self.bridge_said = ""
@@ -817,7 +844,7 @@ class HybridThinker:
                 return
         # The conversation so far, as chat turns, so small talk is answered in context. Acting stays on the
         # current words alone: vet_plan checks them, and the ledger never runs an action twice.
-        self.fast.history = chat_turns(self.recent)
+        self.fast.history = chat_turns(self.recent, skip_acted=True)
         self.fast.vet = lambda calls: vet_plan(calls, text, offer, getattr(toolbox, "specs", None))
         self.handover = {}
         epoch = coord.epoch
@@ -890,10 +917,6 @@ class HybridThinker:
                     async for extra in self._offer_rest(text, toolbox, done_before):
                         yield extra
                 yield ev
-                if ev.kind == "tool_done" and getattr(toolbox, "confirming", None):
-                    async for asked in self._ask_back(text, toolbox):
-                        yield asked
-                    return
                 if ev.kind == "say":
                     self.edge_log.append('User: "%s" -> done on the phone: %s' % (
                         text[-160:], "; ".join("%s(%s)" % (r.tool, json.dumps(r.args))
@@ -968,18 +991,9 @@ class HybridThinker:
         yield ThinkEvent("decided", tools=False)
         yield ThinkEvent("say", text=answer, usage=usage_of(resp))
 
-    async def _ask_back(self, text: str, toolbox) -> AsyncIterator[ThinkEvent]:
-        """The phone held a value the user sounded unsure of (tools.PhoneToolbox._unsure): DUET asks its one question
-        ("4:30 in the afternoon, right?") and the reply ends, whichever mind planned it, so the question is always
-        the same and nothing else is said. A plain "yes" next then runs it from DUET's offer, with no model."""
-        tool, args, question = toolbox.confirming
-        self.edge_log.append('User: "%s" -> DUET asked "%s" before %s(%s): the value sounded unsure; nothing was '
-                             'done yet' % (text[-160:], question, tool, json.dumps(args)))
-        yield ThinkEvent("say", text=question)
-
     def _chat_check(self, words: str, reply: str, offer) -> str:
         """'' when the fast mind's own reply may be spoken (see chat_ok)."""
-        last = next((t for role, t in reversed(list(self.recent or [])) if role == "assistant"), "")
+        last = next((item[1] for item in reversed(list(self.recent or [])) if item[0] == "assistant"), "")
         return chat_ok(words, reply, tool_names(self.fast), awaiting=offer is not None or awaiting_answer(last))
 
     async def _offer_rest(self, text: str, toolbox, done_before: int) -> AsyncIterator[ThinkEvent]:
@@ -1068,10 +1082,6 @@ class HybridThinker:
                 if ev.kind == "error" and cloud_unreachable(ev.text):
                     self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
                 yield ev
-                if ev.kind == "tool_done" and getattr(toolbox, "confirming", None):
-                    async for asked in self._ask_back(text, toolbox):
-                        yield asked
-                    return
                 if ev.kind == "tool_done" and ev.outcome == "not_executed":
                     refused[ev.name] = refused.get(ev.name, 0) + 1
                     if refused[ev.name] >= REFUSED_MAX:
