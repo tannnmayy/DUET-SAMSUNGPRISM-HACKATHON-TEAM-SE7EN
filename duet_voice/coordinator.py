@@ -34,7 +34,7 @@ import json
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
 
 class Superseded(Exception):
@@ -96,6 +96,8 @@ class Coordinator:
     history: List[CallRecord] = field(default_factory=list)
     # the phone app's tone channel: a longer hold, from how the user sounds (None: the words alone decide)
     extra_hold: Optional[Callable[[], float]] = None
+    # the open utterance's pieces, with the clock time each was heard (words_since)
+    heard_log: List[Tuple[float, str]] = field(default_factory=list)
 
     # -- perception events -------------------------------------------------------
     def user_started_speaking(self) -> None:
@@ -124,6 +126,11 @@ class Coordinator:
         self.last_words_epoch = self.epoch
         self.transcript_due = False
         self.open_utterance = (self.open_utterance + " " + text).strip()
+        self.heard_log = (self.heard_log + [(self.clock(), text)])[-40:]
+
+    def words_since(self, t: float) -> str:
+        """What the user said from clock time `t` on."""
+        return " ".join(text for at, text in self.heard_log if at >= t)
 
     def overtaken(self, epoch: int) -> bool:
         """Has the user said new words since a plan made at `epoch`? Then the plan is

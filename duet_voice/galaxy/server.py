@@ -54,11 +54,26 @@ def token(query) -> dict:
     return {"url": url, "token": jwt, "room": room, "identity": identity}
 
 
+# The origins that may read this server's answers from a browser: the phone app's WebView (Capacitor serves it as
+# https://localhost on Android, capacitor://localhost on iOS) and DUET_APP_ORIGINS. Pages served from this server
+# itself are same-origin and need nothing. Before 21 Oct 2026 any web page could read a room token ("*"), join, and
+# type requests, including to the SmartThings home, which runs on this laptop.
+APP_ORIGINS = {"https://localhost", "http://localhost", "capacitor://localhost"}
+
+
+def allowed_origin(origin: str) -> bool:
+    extra = {o.strip() for o in os.environ.get("DUET_APP_ORIGINS", "").split(",") if o.strip()}
+    return bool(origin) and origin in (APP_ORIGINS | extra)
+
+
 @web.middleware
 async def cors(request, handler):
     resp = web.Response(status=204) if request.method == "OPTIONS" else await handler(request)
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Headers"] = "*"
+    origin = request.headers.get("Origin", "")
+    if allowed_origin(origin):
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Headers"] = "*"
+        resp.headers["Vary"] = "Origin"
     resp.headers["Cache-Control"] = "no-store"
     return resp
 

@@ -184,7 +184,9 @@ _SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes"
 def _content(text: str) -> set:
     # "half past four" is the 4:30 already confirmed (21 Oct 2026: "Alarm set for 4:30 in the morning. I've set your
     # alarm for half past four in the morning.")
-    words = re.findall(r"[a-z0-9']+", spoken_digits(text).lower().replace(":", " "))
+    # ...and "7:00" the 7 already confirmed ("Alarm set for 7 in the morning. I've changed that to 7:00 in the morning.")
+    text = re.sub(r"\b(\d{1,2}):00\b", r"\1", spoken_digits(text))
+    words = re.findall(r"[a-z0-9']+", text.lower().replace(":", " "))
     words = [w[:-2] if w.endswith("'s") and len(w) > 4 else w for w in words]     # "camera's" is the camera
     return {_SPELLING.get(w, _NUMBER_WORDS.get(w, w)) for w in words}
 

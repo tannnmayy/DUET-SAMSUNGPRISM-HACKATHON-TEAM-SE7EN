@@ -382,6 +382,29 @@ def test_the_agent_remembers_what_was_really_said_and_shares_it(monkeypatch):
     assert "Tanmay" in a._thinker.fast.instructions
 
 
+def test_words_said_over_a_reply_survive_its_delivery(monkeypatch):
+    """21 Oct 2026, edge_bargein_fix: "Wait, make the alarm 7." was heard, then the reply it cut off was delivered
+    and emptied the coordinator's words: every guard of the correction read nothing, and the next 7 was 7 am."""
+    _, a = galaxy_agent(monkeypatch)
+    coord = a._coord
+    now = [100.0]
+    coord.clock = lambda: now[0]
+    coord.heard("Set an alarm for 6:30 and tell me the weather.")
+    now[0] += 1.0
+    a._asked_clock = coord.clock()                  # the reply to it begins
+    now[0] += 3.0
+    coord.heard("Wait, make the alarm 7.")          # said over that reply
+    a._request_text, a._pending_consumed = "Set an alarm for 6:30 and tell me the weather.", 1
+    a.reply_delivered(said="Alarm set for 6:30 in the evening.")
+    assert coord.open_utterance == "Wait, make the alarm 7."
+    a._asked_clock = coord.clock() + 1.0            # a reply with nothing said over it clears everything
+    a._request_text, a._pending_consumed = "Wait, make the alarm 7.", 2
+    a.reply_delivered(said="Alarm set for 7 in the evening.")
+    assert coord.open_utterance == ""
+    from duet_voice.galaxy.confirm import drop_restated
+    assert drop_restated("I've changed that to 7:00 in the morning.", ["Alarm set for 7 in the morning."]) == ""
+
+
 def test_a_stopped_fast_mind_server_sends_the_request_to_the_cloud_mind_at_once():
     """21 Oct 2026, llama-server killed: every request waited the fast mind's whole 3 s deadline first."""
     import socket
