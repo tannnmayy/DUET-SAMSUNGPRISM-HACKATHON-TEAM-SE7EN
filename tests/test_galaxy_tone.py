@@ -416,6 +416,18 @@ def test_the_voice_slows_for_distress_and_its_fixed_lines_stay_cached(monkeypatc
     assert calm == 1.0 and slow == pytest.approx(0.9)
 
 
+def test_the_health_check_says_what_is_missing(monkeypatch, tmp_path):
+    monkeypatch.setenv("DUET_TONE", "0")
+    assert tone.status()["ok"] is None
+    monkeypatch.setenv("DUET_TONE", "1")
+    import huggingface_hub
+    monkeypatch.setattr(huggingface_hub, "try_to_load_from_cache", lambda *a, **k: None)
+    out = tone.status()
+    assert out["ok"] is False and "emotion model" in out["why"]
+    monkeypatch.setattr(huggingface_hub, "try_to_load_from_cache", lambda *a, **k: str(tmp_path / "model.onnx"))
+    assert tone.status() == {"ok": True, "why": ""}
+
+
 def test_the_benchmark_never_hears_the_tone_channel():
     import inspect
     src = inspect.getsource(base)

@@ -223,6 +223,25 @@ def _session():
         return _model["session"]
 
 
+def status() -> Dict[str, Any]:
+    """For /api/health: are the tone channel's parts on this machine? (Nothing is loaded or downloaded.)"""
+    if not enabled():
+        return {"ok": None, "why": "off (DUET_TONE=0)"}
+    import importlib.util
+    missing = []
+    if importlib.util.find_spec("parselmouth") is None:
+        missing.append("Praat: pip install -r requirements.txt")
+    if os.environ.get("DUET_TONE_EMOTION", "1") == "1":
+        try:
+            from huggingface_hub import try_to_load_from_cache
+            cached = try_to_load_from_cache(EMOTION_REPO, EMOTION_FILE, revision=EMOTION_REVISION)
+        except Exception:
+            cached = None
+        if not isinstance(cached, str):
+            missing.append("the emotion model: the agent downloads it when it starts (10 MB, needs internet)")
+    return {"ok": not missing, "why": "; ".join(missing)}
+
+
 def prewarm() -> None:
     """Load the emotion model, and Praat, before the first conversation (the model is a 10 MB download the
     first time)."""

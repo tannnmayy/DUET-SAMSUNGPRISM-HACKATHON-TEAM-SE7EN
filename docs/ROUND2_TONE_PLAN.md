@@ -175,12 +175,44 @@ words (Whisper) ─────────────────────�
   labels heard, `no_tone_ask`). Results: section 7.1.
 - **Regression**: the 45 earlier scenarios again, with tone on. Results: section 7.1.
 
-### 7.1 Results
+### 7.1 Results (21 Oct 2026, this laptop, LiveKit Cloud, the free Gemma tier)
 
-(filled in from the runs below)
+| Run | Result |
+|---|---|
+| The six tone scenarios, three passes (once alone, once in the full run, twice more) | **24 of 24** |
+| The full suite with tone on: the 45 earlier scenarios and the 6 tone ones | **51 of 51**; stale actions 0, duplicates 0, intent 51/51, model errors 0 |
+| Its latency (round2 before tone, same laptop, same morning) | first word p50 0.96 s (1.02), action 2.46 s (2.75), answer 2.08 s (1.94): unchanged |
+| The fast mind's decisions (`galaxy_fast_eval.py --repeat 2`) | 188 of 190 right, 0 wrong, 2 handed over: the same as before |
+| Unit tests | 319 pass |
+
+What DUET did in the tone scenarios (from the saved timelines, `results/galaxy/suite/tone_first/`):
+
+| The user (the suite's voice) | DUET |
+|---|---|
+| "Set an alarm for 4.30, I think." | heard *unsure ("I think")*; "4:30 in the afternoon, right?"; on "Yes." the alarm was set from the offer, with no model call |
+| "Set a timer for 15 minutes maybe." then "No, make it 20." | "15 minutes, right?"; 20 minutes set, 15 never |
+| "Set a timer for 15 minutes." | set at once, nothing asked |
+| a long battery answer, then a raised "No, no, no." | *urgent (brighter +13 dB, higher +9 semitones; "No")*; DUET stopped and stayed quiet |
+| the same, then a raised "Okay, okay." | *raised voice*; DUET stopped and did not carry on (a calm "Right, I see." still lets it carry on: the backchannel scenario, 3 of 3) |
+| "Turn on the torch.", then a raised "It's still not working." | *frustrated*; the cloud mind: "I'm sorry you're still having trouble. What specifically isn't working?" |
+
+Through the live path (LiveKit, 48 kHz in, 16 kHz measured) the raised lines measured brighter by 9–15 dB and higher
+by 6–9 semitones than the same voice's plain lines; the plain lines measured within the baseline.
+
+Tone in the 45 ordinary scenarios: **no value was asked back**. "Wake me up at 6:30 tomorrow, or maybe 7, hmm" read
+unsure, but the older "which one?" guard asked first, as before. "I am not good." and "But I also have a headache."
+read *distressed* (the emotion model scored the synthetic voice negative, and the words were there): the cloud mind
+answered them, gently, and those scenarios still pass.
+
+Before tone, the same morning, the re-test of round2: the full suite 45 of 45, then 10 scenarios three times each:
+27 of 30. Two misses were a real bug ("Set an alarm for 3:30. No, no, cancel that." planned 15:30, then sent a
+cancel of 03:30 to the phone; fixed in the commit before tone, then `alarm` and `alarm_late` 6 of 6), one was
+Google's API not answering for 15 s.
 
 ## 8. Limits, and the impact, honestly
 
+- **The spoken suite's raised voice is synthetic** (Kokoro, then Praat): it proves the plumbing end to end, not
+  the thresholds on a real shout.
 - **Measured on actors, synthetic voices and 13 of our own utterances**, not yet on the S24 with a real raised
   voice. The thresholds are the measured ones; a rehearsal should check them on Naman's and Tanmay's voices (the
   run log keeps every segment's numbers for that).

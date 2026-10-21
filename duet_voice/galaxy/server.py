@@ -109,8 +109,10 @@ async def health() -> dict:
         return {"ok": out.get("ok"), "why": out.get("why", ""), "devices": out.get("devices")}
 
     f, c, h = await asyncio.gather(fast_mind(), cloud_mind(), home())
+    from . import tone
     out = {"fast_mind": f, "cloud_mind": c, "smartthings": h,
-           "livekit": {"ok": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"))}}
+           "livekit": {"ok": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"))},
+           "tone": tone.status()}
     _health.update(at=time.monotonic(), out=out)
     return out
 

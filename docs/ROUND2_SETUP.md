@@ -123,7 +123,8 @@ FAST_MODEL="$(cd ../duet_local/models && pwd)/gemma-4-E2B-it-Q4_0.gguf" bash scr
 Check (another Git Bash window):
 ```bash
 curl -s localhost:8787/api/health
-# {"fast_mind": {"ok": true}, "cloud_mind": {"ok": true}, "smartthings": {"ok": true, "devices": 7}, "livekit": {"ok": true}}
+# {"fast_mind": {"ok": true}, "cloud_mind": {"ok": true}, "smartthings": {"ok": true, "devices": 7}, "livekit": {"ok": true},
+#  "tone": {"ok": true}}      (tone false: its "why" says what is missing)
 ```
 Logs: `results/galaxy/agent.log`, `results/galaxy/fast-server.log`.
 
