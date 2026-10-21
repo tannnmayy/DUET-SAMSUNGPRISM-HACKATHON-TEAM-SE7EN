@@ -15,6 +15,7 @@ Script lines:
   "text"       spoken after the previous line's pause
   "@text"      first waits until DUET has answered the previous line and is listening again
   "!text"      waits until DUET is speaking its answer, then cuts in (barge-in)
+  "^text"      said in a raised voice (after "@" or "!": "!^No, no, no!"): higher, brighter, a little louder
   "~noise:S"   S seconds of room noise, with no words in it
 
 Results go to results/galaxy/suite/<tag>/, one JSON per run, plus summary.json:
@@ -64,6 +65,8 @@ KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["too
 #   no_bare_ack  True: no message of DUET's is only "One moment." (or another fixed line) with nothing after it
 #   no_cut True: no message of DUET's was cut off (a backchannel such as "mm-hm" must not stop it)
 #   route_why [regex]                a reason DUET must give for where a request went (the timeline's route)
+#   tone   [regex]                   how DUET must have heard the user (the timeline's tone labels), in any order
+#   no_tone_ask True: DUET never asked back a value because the user sounded unsure
 # patterns: "@4:30" means that clock time, morning or afternoon; "=18:00" exactly; else a regex.
 
 S = {}
@@ -260,6 +263,28 @@ scenario("phone_timeout", "assistant", [("@Set a timer for 3 minutes.", 16.0)],
          phone={"slow": {"set_timer": 13.0}}, do=[], only=True,
          say=[r"may not|might not|not sure|couldn't confirm|can't confirm|check"],
          claim=[r"[Tt]imer (is )?set for 3"])
+
+# Added 21 Oct 2026: how the user said it (duet_voice/galaxy/tone.py). A value said unsurely is asked back before it
+# runs, and a plain "yes" runs it; the same value said plainly is not asked about. A raised "no, no, no!" or
+# "okay, okay!" over DUET stops it (a calm "right, I see" lets it go on: the backchannel scenario). Frustration
+# heard in the voice and the words is noted for both minds. Each tone scenario starts with plain lines: the
+# speaker's usual voice is learnt from them.
+scenario("tone_unsure", "assistant", [("@Set an alarm for 4:30, I think.", 8.0), ("@Yes.", 8.0)],
+         ask=True, do=[("set_alarm", {"time": "@4:30"})], only=True, say=[r"right\?"], tone=[r"unsure"])
+scenario("tone_unsure_change", "assistant", [("@Set a timer for 15 minutes, maybe.", 8.0), ("@No, make it 20.", 9.0)],
+         ask=True, do=[("set_timer", {"minutes": "^20(\\.0)?$"})], never=[("set_timer", {"minutes": "^15(\\.0)?$"})],
+         only=True, tone=[r"unsure"])
+scenario("tone_certain", "assistant", [("@Set a timer for 15 minutes.", 8.0)],
+         do=[("set_timer", {"minutes": "^15(\\.0)?$"})], only=True, no_tone_ask=True)
+scenario("tone_shout", "assistant", [
+    ("@Good morning.", 5.0), ("@My battery drains super fast these days. What's going on?", 6.0), ("!^No, no, no!", 8.0)],
+    reads=["get_battery_report"], do=[], only=True, tone=[r"urgent"], route_why=[r"shouted"])
+scenario("tone_raised_ok", "assistant", [
+    ("@Good morning.", 5.0), ("@My battery drains super fast these days. What's going on?", 6.0), ("!^Okay, okay!", 8.0)],
+    reads=["get_battery_report"], do=[], only=True, tone=[r"raised"], route_why=[r"raised"])
+scenario("tone_frustrated", "assistant", [
+    ("@Good morning.", 5.0), ("@Turn on the torch.", 7.0), ("@^It's still not working!", 12.0)],
+    do=[("set_torch", {"on": "true"})], tone=[r"frustrated"], never=[("set_torch", {"on": "false"})])
 
 
 # --- a simulated phone (the same answers as the app's browser build, app/www/phone.js) --------
@@ -498,6 +523,25 @@ async def run_one(name: str, sc: dict, speech: List[tuple], quiet: bool = False)
             "started": t0, "events": record}
 
 
+def raise_voice(x: np.ndarray, rate: int = 24000, semitones: float = 7.0, shelf_db: float = 18.0,
+                gain_db: float = 3.0) -> np.ndarray:
+    """A raised voice from a calm line: the pitch up (Praat), the highs brighter (a shelf from 0.8 to 3 kHz) and a
+    little louder. Vocal effort, as measured on CREMA-D actors (angry against neutral: brighter by about 19 dB,
+    higher by about 14 semitones), at a strength that crosses tone.py's thresholds with room to spare."""
+    import parselmouth
+    from parselmouth.praat import call
+    snd = parselmouth.Sound(x.astype(np.float64), rate)
+    manip = call(snd, "To Manipulation", 0.01, 75, 600)
+    tier = call(manip, "Extract pitch tier")
+    call(tier, "Multiply frequencies", snd.xmin, snd.xmax, 2 ** (semitones / 12))
+    call([tier, manip], "Replace pitch tier")
+    y = np.asarray(call(manip, "Get resynthesis (overlap-add)").values[0], dtype=np.float32)
+    f = np.fft.rfftfreq(len(y), 1 / rate)
+    shelf = 10 ** (np.clip((f - 800) / 2200, 0, 1) * shelf_db / 20)
+    y = np.fft.irfft(np.fft.rfft(y) * shelf, n=len(y)).astype(np.float32)
+    return y / (np.max(np.abs(y)) + 1e-9) * min(0.99, float(np.max(np.abs(x))) * 10 ** (gain_db / 20))
+
+
 def prepare(sc: dict, pipe, voice: str) -> List[tuple]:
     out = []
     for i, (text, pause) in enumerate(sc["lines"]):
@@ -507,18 +551,21 @@ def prepare(sc: dict, pipe, voice: str) -> List[tuple]:
         if text.startswith("#"):
             out.append((text, text, None, pause))
             continue
-        clean = text.lstrip("@!")
+        prefix = re.match(r"[@!^]*", text).group(0)
+        clean, raised = text[len(prefix):], "^" in prefix
         # the scripted voice is the same every run: synthesized once, kept on disk
         import hashlib
-        cache = os.path.join(ROOT, "results", "galaxy", "suite", "_voice_cache",
-                             hashlib.sha1((voice + "|" + clean).encode()).hexdigest() + ".npy")
+        cache = os.path.join(ROOT, "results", "galaxy", "suite", "_voice_cache", hashlib.sha1(
+            (voice + "|" + clean + ("|raised-v1" if raised else "")).encode()).hexdigest() + ".npy")
         if os.path.exists(cache):
             audio = np.load(cache)
         else:
             audio = np.concatenate([np.asarray(r.audio, dtype=np.float32) for r in pipe(clean, voice=voice)])
+            if raised:
+                audio = raise_voice(audio)
             os.makedirs(os.path.dirname(cache), exist_ok=True)
             np.save(cache, audio)
-        out.append((text, clean, audio, pause))
+        out.append((text, ("(raised) " if raised else "") + clean, audio, pause))
     return out
 
 
@@ -593,6 +640,14 @@ def check(run: dict, expect: dict) -> dict:
     for rx in expect.get("route_why", []):
         if not any(re.search(rx, e.get("why") or "", re.I) for e in ev if e.get("kind") == "route"):
             problems.append("NO ROUTE /%s/" % rx)
+    heard_as = [e.get("label") or "" for e in ev if e.get("kind") == "tone"]
+    for rx in expect.get("tone", []):
+        if not any(re.search(rx, label, re.I) for label in heard_as):
+            problems.append("NOT HEARD AS /%s/ (heard: %s)" % (rx, ", ".join(heard_as) or "nothing"))
+    if expect.get("no_tone_ask"):
+        for e in ev:
+            if e.get("kind") == "tone_ask":
+                problems.append('ASKED BACK "%s"' % e.get("text"))
     if expect.get("no_cut"):
         for e in ev:
             if e.get("kind") == "agent_said" and e.get("interrupted"):

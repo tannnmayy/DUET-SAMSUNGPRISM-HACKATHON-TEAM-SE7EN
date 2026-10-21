@@ -231,9 +231,10 @@ def _transcribe_locked(model, pcm16k: np.ndarray) -> "Transcript":
     return Transcript(text, confidence, worst_no_speech, dropped_any and not text)
 
 
-def synthesize(text: str) -> np.ndarray:
-    """Text to 24 kHz float32 audio."""
+def synthesize(text: str, speed: float = 1.0) -> np.ndarray:
+    """Text to 24 kHz float32 audio. `speed`: Kokoro's speaking rate (the phone app speaks a little slower to a
+    user who sounds distressed; the benchmark always uses 1)."""
     pipe = kokoro()
     with _tts_lock:
-        parts = [np.asarray(audio, dtype=np.float32) for _, _, audio in pipe(text, voice=CONFIG.tts_voice)]
+        parts = [np.asarray(audio, dtype=np.float32) for _, _, audio in pipe(text, voice=CONFIG.tts_voice, speed=speed)]
     return np.concatenate(parts) if parts else np.zeros(0, dtype=np.float32)

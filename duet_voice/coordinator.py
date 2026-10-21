@@ -19,6 +19,10 @@ module is the answer, carried over from DUET's first version:
 * **Failure policy.** A read-only call that fails is retried once. A
   state-changing call is never blindly re-sent: if its outcome is unknown, the
   ledger remembers that, and the thinker is told to say so and offer a human.
+* **The voice (phone app only).** `extra_hold`, when set, can lengthen the hold
+  from how the user sounds (duet_voice/galaxy/tone.py): longer while they sound
+  hesitant, and after a raised voice until its words are in. It never shortens
+  the hold and never runs or drops a call. The benchmark leaves it unset.
 
 Everything here is per conversation. Nothing is shared between rooms.
 """
@@ -90,6 +94,8 @@ class Coordinator:
     open_utterance: str = ""            # what the user said since the agent last acted
     ledger: Dict[str, CallRecord] = field(default_factory=dict)
     history: List[CallRecord] = field(default_factory=list)
+    # the phone app's tone channel: a longer hold, from how the user sounds (None: the words alone decide)
+    extra_hold: Optional[Callable[[], float]] = None
 
     # -- perception events -------------------------------------------------------
     def user_started_speaking(self) -> None:
@@ -160,10 +166,17 @@ class Coordinator:
         """How long the user must have been quiet before a call may commit."""
         text = self.open_utterance
         if _DANGLING.search(text):
-            return self.dangling_hold_s
-        if _REVISING.search(text):
-            return self.revising_hold_s
-        return self.commit_hold_s
+            hold = self.dangling_hold_s
+        elif _REVISING.search(text):
+            hold = self.revising_hold_s
+        else:
+            hold = self.commit_hold_s
+        if self.extra_hold is not None:
+            try:
+                hold = max(hold, float(self.extra_hold()))
+            except Exception:  # the voice only ever adds to the hold
+                pass
+        return hold
 
     # -- the gate -------------------------------------------------------------------
     async def gate(self, epoch: Optional[int] = None) -> int:

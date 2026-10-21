@@ -7,7 +7,8 @@ check. Do not skip a check: if one fails, fix it before going on.
 > - Never print, commit or paste the keys in `.env.local` / `.env.livekit`. Both files are git-ignored.
 > - Never force-stop the Clock app on the phone (it cancels the owner's alarms). Stop test timers by hand.
 > - Ask the phone's owner before `phone_check.py --assistant` (makes DUET the default assistant, reversible).
-> - Do not push to `main` (it holds the submitted Round 1 version). Work on `round2`.
+> - Do not push to `main` (it holds the submitted Round 1 version). Work on `round2-tone` (`round2` plus the tone
+>   channel, `docs/ROUND2_TONE_PLAN.md`); `round2` is the same without it.
 > - On Windows, run the `.sh` scripts and the commands below in **Git Bash**, not PowerShell or cmd.
 
 ## 0. What runs where
@@ -42,11 +43,14 @@ It is not standalone: the phone needs the laptop running, and the laptop needs i
 ## 2. Clone
 
 ```bash
-git clone -b round2 https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN.git duet
+git clone -b round2-tone https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN.git duet
 cd duet
 ```
+Already have a clone? `git fetch origin && git switch round2-tone && git pull`, then run the `pip install -r
+requirements.txt` line of section 3 again (the tone channel adds one package, `praat-parselmouth`).
 
-Check: `git log --oneline -1` shows the latest round2 commit; `ls docs/ROUND2_DEMO.md` exists.
+Check: `git log --oneline -1` shows the latest round2-tone commit; `ls docs/ROUND2_DEMO.md docs/ROUND2_TONE_PLAN.md`
+lists both.
 
 ## 3. Python environment
 
@@ -62,10 +66,13 @@ py -3.11 -m venv .venv
 Check:
 ```bash
 .venv/Scripts/python.exe -c "import torch; print(torch.cuda.is_available())"   # True
-.venv/Scripts/python.exe -m pytest -q tests                                       # all pass (180 on 18 Oct)
+.venv/Scripts/python.exe -m pytest -q tests                                       # all pass (317 on 21 Oct)
+.venv/Scripts/python.exe -c "from duet_voice.galaxy import tone; tone.prewarm(); print(tone._session() is not None)"   # True
 ```
 The first real run downloads Whisper large-v3-turbo, Kokoro and the turn detector from Hugging Face (a few GB,
-once).
+once). The last check downloads the tone channel's emotion model (emotion2vec-web-distill, 10 MB, pinned and
+checked against its SHA-256); `False` means it could not be downloaded, and tone then works without emotion (the
+voice's effort and timing, and the words, are still read).
 
 ## 4. Keys
 
@@ -184,6 +191,7 @@ Open DUET on the phone. In Settings the server is `localhost:8787` (set by phone
 | Assistant | "Set an alarm for 6:30, no, make it 7." · "Turn on the torch." · "Is the front door locked?" · "How much battery do I have?" · "Turn on the AC at home and set it to 22." |
 | Drive | "Take me to the office, no wait, the airport." · "Hand it to Google Maps." · "Take me home", then **Skip ahead: 10 min**: DUET offers the AC (and a light after 6 pm); answer "Yes, make it 22", "Just the AC" or "No thanks". |
 | Care | "Did I take my morning medicine?" · "Call my daughter." |
+| Tone (any mode) | Say two or three ordinary things first (DUET learns your usual voice from them). "Set an alarm for 4:30, I think." → "4:30 in the afternoon, right?" → "Yes." sets it; "Set an alarm for 4:30." sets it at once. Ask something long, then shout **"No, no, no!"** over the answer: DUET stops and stays quiet. "It's *still* not working!" said annoyed: the timeline shows *Heard in your voice: frustrated*. |
 
 Interrupt DUET any time; correct yourself mid-sentence. The timeline under the conversation shows what it heard,
 held back, did and confirmed. The **Drills** panel shows recovery: cut/slow the cloud, phone refuses, SmartThings
@@ -216,16 +224,19 @@ Expected on 18 Oct (emulator, live SmartThings): every phone step passes; the sp
 | Echo / DUET interrupts itself on loudspeaker | use Galaxy Buds; or start the stack with `DUET_INTERRUPT_MODE=vad` (the default since 21 Oct is LiveKit's adaptive interruption, which stops DUET faster) |
 | "Connected · waiting for DUET…" never changes | an APK from before 21 Oct: rebuild it (section 7) and install it (section 9) |
 | torch error "paging file is too small" | close the Android emulator / other GPU apps; free RAM |
+| DUET asks "…, right?" when you did not want it | you said a hedge next to the value ("4:30, I think", "maybe 15 minutes"): say it plainly, or answer "yes". Turn the tone channel off with `DUET_TONE=0 bash scripts/galaxy_demo.sh` |
+| Tone never shows on the timeline | an APK from before the tone channel: rebuild it (section 7). Each measured segment is in the run log (`results/galaxy/traces/<room>.jsonl`, kind `tone_segment`); `agent.log` says "tone: no emotion model" if the model could not be loaded |
 
 ## 13. Where things are
 
 | Path | What |
 |---|---|
-| `duet_voice/galaxy/` | the phone agent: coordinator use, fast mind, offers (`proactive.py`), readings, skills, SmartThings |
+| `duet_voice/galaxy/` | the phone agent: coordinator use, fast mind, offers (`proactive.py`), readings, skills, SmartThings, how you said it (`tone.py`) |
 | `duet_voice/coordinator.py` | epochs, commit gate, exactly-once ledger |
 | `app/www/` | the app (UI + `phone.js`); `app/www/skills.json` = new phone actions without code |
 | `app/android/.../DuetPhonePlugin.java` | the native plugin (34 phone actions) |
 | `scripts/` | `galaxy_demo.sh` (stack), `phone_check.py`, `verify_all.py`, `smartthings_setup.py`, `demo_preflight.py` |
 | `docs/ROUND2_DEMO.md` | the demo night checklist and script |
+| `docs/ROUND2_TONE_PLAN.md` | the tone channel: research, measurements, design, how it was tested |
 | `docs/DUET_Project.html` | the project page (open in a browser) |
 | `docs/ROUND2_WORK_REPORT.md` | what changed on 18 Oct and how it was verified |

@@ -186,6 +186,12 @@ class PhoneToolbox:
         self.failed: List[tuple] = []
         # the same, as (tool, args): what the answer must not say happened
         self.failed_calls: List[tuple] = []
+        # the tone channel (tone.py), set by the agent: tone() -> how the open request was said (a tone.Reading);
+        # on_unsure(tool, args, question, action, reading) is told when a value is asked back
+        self.tone: Optional[Callable[[], Any]] = None
+        self.on_unsure: Optional[Callable[..., None]] = None
+        # a value of this request the user sounded unsure of, asked back before it runs: (tool, args, question)
+        self.confirming: Optional[tuple] = None
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -199,6 +205,7 @@ class PhoneToolbox:
         self.unfinished = None
         self.failed = []
         self.failed_calls = []
+        self.confirming = None
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
@@ -292,6 +299,13 @@ class PhoneToolbox:
             return json.dumps({"status": "not_executed", "reason":
                                "the user has not decided yet. Ask which one, in one short question that names "
                                "the options; act only on their answer"})
+        if kind == "write" and self.tone is not None:
+            try:
+                asked = await self._unsure(tool, args, epoch)
+            except Superseded:
+                return self._held(tool, args)
+            if asked:
+                return asked
         if spec.get("consent") and self.consent is not None:
             key = (tool, json.dumps(args, sort_keys=True))
             if key in self.asked:
@@ -333,12 +347,7 @@ class PhoneToolbox:
                                               timeout_s=timeout + 1.0, on_committed=self._committed,
                                               epoch=epoch)
         except Superseded:
-            log.info("held back at the gate: %s %s", tool, args)
-            self.held_back.append({"tool": tool, "args": args})
-            self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
-                       "why": "you kept talking, so this plan was never carried out"})
-            return json.dumps({"status": "not_executed", "reason":
-                               "the user started speaking again; wait for their full request"})
+            return self._held(tool, args)
         self.last_tool_start, self.last_tool_end = record.started, record.finished
         if record.outcome == "ok":
             said = confirmation(tool, args, record.result)
@@ -380,6 +389,46 @@ class PhoneToolbox:
         self.emit({"kind": "tool_failed", "tool": tool, "args": args, "error": record.error})
         return json.dumps({"status": "error", "error": record.error, "instruction":
                            "tell the user this step failed and what they can do next"})
+
+
+    def _held(self, tool: str, args: Dict[str, Any]) -> str:
+        log.info("held back at the gate: %s %s", tool, args)
+        self.held_back.append({"tool": tool, "args": args})
+        self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
+                   "why": "you kept talking, so this plan was never carried out"})
+        return json.dumps({"status": "not_executed", "reason":
+                           "the user started speaking again; wait for their full request"})
+
+    async def _unsure(self, tool: str, args: Dict[str, Any], epoch: Optional[int]) -> str:
+        """A value the user sounded unsure of ("4:30, I think", or a long pause before it) is asked back before it
+        runs: "4:30 in the afternoon, right?". Read once the gate's hold has passed, so words said after a pause
+        count too. The question becomes DUET's offer, so a plain "yes" runs it as asked (proactive.py). '' when the
+        value stands (or the action has none)."""
+        from .tone import ask_back
+        asked = ask_back(tool, args)
+        if asked is None:
+            return ""
+        await self.coord.gate(epoch)       # Superseded: the user said more, as at the gate itself
+        try:
+            reading = self.tone()
+        except Exception as exc:  # the voice never blocks an action
+            log.warning("tone reading failed: %s", exc)
+            return ""
+        if reading is None or not reading.about(tool, args):
+            return ""
+        question, action = asked
+        self.unfinished = (tool, "unsure")
+        self.confirming = (tool, dict(args), question)
+        self.emit({"kind": "tool_asked", "tool": tool, "args": args,
+                   "why": "you sounded unsure (%s), so DUET checks first" % "; ".join(reading.cues)})
+        if self.on_unsure is not None:
+            try:
+                self.on_unsure(tool, dict(args), question, action, reading)
+            except Exception as exc:  # the offer is a convenience; the question is still asked
+                log.warning("could not record the question as an offer: %s", exc)
+        return json.dumps({"status": "not_executed", "reason":
+                           "the user sounded unsure of the value (%s). Ask exactly this and nothing else: \"%s\" "
+                           "Act only on their yes." % ("; ".join(reading.cues), question)})
 
 
 def rpc_sender(room: rtc.Room, identity: Callable[[], str]):

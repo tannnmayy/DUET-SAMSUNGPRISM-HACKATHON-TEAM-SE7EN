@@ -715,6 +715,8 @@ class HybridThinker:
         self.bridge_said = ""           # the line said when this request went to the cloud mind
         # the short instructions of a cloud call with no tools, for talk and health (modes.light); None: never
         self.light_instructions: Optional[str] = None
+        # how the current request was said (tone.Reading), set by the agent before each request; None: not heard
+        self.tone = None
 
     @property
     def history(self):
@@ -740,16 +742,25 @@ class HybridThinker:
                                         "a second look after the user finished"):
                 yield ev
             return
-        asked = control(text)
+        asked, why = control(text), ""
+        if self.tone is not None and asked == "backchannel" and self.tone.raised_voice:
+            # "OKAY, OKAY!" over DUET, in a raised voice, is not "I'm listening": DUET stays quiet
+            asked, why = "stop", "a raised \"%s\" over DUET: it stops, and does not carry on" % text.strip(" .!")
+        elif self.tone is not None and asked is None and self.tone.urgent:
+            from .tone import bare_no
+            if bare_no(text):
+                # a shouted "No!" is a stop; a calm "no" stays an answer or the start of a correction
+                asked, why = "stop", "a shouted \"%s\": DUET stops" % text.strip(" .!")
         said = {"stop": "<silent>", "resume": self.resume_text, "repeat": self.last_answer,
                 "backchannel": self.resume_text}.get(asked or "")
         if said:
             # "wait" / "stop": nothing more is said (talking over DUET already stopped its voice); "go on", or only
             # "mm-hm" over an answer: the rest of the answer they cut off, from the sentence they stopped it in;
             # "what?": the last answer again. (A backchannel with nothing cut off is ordinary small talk.)
-            self._route("edge", {"stop": "the user asked DUET to stop or wait", "resume": "the user asked DUET to go on",
-                                 "repeat": "the user asked DUET to say it again",
-                                 "backchannel": "the user was only listening: the answer goes on"}[asked])
+            self._route("edge", why or {"stop": "the user asked DUET to stop or wait",
+                                        "resume": "the user asked DUET to go on",
+                                        "repeat": "the user asked DUET to say it again",
+                                        "backchannel": "the user was only listening: the answer goes on"}[asked])
             yield ThinkEvent("route", text="edge")
             yield ThinkEvent("decided", tools=False)
             yield ThinkEvent("say", text=said)
@@ -852,6 +863,8 @@ class HybridThinker:
                     return
                 if ev.kind == "chat" or (plain and ev.kind == "say"):
                     why = self._chat_check(text, ev.text, offer)
+                    if not why and self.tone is not None and self.tone.upset:
+                        why = "the user sounded %s (%s)" % (self.tone.upset, "; ".join(self.tone.cues))
                     if why:
                         escalate_why = "small talk the fast mind may not answer itself: %s" % why
                         self.handover = {"say": ev.text or ""}
@@ -877,6 +890,10 @@ class HybridThinker:
                     async for extra in self._offer_rest(text, toolbox, done_before):
                         yield extra
                 yield ev
+                if ev.kind == "tool_done" and getattr(toolbox, "confirming", None):
+                    async for asked in self._ask_back(text, toolbox):
+                        yield asked
+                    return
                 if ev.kind == "say":
                     self.edge_log.append('User: "%s" -> done on the phone: %s' % (
                         text[-160:], "; ".join("%s(%s)" % (r.tool, json.dumps(r.args))
@@ -950,6 +967,15 @@ class HybridThinker:
         from ..thinker import usage_of
         yield ThinkEvent("decided", tools=False)
         yield ThinkEvent("say", text=answer, usage=usage_of(resp))
+
+    async def _ask_back(self, text: str, toolbox) -> AsyncIterator[ThinkEvent]:
+        """The phone held a value the user sounded unsure of (tools.PhoneToolbox._unsure): DUET asks its one question
+        ("4:30 in the afternoon, right?") and the reply ends, whichever mind planned it, so the question is always
+        the same and nothing else is said. A plain "yes" next then runs it from DUET's offer, with no model."""
+        tool, args, question = toolbox.confirming
+        self.edge_log.append('User: "%s" -> DUET asked "%s" before %s(%s): the value sounded unsure; nothing was '
+                             'done yet' % (text[-160:], question, tool, json.dumps(args)))
+        yield ThinkEvent("say", text=question)
 
     def _chat_check(self, words: str, reply: str, offer) -> str:
         """'' when the fast mind's own reply may be spoken (see chat_ok)."""
@@ -1042,6 +1068,10 @@ class HybridThinker:
                 if ev.kind == "error" and cloud_unreachable(ev.text):
                     self.cloud_down_until = time.monotonic() + CLOUD_DOWN_S
                 yield ev
+                if ev.kind == "tool_done" and getattr(toolbox, "confirming", None):
+                    async for asked in self._ask_back(text, toolbox):
+                        yield asked
+                    return
                 if ev.kind == "tool_done" and ev.outcome == "not_executed":
                     refused[ev.name] = refused.get(ev.name, 0) + 1
                     if refused[ev.name] >= REFUSED_MAX:

@@ -9,10 +9,13 @@ there it is the benchmark's agent with the mode's tools and instructions:
 the same ears and mouth, the same talker and thinker, the same coordinator. The
 benchmark's worker (duet_voice/agent.py) is a separate program and is unchanged.
 
-Two things are new here, both for a person holding a phone rather than a
+Three things are new here, all for a person holding a phone rather than a
 benchmark recording:
 - the thinker knows the time, and, when the user cut an answer short, how much of
   it they actually heard;
+- DUET hears how the user said it (duet_voice/galaxy/tone.py): every speech segment
+  is measured as it ends and read with the request's words, for the coordinator's
+  hold, the phone's actions, both minds and DUET's voice (DUET_TONE=0 turns it off);
 - every step is shown live on the phone (the DUET timeline, topic "duet").
 """
 
@@ -28,6 +31,7 @@ import re
 import time
 from typing import Any, Deque, Dict, Optional, Tuple
 
+import numpy as np
 from dotenv import load_dotenv
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -68,7 +72,7 @@ from ..config import CONFIG  # noqa: E402
 from ..coordinator import Coordinator  # noqa: E402
 from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
-from . import fast, proactive, smartthings  # noqa: E402
+from . import fast, proactive, smartthings, tone  # noqa: E402
 from .confirm import adds_nothing, drop_failed_claims, drop_false_undo, drop_overclaims, drop_restated  # noqa: E402
 from .modes import light_instructions, llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
@@ -87,6 +91,10 @@ AGENT_NAME = os.environ.get("DUET_GALAXY_AGENT", "duet-galaxy")
 HOME_POLL_S = float(os.environ.get("DUET_HOME_POLL_S", "10"))   # how often the home is asked what changed
 # how long "One moment." waits for the fast mind to decide (it answers small talk itself in about half a second)
 FAST_WAIT_S = float(os.environ.get("DUET_FAST_WAIT_S", "1.5"))
+# the tone channel: after a raised voice, actions wait this long for its words (the words decide, never the tone);
+# DUET speaks at this rate to a user who sounds distressed
+RAISED_WAIT_S = 4.0
+DISTRESSED_SPEED = float(os.environ.get("DUET_TONE_SLOW", "0.9"))
 
 # the second look before an answer is spoken (DUET_REVIEW=0 turns it off)
 REVIEW = ("Second look before your answer is spoken. Actions carried out in this turn: {done}. "
@@ -184,7 +192,7 @@ SHOWN = {
     "superseded": (), "agent_said": ("text", "interrupted"), "agent_state": ("state",),
     "drill": ("cloud_off", "what", "on", "seconds"),
     "offer": ("text", "why", "items", "source"), "offer_accepted": ("text",), "offer_declined": ("text",),
-    "offer_expired": ("text",),
+    "offer_expired": ("text",), "tone": ("label", "cues"), "tone_ask": ("text", "cues"),
 }
 
 
@@ -238,6 +246,17 @@ class GalaxyAgent(base.DuetAgent):
             self._thinker.recent = self.recent
             # talk and health with nothing on the phone in them: one cloud call with no tools (Care: never)
             self._thinker.light_instructions = light_instructions(str(mode["title"]).lower(), context)
+        # how the user sounds (tone.py): each speech segment measured as it ends, read with the request's words
+        self.listener = tone.Listener() if tone.enabled() else None
+        self._tone: Optional[tone.Reading] = None      # the reading of the request being answered
+        self._tone_jobs: set = set()                   # segments being measured
+        self._speech_from = 0.0                        # when the current speech segment began (wall clock)
+        self._speech_floor = 0.0                       # where the previous segment's audio ended
+        self.voice = None                              # the GalaxyTTS: its rate follows the user's tone
+        if self.listener is not None:
+            coord.extra_hold = self.tone_hold
+            toolbox.tone = lambda: self.listener.reading(self._coord.open_utterance)
+            toolbox.on_unsure = self._unsure_offer
 
     async def llm_node(self, chat_ctx, tools, model_settings):
         self._route_now = None
@@ -249,6 +268,18 @@ class GalaxyAgent(base.DuetAgent):
             # (what was cut stays known through a "Wait.", which says nothing, until DUET next speaks)
             self._thinker.resume_text = fast.remainder(self._last_reply, self._cut_heard)
         self._answer_now = ""
+        self._tone = None
+        if self.listener is not None:
+            if self._tone_jobs:
+                # the last segment is measured in about 20 ms, long before the turn closes; never wait long
+                await asyncio.wait(list(self._tone_jobs), timeout=0.3)
+            self._tone = self.listener.reading(self._request_text)
+            if self._tone.label:
+                self._trace("tone", **self._tone.event())
+        if isinstance(self._thinker, fast.HybridThinker):
+            self._thinker.tone = self._tone
+        if self.voice is not None:
+            self.voice.speed = DISTRESSED_SPEED if self._tone is not None and self._tone.upset == "distressed" else 1.0
         spoke = False
         async for chunk in super().llm_node(chat_ctx, tools, model_settings):
             spoke = spoke or (isinstance(chunk, str) and bool(chunk.strip()))
@@ -268,6 +299,8 @@ class GalaxyAgent(base.DuetAgent):
         second); "One moment." when the request needs the cloud mind. Nothing while the fast mind is still
         deciding (half a second, as a rule): it may answer by itself, and "One moment." before "Good morning!"
         would be wrong. If it is slow, the line comes after FAST_WAIT_S."""
+        if self._tone is not None and self._tone.unsure:
+            return ""      # the phone asks about the value itself in a moment ("4:30, right?"): "Sure." would be wrong
         if self._route_now == "edge":
             return "Sure."
         if self._route_now is None and fast.enabled() and time.time() - self._asked_at < FAST_WAIT_S:
@@ -328,6 +361,8 @@ class GalaxyAgent(base.DuetAgent):
         tool, why = held
         if why == "undecided":
             return "Which one do you want?"
+        if why == "unsure":
+            return (self._toolbox.confirming or ("", {}, "Did I get that right?"))[2]
         return ASK_REST.get(tool, "Sorry, I didn't catch the end of that. Could you finish it?")
 
     def silent_answers(self, confirmed) -> bool:
@@ -400,6 +435,8 @@ class GalaxyAgent(base.DuetAgent):
         offer = self.offers.active()
         if offer is not None:
             lines.append(offer.note())
+        if self._tone is not None and self._tone.note():
+            lines.append(self._tone.note())
         return "\n".join(lines)
 
     def reply_delivered(self, said: str = "") -> None:
@@ -414,11 +451,66 @@ class GalaxyAgent(base.DuetAgent):
             if self._request_text:
                 self.recent.append(("user", self._request_text))
             self._request_text = ""
+            if self.listener is not None:
+                self.listener.close(self._asked_at)
         # the fixed lines say nothing about the conversation
         words = re.sub(r"^\s*((%s)\s*)+" % "|".join(re.escape(x) for x in FIXED_LINES), "", " ".join(
             (said or "").split()))
         if words:
             self.recent.append(("assistant", words))
+
+
+    # -- the tone channel ----------------------------------------------------------------------------------
+    def speech_started(self) -> None:
+        self._speech_from = time.time()
+
+    def speech_ended(self) -> None:
+        """A user speech segment ended: it is measured from the tape in a worker thread, while Whisper transcribes it."""
+        if self.listener is None:
+            return
+        now = time.time()
+        t0 = max(self._speech_from - 0.5, self._speech_floor)
+        self._speech_floor = now
+        chunks = [(t, rate, pcm) for t, rate, pcm in self._tape.frames if t >= t0]
+        if not chunks:
+            return
+        slot = self.listener.expect(now)        # its place: its words find it even before it is measured
+        rate = chunks[-1][1]
+        same = [(t, pcm) for t, r, pcm in chunks if r == rate]
+        audio = np.concatenate([pcm for _, pcm in same])
+        start = same[0][0] - len(same[0][1]) / rate       # a frame's time is when it arrived, at its end
+        job = asyncio.ensure_future(self._measure(audio, rate, start, slot))
+        self._tone_jobs.add(job)
+        job.add_done_callback(self._tone_jobs.discard)
+
+    async def _measure(self, audio, rate: int, start: float, slot) -> None:
+        try:
+            f = await asyncio.to_thread(lambda: tone.analyse(speech_models.to_16k(audio, rate), start))
+        except Exception as exc:  # the voice is a second channel; the words still work without it
+            log.warning("tone: a segment could not be measured: %s", exc)
+            f = None
+        f = self.listener.add(f, into=slot)
+        if f is not None:
+            self._trace("tone_segment", **f.summary())
+
+    def heard_words(self, text: str) -> None:
+        if self.listener is not None and (text or "").strip():
+            self.listener.heard(text, time.time())
+
+    def tone_hold(self) -> float:
+        """The coordinator's extra hold (never shorter than the words' own): after a raised voice whose words have
+        not arrived, RAISED_WAIT_S of quiet, so a shouted "no" is heard before anything runs; while the user sounds
+        hesitant about a value, the revising hold, the time to correct it."""
+        if self.listener.awaiting_words():
+            return RAISED_WAIT_S
+        return self._coord.revising_hold_s if self.listener.reading(self._coord.open_utterance).unsure else 0.0
+
+    def _unsure_offer(self, tool: str, args: Dict[str, Any], question: str, action: str, reading) -> None:
+        """The phone asks back a value the user sounded unsure of: the question is DUET's offer, so "yes" runs it as
+        asked, "no, 5:30" changes it, "no" leaves it (proactive.py, fast.HybridThinker)."""
+        self.offers.make(proactive.Offer(text=question, why="you sounded unsure: " + "; ".join(reading.cues),
+                                         items=[proactive.OfferItem(tool, dict(args), action)], source="tone"))
+        self._trace("tone_ask", text=question, tool=tool, args=args, cues="; ".join(reading.cues))
 
 
 # --- the voice: the fixed lines are synthesized once ------------------------------------------------
@@ -438,11 +530,12 @@ def fixed_audio(text: str):
 
 
 class FixedLineStream(KokoroStream):
+    speed = 1.0
+
     async def _run(self, output_emitter) -> None:
-        import numpy as np
-        audio = fixed_audio(self.input_text)
+        audio = fixed_audio(self.input_text) if self.speed == 1.0 else None
         if audio is None:
-            audio = await asyncio.to_thread(speech_models.synthesize, self.input_text)
+            audio = await asyncio.to_thread(speech_models.synthesize, self.input_text, self.speed)
         pcm16 = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16).tobytes()
         from livekit.agents import utils
         output_emitter.initialize(request_id=utils.shortuuid(), sample_rate=KokoroTTS.SAMPLE_RATE,
@@ -452,16 +545,24 @@ class FixedLineStream(KokoroStream):
 
 
 class GalaxyTTS(KokoroTTS):
-    """Kokoro, with "Sure.", "One moment." and "Still working on it." ready before they are needed."""
+    """Kokoro, with "Sure.", "One moment." and "Still working on it." ready before they are needed. `speed` is set
+    by the agent for each reply (a little slower for a user who sounds distressed)."""
+    speed = 1.0
 
     def synthesize(self, text: str, *, conn_options=DEFAULT_API_CONNECT_OPTIONS) -> "FixedLineStream":
-        return FixedLineStream(tts=self, input_text=text, conn_options=conn_options)
+        stream = FixedLineStream(tts=self, input_text=text, conn_options=conn_options)
+        stream.speed = self.speed
+        return stream
 
 
 def prewarm(proc) -> None:
     base.prewarm(proc)
     for line in FIXED_LINES:
         fixed_audio(line)
+    try:
+        tone.prewarm()          # the emotion model (a 10 MB download the first time) and Praat
+    except Exception as exc:  # tone without its models still reads the words and the timing
+        log.warning("tone: prewarm failed: %s", exc)
 
 
 def _load() -> float:
@@ -577,6 +678,8 @@ async def entrypoint(ctx: JobContext) -> None:
         ("Their contacts: %s." % meta["contacts"]) if meta.get("contacts") else "",
     ) if x)
     agent = GalaxyAgent(trace, coord, toolbox, mode, context, user_name=name)
+    voice = GalaxyTTS()
+    agent.voice = voice
 
     interruption: Dict[str, Any] = {}
     if os.environ.get("DUET_INTERRUPT_MIN_S"):
@@ -587,7 +690,7 @@ async def entrypoint(ctx: JobContext) -> None:
         vad=ctx.proc.userdata.get("vad") or base.build_vad(),
         stt=WhisperSTT(),
         llm=base.build_placeholder_llm(),
-        tts=GalaxyTTS(),
+        tts=voice,
         turn_handling={
             "turn_detection": base.build_turn_detection(),
             "endpointing": {"min_delay": CONFIG.endpoint_min_s, "max_delay": CONFIG.endpoint_max_s},
@@ -608,14 +711,17 @@ async def entrypoint(ctx: JobContext) -> None:
         if ev.new_state == "speaking":
             coord.user_started_speaking()
             agent.mark_speech_start()
+            agent.speech_started()
         elif ev.old_state == "speaking":
             coord.user_stopped_speaking()
+            agent.speech_ended()
         trace("user_state", state=ev.new_state)
 
     @session.on("user_input_transcribed")
     def _heard(ev) -> None:
         if ev.is_final:
             coord.heard(ev.transcript)
+            agent.heard_words(ev.transcript)
             trace("heard", text=ev.transcript)
 
     agent_now = {"state": "initializing"}
