@@ -102,7 +102,9 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     hour, minute = int(m.group(1)), int(m.group(2))
     if not (words or "").strip() or hour > 23 or minute > 59 or _DAYPART.search(words):
         return hhmm                    # no words to go by, or the user said which half of the day
-    said = {int(n) for n in re.findall(r"\d+", words)} | {
+    numbers = [int(n) for n in re.findall(r"\d+", words)]
+    # "430" is 4:30 as the recogniser sometimes writes it (21 Oct 2026: "set it for 430 instead" kept 04:30 at 9 am)
+    said = set(numbers) | {n // 100 for n in numbers if 100 <= n <= 1259 and n % 100 < 60} | {
         v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words, re.I)}
     if hour >= 13 and hour in said:
         return hhmm                    # a 24-hour time, said as such
@@ -111,6 +113,19 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     now_min = now.hour * 60 + now.minute
     best = min(((h * 60 + minute - now_min - 1) % (24 * 60), h) for h in (hour % 12, hour % 12 + 12))
     return "%02d:%02d" % (best[1], minute)
+
+
+def same_alarm(a: Any, b: Any, words: str = "") -> bool:
+    """Two alarm times that mean one alarm: the same, or the same clock time half a day apart when the user's words
+    do not say which half (21 Oct 2026: "Set an alarm for 3:30. No, no, cancel that." planned 15:30 at 9 am, then a
+    cancel of 03:30, which went to the phone although nothing had been set)."""
+    ma, mb = (re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(v or "")) for v in (a, b))
+    if not ma or not mb:
+        return bool(a) and a == b
+    ha, hb = int(ma.group(1)), int(mb.group(1))
+    if ma.group(2) != mb.group(2):
+        return False
+    return ha == hb or (ha % 12 == hb % 12 and not _DAYPART.search(words or ""))
 
 
 def _norm(v: Any) -> Any:
@@ -193,11 +208,24 @@ class PhoneToolbox:
         """An alarm at this time was planned in this request and held back at the gate, and no alarm at this time
         was ever set in this conversation."""
         setting = ("set_alarm", "set_reminder")
+        words = self.coord.open_utterance
         # held back at the gate, or planned in a reply the user cut off (LiveKit cancels that reply, gate and all)
-        held = any(c["tool"] in setting and (c.get("args") or {}).get("time") == time
+        held = any(c["tool"] in setting and same_alarm((c.get("args") or {}).get("time"), time, words)
                    for c in self.held_back + self.planned)
-        ran = any(r.tool in setting and r.outcome == "ok" and r.args.get("time") == time for r in self.coord.history)
+        ran = any(r.tool in setting and r.outcome == "ok" and same_alarm(r.args.get("time"), time, words)
+                  for r in self.coord.history)
         return bool(time) and held and not ran
+
+    def _alarm_that_ran(self, time: Any) -> Any:
+        """The alarm this conversation really set that a cancel means: "cancel the 3:30" after 15:30 was set is a
+        cancel of 15:30 when the user did not say which half of the day. The time as given otherwise."""
+        exact = [r for r in self.coord.history if r.tool in ("set_alarm", "set_reminder") and r.outcome == "ok"
+                 and r.args.get("time") == time]
+        if exact:
+            return time
+        near = [r.args.get("time") for r in self.coord.history if r.tool in ("set_alarm", "set_reminder")
+                and r.outcome == "ok" and same_alarm(r.args.get("time"), time, self.coord.open_utterance)]
+        return near[-1] if near else time
 
     def _target(self, spec: Dict[str, Any], args: Dict[str, Any]) -> List[Any]:
         return [_norm(args.get(k)) for k in spec.get("target", [])]
@@ -246,6 +274,8 @@ class PhoneToolbox:
                        "why": "that alarm was never set, so there is nothing to cancel"})
             return json.dumps({"status": "ok", "note": "that alarm was never set (the user's correction came before "
                                                        "it ran): nothing to cancel, and nothing was done"})
+        if tool == "cancel_alarm" and args.get("time"):
+            args["time"] = self._alarm_that_ran(args["time"])
         self.planned.append({"tool": tool, "args": dict(args)})
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):

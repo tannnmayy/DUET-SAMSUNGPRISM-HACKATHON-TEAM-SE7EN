@@ -318,6 +318,40 @@ def test_a_cancel_of_an_alarm_that_never_ran_goes_nowhere():
     assert box2.planned == []
 
 
+def test_a_cancel_half_a_day_off_is_the_same_alarm_unless_the_user_said_which_half():
+    """21 Oct 2026, the repeat run at 9 am: "Set an alarm for 3:30." was planned as 15:30, then "No, no, cancel
+    that" came as a cancel of 03:30, and went to the phone although nothing had been set."""
+    from duet_voice.coordinator import CallRecord
+    from duet_voice.galaxy.tools import same_alarm
+    sent = []
+
+    async def send(tool, args, timeout):
+        sent.append((tool, args))
+        return json.dumps({"status": "ok"})
+    assert same_alarm("15:30", "03:30", "Set an alarm for 3:30. No, no, cancel that.")
+    assert not same_alarm("15:30", "03:30", "Set an alarm for 3:30 in the afternoon. No, cancel the morning one.")
+    assert not same_alarm("15:30", "03:45") and not same_alarm("", "")
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    coord.open_utterance = "Set an alarm for 3.30. No, no, cancel that. Could you set it for 430 instead?"
+    box = PhoneToolbox(coord, MODES["assistant"]["tools"], send)
+    box.planned.append({"tool": "set_alarm", "args": {"time": "15:30"}})
+    out = json.loads(asyncio.run(box.call("cancel_alarm", {"time": "03:30"})))
+    assert "never set" in out["note"] and sent == []
+    # an alarm that did run at 15:30: "cancel the 3:30" cancels that one, not a 03:30 nobody set
+    coord.history.append(CallRecord("set_alarm", {"time": "15:30"}, 0, 0.0, outcome="ok"))
+    asyncio.run(box.call("cancel_alarm", {"time": "03:30"}))
+    assert sent == [("cancel_alarm", {"time": "15:30"})]
+
+
+def test_a_time_written_without_its_colon_is_still_the_next_one():
+    import datetime as dt
+    from duet_voice.galaxy.tools import next_occurrence
+    nine_am = dt.datetime(2026, 10, 21, 9, 16)
+    assert next_occurrence("04:30", "Could you set it for 430 instead?", nine_am) == "16:30"
+    assert next_occurrence("04:30", "Set it for 4:30 in the morning.", nine_am) == "04:30"
+
+
 # --- the agent ----------------------------------------------------------------------------------------------
 
 def galaxy_agent(monkeypatch):
