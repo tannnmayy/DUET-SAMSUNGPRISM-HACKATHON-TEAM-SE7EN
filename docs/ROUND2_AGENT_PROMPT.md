@@ -84,7 +84,7 @@ py -3.11 -m venv .venv
 .venv/Scripts/python.exe -c "import torch; print(torch.cuda.is_available())"
 .venv/Scripts/python.exe -m pytest -q tests
 ```
-The first prints `True`. The tests: **345 passed** and at most 1 skipped (the benchmark checkout is not in git).
+The first prints `True`. The tests: **344 passed, 1 skipped** (the skipped one needs the benchmark's data, which is not in git); no failures.
 
 ## 4. Keys
 
