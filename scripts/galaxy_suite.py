@@ -52,6 +52,10 @@ from duet_voice.galaxy.modes import MODES  # noqa: E402
 
 WRITE_KINDS = ("write", "ui")
 KIND = {t["name"]: t.get("kind", "read") for m in MODES.values() for t in m["tools"]}
+# the skills of app/www/skills.json are tools too (21 Oct 2026: set_do_not_disturb was taken for a reading, so a
+# required Do Not Disturb could never be found among the actions)
+from duet_voice.galaxy import skills as _skills  # noqa: E402
+KIND.update({s["name"]: s.get("kind", "read") for s in _skills.load()})
 
 # --- the scenarios ----------------------------------------------------------------------------
 # expect:

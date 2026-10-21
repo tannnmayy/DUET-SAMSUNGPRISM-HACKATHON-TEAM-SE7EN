@@ -33,6 +33,31 @@ def call(box, tool, args):
     return json.loads(asyncio.run(box.call(tool, args)))
 
 
+import pytest  # noqa: E402
+
+from duet_voice.galaxy.tools import spoken_clock  # noqa: E402
+
+
+@pytest.mark.parametrize("model,words,want", [
+    ("20:45", "Set an alarm for quarter to eight in the evening.", "19:45"),    # 21 Oct 2026, the fast mind
+    ("07:45", "Set an alarm for quarter to eight in the morning.", "07:45"),
+    ("18:30", "Wake me up at half past six in the evening.", "18:30"),
+    ("06:30", "Set it for half past six, no, quarter to seven.", "06:45"),      # the correction counts
+    ("06:30", "An alarm at half past six and a reminder at quarter to seven.", "06:30"),   # two things, two times
+    ("06:45", "An alarm at half past six and a reminder at quarter to seven.", "06:45"),
+    ("07:00", "Set an alarm for 7.", "07:00"),
+    ("21:15", "quarter past 9 tonight", "21:15")])
+def test_a_time_said_in_words_is_the_time_set(model, words, want):
+    assert spoken_clock(model, words) == want
+
+
+def test_the_toolbox_sets_the_time_the_user_said_in_words():
+    box, sent, _ = make()
+    box.coord.open_utterance = "Set an alarm for quarter to eight in the evening."
+    call(box, "set_alarm", {"time": "20:45"})
+    assert sent == [("set_alarm", {"time": "19:45"})]
+
+
 def test_the_same_alarm_is_set_once_even_if_the_plan_is_made_again():
     box, sent, events = make()
     assert call(box, "set_alarm", {"time": "16:30"})["status"] == "ok"

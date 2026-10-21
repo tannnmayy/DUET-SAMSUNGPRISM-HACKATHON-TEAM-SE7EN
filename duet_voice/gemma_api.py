@@ -409,6 +409,8 @@ def generate_sync(model: str, contents: Any, config: Any = None, deadline_s: flo
                 continue
             if _bad_key(exc) and key is None and pool().n > 1:
                 pool().rest(i, model, BAD_KEY_REST_S)       # another key may work
+                log.warning("gemma: Google refused key %d (%s); not using it for %.0f min", i + 1,
+                            str(exc)[:100], BAD_KEY_REST_S / 60)
                 continue
             if _transient(exc):
                 time.sleep(0.5)

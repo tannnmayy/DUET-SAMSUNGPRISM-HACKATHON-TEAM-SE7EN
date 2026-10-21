@@ -106,6 +106,9 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     # "430" is 4:30 as the recogniser sometimes writes it (21 Oct 2026: "set it for 430 instead" kept 04:30 at 9 am)
     said = set(numbers) | {n // 100 for n in numbers if 100 <= n <= 1259 and n % 100 < 60} | {
         v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words, re.I)}
+    # "quarter to eight" is a 7 o'clock time
+    said |= {((int(h) if h.isdigit() else _HOURS.get(h.lower(), 0)) + 10) % 12 + 1
+             for how, h, _ in _CLOCK.findall(words) if how.lower() == "quarter to"}
     if hour >= 13 and hour in said:
         return hhmm                    # a 24-hour time, said as such
     if not ({hour % 12, hour % 12 + 12, 12 if hour % 12 == 0 else -1} & said):
@@ -113,6 +116,42 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     now_min = now.hour * 60 + now.minute
     best = min(((h * 60 + minute - now_min - 1) % (24 * 60), h) for h in (hour % 12, hour % 12 + 12))
     return "%02d:%02d" % (best[1], minute)
+
+
+def spoken_clock(hhmm: str, words: str) -> str:
+    """A time the user said in words ("quarter to eight", "half past six", "quarter past 9"), when the model wrote
+    a time that matches none of them, on the half of the day the model chose. 21 Oct 2026: "Set an alarm for quarter
+    to eight in the evening." was set for 20:45 by the fast mind. With several such times, the last one counts only
+    after a correction ("half past six, no, quarter to seven"); two times for two things ("an alarm at half past six
+    and a reminder at quarter to seven") leave the model's choice as it is."""
+    m = re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(hhmm or ""))
+    if not m:
+        return hhmm
+    said = []                                    # [(hour on a 12-hour dial, minute, where it was said)]
+    for x in _CLOCK.finditer(words or ""):
+        how, h = x.group(1), x.group(2)
+        if not how:
+            continue
+        h = int(h) if h.isdigit() else _HOURS[h.lower()]
+        if not 1 <= h <= 12:
+            continue
+        how = how.lower()
+        hm = (h, 30) if how == "half past" else (h, 15) if how == "quarter past" else ((h + 10) % 12 + 1, 45)
+        said.append(hm + (x.start(),))
+    if not said:
+        return hhmm
+    hour, minute = int(m.group(1)), int(m.group(2))
+    have = ((hour % 12) or 12, minute)
+    last = said[-1]
+    if have == last[:2]:
+        return hhmm
+    corrected = len(said) > 1 and _CORRECTION.search((words or "")[said[-2][2]:last[2]])
+    if (len(said) == 1 and have not in [s[:2] for s in said]) or corrected:
+        return "%02d:%02d" % (last[0] % 12 + (12 if hour >= 12 else 0), last[1])
+    return hhmm
+
+
+_CORRECTION = re.compile(r"\b(no|nope|actually|instead|i mean|make it|wait|sorry|rather|change)\b", re.I)
 
 
 def same_alarm(a: Any, b: Any, words: str = "") -> bool:
@@ -269,6 +308,8 @@ class PhoneToolbox:
             args["text"] = message_times(args["text"])
         kind = spec.get("kind", "read")
         self.last_done = None
+        if tool in ("set_alarm", "set_reminder", "create_event", "cancel_alarm") and isinstance(args.get("time"), str):
+            args["time"] = spoken_clock(args["time"], self.coord.open_utterance)
         if tool in ("set_alarm", "set_reminder") and args.get("time"):
             args["time"] = next_occurrence(args["time"], self.coord.open_utterance, dt.datetime.now())
         timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))

@@ -182,7 +182,9 @@ _SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes"
 
 
 def _content(text: str) -> set:
-    words = re.findall(r"[a-z0-9']+", (text or "").lower().replace(":", " "))
+    # "half past four" is the 4:30 already confirmed (21 Oct 2026: "Alarm set for 4:30 in the morning. I've set your
+    # alarm for half past four in the morning.")
+    words = re.findall(r"[a-z0-9']+", spoken_digits(text).lower().replace(":", " "))
     words = [w[:-2] if w.endswith("'s") and len(w) > 4 else w for w in words]     # "camera's" is the camera
     return {_SPELLING.get(w, _NUMBER_WORDS.get(w, w)) for w in words}
 
@@ -242,14 +244,19 @@ _HOURS = {w: i + 1 for i, w in enumerate("one two three four five six seven eigh
 _SPOKEN_TIME = re.compile(r"\b(half past|quarter past|quarter to)\s+(\d{1,2}|%s)\b" % "|".join(_HOURS), re.I)
 
 
-def clock_times(text: str) -> set:
-    """The clock times a sentence states, as (hour on a 12-hour dial, minute): "3:54 PM" and "15:54" are
-    (3, 54); "half past three" is (3, 30); "7 in the morning" is (7, 0)."""
+def spoken_digits(text: str) -> str:
+    """Times said in words, as digits: "half past four" -> "4:30", "quarter to seven" -> "6:45"."""
     def digits(m: "re.Match") -> str:
         h = int(m.group(2)) if m.group(2).isdigit() else _HOURS[m.group(2).lower()]
         how = m.group(1).lower()
         return "%d:%02d" % (((h + 10) % 12 + 1, 45) if how == "quarter to" else (h, 30 if how == "half past" else 15))
-    t = _SPOKEN_TIME.sub(digits, text or "")
+    return _SPOKEN_TIME.sub(digits, text or "")
+
+
+def clock_times(text: str) -> set:
+    """The clock times a sentence states, as (hour on a 12-hour dial, minute): "3:54 PM" and "15:54" are
+    (3, 54); "half past three" is (3, 30); "7 in the morning" is (7, 0)."""
+    t = spoken_digits(text)
     found = {(int(h) % 12, int(mm)) for h, mm in re.findall(r"\b(\d{1,2}):(\d{2})\b", t)}
     found |= {(int(h) % 12, 0) for h in re.findall(
         r"(?<![:\d])\b(\d{1,2})\s*(?:am|pm|a\.m\.|p\.m\.|o'?clock|in the (?:morning|afternoon|evening)|at night)\b",

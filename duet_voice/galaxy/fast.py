@@ -385,6 +385,11 @@ def bridge_line(handover: Dict[str, Any], words: str, tools: List[str] = ()) -> 
     from .tools import cut_off
     if not (words or "").strip() or cut_off(words) or not_small_talk(words, []) == "":
         return ""
+    from .proactive import accepts, declines
+    if len(words.split()) <= 4 and (accepts(words) or declines(words)):
+        # a bare yes or no answers something: "Let me check." and then the cloud mind's silence (nothing was
+        # pending) left a promise hanging (21 Oct 2026)
+        return ""
     from .readings import ACTION
     if not asks_question(words) and (ACTION.search(words) or any(
             t not in (ASK_EXPERT, CHAT_REPLY) and user_named(t, words) for t in tools)):
@@ -645,9 +650,10 @@ CLOUD_DOWN = "cannot reach the cloud mind (it failed moments ago)"
 
 
 def cloud_unreachable(why: str) -> bool:
-    """Does this failure mean the cloud mind cannot be reached (rather than a bad answer)?"""
+    """Does this failure mean the cloud mind cannot be reached (rather than a bad answer)? Google refusing every
+    key counts: asking again would not help (gemma_api says "refused every key")."""
     w = (why or "").lower()
-    return "cannot reach" in w or "offline drill" in w
+    return "cannot reach" in w or "offline drill" in w or "refused every key" in w
 
 
 def enabled() -> bool:
@@ -842,6 +848,12 @@ class HybridThinker:
                 self.edge_log.append('User: "%s" -> answered from %s: %s' % (text[-160:], reading, said))
                 yield ThinkEvent("say", text=said)
                 return
+        if not await self._fast_listening():
+            # its server is not running: the cloud mind takes the request at once, not after the deadline
+            async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before,
+                                        "the fast mind's server is not running"):
+                yield ev
+            return
         # The conversation so far, as chat turns, so small talk is answered in context. Acting stays on the
         # current words alone: vet_plan checks them, and the ledger never runs an action twice.
         self.fast.history = chat_turns(self.recent, skip_acted=True)
@@ -990,6 +1002,25 @@ class HybridThinker:
         from ..thinker import usage_of
         yield ThinkEvent("decided", tools=False)
         yield ThinkEvent("say", text=answer, usage=usage_of(resp))
+
+    async def _fast_listening(self) -> bool:
+        """Is the fast mind's server accepting connections? A refused connection is known in a millisecond; without
+        this, a stopped server cost every request the whole deadline (3 s, its client retrying) before the cloud
+        mind took over (21 Oct 2026, llama-server killed: first word p50 2.1 s, action 5.8 s). True for a fast mind
+        with no server of its own (the tests' scripted ones)."""
+        url = getattr(self.fast, "base_url", None)
+        if not isinstance(url, str) or not url:
+            return True
+        import urllib.parse
+        u = urllib.parse.urlparse(url)
+        try:
+            _, writer = await asyncio.wait_for(
+                asyncio.open_connection(u.hostname, u.port or (443 if u.scheme == "https" else 80)), 0.5)
+            writer.close()
+            return True
+        except Exception:
+            log.warning("fast mind: nothing listening at %s; the cloud mind takes the request", url)
+            return False
 
     def _chat_check(self, words: str, reply: str, offer) -> str:
         """'' when the fast mind's own reply may be spoken (see chat_ok)."""

@@ -382,6 +382,31 @@ def test_the_agent_remembers_what_was_really_said_and_shares_it(monkeypatch):
     assert "Tanmay" in a._thinker.fast.instructions
 
 
+def test_a_stopped_fast_mind_server_sends_the_request_to_the_cloud_mind_at_once():
+    """21 Oct 2026, llama-server killed: every request waited the fast mind's whole 3 s deadline first."""
+    import socket
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    closed_port = s.getsockname()[1]
+    s.close()                                         # nothing listens there now
+    stopped = Script("e2b", [ThinkEvent("chat", text="Hello!")])
+    stopped.base_url = "http://127.0.0.1:%d/v1" % closed_port
+    hybrid = fast.HybridThinker(stopped, Script("26b", CLOUD))
+    started = time.time()
+    says = [e.text for e in collect(hybrid, "Good morning.") if e.kind == "say"]
+    assert says == ["From the cloud."] and time.time() - started < 1.0
+
+    async def with_a_server():
+        server = await asyncio.start_server(lambda r, w: w.close(), "127.0.0.1", 0)
+        running = Script("e2b", [ThinkEvent("chat", text="Hello!")])
+        running.base_url = "http://127.0.0.1:%d/v1" % server.sockets[0].getsockname()[1]
+        h = fast.HybridThinker(running, Script("26b", CLOUD))
+        out = [e.text async for e in h.run("Good morning.", Box(), note="") if e.kind == "say"]
+        server.close()
+        return out
+    assert asyncio.run(with_a_server()) == ["Hello!"]
+
+
 def test_an_exchange_that_ran_a_tool_is_kept_from_the_fast_minds_history(monkeypatch):
     """21 Oct 2026, the emulator: after "Turn on the torch." / "Torch on." in its history, the fast mind answered
     "Turn the torch off." in words 5 times out of 5 (the check sent it to the cloud mind; with the cloud cut off,
@@ -557,6 +582,16 @@ def test_a_sentence_that_only_restates_a_confirmed_action_is_not_said_twice():
     assert drop_restated("I've opened the camera.", ["Camera's open."]) == ""
     assert drop_restated("I've turned auto-rotate back on.", ["Auto-rotate is on."]) == ""
     assert drop_restated("I've unlocked the front door.", ["The front door is locked."]) != ""   # says the opposite
+    assert drop_restated("I've set your alarm for half past four in the morning.",
+                         ["Alarm set for 4:30 in the morning."]) == ""
+    assert drop_restated("I've set it for half past five instead.", ["Alarm set for 4:30 in the morning."]) != ""
+
+
+def test_a_bare_yes_or_no_gets_no_bridge_line():
+    """21 Oct 2026: a "Yes." with nothing pending got "Let me check." and then the cloud mind's silence."""
+    for words in ("Yes.", "No.", "Okay.", "No thanks."):
+        assert fast.bridge_line({}, words, ASSISTANT) == ""
+    assert fast.bridge_line({}, "Why is my phone so slow these days?", ASSISTANT) != ""
 
 
 def test_after_a_wait_go_on_still_finishes_the_answer_and_a_bridge_apologises_once(monkeypatch):

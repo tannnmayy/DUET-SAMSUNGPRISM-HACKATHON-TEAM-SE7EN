@@ -221,8 +221,9 @@ def toolbox(reading):
 
 
 def test_an_unsure_value_is_asked_back_and_never_sent():
-    box, sent, events, asked = toolbox(tone.read([], "Set an alarm for 4:30, I think."))
-    box.coord.open_utterance = "Set an alarm for 4:30, I think."
+    # (the half of the day said: a bare "4:30" is the next 4:30, which after 16:30 is the morning one)
+    box, sent, events, asked = toolbox(tone.read([], "Set an alarm for 4:30 in the afternoon, I think."))
+    box.coord.open_utterance = "Set an alarm for 4:30 in the afternoon, I think."
     out = json.loads(asyncio.run(box.call("set_alarm", {"time": "16:30"})))
     assert out["status"] == "not_executed" and "4:30 in the afternoon, right?" in out["reason"]
     assert sent == [] and box.confirming == ("set_alarm", {"time": "16:30"}, "4:30 in the afternoon, right?")
@@ -389,8 +390,9 @@ def test_a_question_from_a_plan_the_user_overtook_is_not_asked():
 
 
 def test_a_mind_that_calls_the_held_action_again_is_told_the_same_quietly():
-    box, sent, events, asked = toolbox(tone.read([], "Set an alarm for 4:30, I think."))
-    box.coord.open_utterance = "Set an alarm for 4:30, I think."
+    # (the half of the day said: a bare "4:30" is the next 4:30, which after 16:30 is the morning one)
+    box, sent, events, asked = toolbox(tone.read([], "Set an alarm for 4:30 in the afternoon, I think."))
+    box.coord.open_utterance = "Set an alarm for 4:30 in the afternoon, I think."
     for _ in range(2):
         out = json.loads(asyncio.run(box.call("set_alarm", {"time": "16:30"})))
         assert out["status"] == "not_executed"
