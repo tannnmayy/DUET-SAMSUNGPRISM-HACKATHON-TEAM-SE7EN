@@ -176,11 +176,18 @@ _FILLER = {"ok", "okay", "alright", "sure", "done", "great", "all", "right", "no
            "to", "at", "in", "on", "of", "and", "that", "this", "there", "so", "as", "with", "set", "new",
            "again", "instead", "up", "o'clock", "oclock", "am", "pm", "successfully", "already", "requested",
            "one", "you'll", "youll", "be", "will", "arriving", "arrive", "around", "about", "heading"}
-_SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes", "second": "seconds"}
+_SPELLING = {"canceled": "cancelled", "cancel": "cancelled", "minute": "minutes", "second": "seconds",
+             # 21 Oct 2026, the emulator: "Camera's open." then "I've opened the camera."
+             "opened": "open", "closed": "close", "paused": "pause", "locked": "lock", "unlocked": "unlock"}
 
 
 def _content(text: str) -> set:
-    words = re.findall(r"[a-z0-9']+", (text or "").lower().replace(":", " "))
+    # "half past four" is the 4:30 already confirmed (21 Oct 2026: "Alarm set for 4:30 in the morning. I've set your
+    # alarm for half past four in the morning.")
+    # ...and "7:00" the 7 already confirmed ("Alarm set for 7 in the morning. I've changed that to 7:00 in the morning.")
+    text = re.sub(r"\b(\d{1,2}):00\b", r"\1", spoken_digits(text))
+    words = re.findall(r"[a-z0-9']+", text.lower().replace(":", " "))
+    words = [w[:-2] if w.endswith("'s") and len(w) > 4 else w for w in words]     # "camera's" is the camera
     return {_SPELLING.get(w, _NUMBER_WORDS.get(w, w)) for w in words}
 
 
@@ -194,7 +201,8 @@ def adds_nothing(answer: str, confirmations: List[str]) -> bool:
 
 
 # the verbs an answer restates an action with ("I've turned on the AC" after "The air conditioner is now on.")
-_RESTATING = {"turned", "switched", "changed", "updated", "moved", "started", "made", "put", "got", "them", "they"}
+_RESTATING = {"turned", "switched", "changed", "updated", "moved", "started", "made", "put", "got", "them", "they",
+              "back"}
 # the same thing in other words: the short form is covered when the long one was said, and back
 _SAME = [("ac", ("air", "conditioner")), ("tv", ("television",)), ("aircon", ("air", "conditioner"))]
 
@@ -238,14 +246,19 @@ _HOURS = {w: i + 1 for i, w in enumerate("one two three four five six seven eigh
 _SPOKEN_TIME = re.compile(r"\b(half past|quarter past|quarter to)\s+(\d{1,2}|%s)\b" % "|".join(_HOURS), re.I)
 
 
-def clock_times(text: str) -> set:
-    """The clock times a sentence states, as (hour on a 12-hour dial, minute): "3:54 PM" and "15:54" are
-    (3, 54); "half past three" is (3, 30); "7 in the morning" is (7, 0)."""
+def spoken_digits(text: str) -> str:
+    """Times said in words, as digits: "half past four" -> "4:30", "quarter to seven" -> "6:45"."""
     def digits(m: "re.Match") -> str:
         h = int(m.group(2)) if m.group(2).isdigit() else _HOURS[m.group(2).lower()]
         how = m.group(1).lower()
         return "%d:%02d" % (((h + 10) % 12 + 1, 45) if how == "quarter to" else (h, 30 if how == "half past" else 15))
-    t = _SPOKEN_TIME.sub(digits, text or "")
+    return _SPOKEN_TIME.sub(digits, text or "")
+
+
+def clock_times(text: str) -> set:
+    """The clock times a sentence states, as (hour on a 12-hour dial, minute): "3:54 PM" and "15:54" are
+    (3, 54); "half past three" is (3, 30); "7 in the morning" is (7, 0)."""
+    t = spoken_digits(text)
     found = {(int(h) % 12, int(mm)) for h, mm in re.findall(r"\b(\d{1,2}):(\d{2})\b", t)}
     found |= {(int(h) % 12, 0) for h in re.findall(
         r"(?<![:\d])\b(\d{1,2})\s*(?:am|pm|a\.m\.|p\.m\.|o'?clock|in the (?:morning|afternoon|evening)|at night)\b",

@@ -254,6 +254,17 @@ def _transient(exc: BaseException) -> bool:
     return any(w in name for w in ("timeout", "connect", "remoteprotocol", "readerror", "network"))
 
 
+BAD_KEY_REST_S = 1800.0   # a key Google refuses is not tried again for half an hour
+
+
+def _bad_key(exc: BaseException) -> bool:
+    """Google refused the key itself (not valid, expired, revoked, its API turned off): the other keys may work.
+    21 Oct 2026: such an error failed the request at once, whichever other keys the pool had."""
+    code, text = error_code(exc), str(exc)
+    return code in (400, 401, 403) and ("API key" in text or "API_KEY" in text or "PERMISSION_DENIED" in text
+                                        or code == 401)
+
+
 def _unreachable(exc: BaseException) -> bool:
     """A failure to reach the server at all (no network, DNS, connection refused), not a slow answer."""
     name, text = type(exc).__name__.lower(), str(exc).lower()
@@ -295,6 +306,8 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
                     if now + wait > end:
                         why = ("every key is resting after Google refused it (rate limit; another program "
                                "using the same keys?)" if last is not None and error_code(last) == 429
+                               else "Google refused every key (not valid or expired: check GOOGLE_API_KEYS)"
+                               if last is not None and _bad_key(last)
                                else "this minute's input-token budget is spent")
                         raise RuntimeError("no key has room for %s within the deadline: %s%s" % (
                             model, why, " (last error: %s)" % str(last)[:160] if last else ""))
@@ -340,6 +353,13 @@ async def generate(model: str, contents: Any, config: Any, deadline_s: Optional[
                     p.rest(i, model, retry_delay(exc))
                     log.info("gemma: key %d refused %s (rate limit); resting it %.0f s", i + 1, model,
                              retry_delay(exc))
+                elif _bad_key(exc):
+                    # this key is no good (the others may be): rest it, and the request goes to another key
+                    last = exc
+                    p.settle(model, booking, 0)
+                    p.rest(i, model, BAD_KEY_REST_S)
+                    log.warning("gemma: Google refused key %d (%s); not using it for %.0f min", i + 1,
+                                str(exc)[:100], BAD_KEY_REST_S / 60)
                 elif _transient(exc):
                     last = exc
                     # A request the server answered with an error frees its booking: on a bad night
@@ -386,6 +406,11 @@ def generate_sync(model: str, contents: Any, config: Any = None, deadline_s: flo
             if error_code(exc) == 429 and key is None:
                 pool().rest(i, model, retry_delay(exc))
                 time.sleep(1.0)
+                continue
+            if _bad_key(exc) and key is None and pool().n > 1:
+                pool().rest(i, model, BAD_KEY_REST_S)       # another key may work
+                log.warning("gemma: Google refused key %d (%s); not using it for %.0f min", i + 1,
+                            str(exc)[:100], BAD_KEY_REST_S / 60)
                 continue
             if _transient(exc):
                 time.sleep(0.5)

@@ -54,11 +54,26 @@ def token(query) -> dict:
     return {"url": url, "token": jwt, "room": room, "identity": identity}
 
 
+# The origins that may read this server's answers from a browser: the phone app's WebView (Capacitor serves it as
+# https://localhost on Android, capacitor://localhost on iOS) and DUET_APP_ORIGINS. Pages served from this server
+# itself are same-origin and need nothing. Before 21 Oct 2026 any web page could read a room token ("*"), join, and
+# type requests, including to the SmartThings home, which runs on this laptop.
+APP_ORIGINS = {"https://localhost", "http://localhost", "capacitor://localhost"}
+
+
+def allowed_origin(origin: str) -> bool:
+    extra = {o.strip() for o in os.environ.get("DUET_APP_ORIGINS", "").split(",") if o.strip()}
+    return bool(origin) and origin in (APP_ORIGINS | extra)
+
+
 @web.middleware
 async def cors(request, handler):
     resp = web.Response(status=204) if request.method == "OPTIONS" else await handler(request)
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Headers"] = "*"
+    origin = request.headers.get("Origin", "")
+    if allowed_origin(origin):
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Access-Control-Allow-Headers"] = "*"
+        resp.headers["Vary"] = "Origin"
     resp.headers["Cache-Control"] = "no-store"
     return resp
 
@@ -92,15 +107,27 @@ async def health() -> dict:
             return {"ok": False, "why": "not answering (%s)" % type(exc).__name__}
 
     async def cloud_mind():
-        if not gemma_api.api_keys():
+        """Every key is asked (a list of models: no tokens used). Usable while one key works; the bad ones are
+        named, by position in GOOGLE_API_KEYS, never by value."""
+        keys = gemma_api.api_keys()
+        if not keys:
             return {"ok": False, "why": "no Google API key"}
         try:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=4)) as s:
-                async with s.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
-                                 headers={"x-goog-api-key": gemma_api.api_keys()[0]}) as r:
-                    return {"ok": r.status == 200, "why": "" if r.status == 200 else "Google answered %d" % r.status}
+                async def status(key: str) -> int:
+                    async with s.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1",
+                                     headers={"x-goog-api-key": key}) as r:
+                        return r.status
+                codes = await asyncio.gather(*(status(k) for k in keys), return_exceptions=True)
         except Exception as exc:
             return {"ok": False, "why": "cannot reach Google (%s)" % type(exc).__name__}
+        if all(isinstance(c, Exception) for c in codes):
+            return {"ok": False, "why": "cannot reach Google (%s)" % type(codes[0]).__name__}
+        bad = ["key %d (%s)" % (n + 1, c if isinstance(c, int) else type(c).__name__)
+               for n, c in enumerate(codes) if c != 200]
+        working = len(keys) - len(bad)
+        return {"ok": working > 0, "keys": "%d of %d work" % (working, len(keys)),
+                "why": ("refused: " + ", ".join(bad)) if bad else ""}
 
     async def home():
         if not smartthings.enabled():
@@ -109,8 +136,10 @@ async def health() -> dict:
         return {"ok": out.get("ok"), "why": out.get("why", ""), "devices": out.get("devices")}
 
     f, c, h = await asyncio.gather(fast_mind(), cloud_mind(), home())
+    from . import tone
     out = {"fast_mind": f, "cloud_mind": c, "smartthings": h,
-           "livekit": {"ok": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"))}}
+           "livekit": {"ok": all(os.environ.get(k) for k in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"))},
+           "tone": tone.status()}
     _health.update(at=time.monotonic(), out=out)
     return out
 

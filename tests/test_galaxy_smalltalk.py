@@ -318,6 +318,40 @@ def test_a_cancel_of_an_alarm_that_never_ran_goes_nowhere():
     assert box2.planned == []
 
 
+def test_a_cancel_half_a_day_off_is_the_same_alarm_unless_the_user_said_which_half():
+    """21 Oct 2026, the repeat run at 9 am: "Set an alarm for 3:30." was planned as 15:30, then "No, no, cancel
+    that" came as a cancel of 03:30, and went to the phone although nothing had been set."""
+    from duet_voice.coordinator import CallRecord
+    from duet_voice.galaxy.tools import same_alarm
+    sent = []
+
+    async def send(tool, args, timeout):
+        sent.append((tool, args))
+        return json.dumps({"status": "ok"})
+    assert same_alarm("15:30", "03:30", "Set an alarm for 3:30. No, no, cancel that.")
+    assert not same_alarm("15:30", "03:30", "Set an alarm for 3:30 in the afternoon. No, cancel the morning one.")
+    assert not same_alarm("15:30", "03:45") and not same_alarm("", "")
+    coord = Coordinator(commit_hold_s=0.0, revising_hold_s=0.0, dangling_hold_s=0.0)
+    coord.turn_committed()
+    coord.open_utterance = "Set an alarm for 3.30. No, no, cancel that. Could you set it for 430 instead?"
+    box = PhoneToolbox(coord, MODES["assistant"]["tools"], send)
+    box.planned.append({"tool": "set_alarm", "args": {"time": "15:30"}})
+    out = json.loads(asyncio.run(box.call("cancel_alarm", {"time": "03:30"})))
+    assert "never set" in out["note"] and sent == []
+    # an alarm that did run at 15:30: "cancel the 3:30" cancels that one, not a 03:30 nobody set
+    coord.history.append(CallRecord("set_alarm", {"time": "15:30"}, 0, 0.0, outcome="ok"))
+    asyncio.run(box.call("cancel_alarm", {"time": "03:30"}))
+    assert sent == [("cancel_alarm", {"time": "15:30"})]
+
+
+def test_a_time_written_without_its_colon_is_still_the_next_one():
+    import datetime as dt
+    from duet_voice.galaxy.tools import next_occurrence
+    nine_am = dt.datetime(2026, 10, 21, 9, 16)
+    assert next_occurrence("04:30", "Could you set it for 430 instead?", nine_am) == "16:30"
+    assert next_occurrence("04:30", "Set it for 4:30 in the morning.", nine_am) == "04:30"
+
+
 # --- the agent ----------------------------------------------------------------------------------------------
 
 def galaxy_agent(monkeypatch):
@@ -346,6 +380,86 @@ def test_the_agent_remembers_what_was_really_said_and_shares_it(monkeypatch):
                               ("user", "What do I do? I have a stomach pain."),
                               ("assistant", "I'm sorry you're in pain.")]
     assert "Tanmay" in a._thinker.fast.instructions
+
+
+def test_a_change_to_an_earlier_action_goes_to_the_cloud_mind():
+    """21 Oct 2026: "Wait, make the alarm 7." (the 6:30 set in the request before) was planned by the fast mind as a
+    second alarm, and the 6:30 stayed. The fast mind does not see earlier actions; the cloud mind does."""
+    assert "earlier action" in fast.vet_plan([("set_alarm", {"time": "19:00"})], "Wait make the alarm 7.")
+    assert fast.vet_plan([("set_alarm", {"time": "16:30"})], "Could you set it for 4:30 instead?") != ""
+    assert fast.vet_plan([("set_volume", {"percent": 30})], "Make it 30 instead.") != ""      # handed over either way
+    # naming the action is a request of its own
+    assert fast.vet_plan([("set_alarm", {"time": "04:30"})], "Could you set an alarm for 430 instead?") == ""
+    # a correction inside the same words stays with the fast mind
+    assert fast.vet_plan([("set_alarm", {"time": "07:00"})], "Set an alarm for 5, no, 6, no wait, make it 7.") == ""
+    assert fast.vet_plan([("set_brightness", {"percent": 30})],
+                         "Turn the brightness down to 40. Actually, make it 30.") == ""
+    assert fast.vet_plan([("call_contact", {"name": "Priya"})],
+                         "Text Priya that I'm running late. Actually, just call her instead.") == ""
+
+
+def test_words_said_over_a_reply_survive_its_delivery(monkeypatch):
+    """21 Oct 2026, edge_bargein_fix: "Wait, make the alarm 7." was heard, then the reply it cut off was delivered
+    and emptied the coordinator's words: every guard of the correction read nothing, and the next 7 was 7 am."""
+    _, a = galaxy_agent(monkeypatch)
+    coord = a._coord
+    coord.heard("Set an alarm for 6:30 and tell me the weather.")
+    a._asked_seq = coord.heard_count                # the reply to it begins (in the same clock tick, often)
+    coord.heard("Wait, make the alarm 7.")          # said over that reply
+    a._request_text, a._pending_consumed = "Set an alarm for 6:30 and tell me the weather.", 1
+    a.reply_delivered(said="Alarm set for 6:30 in the evening.")
+    assert coord.open_utterance == "Wait, make the alarm 7."
+    a._asked_seq = coord.heard_count                # a reply with nothing said over it clears everything
+    a._request_text, a._pending_consumed = "Wait, make the alarm 7.", 2
+    a.reply_delivered(said="Alarm set for 7 in the evening.")
+    assert coord.open_utterance == ""
+    from duet_voice.galaxy.confirm import drop_restated
+    assert drop_restated("I've changed that to 7:00 in the morning.", ["Alarm set for 7 in the morning."]) == ""
+
+
+def test_a_stopped_fast_mind_server_sends_the_request_to_the_cloud_mind_at_once():
+    """21 Oct 2026, llama-server killed: every request waited the fast mind's whole 3 s deadline first."""
+    import socket
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    closed_port = s.getsockname()[1]
+    s.close()                                         # nothing listens there now
+    stopped = Script("e2b", [ThinkEvent("chat", text="Hello!")])
+    stopped.base_url = "http://127.0.0.1:%d/v1" % closed_port
+    hybrid = fast.HybridThinker(stopped, Script("26b", CLOUD))
+    started = time.time()
+    says = [e.text for e in collect(hybrid, "Good morning.") if e.kind == "say"]
+    assert says == ["From the cloud."] and time.time() - started < 1.0
+
+    async def with_a_server():
+        server = await asyncio.start_server(lambda r, w: w.close(), "127.0.0.1", 0)
+        running = Script("e2b", [ThinkEvent("chat", text="Hello!")])
+        running.base_url = "http://127.0.0.1:%d/v1" % server.sockets[0].getsockname()[1]
+        h = fast.HybridThinker(running, Script("26b", CLOUD))
+        out = [e.text async for e in h.run("Good morning.", Box(), note="") if e.kind == "say"]
+        server.close()
+        return out
+    assert asyncio.run(with_a_server()) == ["Hello!"]
+
+
+def test_an_exchange_that_ran_a_tool_is_kept_from_the_fast_minds_history(monkeypatch):
+    """21 Oct 2026, the emulator: after "Turn on the torch." / "Torch on." in its history, the fast mind answered
+    "Turn the torch off." in words 5 times out of 5 (the check sent it to the cloud mind; with the cloud cut off,
+    the torch stayed on). Small talk stays in its history; the cloud mind keeps everything."""
+    from duet_voice.coordinator import CallRecord
+    _, a = galaxy_agent(monkeypatch)
+    a._request_text, a._pending_consumed = "Good morning.", 1
+    a.reply_delivered(said="Good morning, Tanmay!")
+    a._coord.history.append(CallRecord("set_torch", {"on": True}, 0, 0.0, outcome="ok"))
+    a._request_text, a._pending_consumed = "Turn on the torch.", 2
+    a.reply_delivered(said="Sure. Torch on.")
+    assert list(a.recent)[-2:] == [("user", "Turn on the torch.", True), ("assistant", "Torch on.", True)]
+    assert fast.chat_turns(a.recent, skip_acted=True) == [
+        {"role": "user", "content": "Good morning."}, {"role": "assistant", "content": "Good morning, Tanmay!"}]
+    assert len(fast.chat_turns(a.recent)) == 4                            # everyone else still sees it all
+    a._request_text, a._pending_consumed = "How are you?", 3              # nothing ran since: not marked
+    a.reply_delivered(said="Doing well!")
+    assert list(a.recent)[-1] == ("assistant", "Doing well!")
 
 
 def test_one_moment_waits_while_the_fast_mind_decides(monkeypatch):
@@ -499,6 +613,20 @@ def test_a_sentence_that_only_restates_a_confirmed_action_is_not_said_twice():
     assert drop_restated("It will cool the room in about ten minutes.", ["The air conditioner is now on."]) == \
         "It will cool the room in about ten minutes."
     assert drop_restated("Anything.", []) == "Anything."
+    # 21 Oct 2026, the emulator: "Camera's open. I've opened the camera."
+    assert drop_restated("I've opened the camera.", ["Camera's open."]) == ""
+    assert drop_restated("I've turned auto-rotate back on.", ["Auto-rotate is on."]) == ""
+    assert drop_restated("I've unlocked the front door.", ["The front door is locked."]) != ""   # says the opposite
+    assert drop_restated("I've set your alarm for half past four in the morning.",
+                         ["Alarm set for 4:30 in the morning."]) == ""
+    assert drop_restated("I've set it for half past five instead.", ["Alarm set for 4:30 in the morning."]) != ""
+
+
+def test_a_bare_yes_or_no_gets_no_bridge_line():
+    """21 Oct 2026: a "Yes." with nothing pending got "Let me check." and then the cloud mind's silence."""
+    for words in ("Yes.", "No.", "Okay.", "No thanks."):
+        assert fast.bridge_line({}, words, ASSISTANT) == ""
+    assert fast.bridge_line({}, "Why is my phone so slow these days?", ASSISTANT) != ""
 
 
 def test_after_a_wait_go_on_still_finishes_the_answer_and_a_bridge_apologises_once(monkeypatch):

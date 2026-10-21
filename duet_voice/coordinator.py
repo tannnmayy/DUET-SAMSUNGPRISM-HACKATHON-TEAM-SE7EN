@@ -19,6 +19,10 @@ module is the answer, carried over from DUET's first version:
 * **Failure policy.** A read-only call that fails is retried once. A
   state-changing call is never blindly re-sent: if its outcome is unknown, the
   ledger remembers that, and the thinker is told to say so and offer a human.
+* **The voice (phone app only).** `extra_hold`, when set, can lengthen the hold
+  from how the user sounds (duet_voice/galaxy/tone.py): longer while they sound
+  hesitant, and after a raised voice until its words are in. It never shortens
+  the hold and never runs or drops a call. The benchmark leaves it unset.
 
 Everything here is per conversation. Nothing is shared between rooms.
 """
@@ -30,7 +34,7 @@ import json
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple
 
 
 class Superseded(Exception):
@@ -90,6 +94,12 @@ class Coordinator:
     open_utterance: str = ""            # what the user said since the agent last acted
     ledger: Dict[str, CallRecord] = field(default_factory=dict)
     history: List[CallRecord] = field(default_factory=list)
+    # the phone app's tone channel: a longer hold, from how the user sounds (None: the words alone decide)
+    extra_hold: Optional[Callable[[], float]] = None
+    # the open utterance's pieces, numbered in the order they were heard (words_from); a count, not a clock:
+    # Windows' monotonic clock moves in 15 ms steps, and words heard just before a reply began shared its tick
+    heard_log: List[Tuple[int, str]] = field(default_factory=list)
+    heard_count: int = 0
 
     # -- perception events -------------------------------------------------------
     def user_started_speaking(self) -> None:
@@ -118,6 +128,12 @@ class Coordinator:
         self.last_words_epoch = self.epoch
         self.transcript_due = False
         self.open_utterance = (self.open_utterance + " " + text).strip()
+        self.heard_log = (self.heard_log + [(self.heard_count, text)])[-40:]
+        self.heard_count += 1
+
+    def words_from(self, n: int) -> str:
+        """What the user said from the n-th piece heard on (heard_count, read at some moment, marks that moment)."""
+        return " ".join(text for i, text in self.heard_log if i >= n)
 
     def overtaken(self, epoch: int) -> bool:
         """Has the user said new words since a plan made at `epoch`? Then the plan is
@@ -160,10 +176,17 @@ class Coordinator:
         """How long the user must have been quiet before a call may commit."""
         text = self.open_utterance
         if _DANGLING.search(text):
-            return self.dangling_hold_s
-        if _REVISING.search(text):
-            return self.revising_hold_s
-        return self.commit_hold_s
+            hold = self.dangling_hold_s
+        elif _REVISING.search(text):
+            hold = self.revising_hold_s
+        else:
+            hold = self.commit_hold_s
+        if self.extra_hold is not None:
+            try:
+                hold = max(hold, float(self.extra_hold()))
+            except Exception:  # the voice only ever adds to the hold
+                pass
+        return hold
 
     # -- the gate -------------------------------------------------------------------
     async def gate(self, epoch: Optional[int] = None) -> int:

@@ -106,6 +106,9 @@
   };
   // where each step ran: on the phone, or on DUET's side (its own tools)
   const SERVER_SIDE = new Set(["get_weather", "web_search"]);
+  // the tone channel's labels, as the timeline says them
+  const TONE_TEXT = { urgent: "urgent", distressed: "distressed", frustrated: "frustrated", unsure: "unsure of the value",
+    "raised voice": "louder than usual" };
   const toolText = (t, a) => {
     try {
       const s = TOOL_TEXT[t] ? null : (P.skills || []).find((x) => x.name === t);   // a skill labels itself
@@ -277,6 +280,16 @@
       case "superseded":
         addStep("t-drop", "↺", "Plan dropped: you kept talking", "nothing was done with the old words");
         break;
+      case "tone":   // how DUET heard it (duet_voice/galaxy/tone.py): the voice and the words together
+        if (ev.label) {
+          addStep("t-tone", "♪", "Heard in your voice: " + esc(TONE_TEXT[ev.label] || ev.label), esc(ev.cues || ""));
+          moment("t-tone", "♪  You sounded " + (TONE_TEXT[ev.label] || ev.label));
+        }
+        break;
+      case "tone_ask":
+        addStep("t-tone", "?", "Checking first: “" + esc(ev.text || "") + "”",
+          "you sounded unsure (" + esc(ev.cues || "") + "): nothing runs until you say yes");
+        break;
       case "tool_planned": {
         const li = addStep("t-plan", "⏸", "Planned: " + esc(toolText(ev.tool, ev.args)),
           "held until you've been quiet " + ev.hold_s + " s");
@@ -305,7 +318,7 @@
         }
         if (ev.kind === "tool_dropped") setStep(li, "t-drop", "✕", "Never ran: " + what, "you corrected yourself before it committed");
         if (ev.kind === "tool_cached") setStep(li, "t-cached", "=", "Not repeated: " + what, "it already ran for this request");
-        if (ev.kind === "tool_asked") setStep(li, "t-cached", "?", "Asked first: " + what, "you hadn't asked for this, so DUET offers it instead");
+        if (ev.kind === "tool_asked") setStep(li, "t-cached", "?", "Asked first: " + what, ev.why ? esc(ev.why) : "you hadn't asked for this, so DUET offers it instead");
         if (ev.kind === "tool_unknown") setStep(li, "t-fail", "?", "Unconfirmed: " + what, esc(ev.error || ""));
         if (ev.kind === "tool_failed") {
           const r = ev.result || {};

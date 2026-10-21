@@ -102,8 +102,13 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     hour, minute = int(m.group(1)), int(m.group(2))
     if not (words or "").strip() or hour > 23 or minute > 59 or _DAYPART.search(words):
         return hhmm                    # no words to go by, or the user said which half of the day
-    said = {int(n) for n in re.findall(r"\d+", words)} | {
+    numbers = [int(n) for n in re.findall(r"\d+", words)]
+    # "430" is 4:30 as the recogniser sometimes writes it (21 Oct 2026: "set it for 430 instead" kept 04:30 at 9 am)
+    said = set(numbers) | {n // 100 for n in numbers if 100 <= n <= 1259 and n % 100 < 60} | {
         v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words, re.I)}
+    # "quarter to eight" is a 7 o'clock time
+    said |= {((int(h) if h.isdigit() else _HOURS.get(h.lower(), 0)) + 10) % 12 + 1
+             for how, h, _ in _CLOCK.findall(words) if how.lower() == "quarter to"}
     if hour >= 13 and hour in said:
         return hhmm                    # a 24-hour time, said as such
     if not ({hour % 12, hour % 12 + 12, 12 if hour % 12 == 0 else -1} & said):
@@ -111,6 +116,55 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     now_min = now.hour * 60 + now.minute
     best = min(((h * 60 + minute - now_min - 1) % (24 * 60), h) for h in (hour % 12, hour % 12 + 12))
     return "%02d:%02d" % (best[1], minute)
+
+
+def spoken_clock(hhmm: str, words: str) -> str:
+    """A time the user said in words ("quarter to eight", "half past six", "quarter past 9"), when the model wrote
+    a time that matches none of them, on the half of the day the model chose. 21 Oct 2026: "Set an alarm for quarter
+    to eight in the evening." was set for 20:45 by the fast mind. With several such times, the last one counts only
+    after a correction ("half past six, no, quarter to seven"); two times for two things ("an alarm at half past six
+    and a reminder at quarter to seven") leave the model's choice as it is."""
+    m = re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(hhmm or ""))
+    if not m:
+        return hhmm
+    said = []                                    # [(hour on a 12-hour dial, minute, where it was said)]
+    for x in _CLOCK.finditer(words or ""):
+        how, h = x.group(1), x.group(2)
+        if not how:
+            continue
+        h = int(h) if h.isdigit() else _HOURS[h.lower()]
+        if not 1 <= h <= 12:
+            continue
+        how = how.lower()
+        hm = (h, 30) if how == "half past" else (h, 15) if how == "quarter past" else ((h + 10) % 12 + 1, 45)
+        said.append(hm + (x.start(),))
+    if not said:
+        return hhmm
+    hour, minute = int(m.group(1)), int(m.group(2))
+    have = ((hour % 12) or 12, minute)
+    last = said[-1]
+    if have == last[:2]:
+        return hhmm
+    corrected = len(said) > 1 and _CORRECTION.search((words or "")[said[-2][2]:last[2]])
+    if (len(said) == 1 and have not in [s[:2] for s in said]) or corrected:
+        return "%02d:%02d" % (last[0] % 12 + (12 if hour >= 12 else 0), last[1])
+    return hhmm
+
+
+_CORRECTION = re.compile(r"\b(no|nope|actually|instead|i mean|make it|wait|sorry|rather|change)\b", re.I)
+
+
+def same_alarm(a: Any, b: Any, words: str = "") -> bool:
+    """Two alarm times that mean one alarm: the same, or the same clock time half a day apart when the user's words
+    do not say which half (21 Oct 2026: "Set an alarm for 3:30. No, no, cancel that." planned 15:30 at 9 am, then a
+    cancel of 03:30, which went to the phone although nothing had been set)."""
+    ma, mb = (re.match(r"\s*(\d{1,2}):(\d{2})\s*$", str(v or "")) for v in (a, b))
+    if not ma or not mb:
+        return bool(a) and a == b
+    ha, hb = int(ma.group(1)), int(mb.group(1))
+    if ma.group(2) != mb.group(2):
+        return False
+    return ha == hb or (ha % 12 == hb % 12 and not _DAYPART.search(words or ""))
 
 
 def _norm(v: Any) -> Any:
@@ -171,6 +225,12 @@ class PhoneToolbox:
         self.failed: List[tuple] = []
         # the same, as (tool, args): what the answer must not say happened
         self.failed_calls: List[tuple] = []
+        # the tone channel (tone.py), set by the agent: tone() -> how the open request was said (a tone.Reading);
+        # on_unsure(tool, args, question, action, reading) is told when a value is asked back
+        self.tone: Optional[Callable[[], Any]] = None
+        self.on_unsure: Optional[Callable[..., None]] = None
+        # a value of this request the user sounded unsure of, asked back before it runs: (tool, args, question)
+        self.confirming: Optional[tuple] = None
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -184,6 +244,7 @@ class PhoneToolbox:
         self.unfinished = None
         self.failed = []
         self.failed_calls = []
+        self.confirming = None
         for key, rec in list(self.coord.ledger.items()):
             spec = self.specs.get(rec.tool, {})
             if spec.get("repeatable") or spec.get("kind") in ("ui", "read"):
@@ -193,11 +254,24 @@ class PhoneToolbox:
         """An alarm at this time was planned in this request and held back at the gate, and no alarm at this time
         was ever set in this conversation."""
         setting = ("set_alarm", "set_reminder")
+        words = self.coord.open_utterance
         # held back at the gate, or planned in a reply the user cut off (LiveKit cancels that reply, gate and all)
-        held = any(c["tool"] in setting and (c.get("args") or {}).get("time") == time
+        held = any(c["tool"] in setting and same_alarm((c.get("args") or {}).get("time"), time, words)
                    for c in self.held_back + self.planned)
-        ran = any(r.tool in setting and r.outcome == "ok" and r.args.get("time") == time for r in self.coord.history)
+        ran = any(r.tool in setting and r.outcome == "ok" and same_alarm(r.args.get("time"), time, words)
+                  for r in self.coord.history)
         return bool(time) and held and not ran
+
+    def _alarm_that_ran(self, time: Any) -> Any:
+        """The alarm this conversation really set that a cancel means: "cancel the 3:30" after 15:30 was set is a
+        cancel of 15:30 when the user did not say which half of the day. The time as given otherwise."""
+        exact = [r for r in self.coord.history if r.tool in ("set_alarm", "set_reminder") and r.outcome == "ok"
+                 and r.args.get("time") == time]
+        if exact:
+            return time
+        near = [r.args.get("time") for r in self.coord.history if r.tool in ("set_alarm", "set_reminder")
+                and r.outcome == "ok" and same_alarm(r.args.get("time"), time, self.coord.open_utterance)]
+        return near[-1] if near else time
 
     def _target(self, spec: Dict[str, Any], args: Dict[str, Any]) -> List[Any]:
         return [_norm(args.get(k)) for k in spec.get("target", [])]
@@ -234,6 +308,8 @@ class PhoneToolbox:
             args["text"] = message_times(args["text"])
         kind = spec.get("kind", "read")
         self.last_done = None
+        if tool in ("set_alarm", "set_reminder", "create_event", "cancel_alarm") and isinstance(args.get("time"), str):
+            args["time"] = spoken_clock(args["time"], self.coord.open_utterance)
         if tool in ("set_alarm", "set_reminder") and args.get("time"):
             args["time"] = next_occurrence(args["time"], self.coord.open_utterance, dt.datetime.now())
         timeout = float(spec.get("timeout", TIMEOUTS.get(kind, 8.0)))
@@ -246,6 +322,8 @@ class PhoneToolbox:
                        "why": "that alarm was never set, so there is nothing to cancel"})
             return json.dumps({"status": "ok", "note": "that alarm was never set (the user's correction came before "
                                                        "it ran): nothing to cancel, and nothing was done"})
+        if tool == "cancel_alarm" and args.get("time"):
+            args["time"] = self._alarm_that_ran(args["time"])
         self.planned.append({"tool": tool, "args": dict(args)})
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
@@ -262,6 +340,13 @@ class PhoneToolbox:
             return json.dumps({"status": "not_executed", "reason":
                                "the user has not decided yet. Ask which one, in one short question that names "
                                "the options; act only on their answer"})
+        if kind == "write" and self.tone is not None:
+            try:
+                asked = await self._unsure(tool, args, epoch)
+            except Superseded:
+                return self._held(tool, args)
+            if asked:
+                return asked
         if spec.get("consent") and self.consent is not None:
             key = (tool, json.dumps(args, sort_keys=True))
             if key in self.asked:
@@ -272,9 +357,9 @@ class PhoneToolbox:
                                    "question offering this; act only on their yes"})
             try:
                 allowed = await self.consent(tool, args)
-            except Exception as exc:  # a failed check never blocks what the user asked for
+            except Exception as exc:  # a broken check never lets an unasked call or change through: ask first
                 log.warning("consent check failed: %s", exc)
-                allowed = True
+                allowed = False
             if not allowed:
                 self.asked.add(key)
                 self.emit({"kind": "tool_asked", "tool": tool, "args": args})
@@ -303,12 +388,7 @@ class PhoneToolbox:
                                               timeout_s=timeout + 1.0, on_committed=self._committed,
                                               epoch=epoch)
         except Superseded:
-            log.info("held back at the gate: %s %s", tool, args)
-            self.held_back.append({"tool": tool, "args": args})
-            self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
-                       "why": "you kept talking, so this plan was never carried out"})
-            return json.dumps({"status": "not_executed", "reason":
-                               "the user started speaking again; wait for their full request"})
+            return self._held(tool, args)
         self.last_tool_start, self.last_tool_end = record.started, record.finished
         if record.outcome == "ok":
             said = confirmation(tool, args, record.result)
@@ -350,6 +430,48 @@ class PhoneToolbox:
         self.emit({"kind": "tool_failed", "tool": tool, "args": args, "error": record.error})
         return json.dumps({"status": "error", "error": record.error, "instruction":
                            "tell the user this step failed and what they can do next"})
+
+
+    def _held(self, tool: str, args: Dict[str, Any]) -> str:
+        log.info("held back at the gate: %s %s", tool, args)
+        self.held_back.append({"tool": tool, "args": args})
+        self.emit({"kind": "tool_dropped", "tool": tool, "args": args,
+                   "why": "you kept talking, so this plan was never carried out"})
+        return json.dumps({"status": "not_executed", "reason":
+                           "the user started speaking again; wait for their full request"})
+
+    async def _unsure(self, tool: str, args: Dict[str, Any], epoch: Optional[int]) -> str:
+        """A value the user sounded unsure of ("4:30, I think", or a long pause before it) is asked back before it
+        runs: "4:30 in the afternoon, right?". Read once the gate's hold has passed, so words said after a pause
+        count too. The question becomes DUET's offer, so a plain "yes" runs it as asked (proactive.py). '' when the
+        value stands (or the action has none)."""
+        from .tone import ask_back
+        asked = ask_back(tool, args)
+        if asked is None:
+            return ""
+        await self.coord.gate(epoch)       # Superseded: the user said more, as at the gate itself
+        try:
+            reading = self.tone()
+        except Exception as exc:  # the voice never blocks an action
+            log.warning("tone reading failed: %s", exc)
+            return ""
+        if reading is None or not reading.about(tool, args):
+            return ""
+        question, action = asked
+        again = self.confirming is not None and self.confirming[:2] == (tool, dict(args))
+        self.unfinished = (tool, "unsure")
+        self.confirming = (tool, dict(args), question)
+        if not again:   # a mind that calls it once more is told the same, with nothing new on the timeline
+            self.emit({"kind": "tool_asked", "tool": tool, "args": args,
+                       "why": "you sounded unsure (%s), so DUET checks first" % "; ".join(reading.cues)})
+        if self.on_unsure is not None and not again:
+            try:
+                self.on_unsure(tool, dict(args), question, action, reading)
+            except Exception as exc:  # the offer is a convenience; the question is still asked
+                log.warning("could not record the question as an offer: %s", exc)
+        return json.dumps({"status": "not_executed", "reason":
+                           "the user sounded unsure of the value (%s). Ask exactly this and nothing else: \"%s\" "
+                           "Act only on their yes." % ("; ".join(reading.cues), question)})
 
 
 def rpc_sender(room: rtc.Room, identity: Callable[[], str]):

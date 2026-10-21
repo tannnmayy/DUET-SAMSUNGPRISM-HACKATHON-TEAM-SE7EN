@@ -33,6 +33,31 @@ def call(box, tool, args):
     return json.loads(asyncio.run(box.call(tool, args)))
 
 
+import pytest  # noqa: E402
+
+from duet_voice.galaxy.tools import spoken_clock  # noqa: E402
+
+
+@pytest.mark.parametrize("model,words,want", [
+    ("20:45", "Set an alarm for quarter to eight in the evening.", "19:45"),    # 21 Oct 2026, the fast mind
+    ("07:45", "Set an alarm for quarter to eight in the morning.", "07:45"),
+    ("18:30", "Wake me up at half past six in the evening.", "18:30"),
+    ("06:30", "Set it for half past six, no, quarter to seven.", "06:45"),      # the correction counts
+    ("06:30", "An alarm at half past six and a reminder at quarter to seven.", "06:30"),   # two things, two times
+    ("06:45", "An alarm at half past six and a reminder at quarter to seven.", "06:45"),
+    ("07:00", "Set an alarm for 7.", "07:00"),
+    ("21:15", "quarter past 9 tonight", "21:15")])
+def test_a_time_said_in_words_is_the_time_set(model, words, want):
+    assert spoken_clock(model, words) == want
+
+
+def test_the_toolbox_sets_the_time_the_user_said_in_words():
+    box, sent, _ = make()
+    box.coord.open_utterance = "Set an alarm for quarter to eight in the evening."
+    call(box, "set_alarm", {"time": "20:45"})
+    assert sent == [("set_alarm", {"time": "19:45"})]
+
+
 def test_the_same_alarm_is_set_once_even_if_the_plan_is_made_again():
     box, sent, events = make()
     assert call(box, "set_alarm", {"time": "16:30"})["status"] == "ok"
@@ -114,13 +139,26 @@ def test_the_consent_gate_holds_back_a_change_nobody_asked_for():
     assert asked == ["set_brightness"] and sent == [("set_alarm", {"time": "07:00"})]
 
 
-def test_a_failed_consent_check_does_not_block_the_user():
+def test_a_broken_consent_check_asks_first_and_never_lets_an_unasked_action_through():
+    """21 Oct 2026: a check that crashed let the action run. The agent's own check no longer fails on a model that
+    is down (agent.agreed_without_model, and the user's named actions never need the model); a check that still
+    breaks is a bug, and a call or a text then waits for the user's yes."""
     box, sent, _ = make()
 
     async def broken(tool, args):
-        raise RuntimeError("model server down")
+        raise RuntimeError("a bug in the check")
     box.consent = broken
-    assert call(box, "send_message", {"to": "Priya", "text": "running late"})["status"] == "ok"
+    assert call(box, "send_message", {"to": "Priya", "text": "running late"})["status"] == "not_executed"
+    assert sent == []
+
+
+def test_without_its_model_the_consent_check_takes_only_a_plain_yes_to_a_question(monkeypatch):
+    monkeypatch.setenv("DUET_FAST", "1")
+    from duet_voice.galaxy.agent import agreed_without_model
+    assert agreed_without_model("Yes, please.", "Shall I turn on the AC at 24 degrees?")
+    assert not agreed_without_model("Yes, please.", "The AC is off.")                 # no question was asked
+    assert not agreed_without_model("I'm feeling cold.", "Anything else?")             # not a yes
+    assert not agreed_without_model("No thanks.", "Shall I call Priya?")
 
 
 def test_a_held_back_call_is_remembered_for_the_request_only():

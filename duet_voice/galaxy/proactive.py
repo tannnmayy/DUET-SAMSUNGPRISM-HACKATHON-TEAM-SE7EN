@@ -122,6 +122,12 @@ class Offer:
         """What the thinker is told while the offer is open."""
         age = int(time.monotonic() - self.made_at)
         calls = "; ".join("%s(%s)" % (i.tool, _args(i.args)) for i in self.items)
+        if self.source == "tone":
+            # asked by the phone itself before an action whose value the user sounded unsure of (tone.py)
+            return ('DUET has just asked the user to confirm a value they sounded unsure of (%d s ago): "%s" The '
+                    "action asked about: %s. If the user says yes, call exactly this; if they give another value, "
+                    "call it with theirs; if they say no or talk about something else, call nothing."
+                    % (age, self.text, calls))
         return ('DUET\'s open offer, said by DUET itself %d s ago without being asked: "%s" Offered actions: %s. '
                 "If the user accepts (yes, sure, go ahead), call exactly these, changed only as the user says "
                 "(\"make it 22\"); if they accept only some (\"just the AC\"), call only those; if they decline or "

@@ -140,6 +140,26 @@ def test_a_permanent_error_is_raised_at_once(monkeypatch):
     assert len(calls) == 1
 
 
+def test_a_key_google_refuses_rests_and_the_call_moves_to_another(monkeypatch):
+    """21 Oct 2026: one invalid or expired key failed every request that landed on it, whatever the other keys."""
+    with_keys(monkeypatch, 2)
+    calls = fake_clients(monkeypatch, {0: [ApiError(400, "API key not valid. Please pass a valid API key.")],
+                                       1: [2300]})
+    assert run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=10)).key == 1 and calls == [0, 1]
+    assert gemma_api.pool().windows[(0, "gemma-4-26b-a4b-it")].rest_until > time.monotonic() + 600
+
+
+def test_when_google_refuses_every_key_the_error_says_so(monkeypatch):
+    with_keys(monkeypatch, 2)
+    fake_clients(monkeypatch, {0: [ApiError(403, "PERMISSION_DENIED: API key expired")],
+                               1: [ApiError(400, "API_KEY_INVALID")]})
+    with pytest.raises(RuntimeError, match="refused every key") as caught:
+        run(gemma_api.generate("gemma-4-26b-a4b-it", "hi", None, deadline_s=3))
+    # the phone app then says its cloud mind cannot be reached, and does not ask the user to repeat themselves
+    from duet_voice.galaxy import fast
+    assert fast.cloud_unreachable(str(caught.value))
+
+
 def test_nothing_waits_past_the_deadline(monkeypatch):
     with_keys(monkeypatch, 1, tpm=3000)
     fake_clients(monkeypatch, {0: [2900, 2900]})

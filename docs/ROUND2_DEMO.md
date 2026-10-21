@@ -152,6 +152,14 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
   stops and says nothing. **"Go on.":** it finishes the answer, from where you stopped it. **"What?":** it says it again.
 - **"Okay, bring the brightness down to 40."** *The screen dims.*
 
+**Beat 3b · It hears how you say it (45 s)** *(branch `round2-tone`; skip it if DUET_TONE=0)*
+- **"Set an alarm for 4:30, I think."** DUET: "4:30 in the afternoon, right?" **"Yes."** Set. *The timeline:* "Heard
+  in your voice: unsure of the value", then "Checking first", then **Done**.
+- **"Set an alarm for 5."** (said plainly) Set at once: no needless question.
+- Ask something long ("What's draining my battery?") and, while it explains, **shout "No, no, no!"**. DUET stops and
+  stays quiet. *The timeline:* "Heard in your voice: urgent · raised voice: brighter +13 dB, higher +9 semitones".
+- Say: "It hears how sure you sound before it acts. Tone may make it ask or hold; it never acts on tone alone."
+
 **Beat 4 · The real home (SmartThings, 60 s)**
 - *Show my.smartthings.com next to the phone.*
 - **"Turn on the AC at home and set it to 22. Actually, make it 21."**
@@ -330,3 +338,19 @@ About 7 minutes, then the jury's turn. **Bold** is what the presenter says; *ita
     is the next step (it lets thinking start while you still speak).
 35. *What is still missing?* A streaming recogniser (about a second after your last word before thinking starts);
     expressive, multilingual speech (Hindi and Hinglish); the engine on the phone itself instead of a laptop.
+
+**How you say it (branch `round2-tone`, measured 21 Oct; `docs/ROUND2_TONE_PLAN.md`)**
+
+36. *Does it hear tone, or only words?* Both. Every speech segment is measured as it ends, against your own earlier
+    speech in the conversation: brightness (vocal effort), pitch (Praat), level, pauses, and an emotion model
+    (emotion2vec, distilled to 10 MB). About 12 ms a segment, in parallel with the recogniser: no added delay.
+37. *Why not just use an emotion model?* Measured: SenseVoice said "unknown" on 49 of 50 English clips;
+    emotion2vec caught 19 of 30 angry, fearful or sad actors, but it is thrown by volume and reads some voices as sad.
+    So every label needs the voice **and** the words: a raised voice with "no" is urgent; a negative voice with
+    "it hurts" is distress. Plain speech marked raised: 0 of 13 of our own utterances.
+38. *Why does "4:30, I think" get a question but "4:30?" not?* We measured rising pitch on our own voices: plain
+    Indian-English statements often end rising (6 of 29 flagged), so pitch alone would ask needless questions. DUET
+    asks when a hedge sits next to the value, or after a long pause before it. "Yes" then runs it with no model call.
+39. *Can tone make it do something?* Never. It can hold an action longer (4 s after a shout, until its words
+    arrive), ask before one, stop DUET's own voice, or change how DUET speaks (slower for distress). Every action
+    still needs words. As far as we found, no voice agent gates its actions on how sure the user sounds.

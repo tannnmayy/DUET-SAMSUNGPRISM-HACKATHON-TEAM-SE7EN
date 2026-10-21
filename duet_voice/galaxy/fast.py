@@ -385,6 +385,11 @@ def bridge_line(handover: Dict[str, Any], words: str, tools: List[str] = ()) -> 
     from .tools import cut_off
     if not (words or "").strip() or cut_off(words) or not_small_talk(words, []) == "":
         return ""
+    from .proactive import accepts, declines
+    if len(words.split()) <= 4 and (accepts(words) or declines(words)):
+        # a bare yes or no answers something: "Let me check." and then the cloud mind's silence (nothing was
+        # pending) left a promise hanging (21 Oct 2026)
+        return ""
     from .readings import ACTION
     if not asks_question(words) and (ACTION.search(words) or any(
             t not in (ASK_EXPERT, CHAT_REPLY) and user_named(t, words) for t in tools)):
@@ -499,13 +504,21 @@ def light_request(handover: Dict[str, Any], words: str) -> bool:
 RECENT_TURNS = 12      # what the fast mind sees of the conversation: the last six exchanges
 
 
-def chat_turns(recent) -> List[Dict[str, str]]:
+def chat_turns(recent, skip_acted: bool = False) -> List[Dict[str, str]]:
     """The recent conversation, [(role, text), ...] with role "user" or "assistant", as chat messages: one
     message per turn, the same speaker's lines joined. As real turns (not inside the system message) the
     server keeps the instructions and tools it has already processed (20 Oct 2026: 0.24-0.44 s a reply,
-    against 0.84-0.96 s with the conversation in the system message)."""
+    against 0.84-0.96 s with the conversation in the system message).
+
+    An exchange in which a tool ran is marked (role, text, True). `skip_acted` leaves those out, for the fast
+    mind: shown "Turn on the torch." then "Torch on." as plain words, it answers the next action in words too
+    (21 Oct 2026, the emulator: "Turn the torch off." 0 of 5 acted on with such a history, 5 of 5 without it), and
+    in the cloud drill the torch then stayed on. It acts on the current words alone anyway."""
     out: List[Dict[str, str]] = []
-    for role, text in list(recent or [])[-RECENT_TURNS:]:
+    for item in list(recent or [])[-RECENT_TURNS:]:
+        role, text = item[0], item[1]
+        if skip_acted and len(item) > 2 and item[2]:
+            continue
         text = " ".join((text or "").split())
         if not text or role not in ("user", "assistant"):
             continue
@@ -540,7 +553,20 @@ def vet_plan(calls: List[tuple], words: str, offer=None, specs: Optional[Dict[st
     last = _last_value(w)
     if last and calls and not (last & _plan_values(calls)):
         return "the last value the user said is not in the plan"
+    if any(t in _VALUED for t, _ in calls) and _CHANGES_EARLIER.search(w) and len(re.findall(_VALUE, w)) <= 1:
+        return "a change to an earlier action: the cloud mind knows what it changes"
     return ""
+
+
+# "make the alarm 7", "change it to 22", "move it to 8" with no first value in the same words: a change to something
+# done in an earlier request. The fast mind does not see earlier actions (chat_turns), so it would add a second
+# alarm and leave the first (21 Oct 2026: "Wait, make the alarm 7." set 7 pm and kept the 6:30 just set).
+_CHANGES_EARLIER = re.compile(
+    r"\b((make|change|move|push) (it|that|them|the (alarm|timer|reminder|brightness|volume|ac|temperature))|"
+    r"(set|put) (it|that))\s+(back\s+)?((to|for|at|by)\s+)?(\d|one|two|three|four|five|six|seven|eight|nine|ten|"
+    r"eleven|twelve|fifteen|twenty|thirty|forty|fifty|half|quarter)\b", re.I)
+_VALUED = {"set_alarm", "set_reminder", "set_timer", "set_brightness", "set_volume", "set_screen_timeout",
+           "control_home_device", "set_car_climate", "create_event"}
 
 
 def off_choice(tool: str, args: Dict[str, Any], specs: Optional[Dict[str, Any]]) -> str:
@@ -637,9 +663,10 @@ CLOUD_DOWN = "cannot reach the cloud mind (it failed moments ago)"
 
 
 def cloud_unreachable(why: str) -> bool:
-    """Does this failure mean the cloud mind cannot be reached (rather than a bad answer)?"""
+    """Does this failure mean the cloud mind cannot be reached (rather than a bad answer)? Google refusing every
+    key counts: asking again would not help (gemma_api says "refused every key")."""
     w = (why or "").lower()
-    return "cannot reach" in w or "offline drill" in w
+    return "cannot reach" in w or "offline drill" in w or "refused every key" in w
 
 
 def enabled() -> bool:
@@ -715,6 +742,8 @@ class HybridThinker:
         self.bridge_said = ""           # the line said when this request went to the cloud mind
         # the short instructions of a cloud call with no tools, for talk and health (modes.light); None: never
         self.light_instructions: Optional[str] = None
+        # how the current request was said (tone.Reading), set by the agent before each request; None: not heard
+        self.tone = None
 
     @property
     def history(self):
@@ -729,6 +758,25 @@ class HybridThinker:
 
     async def run(self, text: str, toolbox, audio=None, note: str = "",
                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
+        """The request, through whichever route takes it. A value the phone held back because the user sounded
+        unsure of it (tools.PhoneToolbox._unsure) makes the reply's words its one question ("4:30 in the
+        afternoon, right?"), whichever mind planned it; the plan's other actions still run (21 Oct 2026: "an
+        alarm for 4:30, I think, and a timer for 10 minutes" must still set the timer)."""
+        if hasattr(toolbox, "confirming"):
+            toolbox.confirming = None       # a plan the user overtook leaves no question behind
+        asked = None
+        async for ev in self._run(text, toolbox, audio, note, allow_listen):
+            if ev.kind == "say" and getattr(toolbox, "confirming", None):
+                asked = toolbox.confirming
+                ev = ThinkEvent("say", text=asked[2], usage=getattr(ev, "usage", None))
+            yield ev
+        if asked:   # last, so the cloud mind reads it after what the fast mind did
+            tool, args, question = asked
+            self.edge_log.append('User: "%s" -> DUET asked "%s" before %s(%s): the value sounded unsure; nothing '
+                                 'was done with it yet' % (text[-160:], question, tool, json.dumps(args)))
+
+    async def _run(self, text: str, toolbox, audio=None, note: str = "",
+                   allow_listen: bool = True) -> AsyncIterator[ThinkEvent]:
         coord = toolbox.coord
         done_before = len(coord.history)
         self.bridge_said = ""
@@ -740,16 +788,25 @@ class HybridThinker:
                                         "a second look after the user finished"):
                 yield ev
             return
-        asked = control(text)
+        asked, why = control(text), ""
+        if self.tone is not None and asked == "backchannel" and self.tone.raised_voice:
+            # "OKAY, OKAY!" over DUET, in a raised voice, is not "I'm listening": DUET stays quiet
+            asked, why = "stop", "a raised \"%s\" over DUET: it stops, and does not carry on" % text.strip(" .!")
+        elif self.tone is not None and asked is None and self.tone.urgent:
+            from .tone import bare_no
+            if bare_no(text):
+                # a shouted "No!" is a stop; a calm "no" stays an answer or the start of a correction
+                asked, why = "stop", "a shouted \"%s\": DUET stops" % text.strip(" .!")
         said = {"stop": "<silent>", "resume": self.resume_text, "repeat": self.last_answer,
                 "backchannel": self.resume_text}.get(asked or "")
         if said:
             # "wait" / "stop": nothing more is said (talking over DUET already stopped its voice); "go on", or only
             # "mm-hm" over an answer: the rest of the answer they cut off, from the sentence they stopped it in;
             # "what?": the last answer again. (A backchannel with nothing cut off is ordinary small talk.)
-            self._route("edge", {"stop": "the user asked DUET to stop or wait", "resume": "the user asked DUET to go on",
-                                 "repeat": "the user asked DUET to say it again",
-                                 "backchannel": "the user was only listening: the answer goes on"}[asked])
+            self._route("edge", why or {"stop": "the user asked DUET to stop or wait",
+                                        "resume": "the user asked DUET to go on",
+                                        "repeat": "the user asked DUET to say it again",
+                                        "backchannel": "the user was only listening: the answer goes on"}[asked])
             yield ThinkEvent("route", text="edge")
             yield ThinkEvent("decided", tools=False)
             yield ThinkEvent("say", text=said)
@@ -804,9 +861,15 @@ class HybridThinker:
                 self.edge_log.append('User: "%s" -> answered from %s: %s' % (text[-160:], reading, said))
                 yield ThinkEvent("say", text=said)
                 return
+        if not await self._fast_listening():
+            # its server is not running: the cloud mind takes the request at once, not after the deadline
+            async for ev in self._cloud(text, toolbox, audio, note, allow_listen, done_before,
+                                        "the fast mind's server is not running"):
+                yield ev
+            return
         # The conversation so far, as chat turns, so small talk is answered in context. Acting stays on the
         # current words alone: vet_plan checks them, and the ledger never runs an action twice.
-        self.fast.history = chat_turns(self.recent)
+        self.fast.history = chat_turns(self.recent, skip_acted=True)
         self.fast.vet = lambda calls: vet_plan(calls, text, offer, getattr(toolbox, "specs", None))
         self.handover = {}
         epoch = coord.epoch
@@ -840,6 +903,11 @@ class HybridThinker:
                     escalate_why = "the fast mind took longer than %.1f s" % self.deadline_s
                     break
                 if ev.kind == "escalate":
+                    if getattr(toolbox, "confirming", None) and not getattr(toolbox, "failed", None):
+                        # all that was held back is the value the user sounded unsure of: its question is the whole
+                        # answer, now (21 Oct 2026: the cloud mind was asked and said the same question 5.8 s later)
+                        yield ThinkEvent("say", text="<silent>")
+                        return
                     escalate_why = ev.text or "the fast mind handed it over"
                     self.handover = dict(ev.args or {})
                     break
@@ -852,6 +920,8 @@ class HybridThinker:
                     return
                 if ev.kind == "chat" or (plain and ev.kind == "say"):
                     why = self._chat_check(text, ev.text, offer)
+                    if not why and self.tone is not None and self.tone.upset:
+                        why = "the user sounded %s (%s)" % (self.tone.upset, "; ".join(self.tone.cues))
                     if why:
                         escalate_why = "small talk the fast mind may not answer itself: %s" % why
                         self.handover = {"say": ev.text or ""}
@@ -951,9 +1021,28 @@ class HybridThinker:
         yield ThinkEvent("decided", tools=False)
         yield ThinkEvent("say", text=answer, usage=usage_of(resp))
 
+    async def _fast_listening(self) -> bool:
+        """Is the fast mind's server accepting connections? A refused connection is known in a millisecond; without
+        this, a stopped server cost every request the whole deadline (3 s, its client retrying) before the cloud
+        mind took over (21 Oct 2026, llama-server killed: first word p50 2.1 s, action 5.8 s). True for a fast mind
+        with no server of its own (the tests' scripted ones)."""
+        url = getattr(self.fast, "base_url", None)
+        if not isinstance(url, str) or not url:
+            return True
+        import urllib.parse
+        u = urllib.parse.urlparse(url)
+        try:
+            _, writer = await asyncio.wait_for(
+                asyncio.open_connection(u.hostname, u.port or (443 if u.scheme == "https" else 80)), 0.5)
+            writer.close()
+            return True
+        except Exception:
+            log.warning("fast mind: nothing listening at %s; the cloud mind takes the request", url)
+            return False
+
     def _chat_check(self, words: str, reply: str, offer) -> str:
         """'' when the fast mind's own reply may be spoken (see chat_ok)."""
-        last = next((t for role, t in reversed(list(self.recent or [])) if role == "assistant"), "")
+        last = next((item[1] for item in reversed(list(self.recent or [])) if item[0] == "assistant"), "")
         return chat_ok(words, reply, tool_names(self.fast), awaiting=offer is not None or awaiting_answer(last))
 
     async def _offer_rest(self, text: str, toolbox, done_before: int) -> AsyncIterator[ThinkEvent]:
