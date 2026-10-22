@@ -37,7 +37,31 @@ READINGS = [
         r"\b(eta|arrival time)\b|\bhow (far|much longer)\b", re.I)),
     ("get_home_status", re.compile(
         r"^\W*(is|are)\b.*\b(on|off|locked|unlocked|running|open|closed|docked|charging|finished|done)\b", re.I)),
+    # the time and date, here or in a named place, from the clock and the place's time zone, said from a template
+    # (22 Oct 2026, the S24: "isn't it afternoon now?" went to a web search, which answered "5:48 AM", the time in
+    # UTC; "what time is it in London?" was read right by get_time, 7:25, but the cloud mind said "half past seven",
+    # and "the exact time in London" then went to a web search, which said 6:25)
+    ("get_time", re.compile(
+        r"\bwhat('?s| is) the (exact |current |local )?time\b|\bwhat time is it\b|\bthe time (now|right now)\b|"
+        r"\b(exact|current|local) time\b|\bwhat('?s| is) (the |today'?s )?(date|day)\b|\bwhat day is (it|today)\b|"
+        r"\b(is|isn'?t) it (morning|afternoon|evening|night)\b", re.I)),
+    # where the user is, from the phone's GPS (22 Oct 2026: the cloud mind put "I can help you with navigation if you
+    # tell me where you want to go" before the answer)
+    ("get_location", re.compile(r"\bwhere am i\b|\bwhere i am\b|\bmy (current |exact |live )?location\b", re.I)),
 ]
+# the place of a clock question: "what time is it in New York right now?" -> "New York"
+_TIME_IN = re.compile(r"\b(?:time|date|day)\b[^?.!,]*?\b(?:in|at)\s+(?!the moment\b|the minute\b|the morning\b|"
+                      r"the evening\b|the afternoon\b|night\b)([a-z][a-z .'-]{1,40}?)\s*"
+                      r"(?:\b(?:right now|now|currently|today|at the moment|please)\b\s*)?(?:[?.!,]|$)", re.I)
+
+
+def args_for(tool: str, words: str) -> Dict[str, Any]:
+    """What a reading needs from the words: the place of a clock question."""
+    if tool == "get_time":
+        m = _TIME_IN.search(words or "")
+        if m:
+            return {"place": m.group(1).strip()}
+    return {}
 
 _DAYS = {"Mon": "Monday", "Tue": "Tuesday", "Wed": "Wednesday", "Thu": "Thursday", "Fri": "Friday", "Sat": "Saturday",
          "Sun": "Sunday"}
@@ -142,7 +166,22 @@ def _home(r: Dict[str, Any], w: str) -> Optional[str]:
     return text[0].upper() + text[1:] + "."
 
 
-ANSWERS = {"get_battery_report": _battery, "list_alarms": _alarms, "get_trip_status": _trip, "get_home_status": _home}
+def _time(r: Dict[str, Any], w: str) -> Optional[str]:
+    """'It's 11:20 in the morning.' (the voice says the time in words), or the date when only the date was asked."""
+    there = "" if str(r.get("where") or "").startswith("where the user") else str(r.get("where") or "").split(",")[0]
+    if re.search(r"\b(date|day)\b", w) and not re.search(r"\btime\b", w):
+        return ("It's %s%s." % (r["date"], " in " + there if there else "")) if r.get("date") else None
+    said = r.get("said") or r.get("time")
+    return ("It's %s%s." % (said, " in " + there if there else "")) if said else None
+
+
+def _location(r: Dict[str, Any], w: str) -> Optional[str]:
+    """'You're in Potheri, Chennai, Tamil Nadu.'; no place name: the cloud mind words it."""
+    return "You're in %s." % r["place"] if r.get("place") else None
+
+
+ANSWERS = {"get_battery_report": _battery, "list_alarms": _alarms, "get_trip_status": _trip, "get_home_status": _home,
+           "get_time": _time, "get_location": _location}
 
 
 def answer(tool: str, result: Any, words: str) -> Optional[str]:

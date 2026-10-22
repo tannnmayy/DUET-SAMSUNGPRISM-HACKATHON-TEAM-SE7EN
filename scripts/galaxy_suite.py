@@ -246,6 +246,31 @@ scenario("web", "assistant", [("@Who won the T20 cricket world cup in 2024?", 15
          reads=["web_search"], do=[], only=True, say=[r"India"])
 scenario("calendar", "assistant", [("@Put a dentist appointment in my calendar for Monday at 4 in the afternoon.", 10.0)],
          do=[("create_event", {"title": "dentist", "time": "=16:00", "date": "^" + _next_monday() + "$"})], only=True)
+
+# Place and time, and the S24 run of 22 Oct 2026 (where am I, how far, the time here and in London, "8am",
+# a calendar request with an alarm in it, a day of the month said a turn earlier, "near me")
+scenario("where_am_i", "assistant", [("@Where am I right now?", 10.0)],
+         reads=["get_location"], do=[], only=True, say=[r"Potheri|Chennai"])
+scenario("how_far", "assistant", [("@How far is the Chennai airport from me?", 14.0)],
+         reads=["get_distance"], do=[], only=True, say=[r"\d+(\.\d)? ?(km|kilomet)|minutes"])
+scenario("time_here", "assistant", [("@What time is it?", 7.0)],
+         reads=["get_time"], do=[], only=True, say=[r"morning|afternoon|evening|night"], all_edge=True)
+scenario("time_london", "assistant", [("@What time is it in London?", 9.0),
+                                       ("@I want the exact time in London, please.", 12.0)],
+         reads=["get_time"], do=[], only=True, say=[r"London"], claim=[r"half past"])
+scenario("alarm_8am", "assistant", [("@Set an 8am alarm for tomorrow.", 8.0)],
+         do=[("set_alarm", {"time": "=08:00"})], only=True)
+scenario("calendar_and_alarm", "assistant", [
+    ("@Add a dentist appointment on Monday at 4 in the afternoon to my calendar, and set an alarm for 3 in the "
+     "afternoon.", 16.0)],
+    do=[("create_event", {"title": "dentist", "time": "=16:00", "date": "^" + _next_monday() + "$"})],
+    alarms=["=15:00"])
+scenario("calendar_said_day", "assistant", [
+    ("@I have an exam on the 29th at 10 in the morning.", 7.0),
+    ("@Please add it to my calendar.", 12.0)],
+    do=[("create_event", {"time": "=10:00", "date": "-29$"})], only=True)
+scenario("web_near_me", "assistant", [("@Find good South Indian restaurants near me.", 16.0)],
+         reads=["web_search"], do=[], only=True, claim=[r"(don'?t|do not|can'?t|cannot) (have )?(access|know)"])
 scenario("home_fix", "assistant", [("@Set the AC at home to 22 degrees. Actually, make it 21.", 9.0)],
          do=[("control_home_device", {"device": "ac|air", "value": "^21"})],
          never=[("control_home_device", {"value": "^22"})], only=True)
@@ -454,6 +479,9 @@ class Phone:
             return ok(ac_on=a.get("on", True) is not False, cabin_temp_c=a.get("temperature", 24))
         if tool == "open_navigation":
             return ok(navigating_to=self.trip, app="Google Maps")
+        if tool == "get_location":   # the S24's GPS on 22 Oct 2026 (Potheri, near Chennai)
+            return ok(latitude=12.8164973, longitude=80.0395566, accuracy_m=20, age_s=1, provider="fused",
+                      source="this phone's GPS")
         return ok(tool=tool, args=a)
 
 

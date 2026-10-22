@@ -489,7 +489,19 @@ def web_question(handover: Dict[str, Any], words: str, specs: Optional[Dict[str,
     from .readings import ACTION
     if ACTION.search(words or "") or _WEATHER.search(words or "") or _WEATHER.search(q) or _PHONE_WORDS.search(words or ""):
         return ""
+    if _CLOCK_OR_PLACE.search(words or "") or _CLOCK_OR_PLACE.search(q):
+        return ""          # the time, where the user is, how far: the cloud mind's own tools know, a search does not
     return q
+
+
+# the time, the date, where the user is, how far a place is: get_time, get_location, get_distance, not the web
+# (22 Oct 2026, the S24: "what time is it in Singapore?" and "how far is the Chennai airport from me?" were searched,
+# and the searches could not say)
+_CLOCK_OR_PLACE = re.compile(r"\bwhat time\b|\btime (is it|now|there|right now)\b|\b(exact|current|local) time\b|"
+                             r"\btime (is it )?in [a-z]|\btime zone\b|"
+                             r"\b(date|day) (is it|today)\b|\bwhat'?s the (date|time)\b|"
+                             r"\b(is|isn'?t) it (morning|afternoon|evening|night)\b|\bhow far\b|\bdistance\b|"
+                             r"\b(from|to) (me|here)\b|\bwhere am i\b|\bmy (current )?location\b|\bwhere i am\b", re.I)
 
 
 def light_request(handover: Dict[str, Any], words: str) -> bool:
@@ -529,6 +541,13 @@ def chat_turns(recent, skip_acted: bool = False) -> List[Dict[str, str]]:
     return out
 
 
+# Words for what the fast mind has no tool for. Its plan for the rest of such a request would leave that part
+# undone without a word (22 Oct 2026, the S24: "add all of them to my calendar and set an 8am alarm" set the
+# alarm and never touched the calendar), so the whole request goes to the cloud mind.
+_BEYOND_FAST = re.compile(r"\b(calendar|schedule|appointments?|weather|forecast|search|look (it |that )?up|google|"
+                          r"how far|distance|where am i|my location)\b", re.I)
+
+
 def vet_plan(calls: List[tuple], words: str, offer=None, specs: Optional[Dict[str, Any]] = None) -> str:
     """The fast mind's whole first step: every call must pass `vet`, and when the user said a
     number, the last one they said (the value a correction settled on) must be in the plan.
@@ -546,6 +565,8 @@ def vet_plan(calls: List[tuple], words: str, offer=None, specs: Optional[Dict[st
         return "a question: the cloud mind answers it"
     if calls and drops_something(words):
         return "the user dropped something: the cloud mind decides what is left"
+    if calls and _BEYOND_FAST.search(w):
+        return "part of the request is something the fast mind cannot do: the cloud mind does all of it"
     for tool, args in calls:
         why = vet(tool, args, w) or off_choice(tool, args, specs)
         if why:
@@ -852,9 +873,10 @@ class HybridThinker:
             self._route("edge", "a plain reading, answered from the reading itself")
             yield ThinkEvent("route", text="edge")
             yield ThinkEvent("decided", tools=False)
-            yield ThinkEvent("tool_start", name=reading, args={})
-            result = json.loads(await toolbox.call(reading, {}, epoch=coord.epoch))
-            yield ThinkEvent("tool_done", name=reading, args={}, text=said_of(result),
+            reading_args = readings.args_for(reading, text)
+            yield ThinkEvent("tool_start", name=reading, args=reading_args)
+            result = json.loads(await toolbox.call(reading, dict(reading_args), epoch=coord.epoch))
+            yield ThinkEvent("tool_done", name=reading, args=reading_args, text=said_of(result),
                              outcome=str(result.get("status", "ok")) if isinstance(result, dict) else "ok")
             said = readings.answer(reading, result, text)
             if said:

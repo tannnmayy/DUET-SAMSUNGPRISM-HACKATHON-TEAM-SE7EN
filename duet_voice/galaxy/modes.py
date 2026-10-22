@@ -145,6 +145,24 @@ WEB = {
                    "the phone and the other tools cannot tell you. Returns a short answer and its sources.",
     "parameters": _obj({"question": {**S, "description": "The question, complete and self-contained."}},
                        ["question"])}
+TIME_NOW = {
+    "name": "get_time", "kind": "read", "runs": "server",
+    "description": "The time and date now, where the user is or in another city or country. Use it for any "
+                   "question about the time or the day; never a web search.",
+    "parameters": _obj({"place": {**S, "description": "A city or country; leave it out for the user's own time."}},
+                       [])}
+LOCATION = {
+    "name": "get_location", "kind": "read", "runs": "server", "timeout": 12,
+    "description": "Where the user is now, from the phone's GPS: the place's name and its coordinates.",
+    "parameters": _obj({}, [])}
+DISTANCE = {
+    "name": "get_distance", "kind": "read", "runs": "server", "timeout": 15,
+    "description": "How far a place is from the user (the phone's GPS), by road with the driving time, or from "
+                   "another named place.",
+    "parameters": _obj({
+        "to": {**S, "description": "Where to, as the user said it, e.g. 'Chennai airport'."},
+        "from": {**S, "description": "A starting place, only when the user names one; leave it out for 'from me'."}},
+        ["to"])}
 
 # --- the home (simulated SmartThings-style devices in the app) ------------------------------
 
@@ -271,6 +289,9 @@ Reply exactly <silent> only to background talk or noise that is clearly not addr
 - For anything about the world (weather, news, facts, places, opening hours), use get_weather or \
 web_search; never answer it from memory. Say only what the result says, and name the source if the user \
 asks where it came from.
+- The time or the date, here or anywhere: get_time, never a web search, and say the time exactly as it gives \
+it ("7:25 in the morning"), never rounded. Where the user is: get_location. How far a place is, or how long the \
+drive: get_distance (it starts from where they are by itself).
 """
 
 SPEAKING = """\
@@ -419,7 +440,7 @@ MODES: Dict[str, Dict[str, Any]] = {
         "title": "Assistant",
         "tools": [SET_ALARM, CANCEL_ALARM, LIST_ALARMS, SET_TIMER, BATTERY, APP_USAGE, APPS, BRIGHTNESS,
                   TIMEOUT, OPEN_SETTINGS, OPEN_APP, NAVIGATE, CALL, MESSAGE, HOME_STATUS, HOME_CONTROL,
-                  TORCH, MEDIA, VOLUME, EVENT, WEATHER, WEB],
+                  TORCH, MEDIA, VOLUME, EVENT, WEATHER, WEB, TIME_NOW, LOCATION, DISTANCE],
         "thinker": ASSISTANT,
         "talker": TALKER_BASE.format(tone="Friendly and natural."),
         "greeting": "Hi {name}, I'm DUET. What can I do for you?",
@@ -427,7 +448,7 @@ MODES: Dict[str, Dict[str, Any]] = {
     "care": {
         "title": "Care",
         "tools": [MEDS, LOG_MED, REMINDER, LIST_ALARMS, CALL, MESSAGE, ALERT, CHECKIN,
-                  HOME_STATUS, HOME_CONTROL, EVENT, WEATHER],
+                  HOME_STATUS, HOME_CONTROL, EVENT, WEATHER, TIME_NOW, LOCATION],
         "thinker": CARE,
         "talker": TALKER_BASE.format(tone="Warm and gentle, like a kind neighbour."),
         "greeting": "Hello {name}, it's DUET. How are you feeling today?",
@@ -435,7 +456,7 @@ MODES: Dict[str, Dict[str, Any]] = {
     "drive": {
         "title": "Drive",
         "tools": [TRIP, DESTINATION, STOP, HANDOFF, CLIMATE, MESSAGE, CALL, HOME_STATUS, HOME_CONTROL,
-                  MEDIA, VOLUME, WEATHER, WEB],
+                  MEDIA, VOLUME, WEATHER, WEB, TIME_NOW, LOCATION, DISTANCE],
         "thinker": DRIVE,
         "talker": TALKER_BASE.format(tone="Calm and brief: the user is driving."),
         "greeting": "Hi {name}, DUET here. Where are we heading?",

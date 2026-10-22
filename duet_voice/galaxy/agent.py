@@ -74,6 +74,7 @@ from ..plugins import KokoroStream, KokoroTTS, WhisperSTT  # noqa: E402
 from ..thinker import make_thinker  # noqa: E402
 from . import fast, proactive, smartthings, tone  # noqa: E402
 from .confirm import adds_nothing, drop_failed_claims, drop_false_undo, drop_overclaims, drop_restated  # noqa: E402
+from .confirm import speakable  # noqa: E402
 from .modes import light_instructions, llm_specs, mode as get_mode  # noqa: E402
 from .server_tools import SERVER_TOOLS  # noqa: E402
 from .tools import PhoneToolbox, cut_off, rpc_sender  # noqa: E402
@@ -260,6 +261,8 @@ class GalaxyAgent(base.DuetAgent):
         self._speech_from = 0.0                        # when the current speech segment began (wall clock)
         self._speech_floor = 0.0                       # where the previous segment's audio ended
         self.voice = None                              # the GalaxyTTS: its rate follows the user's tone
+        # what the user said in the last few exchanges, for checks that need more than the open request
+        toolbox.recent_words = lambda: " ".join(t for r, t, *_ in list(self.recent)[-8:] if r == "user")
         if self.listener is not None:
             coord.extra_hold = self.tone_hold
             toolbox.tone = lambda: self.listener.reading(self._coord.open_utterance)
@@ -549,7 +552,8 @@ class FixedLineStream(KokoroStream):
     async def _run(self, output_emitter) -> None:
         audio = fixed_audio(self.input_text) if self.speed == 1.0 else None
         if audio is None:
-            audio = await asyncio.to_thread(speech_models.synthesize, self.input_text, self.speed)
+            # times in words first: Kokoro reads "11:05" as "eleven-zero five" (22 Oct 2026, the S24: "ELEVENFIVE")
+            audio = await asyncio.to_thread(speech_models.synthesize, speakable(self.input_text), self.speed)
         pcm16 = (np.clip(audio, -1.0, 1.0) * 32767).astype(np.int16).tobytes()
         from livekit.agents import utils
         output_emitter.initialize(request_id=utils.shortuuid(), sample_rate=KokoroTTS.SAMPLE_RATE,
@@ -617,7 +621,15 @@ async def entrypoint(ctx: JobContext) -> None:
     smartthings.DRILL["down"] = False   # a drill never outlives its conversation
     # the SmartThings home, checked while the phone joins (a token lasts 24 hours)
     home_check = asyncio.ensure_future(smartthings.check()) if smartthings.enabled() else None
-    phone = await ctx.wait_for_participant()
+    try:
+        phone = await ctx.wait_for_participant()
+    except RuntimeError as exc:
+        # the phone left before it joined (End tapped at once, or a mode switch): nothing to answer
+        # (22 Oct 2026: logged as an unhandled exception, which it is not)
+        log.info("room %s closed before the phone joined: %s", room, exc)
+        if home_check is not None:
+            home_check.cancel()
+        return
     trace = RoomTrace(room, publish)
     home = {"live": False, "why": "no SmartThings token: the home is simulated in the app"}
     if home_check is not None:

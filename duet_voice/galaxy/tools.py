@@ -30,6 +30,16 @@ from .confirm import confirmation
 log = logging.getLogger("duet.galaxy.tools")
 
 TIMEOUTS = {"read": 8.0, "write": 10.0, "ui": 6.0}
+LOCATION_FRESH_S = 60.0     # a GPS reading this recent answers "where am I" and "how far" again
+
+
+def _takes_ctx(fn: Callable) -> bool:
+    """A tool DUET runs itself that wants the clock and the phone's GPS (server_tools: get_time, get_distance...)."""
+    import inspect
+    try:
+        return "ctx" in inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        return False
 
 _HOURS = {w: i + 1 for i, w in enumerate("one two three four five six seven eight nine ten eleven twelve".split())}
 _CLOCK = re.compile(r"\b(half past|quarter past|quarter to)\s+(\d{1,2}|%s)\b|\b(\d{1,2}|%s) o'?clock\b"
@@ -90,9 +100,38 @@ def cut_off(text: str) -> bool:
 # A clock time said without the half of the day ("set an alarm for 6:30") means the next one
 # from now, whichever mind wrote the time down. Measured 16 Oct 2026, 23:50: the fast mind wrote
 # 18:30 for "6:30"; the next 6:30 was 06:30.
-_DAYPART = re.compile(r"\b(a\.?\s?m\.?|p\.?\s?m\.?|morning|evening|night|tonight|afternoon|noon|midnight)\b", re.I)
+# "8am" counts too: the recogniser often writes it as one word (22 Oct 2026, the S24: "set an 8am alarm" read no
+# half of the day, so 08:00 became the next 8 o'clock, 8 in the evening).
+# AM or PM counts only after a time ("I am at home" says nothing about the half of the day).
+_DAYPART = re.compile(r"(?:\d|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|o'?clock))\s*"
+                      r"(?:a\.?\s?m|p\.?\s?m)\b|\b(morning|evening|night|tonight|afternoon|noon|midnight)\b", re.I)
 _HOUR_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
                "ten": 10, "eleven": 11, "twelve": 12}
+
+
+def hours_said(words: str) -> set:
+    """Every hour the words could name: numbers, hour words, "430" as 4, "quarter to eight" as 7, noon as 12."""
+    numbers = [int(n) for n in re.findall(r"\d+", words or "")]
+    # "430" is 4:30 as the recogniser sometimes writes it (21 Oct 2026: "set it for 430 instead" kept 04:30 at 9 am)
+    said = set(numbers) | {n // 100 for n in numbers if 100 <= n <= 1259 and n % 100 < 60} | {
+        v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words or "", re.I)}
+    # "quarter to eight" is a 7 o'clock time
+    said |= {((int(h) if h.isdigit() else _HOURS.get(h.lower(), 0)) + 10) % 12 + 1
+             for how, h, _ in _CLOCK.findall(words or "") if how.lower() == "quarter to"}
+    if re.search(r"\b(noon|midday|midnight)\b", words or "", re.I):
+        said |= {12}
+    return said
+
+
+# the days of the month a user said: "the 24th", "on 29", "31st"
+_MONTH_DAY = re.compile(r"\b([0-3]?\d)(?:st|nd|rd|th)\b|\b(?:on|the)\s+([0-3]?\d)\b(?!\s*(?::|\.\d|am\b|pm\b|a\.m|p\.m|"
+                        r"minutes?|mins?|hours?|percent|%|degrees?))", re.I)
+_RELATIVE_DAY = re.compile(r"\b(today|tonight|tomorrow|day after|next|this (week|weekend)|monday|tuesday|wednesday|"
+                           r"thursday|friday|saturday|sunday)\b", re.I)
+
+
+def days_said(words: str) -> set:
+    return {int(a or b) for a, b in _MONTH_DAY.findall(words or "") if 1 <= int(a or b) <= 31}
 
 
 def next_occurrence(hhmm: str, words: str, now) -> str:
@@ -102,13 +141,7 @@ def next_occurrence(hhmm: str, words: str, now) -> str:
     hour, minute = int(m.group(1)), int(m.group(2))
     if not (words or "").strip() or hour > 23 or minute > 59 or _DAYPART.search(words):
         return hhmm                    # no words to go by, or the user said which half of the day
-    numbers = [int(n) for n in re.findall(r"\d+", words)]
-    # "430" is 4:30 as the recogniser sometimes writes it (21 Oct 2026: "set it for 430 instead" kept 04:30 at 9 am)
-    said = set(numbers) | {n // 100 for n in numbers if 100 <= n <= 1259 and n % 100 < 60} | {
-        v for w, v in _HOUR_WORDS.items() if re.search(r"\b%s\b" % w, words, re.I)}
-    # "quarter to eight" is a 7 o'clock time
-    said |= {((int(h) if h.isdigit() else _HOURS.get(h.lower(), 0)) + 10) % 12 + 1
-             for how, h, _ in _CLOCK.findall(words) if how.lower() == "quarter to"}
+    said = hours_said(words)
     if hour >= 13 and hour in said:
         return hhmm                    # a 24-hour time, said as such
     if not ({hour % 12, hour % 12 + 12, 12 if hour % 12 == 0 else -1} & said):
@@ -231,6 +264,53 @@ class PhoneToolbox:
         self.on_unsure: Optional[Callable[..., None]] = None
         # a value of this request the user sounded unsure of, asked back before it runs: (tool, args, question)
         self.confirming: Optional[tuple] = None
+        # the user's recent words, set by the agent: recent_words() -> text. The open request alone forgets what was
+        # said a turn earlier ("exams on the 24th, the 29th and the 31st", then "you didn't add them, did you?")
+        self.recent_words: Optional[Callable[[], str]] = None
+        # the phone's last GPS reading, (monotonic time, reading): asked again after LOCATION_FRESH_S
+        self._here: Optional[tuple] = None
+
+    # -- what the tools DUET runs itself are given -----------------------------------------
+    async def locate(self) -> Dict[str, Any]:
+        """The phone's GPS (its get_location), kept for a minute: a question and its follow-up need one reading."""
+        if self._here is not None and time.monotonic() - self._here[0] < LOCATION_FRESH_S:
+            return self._here[1]
+        try:
+            out = await self.send("get_location", {}, 10.0)
+            here = json.loads(out) if isinstance(out, str) and out else (out or {})
+        except Exception as exc:  # an older app has no get_location: said, not raised
+            return {"status": "error", "error": "the phone did not give its location: %s" % str(exc)[:100]}
+        if not isinstance(here, dict):
+            return {"status": "error", "error": "the phone did not give its location"}
+        if here.get("status") == "ok":
+            self._here = (time.monotonic(), here)
+        return here
+
+    def server_context(self) -> Dict[str, Any]:
+        return {"now": dt.datetime.now(), "locate": self.locate}
+
+    def _event_check(self, args: Dict[str, Any]) -> str:
+        """A calendar event needs a time the user gave, on a day they said. 22 Oct 2026, the S24: "exams on the 24th,
+        the 29th and the 31st" became one exam on today's date, one missing, and both at 9 AM, which nobody said.
+        '' when the event may go ahead; else what the model is told."""
+        now_words = self.coord.open_utterance or ""
+        words = ((self.recent_words() if self.recent_words else "") + " " + now_words).strip()
+        time_ = str(args.get("time") or "")
+        m = re.match(r"(\d{2}):\d{2}$", time_)
+        if not m:
+            return json.dumps({"status": "not_executed", "reason": "no time was given for this event. Ask the user, in "
+                                                                   "one short question, what time it is; act on their answer"})
+        hour = int(m.group(1))
+        if not ({hour % 12, hour % 12 + 12, 12 if hour % 12 == 0 else -1} & hours_said(words)):
+            return json.dumps({"status": "not_executed", "reason": "the user did not say %s for this event. Ask them, in "
+                                                                   "one short question, what time it is" % time_})
+        said = days_said(words)
+        d = re.match(r"\d{4}-\d{2}-(\d{2})$", str(args.get("date") or ""))
+        if said and d and int(d.group(1)) not in said and not _RELATIVE_DAY.search(now_words):
+            return json.dumps({"status": "not_executed", "reason": "%s is not a day the user said (they said the %s). "
+                               "Use the day they said for each event, in the current month unless they said another"
+                               % (args["date"], ", ".join(str(x) for x in sorted(said)))})
+        return ""
 
     # -- the ledger's scope ------------------------------------------------------------
     def new_request(self) -> None:
@@ -324,6 +404,11 @@ class PhoneToolbox:
                                                        "it ran): nothing to cancel, and nothing was done"})
         if tool == "cancel_alarm" and args.get("time"):
             args["time"] = self._alarm_that_ran(args["time"])
+        if tool == "create_event":
+            asked = self._event_check(args)
+            if asked:
+                self.emit({"kind": "tool_asked", "tool": tool, "args": args})
+                return asked
         self.planned.append({"tool": tool, "args": dict(args)})
         self.emit({"kind": "tool_planned", "tool": tool, "args": args, "hold_s": round(self.coord.hold(), 1)})
         if kind in ("write", "ui") and cut_off(self.coord.open_utterance):
@@ -369,7 +454,8 @@ class PhoneToolbox:
 
         async def run() -> Any:
             if tool in self.server:
-                out = await self.server[tool](args)
+                run_here = self.server[tool]
+                out = await (run_here(args, ctx=self.server_context()) if _takes_ctx(run_here) else run_here(args))
             else:
                 try:
                     out = await self.send(tool, args, timeout)

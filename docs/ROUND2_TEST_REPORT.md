@@ -16,6 +16,7 @@ what was fixed, and an honest verdict: the good, the doubtful, the outstanding a
 - [8. The bad](#8-the-bad)
 - [9. Not tested](#9-not-tested)
 - [10. Before the S24](#10-before-the-s24)
+- [11. The S24 run of 22 Oct](#11-the-s24-run-of-22-oct)
 
 ## 1. What was tested, and how
 
@@ -163,3 +164,37 @@ corrected) and **0 duplicate actions**.
 4. Run `scripts/verify_all.py --device s24`.
 5. Talk to it for five minutes, including a shouted "no" and "4:30, I think", then read the `tone_segment` numbers
    in `results/galaxy/traces/` to check the thresholds on your own voices.
+
+## 11. The S24 run of 22 Oct
+
+**Set-up.** The stack ran on this laptop and the phone ran Naman's build of the app. That build is not ours: it
+was updated at 01:27 that night and adds a `get_location` method to the native plugin and the web UI. The phone was
+reached by **wireless debugging**: this laptop has no Android USB driver for the S24, so adb saw nothing over the cable.
+Over about 25 conversations everything held: calls, texts, the torch, Maps, the SmartThings home and corrections
+("set it to 27, oh wait, 23"). The traces showed these failures, all fixed with tests:
+
+| What the user heard | Why | Fix |
+|---|---|---|
+| "Can you fetch my location?" read the **battery**, and "how far is the airport from me?" could not say | the agent had no location tool at all (Naman's app can read the GPS, but nothing asked it) | `get_location` (the phone's GPS, named with OpenStreetMap: "Potheri, Chennai, Tamil Nadu"), `get_distance` (from the GPS, by road with OSRM: the airport 26 km, 32 minutes) and `get_time`, run by DUET itself (`server_tools.py`); "where am I?" is a plain reading said from a template |
+| "Isn't it afternoon now?" → "5:48 AM"; "time in Singapore?" → "the results do not provide it" | time questions went to a web search, which knew neither the user's time zone nor the clock | "what time is it" (here, or in a named place) is a plain reading from the clock and the place's time zone, said from a template; time and distance questions never go to a web search |
+| London "half past seven", then "the exact time in London" → **6:25** (it was 7:25) | the cloud mind rounded the tool's 7:25; "exact time" slipped past the routing and a search gave UTC as London's time | "exact/current time in <place>" is a reading too; the cloud mind is told to say times exactly; searches are told the time in UTC |
+| "11:05" sounded like **"ELEVENFIVE"** | Kokoro reads "11:05" as "eleven-zero five" and "10:00" as "ten zero zero" | `confirm.speakable`: times in words before the voice ("eleven oh five", "ten o'clock", "8 AM"); the screen keeps digits |
+| "Restaurants near me" → "I don't have access to your location" | the search had no place in it | a near-me question is searched with the place ("near Potheri, Chennai") and carries the date and time |
+| "Set an **8am** alarm" → 8 in the **evening** | the AM/PM check needed a space ("8 am"); it also read "I **am**" as AM | AM/PM counts right after a time, glued or not |
+| "Add the exams to my calendar and set an 8am alarm" → only the alarm | the fast mind has no calendar tool and did the part it could | words the fast mind has no tool for (calendar, weather, search, how far, where am I) send the whole request to the cloud mind |
+| Exams "on the 24th, 29 and 31st" → one on **today's** date, one missing, both at a 9 AM nobody said | the cloud mind's dates and times | a calendar event needs a time the user said, on a day they said (also a turn earlier); otherwise DUET asks |
+| a room the phone left before joining was logged as an unhandled exception | — | a normal exit |
+
+**Verified on 22 Oct (this laptop, live stack, LiveKit Cloud, the free Gemma tier):** unit tests **365 pass** (20 new,
+`tests/test_galaxy_place_time.py`); the fast mind's 190 decisions: 188 right, **0 wrong**, actions decided in 0.23 s (the
+same as before); eight new spoken scenarios (`where_am_i`, `how_far`, `time_here`, `time_london`, `alarm_8am`,
+`calendar_and_alarm`, `calendar_said_day`, `web_near_me`): **8 of 8**, 0 stale actions, 0 duplicates. The full suite was
+started and cut short by a session restart after 4 scenarios (all passed); it was not re-run.
+
+**Still open:**
+- Naman's app changes (`get_location` in `DuetPhonePlugin.java`, `phone.js`, `app.js`, `index.html`) are not in this
+  repository: an APK rebuilt from here has no GPS, and `get_location` then says so plainly. Commit them.
+- Install Samsung's Android USB driver on the demo laptop, or keep the phone's Developer options › Stay awake on:
+  wireless debugging drops (and changes port) when the screen locks.
+- The cloud mind added an exam to the calendar when it was only mentioned ("I have an exam on the 29th"), before it
+  was asked; calendar events are not under the consent check.

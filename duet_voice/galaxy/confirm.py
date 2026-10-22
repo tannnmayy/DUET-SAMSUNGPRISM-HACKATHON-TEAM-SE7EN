@@ -16,6 +16,39 @@ import re
 from typing import Any, Callable, Dict, List, Optional
 
 
+_ONES = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+         "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+_TENS = {2: "twenty", 3: "thirty", 4: "forty", 5: "fifty"}
+
+
+def _words(n: int) -> str:
+    """0-59 in words: 5 -> 'five', 45 -> 'forty-five'."""
+    if n < 20:
+        return _ONES[n]
+    tens, ones = divmod(n, 10)
+    return _TENS[tens] + ("-" + _ONES[ones] if ones else "")
+
+
+_CLOCK_TIME = re.compile(r"\b([01]?\d|2[0-3]):([0-5]\d)\b(\s*(?:a\.?\s?m\b\.?|p\.?\s?m\b\.?))?", re.I)
+_GLUED_DAYPART = re.compile(r"(\d)\s*(a|p)\.?\s?m\b\.?", re.I)
+
+
+def speakable(text: str) -> str:
+    """Times in words, as people say them, for the voice only (the screen keeps the digits). Kokoro reads "11:05" as
+    "eleven-zero five" and "10:00" as "ten zero zero" (22 Oct 2026, the S24: "ELEVENFIVE"), and "8am" as "eight am"
+    the word. '11:05' -> 'eleven oh five', '4:30' -> 'four thirty', '7:00' -> "seven o'clock", '8am' -> '8 AM'."""
+    def clock(m: "re.Match") -> str:
+        hour, minute, half = int(m.group(1)), int(m.group(2)), (m.group(3) or "")
+        mark = ""
+        if half:
+            mark = " PM" if half.strip().lower().startswith("p") else " AM"
+        if minute == 0:
+            return _words(hour) + (mark or " o'clock")
+        return _words(hour) + (" oh " + _ONES[minute] if minute < 10 else " " + _words(minute)) + mark
+    text = _CLOCK_TIME.sub(clock, text or "")
+    return _GLUED_DAYPART.sub(lambda m: m.group(1) + (" PM" if m.group(2).lower() == "p" else " AM"), text)
+
+
 def spoken_time(value: Any) -> str:
     """'16:30' -> '4:30 in the afternoon', '07:00' -> '7 in the morning'."""
     m = re.match(r"\s*(\d{1,2}):(\d{2})", str(value or ""))
