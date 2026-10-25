@@ -209,36 +209,91 @@ code,.mono{font-family:var(--f-mono)}
 .s1:not(.s2) .mc-gate,.s2:not(.s3) .mc-epoch,.s3:not(.s4) .mc-ledger,.s4 .mc-fail{border-color:var(--blue);background:#fff;box-shadow:0 0 0 2px var(--blue)}
 
 /* ---------- 5 tone ---------- */
-#tone-svg{width:1456px;height:236px;display:block;overflow:visible}
-.lane-l{font:600 14px var(--f-mono);letter-spacing:.08em;fill:var(--muted)}
+/* blue is the voice, amber the words */
+#tone .sh{padding-bottom:8px}
+#tone-ex{width:1456px;height:104px;display:block;overflow:visible}
+#tone .lane-l{font:600 14px var(--f-mono);letter-spacing:.08em}
+#tone .lane-l.a{fill:var(--amber)}
+#tone .lane-l.b{fill:var(--blue-2)}
 .wtxt{font:500 24px var(--f-body);fill:var(--ink)}
 .hedge{fill:var(--amber);font-weight:700}
-#wave{--L:6000;fill:none;stroke:var(--blue-2);stroke-width:2.2;stroke-dasharray:var(--L);stroke-dashoffset:var(--L);transition:stroke-dashoffset 1.6s ease}
+#wave{--L:4000;fill:none;stroke:var(--blue-2);stroke-width:2.2;stroke-dasharray:var(--L);stroke-dashoffset:var(--L);transition:stroke-dashoffset 1.6s ease}
 .s1 #wave{stroke-dashoffset:0}
-.mtr .ml{font:500 14px var(--f-body);fill:var(--ink-2)}
-.mtr .mb{fill:var(--line-2)}
-.mtr .mf{fill:#8E98B4;transform-box:fill-box;transform-origin:left center;transform:scaleX(0);transition:transform .7s ease var(--d,0ms)}
-.mtr .mf.hi{fill:var(--amber)}
-.s1 .mtr .mf{transform:scaleX(1)}
-.mtr .base{stroke:var(--ink);stroke-width:2}
+#tone path[data-in]{transform:none}
+#tone .wire{stroke-width:2.2;marker-end:url(#ah-tone)}
+#tone .wire.b{stroke:#9EB0EE}
+#tone .wire.a{stroke:#E0BE86}
 .rd rect{fill:var(--amber-t);stroke:var(--amber);stroke-width:2.5}
-.rd .rt{font:700 20px var(--f-disp);fill:var(--amber)}
-.rd .rs{font:400 15px var(--f-body);fill:var(--ink-2)}
+.rd .rt{font:700 19px var(--f-disp);fill:var(--amber)}
 .act rect{fill:var(--blue-t);stroke:var(--blue);stroke-width:2.5}
-.act .rt{font:700 20px var(--f-disp);fill:var(--blue)}
-.act .rs{font:400 15px var(--f-body);fill:var(--ink-2)}
-.tone-rule{display:flex;align-items:center;gap:16px;padding:12px 20px;border-radius:12px;background:var(--ink);color:#fff;font:600 21px/1.3 var(--f-body);margin:10px 0 14px}
+.act .rt{font:700 19px var(--f-disp);fill:var(--blue)}
+#tone .rs{font:400 15px var(--f-body);fill:var(--ink-2)}
+#tone .pipe{position:relative;width:1456px;height:548px;margin-top:8px}
+#tone .wires{position:absolute;left:0;top:0;width:1456px;height:548px;overflow:visible}
+#tone .ps{position:absolute;box-sizing:border-box;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:11px;box-shadow:0 1px 2px rgba(13,21,48,.04)}
+#tone .ph{display:flex;align-items:center;gap:11px}
+#tone .n{flex:none;width:28px;height:28px;border-radius:8px;background:var(--ink);color:#fff;display:grid;place-items:center;font:600 15px/1 var(--f-mono)}
+#tone .n.b{background:var(--blue)}
+#tone .n.a{background:var(--amber)}
+#tone .ps h3{font:700 20px/1.1 var(--f-disp);font-stretch:106%;color:var(--ink)}
+#tone .ps h3 small{font:500 14px var(--f-mono);letter-spacing:.06em;color:var(--muted);margin-left:8px}
+#tone .ps p{font-size:16px;line-height:1.42;color:var(--ink-2)}
+#tone .ps b{color:var(--ink);font-weight:600}
+#tone .ps .ft{margin-top:auto;padding-top:10px;border-top:1px solid var(--line-2);font-size:14px;color:var(--muted)}
+#t1{left:0;top:0;width:204px;height:548px;justify-content:center;gap:16px!important}
+#t2{left:236px;top:0;width:604px;height:340px;background:var(--blue-tt)!important;border-color:#D2DBF8!important;gap:9px!important}
+#t3{left:236px;top:352px;width:604px;height:196px;background:#FCF6EA!important;border-color:#EFDDB8!important}
+#t4{left:880px;top:0;width:282px;height:548px;gap:9px!important}
+#t5{left:1196px;top:0;width:260px;height:548px;gap:9px!important}
+#t2 h3{color:var(--blue)}
+#t3 h3{color:var(--amber)}
+/* 1: one segment, two paths */
+#tone .seg{display:block;flex:none;width:164px;height:74px}
+#tone .seg .sw,#tone .seg .sb{fill:none;stroke:var(--ink-2);stroke-width:1.5}
+#tone .seg .st{font:500 10.5px var(--f-mono);fill:var(--muted)}
+#tone .paths{display:flex;flex-direction:column;gap:10px}
+#tone .paths span{display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:10px;font:400 14px/1.3 var(--f-body);color:var(--ink-2);background:var(--c2)}
+#tone .paths span b{font:600 15px/1.2 var(--f-body);color:var(--c)}
+/* 2: acoustics, against your usual */
+#tone .usual{display:flex;gap:14px;align-items:center;padding:9px 14px;border-radius:12px;background:#fff;border:1px solid #D9E0F7}
+#tone .usual .ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--blue-t);display:grid;place-items:center}
+#tone .meters{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+#tone .m{position:relative;display:flex;flex-direction:column;gap:6px;padding:10px 11px;border-radius:12px;background:#fff;border:1px solid #D9E0F7}
+#tone .m h4{margin:0;font:700 16px/1.1 var(--f-disp);font-stretch:104%;color:var(--ink)}
+#tone .gauge{position:relative;display:block;height:10px;border-radius:5px;background:var(--line-2)}
+#tone .gauge i{position:absolute;left:0;top:0;bottom:0;width:var(--w);border-radius:5px;background:#8E98B4;transform-origin:left;transform:scaleX(0);transition:transform .7s ease var(--d2,0ms)}
+#tone .gauge i.hi{background:var(--amber)}
+#tone.s2 .gauge i{transform:scaleX(1)}
+#tone .gauge u{position:absolute;left:50%;top:-4px;bottom:-4px;width:2.5px;margin-left:-1px;background:var(--ink);border-radius:1px}
+#tone .ps .m p{font-size:14px;line-height:1.32}
+#tone .best{position:absolute;right:8px;top:-9px;padding:1px 6px;border-radius:5px;background:var(--blue);color:#fff;font:600 10.5px/1.5 var(--f-mono);letter-spacing:.05em}
+#tone .legend{display:flex;gap:18px;justify-content:flex-end;font:500 12.5px var(--f-mono);color:var(--muted);margin-top:-4px}
+#tone .legend span{display:flex;align-items:center;gap:6px}
+#tone .legend .lt{width:2.5px;height:14px;background:var(--ink)}
+#tone .legend .lf{width:18px;height:8px;border-radius:4px;background:#8E98B4}
+#tone .ps p.raised{padding:10px 14px;border-radius:11px;background:var(--blue);color:#fff;font:500 15px/1.35 var(--f-body)}
+#tone .ps p.raised b{color:#fff}
+/* 3: semantics */
+#tone .pats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+#tone .pat{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:11px;background:#fff;border:1px solid #EFDDB8}
+#tone .pat .k{font:600 12.5px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--amber)}
+#tone .pat span:last-child{font:400 15px/1.3 var(--f-body);color:var(--ink);font-style:italic}
+/* 4: the readings */
+#tone .rr{flex:1;justify-content:center;display:flex;flex-direction:column;gap:7px;padding:7px 12px;border-radius:11px;background:var(--paper);border:1px solid var(--line-2)}
+#tone .rr h4{margin:0;font:700 17px/1.1 var(--f-disp);font-stretch:106%;color:var(--ink)}
+#tone .ps .rr p{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+#tone .rr p span{padding:3px 8px;border-radius:7px;font:500 14.5px/1.3 var(--f-body)}
+#tone .rr .v{background:var(--blue-t);color:var(--blue)}
+#tone .rr .w{background:var(--amber-t);color:var(--amber);font-style:italic}
+#tone .rr em{font:600 12px/1 var(--f-mono);font-style:normal;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+/* 5: what it changes */
+#tone .ch{flex:1;justify-content:center;display:flex;flex-direction:column;gap:4px;padding:7px 12px;border-radius:11px;border-left:4px solid var(--c);background:var(--paper)}
+#tone .ch h4{margin:0;font:700 17px/1.1 var(--f-disp);font-stretch:106%;color:var(--c)}
+#tone .ps .ch p{font-size:14.5px;line-height:1.36}
+.tone-rule{display:flex;align-items:center;gap:12px;padding:9px 20px;border-radius:12px;background:var(--ink);color:#fff;font:600 18px/1.3 var(--f-body);margin-top:8px}
 .tone-rule span{color:#9DB0F5;font-weight:500}
-.tcards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-.tc{display:flex;flex-direction:column;gap:9px;padding:16px 17px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
-.tc.next{background:#F7F8FB;border:1.5px dashed #B3BBCF}
-.tc .tch{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.tc h3{font:700 21px/1.1 var(--f-disp);font-stretch:106%}
-.tc .say{font:500 17px/1.35 var(--f-body);color:var(--ink);font-style:italic}
-.tc .does{font-size:16px;line-height:1.4;color:var(--ink-2)}
-.tc .cue{font:400 14px/1.4 var(--f-mono);color:var(--muted);border-top:1px solid var(--line-2);padding-top:8px;margin-top:auto}
-.tone-note{font-size:16px;color:var(--muted);padding:12px 0 60px;line-height:1.4}
-.tone-note b{color:var(--ink-2);font-weight:600}
+.pk.ta{fill:var(--amber)}
+.pk.tk{fill:var(--ink)}
 
 /* ---------- 7 galaxy ---------- */
 .gpanels{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
@@ -555,40 +610,93 @@ body.print #hud,body.print #hint,body.print #notes{display:none!important}
 
 <!-- ======================= 5 · TONE ======================= -->
 <section class="slide" id="tone" data-steps="3" data-label="Semantics and acoustics">
-  <header class="sh" style="padding-bottom:14px">
+  <header class="sh">
     <div class="eyebrow"><b>2</b>Brief point 2 · Semantics and acoustics</div>
     <h2 class="t">It hears what you say and how you say it</h2>
   </header>
-  <svg id="tone-svg" viewBox="0 0 1456 236" aria-label="The words and the voice of one request are read together into a reading of unsure, which makes the coordinator ask first">
-    <text class="lane-l" x="0" y="44">WORDS</text>
-    <text class="wtxt" x="96" y="46">Set an alarm for <tspan fill="#56607E">…</tspan> 4:30, <tspan class="hedge">I think.</tspan></text>
-    <text class="lane-l" x="0" y="154">VOICE</text>
+  <svg id="tone-ex" viewBox="0 0 1456 104" aria-label="One request: the words carry a hedge next to 4:30, the voice a 1.1 second pause before it; read together they give unsure of the value, so the coordinator asks first">
+    <defs><marker id="ah-tone" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#A9B3CC"/></marker></defs>
+    <text class="lane-l a" x="0" y="26">WORDS</text>
+    <text class="wtxt" x="96" y="28">Set an alarm for <tspan fill="#56607E">…</tspan> 4:30, <tspan class="hedge">I think.</tspan></text>
+    <text class="lane-l b" x="0" y="82">VOICE</text>
     <path id="wave" d=""/>
-    <g data-in="1" style="--d:900ms"><line x1="452" y1="104" x2="452" y2="116" stroke="#A15C07" stroke-width="2"/><line x1="452" y1="110" x2="548" y2="110" stroke="#A15C07" stroke-width="2"/><line x1="548" y1="104" x2="548" y2="116" stroke="#A15C07" stroke-width="2"/><text x="500" y="98" text-anchor="middle" style="font:600 14px var(--f-body);fill:#A15C07">pause 1.1 s</text></g>
-    <g class="mtr">
-      <text class="lane-l" x="790" y="70">AGAINST YOUR OWN USUAL</text>
-      <text class="ml" x="790" y="98">brightness</text><rect class="mb" x="900" y="88" width="160" height="12" rx="6"/><rect class="mf" x="900" y="88" width="74" height="12" rx="6" style="--d:500ms"/>
-      <text class="ml" x="790" y="126">pitch</text><rect class="mb" x="900" y="116" width="160" height="12" rx="6"/><rect class="mf" x="900" y="116" width="82" height="12" rx="6" style="--d:600ms"/>
-      <text class="ml" x="790" y="154">loudness</text><rect class="mb" x="900" y="144" width="160" height="12" rx="6"/><rect class="mf" x="900" y="144" width="70" height="12" rx="6" style="--d:700ms"/>
-      <text class="ml" x="790" y="182">pauses</text><rect class="mb" x="900" y="172" width="160" height="12" rx="6"/><rect class="mf hi" x="900" y="172" width="150" height="12" rx="6" style="--d:900ms"/>
-      <text class="ml" x="790" y="210">emotion</text><rect class="mb" x="900" y="200" width="160" height="12" rx="6"/><rect class="mf" x="900" y="200" width="56" height="12" rx="6" style="--d:800ms"/>
-      <line class="base" x1="980" y1="82" x2="980" y2="218"/><text x="980" y="232" text-anchor="middle" style="font:500 12px var(--f-mono);fill:#56607E">usual</text>
+    <g data-in="1" style="--d:900ms">
+      <line x1="446" y1="90" x2="446" y2="100" stroke="#A15C07" stroke-width="2"/><line x1="446" y1="95" x2="546" y2="95" stroke="#A15C07" stroke-width="2"/><line x1="546" y1="90" x2="546" y2="100" stroke="#A15C07" stroke-width="2"/>
+      <text x="496" y="68" text-anchor="middle" style="font:600 14px var(--f-body);fill:#A15C07">pause 1.1 s</text>
     </g>
-    <path class="wire" d="M 520 36 C 820 36, 980 56, 1106 70" data-in="1" style="--d:1100ms"/>
-    <path class="wire" d="M 1070 150 C 1092 150, 1090 100, 1106 96" data-in="1" style="--d:1100ms"/>
-    <g class="rd" data-in="1" style="--d:1300ms"><rect x="1110" y="38" width="346" height="80" rx="14"/><text class="rt" x="1130" y="70">Reading: unsure of the value</text><text class="rs" x="1130" y="96">“I think” next to 4:30 · a pause before it</text></g>
-    <path class="wire" d="M 1283 118 V 140" data-in="1" style="--d:1600ms"/>
-    <g class="act" data-in="1" style="--d:1700ms"><rect x="1110" y="142" width="346" height="80" rx="14"/><text class="rt" x="1130" y="174">Coordinator: ask first</text><text class="rs" x="1130" y="200">“4:30 in the afternoon, right?” · holds 1.8 s</text></g>
+    <path class="wire a" d="M 520 22 C 700 22, 760 32, 876 40" data-in="1" style="--d:1100ms"/>
+    <path class="wire b" d="M 770 78 C 820 78, 836 68, 876 66" data-in="1" style="--d:1100ms"/>
+    <g class="rd" data-in="1" style="--d:1300ms"><rect x="880" y="2" width="282" height="98" rx="14"/><text class="rt" x="898" y="32">Reading: unsure of the value</text><text class="rs" x="898" y="59">“I think” right next to 4:30</text><text class="rs" x="898" y="83">and a 1.1 s pause before it</text></g>
+    <path class="wire" d="M 1162 51 H 1192" data-in="1" style="--d:1600ms"/>
+    <g class="act" data-in="1" style="--d:1700ms"><rect x="1196" y="2" width="260" height="98" rx="14"/><text class="rt" x="1214" y="32">Coordinator: ask first</text><text class="rs" x="1214" y="59">“4:30 in the afternoon, right?”</text><text class="rs" x="1214" y="83">held 1.8 s before acting</text></g>
   </svg>
-  <div class="tone-rule">Tone may make DUET wait or ask. <span>It never runs or cancels an action on its own: every action still needs words.</span></div>
-  <div class="tcards">
-    <div class="tc" data-in="2" style="--d:0ms"><div class="tch"><h3>Unsure</h3><span class="tag t-built">built</span></div><p class="say">“Set an alarm for 4:30, I think.”</p><p class="does">Asks “4:30 in the afternoon, right?” before acting. “Yes” then sets it, with no model call.</p><p class="cue">words: a hedge next to the value · voice: a long pause before it</p></div>
-    <div class="tc" data-in="2" style="--d:120ms"><div class="tch"><h3>Urgent</h3><span class="tag t-built">built</span></div><p class="say">“No, no, no!” shouted over an answer</p><p class="does">Stops at once and stays quiet. Pending actions wait for the words before anything runs.</p><p class="cue">voice: brighter +13 dB, higher +9 semitones · words: “no”</p></div>
-    <div class="tc" data-in="2" style="--d:240ms"><div class="tch"><h3>Distressed</h3><span class="tag t-built">built</span></div><p class="say">“My knee hurts…” in a low, shaky voice</p><p class="does">Answers gently, asks how they are, offers to call family, and speaks 10% slower.</p><p class="cue">voice: emotion model · words: pain</p></div>
-    <div class="tc next" data-in="3" style="--d:0ms"><div class="tch"><h3>Mixed signals</h3><span class="tag t-next">next</span></div><p class="say">“I'm fine” said shakily</p><p class="does">The words and the voice disagree: check in gently and offer to alert family.</p><p class="cue">the voice must outweigh the words, so it needs care</p></div>
-    <div class="tc next" data-in="3" style="--d:120ms"><div class="tch"><h3>Sarcasm</h3><span class="tag t-next">next</span></div><p class="say">“Oh great, set it for 5 AM.”</p><p class="does">At most a quick yes/no check before acting. Never acted on.</p><p class="cue">a research-grade cue, so advisory only</p></div>
+  <div class="pipe">
+    <svg class="wires" viewBox="0 0 1456 548" aria-hidden="true">
+      <path id="tw-a" class="wire b" style="--d:300ms" d="M 204 274 C 222 274, 216 170, 234 170" data-in="2"/>
+      <path id="tw-s" class="wire a" style="--d:600ms" d="M 204 274 C 222 274, 216 450, 234 450" data-in="2"/>
+      <path id="tw-a4" class="wire b" d="M 840 170 C 862 170, 856 236, 878 236" data-in="3"/>
+      <path id="tw-s4" class="wire a" d="M 840 450 C 862 450, 856 312, 878 312" data-in="3"/>
+      <path id="tw-45" class="wire" style="--d:500ms" d="M 1162 274 H 1194" data-in="3"/>
+      <g id="pk-tone"></g>
+    </svg>
+    <div class="ps" id="t1" data-in="2">
+      <div class="ph"><span class="n">1</span><h3>Two paths</h3></div>
+      <svg class="seg" viewBox="0 0 164 74" aria-label="A stretch of speech marked as one segment where it ends">
+        <path class="sw" d="M2 40 L10 32 L14 48 L18 26 L22 52 L26 30 L30 46 L34 36 L38 42 L42 38 L48 30 L52 50 L56 22 L60 54 L64 28 L68 46 L72 34 L76 44 L80 40 L84 30 L88 50 L92 26 L96 52 L100 32 L104 44 L108 38 L112 40 L162 40"/>
+        <path class="sb" d="M2 64 V68 H112 V64"/>
+        <text class="st" x="57" y="12" text-anchor="middle">one segment</text>
+        <text class="st" x="138" y="60" text-anchor="middle">you stop</text>
+      </svg>
+      <p>When you stop speaking, that stretch of audio becomes one <b>segment</b>. It goes two ways at once:</p>
+      <div class="paths">
+        <span style="--c:var(--blue);--c2:var(--blue-t)"><b>Tone channel</b>for the voice</span>
+        <span style="--c:var(--amber);--c2:var(--amber-t)"><b>Whisper</b>for the words</span>
+      </div>
+    </div>
+    <div class="ps" id="t2" data-in="2" style="--d:300ms">
+      <div class="ph"><span class="n b">2</span><h3>Acoustics<small>· how it was said</small></h3></div>
+      <div class="usual">
+        <span class="ic"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M3 13 h3 M8 8 v10 M12 4 v18 M16 9 v8 M20 6 v14 M23 13 h1" stroke="#1428A0" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg></span>
+        <p>DUET already keeps <b>your usual voice</b>, from your last 12 normal segments, and measures each new one <b>against it</b>. A naturally loud speaker is not an angry one.</p>
+      </div>
+      <div class="meters">
+        <div class="m"><h4>Brightness</h4><span class="gauge"><i style="--w:56%;--d2:400ms"></i><u></u></span><p>energy in the highs</p><span class="best">BEST CUE</span></div>
+        <div class="m"><h4>Pitch</h4><span class="gauge"><i style="--w:54%;--d2:500ms"></i><u></u></span><p>how high</p></div>
+        <div class="m"><h4>Loudness</h4><span class="gauge"><i style="--w:47%;--d2:600ms"></i><u></u></span><p>how loud</p></div>
+        <div class="m"><h4>Pauses</h4><span class="gauge"><i class="hi" style="--w:94%;--d2:700ms"></i><u></u></span><p>gap before a value</p></div>
+        <div class="m"><h4>Emotion</h4><span class="gauge"><i style="--w:40%;--d2:800ms"></i><u></u></span><p>angry, fearful, sad</p></div>
+      </div>
+      <div class="legend"><span><i class="lt"></i>your usual</span><span><i class="lf"></i>this segment: only the pause stands out</span></div>
+      <p class="raised"><b>A raised voice</b> is 2 of these 3 above your usual: brighter, higher, louder.</p>
+    </div>
+    <div class="ps" id="t3" data-in="2" style="--d:600ms">
+      <div class="ph"><span class="n a">3</span><h3>Semantics<small>· what was said</small></h3></div>
+      <p>Whisper's words, checked for four kinds of cue:</p>
+      <div class="pats">
+        <div class="pat"><span class="k">Stop</span><span>no · wait · cancel</span></div>
+        <div class="pat"><span class="k">Distress</span><span>it hurts · I fell</span></div>
+        <div class="pat"><span class="k">Frustration</span><span>still not working</span></div>
+        <div class="pat"><span class="k">Hedge</span><span>I think · maybe</span></div>
+      </div>
+    </div>
+    <div class="ps" id="t4" data-in="3">
+      <div class="ph"><span class="n">4</span><h3>Read together</h3></div>
+      <div class="rr"><h4>Urgent</h4><p><span class="v">raised voice</span><em>+</em><span class="w">“no, no, no!”</span></p></div>
+      <div class="rr"><h4>Distressed</h4><p><span class="v">emotion ≥ 0.6</span><em>+</em><span class="w">“my knee hurts”</span></p></div>
+      <div class="rr"><h4>Frustrated</h4><p><span class="v">raised or negative</span><em>+</em><span class="w">“still not working”</span></p></div>
+      <div class="rr"><h4>Unsure of a value</h4><p><span class="v">a pause before it</span><em>or</em><span class="w">“4:30, I think”</span></p></div>
+      <p class="ft">Each reading needs the voice <b>and</b> the words. <b>Unsure needs only one</b>, because all it can do is ask.</p>
+    </div>
+    <div class="ps" id="t5" data-in="3" style="--d:500ms">
+      <div class="ph"><span class="n">5</span><h3>What it changes</h3></div>
+      <div class="ch" style="--c:var(--amber)"><h4>Unsure</h4><p>The gate holds 1.8 s and asks back: “4:30 in the afternoon, right?” “Yes” sets it, with no model call.</p></div>
+      <div class="ch" style="--c:var(--orange)"><h4>Urgent</h4><p>DUET's voice stops at once. Actions wait until the words arrive.</p></div>
+      <div class="ch" style="--c:var(--green)"><h4>Distressed</h4><p>A gentler reply, an offer to call family, a voice 10% slower.</p></div>
+      <div class="ch" style="--c:var(--blue)"><h4>Frustrated</h4><p>Both minds get a note: acknowledge it, try another way.</p></div>
+      <p class="ft">Every reading is written to the trace, with its cues.</p>
+    </div>
   </div>
-  <p class="tone-note"><b>Why brightness and pitch, not loudness:</b> a phone's gain control flattens loudness. On CREMA-D actors, angry speech was only +2.3 dB louder after levelling, but +18.9 dB brighter and +14 semitones higher. Each segment is measured in about 12 ms, in parallel with speech recognition.</p>
+  <div class="tone-rule" data-in="3" style="--d:800ms">Tone may make DUET wait, ask or speak differently. <span>It never runs or cancels an action on its own: every action still needs words.</span></div>
 </section>
 
 <!-- ======================= 7 · GALAXY ======================= -->
@@ -1005,7 +1113,7 @@ body.print #hud,body.print #hint,body.print #notes{display:none!important}
     problem: [45, "The Full-Duplex-Bench v3 paper, from NTU and NVIDIA, found today's voice agents fail exactly here: they commit values before the correction arrives. On self-corrections GPT-Realtime passes 59 percent, Gemini Live 35. [click] Building DUET we found six caveats. A correction arrives after the plan. Not every sound is a turn. When you cut it off, what did you actually hear? A retry after a timeout can send the same text twice. A quick request needs an answer in a third of a second, while a why-question needs real reasoning, so DUET has two minds and code checks every plan. And the words can hide a doubt that the voice gives away. Each card names the part of DUET that answers it. [click] So the tension: reply within a second, but act only on what you finally mean. On the same items DUET scores 0.88."],
     flow: [100, "This is the whole system. The phone is the ears, mouth and hands; our edge machine hears, thinks fast and coordinates; the cloud thinks deep. [click] I say “Set an alarm for 6:30…”. Audio streams over WebRTC, Whisper transcribes it, and in parallel the tone channel measures how I said it. [click] The fast mind, Gemma 4 E2B on our GPU, plans 6:30 in 0.3 seconds. Planning starts early; acting waits at the gate. [click] Then “no, make it 7”: new words advance the epoch, so the 6:30 plan is void. It never reaches the phone. [click] The new plan is checked by code, held 1.8 seconds because I just corrected myself, sent once, and confirmed from the phone's reply, about 2.4 seconds after I stop. [click] A harder question goes to the cloud mind; the fast mind covers the wait in its own words, and the battery is read through the same coordinator. [click] I talk over it: it stops in 0.21 seconds and knows how much I heard. [click] A plain mm-hm lets it carry on; wait, go on and what? are handled by code, with no model call."],
     coord: [35, "The heart of DUET is the coordinator: the model proposes, deterministic code decides. [click] The normal path: planned, held at the gate until you've been quiet long enough, checked against the ledger, run once, done when the device confirms. [click] New words while it's held: it never runs. [click] The identical call again: answered from the ledger, never repeated. [click] A write that times out is never re-sent; DUET tells you."],
-    tone: [45, "DUET also hears how you say things. Each speech segment is measured against your own voice: brightness, pitch, loudness, pauses and an emotion model, in about 12 milliseconds. [click] “4:30, I think” has a hedge next to the value and a pause before it, so DUET asks “4:30 in the afternoon, right?” before acting. [click] A shouted “no, no, no” stops it at once. Distress with words of pain makes it gentle and slower, and it offers to call family. [click] Mixed signals and sarcasm are next, and the rule makes them safe to add: tone can make DUET wait or ask, never act. And we measured why loudness fails on a phone: gain control flattens it, while brightness and pitch survive."],
+    tone: [60, "DUET doesn't just hear what you say; it hears how you say it. [click] “Set an alarm for… 4:30, I think.” The words carry a hedge right next to the value, the voice a 1.1-second pause before it, so DUET asks first: “4:30 in the afternoon, right?” [click] Here is how. When you stop speaking, that stretch becomes one segment, and it goes two ways at once. On the acoustics side, DUET already keeps your usual voice and measures each segment against it: brightness, pitch, loudness, pauses and emotion. Brightness is the best cue, because a phone's gain control flattens loudness. On the semantics side, Whisper's words are checked for stop words, distress, frustration and hedges. [click] The two are read together, and a reading needs both to agree. It changes how DUET acts: unsure, it asks; urgent, it stops; distressed, it slows down and offers to call family. The rule: tone can make DUET wait or ask, but it never runs or cancels an action. Every action still needs words."],
     galaxy: [50, "This runs on a Galaxy S24 today, with real Android actions and a real SmartThings home. [click] Asha lives alone: “Did I take my tablet? I'll take one now.” DUET checks the record and gently stops a second dose. When she says her knee hurts, in a shaky voice, it answers gently and offers to call her daughter. [click] Driving, the destination is corrected mid-sentence and only home reaches Maps. Ten minutes from home DUET speaks first and offers the AC; “yes, make it 22” sets it, confirmed by SmartThings. [click] And for every Galaxy owner: corrections, battery help from the phone's real readings, DUET on the side key."],
     roadmap: [45, "Where this goes. Today everything you will see in the demo is built and running: the Galaxy app, our edge machine and the cloud. [click] Phase 1 moves all of it onto the phone: the coordinator in Kotlin with the same tests, and Gemma 4 E2B through Google's LiteRT-LM. It is done when a simple action lands in under a second and a half with the laptop switched off. [click] Phase 2 makes it listen like a person: Hindi and Hinglish, and Gemma hearing the audio itself, so meaning and tone come from one model. [click] Phase 3 puts DUET inside Samsung's agents: in front of every action Bixby's device agents and AppFunctions take, Car-to-Home offers, Watch and Buds for Care, and SDS voicebots that book once. A new capability is one entry in a manifest, so it scales without new code. Models are configuration; the coordinator is the product. Now, the demo."],
     demo: [178, "The live demo film, 2 minutes 58. It starts as the slide opens. Space pauses and resumes it; the right arrow moves on to the appendix."],
@@ -1173,16 +1281,22 @@ body.print #hud,body.print #hint,body.print #notes{display:none!important}
   function buildWave() {
     const w = $("#wave"); if (!w) return;
     let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    const bursts = [[96, 150], [156, 214], [222, 298], [306, 344], [352, 442], [550, 626], [634, 676], [686, 760]];
-    let d = "M 96 150";
+    const bursts = [[96, 150], [156, 214], [222, 298], [306, 344], [352, 440], [552, 626], [634, 676], [686, 760]];
+    let d = "M 96 78";
     for (let x = 96; x <= 760; x += 2) {
       const b = bursts.find(([a, z]) => x >= a && x <= z);
-      let y = 150;
-      if (b) { const p = (x - b[0]) / (b[1] - b[0]); const env = Math.sin(Math.PI * p); y = 150 + (x % 4 === 0 ? -1 : 1) * env * (8 + 30 * rnd()); }
+      let y = 78;
+      if (b) { const p = (x - b[0]) / (b[1] - b[0]); const env = Math.sin(Math.PI * p); y = 78 + (x % 4 === 0 ? -1 : 1) * env * (6 + 20 * rnd()); }
       d += " L " + x + " " + y.toFixed(1);
     }
     w.setAttribute("d", d);
-    try { w.style.setProperty("--L", String(Math.ceil(w.getTotalLength()))); } catch (e) { w.style.setProperty("--L", "6000"); }
+    try { w.style.setProperty("--L", String(Math.ceil(w.getTotalLength()))); } catch (e) { w.style.setProperty("--L", "4000"); }
+  }
+  // packets down the two paths, then into the reading
+  function toneHook(k, instant) {
+    if (instant || REDUCED) return;
+    if (k === 2) { dot("#pk-tone", "tw-a", 500, 600, "pk"); dot("#pk-tone", "tw-s", 800, 650, "pk ta"); }
+    if (k === 3) { dot("#pk-tone", "tw-a4", 250, 650, "pk"); dot("#pk-tone", "tw-s4", 250, 750, "pk ta"); dot("#pk-tone", "tw-45", 1050, 450, "pk tk"); }
   }
 
   // ---------------------------------------------------------------- slide 7: stop-motion scenes
@@ -1196,7 +1310,7 @@ body.print #hud,body.print #hint,body.print #notes{display:none!important}
     });
   }
 
-  const HOOKS = { flow: flowHook, coord: coordHook, galaxy: galaxyHook };
+  const HOOKS = { flow: flowHook, coord: coordHook, tone: toneHook, galaxy: galaxyHook };
 
   // ---------------------------------------------------------------- the demo film
   const filmEl = $("#demo-video");
@@ -1318,6 +1432,5 @@ body.print #hud,body.print #hint,body.print #notes{display:none!important}
   document.documentElement.dataset.ready = "1";
 })();
 </script>
-
 </body>
 </html>
