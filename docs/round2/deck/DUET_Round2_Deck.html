@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>DUET Round 2 Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one fixed 1600x900 stage, scaled to the window; each slide builds step by step on a click or arrow key.
+   Single light look on purpose (a projected deck), on Samsung blue, with orange for "never ran" and green for "done". */
+:root{
+  --night:#0A1024; --ink:#0D1530; --ink-2:#2B3453; --muted:#56607E; --line:#D3D9E7; --line-2:#E5E9F2;
+  --paper:#F3F5FA; --card:#FCFDFF; --white:#FFFFFF;
+  --blue:#1428A0; --blue-2:#2F55E4; --blue-t:#E5EAFA; --blue-tt:#F1F4FD;
+  --orange:#C2410C; --orange-t:#FCE8DA; --green:#0A7A53; --green-t:#DCF1E7; --amber:#A15C07; --amber-t:#FBEFD5;
+  --wire:#A9B3CC; --zone:#B7C0D7;
+  --f-disp:'Archivo','Arial Narrow',Arial,sans-serif;
+  --f-body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',Consolas,ui-monospace,monospace;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--ink);font-family:var(--f-body);overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{position:fixed;inset:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(-50%,-50%) scale(var(--s,.5));background:var(--paper);overflow:hidden;border-radius:6px;box-shadow:0 24px 70px rgba(0,0,0,.45);cursor:pointer;user-select:none}
+.slide{box-sizing:border-box;position:absolute;inset:0;display:none;flex-direction:column;padding:50px 72px 0;background:var(--paper);color:var(--ink)}
+.slide.active{display:flex}
+.slide.dark{background:var(--blue);color:#F3F5FA}
+.slide.night{background:var(--night);color:#E8ECF6}
+.foot{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;align-items:center;font:500 14px/1 var(--f-mono);letter-spacing:.05em;color:var(--muted)}
+.night .foot{color:#8C96B5}
+p{margin:0}
+h2,h3{margin:0}
+code,.mono{font-family:var(--f-mono)}
+
+/* heading block: same place on every slide */
+.sh{display:flex;flex-direction:column;gap:12px;padding-bottom:24px}
+.eyebrow{display:flex;align-items:center;gap:10px;font:500 15px/1 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--blue)}
+.eyebrow b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--blue);color:#fff;font-weight:600;letter-spacing:0;font-size:15px}
+.eyebrow.light{color:#C9D3F7}
+.night .eyebrow{color:#9DB0F5}
+.night .eyebrow b{background:#2F55E4}
+.t{font:700 46px/1.06 var(--f-disp);font-stretch:112%;letter-spacing:-.012em;text-wrap:balance;color:var(--ink);max-width:1400px}
+.night .t{color:#F3F5FA}
+
+/* builds: [data-in=n] appears at step n */
+[data-in]{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .6s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+.s1 [data-in="1"],.s2 [data-in="2"],.s3 [data-in="3"],.s4 [data-in="4"],.s5 [data-in="5"],.s6 [data-in="6"],.s7 [data-in="7"],.s8 [data-in="8"]{opacity:1;transform:none}
+.slide.instant,.slide.instant *{transition:none!important}
+.slide.instant *:not(.boil){animation-duration:0s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+
+/* shared pieces */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font:500 15px/1.2 var(--f-mono);background:var(--blue-t);color:var(--blue);white-space:nowrap}
+.tag{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font:600 13px/1.2 var(--f-body);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.t-ran{background:#E8EBF2;color:var(--ink-2)}
+.t-void{background:var(--orange-t);color:var(--orange)}
+.t-done{background:var(--green-t);color:var(--green)}
+.t-next{background:#ECEEF4;color:var(--muted);border:1.5px dashed #AEB6CB}
+.t-built{background:var(--green-t);color:var(--green)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.k{font:500 14px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- 1 hook ---------- */
+.hook{flex:1;display:grid;grid-template-columns:1fr 650px;gap:64px;align-items:center;padding-bottom:50px}
+.hook-l{display:flex;flex-direction:column;gap:22px}
+.wordmark{font:800 190px/.86 var(--f-disp);font-stretch:125%;letter-spacing:-.025em;color:#fff;padding-top:18px}
+.hook-tag{font:700 42px/1.1 var(--f-disp);font-stretch:108%;color:#fff;max-width:720px}
+.hook-sub{font:400 25px/1.4 var(--f-body);color:#D5DDF8;max-width:700px}
+.team{display:flex;flex-direction:column;gap:6px;padding-top:26px;border-top:1px solid rgba(255,255,255,.25);font-size:20px;color:#D5DDF8;max-width:700px}
+.team b{font-weight:600;color:#fff}
+.hook-r{background:var(--paper);color:var(--ink);border-radius:22px;padding:34px 34px 30px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(4,10,40,.35)}
+.says{display:flex;gap:14px;align-items:flex-start}
+.who{flex:none;font:600 13px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border-radius:8px;background:var(--ink);color:#fff;margin-top:4px}
+.who.duet{background:var(--blue)}
+.says p{font:600 28px/1.25 var(--f-disp);font-stretch:104%;text-wrap:balance}
+.lane{display:flex;flex-direction:column;gap:9px;padding:18px 20px;border-radius:14px;background:#E9ECF4}
+.lane.duet{background:var(--blue-t)}
+.lane-h{font:600 15px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-bottom:4px}
+.lane.duet .lane-h{color:var(--blue)}
+.call{display:flex;justify-content:space-between;align-items:center;font-size:21px}
+.call code{position:relative;font-size:21px;font-weight:500}
+.call.void code::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:3px;border-radius:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .45s ease 1s}
+.s2 .call.void code::after{transform:scaleX(1)}
+.call.void .tag{opacity:0;transition:opacity .3s ease 1.3s}
+.s2 .call.void .tag{opacity:1}
+.lane-out{font:600 20px/1.3 var(--f-body);padding-top:2px}
+.lane-out.bad{color:var(--orange)}
+.lane-out.good{color:var(--green)}
+
+/* ---------- 2 problem ---------- */
+.g-problem{display:grid;grid-template-columns:540px 1fr;gap:48px;flex:1;min-height:0}
+.ev{display:flex;flex-direction:column;gap:18px}
+.ev blockquote{margin:0;font:600 31px/1.25 var(--f-disp);font-stretch:104%;color:var(--ink);padding-left:22px;border-left:5px solid var(--blue)}
+.ev .src{font-size:17px;color:var(--muted);padding-left:27px}
+.bars{display:flex;flex-direction:column;gap:13px;padding:22px 24px;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:6px}
+.bar{display:grid;grid-template-columns:180px 1fr 54px;align-items:center;gap:12px;font-size:18px}
+.bar .lab{color:var(--ink-2)}
+.bar .trk{height:24px;background:var(--line-2);border-radius:6px;overflow:hidden}
+.bar .fil{height:100%;background:#8E98B4;border-radius:6px;transform-origin:left}
+.bar .val{font:600 19px var(--f-mono);text-align:right}
+.bar.us .lab,.bar.us .val{color:var(--blue);font-weight:700}
+.bar.us .fil{background:var(--blue);transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.7,.2,1) .2s}
+.s2 .bar.us .fil{transform:scaleX(1)}
+.cav{display:flex;flex-direction:column;gap:14px}
+.cav-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cv{display:flex;flex-direction:column;gap:8px;padding:18px 20px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.cv h3{font:600 22px/1.2 var(--f-body);color:var(--ink)}
+.cv p{font-size:18px;line-height:1.35;color:var(--muted);font-style:italic}
+.cv .chip{align-self:flex-start;margin-top:2px}
+.tension{margin:18px 0 70px;padding:18px 26px;border-radius:14px;background:var(--ink);color:#fff;font:600 27px/1.25 var(--f-disp);font-stretch:106%}
+.tension span{color:#9DB0F5}
+
+/* ---------- 3 flow ---------- */
+.flow-wrap{display:flex;flex-direction:column;gap:14px;flex:1}
+#flow-svg{display:block;width:1456px;height:470px;overflow:visible}
+.zone{fill:none;stroke:var(--zone);stroke-width:1.5;stroke-dasharray:6 6}
+.zl{font:500 14px var(--f-mono);letter-spacing:.09em;fill:var(--muted)}
+.zs{font:400 14px var(--f-body);fill:var(--muted)}
+.c{text-anchor:middle}
+.lk{stroke:var(--zone);stroke-width:2;stroke-dasharray:2 7;stroke-linecap:round}
+.wire{fill:none;stroke:var(--wire);stroke-width:2;marker-end:url(#ah)}
+.wire.dash{stroke-dasharray:7 6}
+.wl{font:500 13px var(--f-body);fill:var(--muted)}
+.mod rect.box{fill:var(--card);stroke:#C7CFE2;stroke-width:1.5;transition:fill .35s,stroke .35s,stroke-width .35s}
+.mod .mt{font:700 22px var(--f-disp);font-stretch:108%;fill:var(--ink)}
+.mod .ms{font:400 14px var(--f-body);fill:var(--muted)}
+.mod.lit rect.box{fill:#FFFFFF;stroke:var(--blue-2);stroke-width:3.5}
+#m-coord rect.box{fill:var(--blue-t);stroke:var(--blue);stroke-width:2.5}
+#m-coord.lit rect.box{fill:#DCE3FA;stroke:var(--blue);stroke-width:4}
+#m-coord .mt{fill:var(--blue);font-size:24px}
+.pk{fill:var(--blue-2);stroke:#fff;stroke-width:2.5}
+.pk.au{fill:#6E8BFF}
+.pk.o{fill:var(--orange)}
+.pk.g{fill:var(--green)}
+.ep rect{fill:var(--blue);transition:fill .3s}
+.ep text{font:600 14px var(--f-mono);fill:#fff}
+.ep.flash rect{fill:var(--orange)}
+.pcard{opacity:0;transition:opacity .35s}
+.pcard rect{fill:#fff;stroke:#C7CFE2;stroke-width:1.5;transition:fill .3s,stroke .3s}
+.pcard .pc{font:500 16px var(--f-mono);fill:var(--ink)}
+.pcard .pt{font:600 12px var(--f-body);letter-spacing:.05em;text-transform:uppercase}
+.pcard .stk{stroke:var(--orange);stroke-width:2.5;stroke-dasharray:190;stroke-dashoffset:190;transition:stroke-dashoffset .5s .1s}
+.pcard.held,.pcard.void,.pcard.done{opacity:1}
+.pcard.held rect{fill:var(--amber-t);stroke:var(--amber)}
+.pcard.held .pt{fill:var(--amber)}
+.pcard.void rect{fill:var(--orange-t);stroke:var(--orange)}
+.pcard.void .pt{fill:var(--orange)}
+.pcard.void .pc{fill:#8A4A2D}
+.pcard.void .stk{stroke-dashoffset:0}
+.pcard.done rect{fill:var(--green-t);stroke:var(--green)}
+.pcard.done .pt{fill:var(--green)}
+.ring-bg{fill:#fff;stroke:#C7CFE2;stroke-width:6}
+#ring{fill:none;stroke:var(--amber);stroke-width:6;stroke-linecap:round;transform:rotate(-90deg);transform-origin:1022px 330px;stroke-dasharray:125.66;stroke-dashoffset:125.66}
+.rl{font:500 12px var(--f-mono);fill:var(--muted);letter-spacing:.05em}
+.badge{opacity:0;transition:opacity .3s}
+.badge.on{opacity:1}
+.badge text{font:600 13px var(--f-body);fill:#fff}
+.phi{opacity:0;transition:opacity .35s}
+.phi.on{opacity:1}
+.ph-s{font:500 14px var(--f-body)}
+.ph-big{font:700 40px var(--f-disp);fill:var(--ink)}
+.ph-b{font:700 16px var(--f-disp);fill:var(--blue)}
+.pl{font:600 17px var(--f-body);fill:var(--ink)}
+#tone-fill{transition:width .6s ease}
+.flow-cap{display:grid;grid-template-columns:1fr 400px;gap:28px;padding-bottom:60px}
+.fc-l{display:flex;flex-direction:column;gap:10px;min-width:0}
+.fc-said{display:flex;gap:12px;align-items:flex-start;min-height:30px}
+.fc-said .q{font:500 21px/1.35 var(--f-body);color:var(--ink)}
+.fc-said .who{margin-top:2px}
+.fc-label{font:600 15px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue);padding-top:6px}
+.fc-text{font:400 23px/1.4 var(--f-body);color:var(--ink-2);max-width:980px}
+.fc-text b{color:var(--ink);font-weight:600}
+.fc-clock{background:var(--ink);color:#fff;border-radius:16px;padding:16px 22px;display:flex;flex-direction:column;gap:6px;align-self:start}
+.fc-clock .k{color:#9DA8C8}
+.fc-num{font:700 50px/1 var(--f-disp);font-stretch:110%;font-variant-numeric:tabular-nums}
+.fc-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font:400 15px/1.35 var(--f-mono);color:#C9D2EC;white-space:pre}
+.fc-log li{animation:logIn .35s ease both}
+@keyframes logIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.fade-swap{animation:swapIn .45s ease both}
+@keyframes swapIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.heard{color:var(--ink)}
+.cut{color:#9AA3BC;text-decoration:line-through;text-decoration-color:var(--orange)}
+.mark{display:inline-block;margin:0 6px;padding:2px 8px;border-radius:6px;background:var(--orange);color:#fff;font:600 13px/1.4 var(--f-body);letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
+.bc{display:inline-block;margin:0 4px;padding:1px 8px;border-radius:6px;background:var(--line-2);color:var(--ink-2);font:500 16px/1.4 var(--f-mono);vertical-align:1px}
+
+/* ---------- 4 coordinator ---------- */
+.g-coord{display:grid;grid-template-columns:860px 1fr;gap:44px;flex:1;min-height:0;padding-bottom:64px}
+#coord-svg{width:860px;height:560px;display:block;overflow:visible}
+.nd rect{fill:var(--card);stroke:#C7CFE2;stroke-width:1.5;transition:fill .35s,stroke .35s}
+.nd .nt{font:700 20px var(--f-disp);font-stretch:106%;fill:var(--ink)}
+.nd .ns{font:400 14px var(--f-body);fill:var(--muted)}
+.nd.hit-g rect{fill:var(--green-t);stroke:var(--green);stroke-width:3}
+.nd.hit-o rect{fill:var(--orange-t);stroke:var(--orange);stroke-width:3}
+.nd.hit-b rect{fill:var(--blue-t);stroke:var(--blue);stroke-width:3}
+.nd.hit-a rect{fill:var(--amber-t);stroke:var(--amber);stroke-width:3}
+.nd.gate rect{stroke:var(--blue);stroke-width:2.5}
+.el{font:500 14px var(--f-body);fill:var(--muted)}
+.tok{stroke:#fff;stroke-width:3;fill:var(--blue)}
+#coord.s1 .tok{fill:var(--green)}#coord.s2 .tok{fill:var(--orange)}#coord.s3 .tok{fill:var(--blue)}#coord.s4 .tok{fill:var(--amber)}
+.mcs{display:flex;flex-direction:column;gap:12px}
+.mc{padding:14px 20px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;transition:border-color .35s,background .35s,box-shadow .35s}
+.mc h3{font:700 22px/1.15 var(--f-disp);font-stretch:106%;color:var(--blue)}
+.mc p{font-size:17px;line-height:1.38;color:var(--ink-2)}
+.mc .holds{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.s1:not(.s2) .mc-gate,.s2:not(.s3) .mc-epoch,.s3:not(.s4) .mc-ledger,.s4 .mc-fail{border-color:var(--blue);background:#fff;box-shadow:0 0 0 2px var(--blue)}
+
+/* ---------- 5 tone ---------- */
+#tone-svg{width:1456px;height:236px;display:block;overflow:visible}
+.lane-l{font:600 14px var(--f-mono);letter-spacing:.08em;fill:var(--muted)}
+.wtxt{font:500 24px var(--f-body);fill:var(--ink)}
+.hedge{fill:var(--amber);font-weight:700}
+#wave{--L:6000;fill:none;stroke:var(--blue-2);stroke-width:2.2;stroke-dasharray:var(--L);stroke-dashoffset:var(--L);transition:stroke-dashoffset 1.6s ease}
+.s1 #wave{stroke-dashoffset:0}
+.mtr .ml{font:500 14px var(--f-body);fill:var(--ink-2)}
+.mtr .mb{fill:var(--line-2)}
+.mtr .mf{fill:#8E98B4;transform-box:fill-box;transform-origin:left center;transform:scaleX(0);transition:transform .7s ease var(--d,0ms)}
+.mtr .mf.hi{fill:var(--amber)}
+.s1 .mtr .mf{transform:scaleX(1)}
+.mtr .base{stroke:var(--ink);stroke-width:2}
+.rd rect{fill:var(--amber-t);stroke:var(--amber);stroke-width:2.5}
+.rd .rt{font:700 20px var(--f-disp);fill:var(--amber)}
+.rd .rs{font:400 15px var(--f-body);fill:var(--ink-2)}
+.act rect{fill:var(--blue-t);stroke:var(--blue);stroke-width:2.5}
+.act .rt{font:700 20px var(--f-disp);fill:var(--blue)}
+.act .rs{font:400 15px var(--f-body);fill:var(--ink-2)}
+.tone-rule{display:flex;align-items:center;gap:16px;padding:12px 20px;border-radius:12px;background:var(--ink);color:#fff;font:600 21px/1.3 var(--f-body);margin:10px 0 14px}
+.tone-rule span{color:#9DB0F5;font-weight:500}
+.tcards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.tc{display:flex;flex-direction:column;gap:9px;padding:16px 17px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.tc.next{background:#F7F8FB;border:1.5px dashed #B3BBCF}
+.tc .tch{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tc h3{font:700 21px/1.1 var(--f-disp);font-stretch:106%}
+.tc .say{font:500 17px/1.35 var(--f-body);color:var(--ink);font-style:italic}
+.tc .does{font-size:16px;line-height:1.4;color:var(--ink-2)}
+.tc .cue{font:400 14px/1.4 var(--f-mono);color:var(--muted);border-top:1px solid var(--line-2);padding-top:8px;margin-top:auto}
+.tone-note{font-size:16px;color:var(--muted);padding:12px 0 60px;line-height:1.4}
+.tone-note b{color:var(--ink-2);font-weight:600}
+
+/* ---------- 7 galaxy ---------- */
+.gpanels{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.gp{display:flex;flex-direction:column;border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--line)}
+.gp-h{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 10px}
+.gp-h h3{font:700 23px var(--f-disp);font-stretch:108%;color:var(--blue)}
+.gp-h span{font-size:15px;color:var(--muted)}
+.scene{display:block;width:100%;height:auto;background:#EDE6DA}
+.gp-say{display:flex;flex-direction:column;gap:7px;padding:12px 18px 16px;min-height:132px}
+.gp-say .ln{display:flex;gap:10px;align-items:flex-start;font-size:17px;line-height:1.35}
+.gp-say .ln .who{font-size:11px;padding:5px 7px;margin-top:1px}
+.fr{display:none}
+.f0 .fr0,.f1 .fr1,.f2 .fr2{display:block}
+svg .fr{display:none}
+.f0 svg .fr0,.f1 svg .fr1,.f2 svg .fr2{display:inline}
+.boil{animation:boil .42s steps(1) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes boil{0%{transform:rotate(-.7deg) translate(0,0)}33%{transform:rotate(.5deg) translate(.6px,-.6px)}66%{transform:rotate(-.2deg) translate(-.5px,.4px)}}
+.paper{filter:url(#cut)}
+.caps{display:flex;flex-wrap:wrap;gap:9px;padding:16px 0 60px;align-items:center}
+.caps .k{padding-right:8px}
+.caps .chip{background:var(--card);border:1px solid var(--line);color:var(--ink-2);font:500 15px/1.2 var(--f-body)}
+.caps .chip.st{background:var(--blue-t);border-color:#C3CEF5;color:var(--blue);font-weight:600}
+
+/* ---------- roadmap: one rail, four stops; the rail fills as each phase is shown ---------- */
+.rm{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.rm-rail{position:absolute;left:11px;right:11px;top:10px;height:4px;border-radius:2px;background:var(--line)}
+.rm-fill{position:absolute;inset:0 auto 0 0;width:9%;border-radius:2px;background:var(--blue);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.s1 .rm-fill{width:38%}.s2 .rm-fill{width:68%}.s3 .rm-fill{width:100%}
+.rm-cols{position:relative;display:grid;grid-template-columns:270px repeat(3,1fr);gap:18px;align-items:start}
+.rm-col{display:flex;flex-direction:column;gap:11px;min-width:0}
+.rm-dot{width:24px;height:24px;border-radius:50%;background:var(--paper);border:4px solid var(--blue);box-sizing:border-box}
+.rm-col.now .rm-dot{background:var(--green);border-color:var(--green)}
+.rm-col.sam .rm-dot{background:var(--blue)}
+.rm-when{font:600 14px/1.2 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--blue);padding-top:6px}
+.rm-card{display:flex;flex-direction:column;gap:12px;padding:20px 22px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.rm-col.now .rm-card{border:2px solid var(--green)}
+.rm-col.sam .rm-card{background:var(--blue);border-color:var(--blue)}
+.rm-card h3{font:800 24px/1.12 var(--f-disp);font-stretch:110%;color:var(--ink)}
+.rm-col.sam .rm-card h3{color:#fff}
+.rm-card ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.rm-card li{font-size:17.5px;line-height:1.36;padding-left:17px;position:relative;color:var(--ink-2)}
+.rm-card li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:2px;background:var(--blue)}
+.rm-col.now li::before{background:var(--green)}
+.rm-card li b{color:var(--ink);font-weight:600}
+.rm-col.sam li{color:#E3E9FC}
+.rm-col.sam li::before{background:#9DB0F5}
+.rm-col.sam li b{color:#fff}
+.rm-gate{font-size:16px;line-height:1.4;color:var(--ink-2);padding:11px 13px;border-radius:11px;background:var(--blue-tt);border:1px solid #CFD8F6}
+.rm-gate b{display:block;font:600 12.5px/1.2 var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--blue);padding-bottom:4px}
+.rm-col.sam .rm-gate{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#E3E9FC}
+.rm-col.sam .rm-gate b{color:#fff}
+.rm-foot{display:flex;justify-content:space-between;align-items:center;gap:28px;padding:20px 0 60px}
+.rm-scale{font-size:19px;line-height:1.4;color:var(--ink-2);max-width:640px}
+.rm-scale b{color:var(--ink)}
+.rm-foot .big{font:800 30px/1.15 var(--f-disp);font-stretch:110%;color:var(--ink);text-align:right}
+.rm-foot .big span{color:var(--blue)}
+.demo-cta{flex:none;display:flex;align-items:center;gap:12px;padding:13px 20px;border-radius:999px;background:var(--ink);color:#fff;font:600 20px var(--f-body)}
+
+/* ---------- the demo film: the whole stage ---------- */
+.slide.film{padding:0;background:#000}
+.film video{display:block;width:100%;height:100%;object-fit:contain;background:#000;cursor:default}
+.film-miss{position:absolute;left:0;right:0;bottom:48px;text-align:center;font:500 20px/1.4 var(--f-body);color:#C9D3F7}
+.film-miss code{color:#fff}
+
+/* ---------- appendix ---------- */
+.ap-intro{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:10px}
+.ap-intro div{padding:16px 18px;border-radius:12px;background:#141C3A;border:1px solid #27315A;font-size:19px;color:#DCE3F8;display:flex;gap:12px;align-items:baseline}
+.ap-intro b{font:600 15px var(--f-mono);color:#9DB0F5}
+.tbl{width:100%;border-collapse:collapse;font-size:19px;line-height:1.38}
+.tbl th{font:600 13px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:9px 10px 9px 0;border-bottom:2px solid var(--ink);vertical-align:bottom}
+.tbl td{padding:13px 12px 13px 0;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+.tbl td:first-child{color:var(--ink);font-weight:600}
+.tbl tr.us td{background:var(--blue-tt);color:var(--blue)}
+.tbl .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;min-height:0}
+.box-h{font:700 22px var(--f-disp);font-stretch:106%;color:var(--blue);padding-bottom:10px}
+.lst{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px}
+.lst li{font-size:20px;line-height:1.4;color:var(--ink-2);padding-left:18px;position:relative}
+.lst li::before{content:"";position:absolute;left:0;top:10px;width:7px;height:7px;border-radius:2px;background:var(--blue)}
+.lst li b{color:var(--ink);font-weight:600}
+.small{font-size:17px;color:var(--muted);line-height:1.4;padding-top:12px}
+
+/* ---------- chrome outside the stage ---------- */
+#hud{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;opacity:0;transition:opacity .3s;z-index:20}
+#hud.show{opacity:1}
+#hud button{all:unset;cursor:pointer;width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;font:600 18px var(--f-body)}
+#hud button:hover{background:rgba(255,255,255,.22)}
+#hud button:focus-visible{outline:2px solid #9DB0F5;outline-offset:2px}
+#hud .pos{font:500 14px var(--f-mono);color:#AEB8D6;padding:0 8px;min-width:80px;text-align:center}
+#hint{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:rgba(10,16,36,.86);color:#DCE3F8;font:500 14px var(--f-mono);letter-spacing:.03em;z-index:20;transition:opacity .6s;pointer-events:none;white-space:nowrap}
+#hint.gone{opacity:0}
+#notes{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));max-height:42vh;overflow:auto;padding:16px 20px;border-radius:14px;background:rgba(10,16,36,.95);color:#E7ECF8;font:400 17px/1.5 var(--f-body);z-index:30;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+#notes .nh{display:flex;justify-content:space-between;gap:12px;font:500 14px var(--f-mono);color:#9DB0F5;padding-bottom:8px;flex-wrap:wrap}
+#notes .nb{max-width:1100px}
+#notes .warn{color:#FFB38A}
+@media (prefers-reduced-motion:reduce){
+  [data-in]{transition:opacity .2s ease!important;transform:none!important}
+  .boil{animation:none}
+}
+/* print: every slide at its last step, one per page (used to make the PDF) */
+body.print{overflow:visible;background:#fff}
+body.print #app{position:static;padding:0}
+body.print #stage{position:static;transform:none;width:1600px;height:auto;box-shadow:none;border-radius:0;background:none;overflow:visible}
+body.print .slide{display:flex!important;position:relative;width:1600px;height:900px;break-after:page;page-break-after:always;overflow:hidden}
+body.print #hud,body.print #hint,body.print #notes{display:none!important}
+@page{size:1600px 900px;margin:0}
+</style>
+
+<div id="app">
+<div id="stage" aria-live="polite">
+
+<!-- ======================= 1 · HOOK ======================= -->
+<section class="slide dark nofoot" id="hook" data-steps="2" data-label="Title">
+  <div class="hook">
+    <div class="hook-l">
+      <div class="eyebrow light">Samsung PRISM GenAI Hackathon · Theme 05 · Round 2</div>
+      <div class="wordmark">DUET</div>
+      <p class="hook-tag">Interrupt it. Hesitate. Change your mind.</p>
+      <p class="hook-sub">A full-duplex voice agent for Galaxy phones that acts on what you finally meant: once, and only after the phone confirms it.</p>
+      <div class="team"><b>Team SE7EN · SRM Institute of Science and Technology</b><span>Tanmay Singh · Panshul Arora · Naman Rai · Devansh Goenka</span></div>
+    </div>
+    <div class="hook-r">
+      <div class="says"><span class="who">You</span><p>“Set an alarm for 6:30… no, make it 7.”</p></div>
+      <div class="lane" data-in="1">
+        <div class="lane-h">A typical voice agent</div>
+        <div class="call" data-in="1" style="--d:250ms"><code>set_alarm(06:30)</code><span class="tag t-ran">ran</span></div>
+        <div class="call" data-in="1" style="--d:800ms"><code>set_alarm(07:00)</code><span class="tag t-ran">ran</span></div>
+        <p class="lane-out bad" data-in="1" style="--d:1400ms">Two alarms. You wake up at 6:30.</p>
+      </div>
+      <div class="lane duet" data-in="2">
+        <div class="lane-h">DUET</div>
+        <div class="call void" data-in="2" style="--d:250ms"><code>set_alarm(06:30)</code><span class="tag t-void">never ran</span></div>
+        <div class="call" data-in="2" style="--d:1700ms"><code>set_alarm(07:00)</code><span class="tag t-done">done, once</span></div>
+        <p class="lane-out good" data-in="2" style="--d:2200ms">“Sure. Alarm set for 7 in the morning.”</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 2 · PROBLEM ======================= -->
+<section class="slide" id="problem" data-steps="2" data-label="The problem">
+  <header class="sh">
+    <div class="eyebrow"><b>1</b>Brief point 1 · Understanding the problem</div>
+    <h2 class="t">Voice agents act before the user has finished deciding</h2>
+  </header>
+  <div class="g-problem">
+    <div class="ev">
+      <blockquote>“Models commit intermediate parameters before the correction arrives.”</blockquote>
+      <p class="src">Full-Duplex-Bench v3 (NTU and NVIDIA, 2026), on why today's voice agents fail at tool use.</p>
+      <div class="bars">
+        <div class="k">Self-correction items · strict pass rate</div>
+        <div class="bar"><span class="lab">GPT-Realtime</span><span class="trk"><span class="fil" style="display:block;width:59%"></span></span><span class="val">0.59</span></div>
+        <div class="bar"><span class="lab">Gemini Live 3.1</span><span class="trk"><span class="fil" style="display:block;width:35%"></span></span><span class="val">0.35</span></div>
+        <div class="bar"><span class="lab">Whisper → GPT-4o</span><span class="trk"><span class="fil" style="display:block;width:18%"></span></span><span class="val">0.18</span></div>
+        <div class="bar us" data-in="2"><span class="lab">DUET</span><span class="trk"><span class="fil" style="display:block;width:88%"></span></span><span class="val">0.88</span></div>
+      </div>
+    </div>
+    <div class="cav">
+      <div class="k">Six caveats we found while building it, and what answers each</div>
+      <div class="cav-grid">
+        <div class="cv" data-in="1" style="--d:0ms"><h3>A correction arrives after the plan</h3><p>“6:30… no, make it 7”: the first value is already on its way.</p><span class="chip">epochs · commit gate</span></div>
+        <div class="cv" data-in="1" style="--d:120ms"><h3>Not every sound is a turn</h3><p>A cough, room noise, a listener's “mm-hm”.</p><span class="chip">only words void a plan</span></div>
+        <div class="cv" data-in="1" style="--d:240ms"><h3>Cut off mid-answer</h3><p>What did the user actually hear before they spoke?</p><span class="chip">heard-position tracking</span></div>
+        <div class="cv" data-in="1" style="--d:360ms"><h3>A retry can do it twice</h3><p>The text to Gupta Hostel times out. Did it go? Sending it again may send it twice.</p><span class="chip">exactly-once ledger</span></div>
+        <div class="cv" data-in="1" style="--d:480ms"><h3>Fast and smart pull apart</h3><p>“Torch on” needs an answer in 0.3 s; “Why is my battery draining?” needs real reasoning.</p><span class="chip">two minds · code checks each plan</span></div>
+        <div class="cv" data-in="1" style="--d:600ms"><h3>The words hide the doubt</h3><p>“Set it for 4:30… I think?” The words say 4:30; the voice says not sure.</p><span class="chip">tone channel · asks first</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="tension" data-in="2">The tension: <span>reply within about a second,</span> but act only on what the user finally means.</div>
+</section>
+
+<!-- ======================= 3 · FLOW ======================= -->
+<section class="slide" id="flow" data-steps="7" data-label="One conversation">
+  <header class="sh" style="padding-bottom:12px">
+    <div class="eyebrow"><b>2</b>Brief point 2 · Core architecture</div>
+    <h2 class="t">One conversation through DUET</h2>
+  </header>
+  <div class="flow-wrap">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#A9B3CC"/></marker></defs></svg>
+    <svg id="flow-svg" viewBox="0 0 1456 470" aria-label="DUET's architecture: the Galaxy phone, the edge machine with ears, tone, fast mind, coordinator and mouth, and the cloud mind, web answers and SmartThings">
+      <!-- zones -->
+      <rect class="zone" x="380" y="8" width="700" height="454" rx="18"/>
+      <text class="zl" x="400" y="36">EDGE · OUR LAPTOP GPU</text>
+      <rect class="zone" x="1100" y="8" width="356" height="454" rx="18"/>
+      <text class="zl" x="1120" y="36">CLOUD</text>
+      <line class="lk" x1="300" y1="58" x2="300" y2="456"/>
+      <text class="zl c" x="300" y="22">LIVEKIT</text>
+      <text class="zs c" x="300" y="42">WebRTC · RPC</text>
+
+      <!-- wires -->
+      <path id="w-in" class="wire" d="M 222 102 H 403"/>
+      <path id="w-out" class="wire" d="M 405 373 H 224"/>
+      <path id="w-rpc" class="wire" d="M 760 386 V 444 H 136 V 404"/>
+      <path id="w-ef" class="wire" d="M 635 102 H 678"/>
+      <path id="w-et" class="wire" d="M 520 148 V 174"/>
+      <path id="w-tc" class="wire" d="M 635 228 C 662 228, 652 300, 678 300"/>
+      <path id="w-fc" class="wire" d="M 795 148 V 194"/>
+      <path id="w-fk" class="wire dash" d="M 910 102 H 1120"/>
+      <path id="w-kc" class="wire" d="M 1122 136 C 1086 146, 1092 232, 1062 238"/>
+      <path id="w-cm" class="wire" d="M 680 362 H 637"/>
+      <path id="w-cs" class="wire" d="M 1060 305 H 1120"/>
+      <path id="w-kw" class="wire" d="M 1278 148 V 174"/>
+      <text class="wl" x="1015" y="92" text-anchor="middle">hand-over</text>
+      <text class="wl" x="560" y="437" text-anchor="middle">an action, sent once</text>
+
+      <!-- phone -->
+      <g id="phone">
+        <text class="pl" x="136" y="24" text-anchor="middle">Galaxy S24 · DUET app</text>
+        <rect x="50" y="40" width="172" height="362" rx="28" fill="#0D1530"/>
+        <rect x="60" y="54" width="152" height="334" rx="18" fill="#F3F5FA"/>
+        <text x="76" y="82" class="ph-b">DUET</text>
+        <circle cx="196" cy="77" r="5" fill="#0A7A53"/>
+        <g id="ph-never" class="phi"><rect x="70" y="96" width="132" height="28" rx="7" fill="#FCE8DA"/><text x="80" y="115" class="ph-s" fill="#C2410C">Never ran · 06:30</text></g>
+        <g id="ph-done" class="phi"><rect x="70" y="130" width="132" height="28" rx="7" fill="#DCF1E7"/><text x="80" y="149" class="ph-s" fill="#0A7A53">Done · 07:00</text></g>
+        <g id="ph-batt" class="phi"><rect x="70" y="164" width="132" height="28" rx="7" fill="#E5EAFA"/><text x="80" y="183" class="ph-s" fill="#1428A0">Read · battery</text></g>
+        <g id="ph-alarm" class="phi"><text x="136" y="282" text-anchor="middle" class="ph-big">07:00</text><text x="136" y="308" text-anchor="middle" class="ph-s" fill="#56607E">alarm set</text></g>
+        <g id="ph-bat" class="phi">
+          <rect x="108" y="226" width="56" height="96" rx="9" fill="none" stroke="#0D1530" stroke-width="4"/>
+          <rect x="126" y="217" width="20" height="9" rx="3" fill="#0D1530"/>
+          <rect x="115" y="282" width="42" height="33" rx="4" fill="#A15C07"/>
+          <text x="136" y="346" text-anchor="middle" class="ph-s" fill="#56607E">readings</text>
+        </g>
+        <text class="ph-s" x="136" y="378" text-anchor="middle" fill="#56607E">listening</text>
+        <text class="zs c" x="136" y="428">ears · mouth · hands</text>
+      </g>
+
+      <!-- edge modules -->
+      <g class="mod" id="m-ears"><rect class="box" x="405" y="56" width="230" height="92" rx="14"/><text class="mt" x="423" y="88">Ears</text><text class="ms" x="423" y="112">Silero VAD · Whisper</text><text class="ms" x="423" y="132">end-of-turn model</text></g>
+      <g class="mod" id="m-tone"><rect class="box" x="405" y="176" width="230" height="86" rx="14"/><text class="mt" x="423" y="206">Tone</text><text id="tone-read" class="ms" x="617" y="206" text-anchor="end"></text><text class="ms" x="423" y="228">effort · pitch · pauses · emotion</text>
+        <rect x="423" y="240" width="194" height="8" rx="4" fill="#E5E9F2"/><rect id="tone-fill" x="423" y="240" width="0" height="8" rx="4" fill="#8E98B4"/></g>
+      <g class="mod" id="m-mouth"><rect class="box" x="405" y="330" width="230" height="86" rx="14"/><text class="mt" x="423" y="362">Mouth</text><text class="ms" x="423" y="386">Kokoro-82M voice</text><text class="ms" x="423" y="404">fixed lines pre-rendered</text></g>
+      <g class="mod" id="m-fast"><rect class="box" x="680" y="56" width="230" height="92" rx="14"/><text class="mt" x="698" y="88">Fast mind</text><text class="ms" x="698" y="112">Gemma 4 E2B · llama.cpp</text><text class="ms" x="698" y="132">decides in ~0.3 s</text></g>
+      <g class="mod" id="m-coord"><rect class="box" x="680" y="196" width="380" height="190" rx="16"/><text class="mt" x="700" y="230">Coordinator</text><text class="ms" x="700" y="252">epochs · commit gate · ledger</text>
+        <g class="ep" id="ep"><rect x="958" y="210" width="88" height="28" rx="14"/><text id="ep-t" x="1002" y="229" text-anchor="middle">epoch 1</text></g>
+        <g class="pcard" id="card-a"><rect x="700" y="268" width="276" height="38" rx="9"/><text class="pc" x="714" y="293">set_alarm(06:30)</text><text class="pt" x="966" y="292" text-anchor="end" id="card-a-t">held</text><line class="stk" x1="710" y1="288" x2="880" y2="288"/></g>
+        <g class="pcard" id="card-b"><rect x="700" y="318" width="276" height="38" rx="9"/><text class="pc" x="714" y="343">set_alarm(07:00)</text><text class="pt" x="966" y="342" text-anchor="end" id="card-b-t">held</text></g>
+        <g class="pcard" id="card-c"><rect x="700" y="268" width="276" height="38" rx="9"/><text class="pc" x="714" y="293">get_battery_report()</text><text class="pt" x="966" y="292" text-anchor="end" id="card-c-t">held</text></g>
+        <circle class="ring-bg" cx="1022" cy="330" r="20"/>
+        <circle id="ring" cx="1022" cy="330" r="20"/>
+        <text class="rl" x="1022" y="374" text-anchor="middle">gate</text>
+        <g class="badge" id="ledger"><rect x="988" y="264" width="68" height="22" rx="11" fill="#0A7A53"/><text x="1022" y="279" text-anchor="middle" style="font-size:12px">ledger ✓</text></g>
+      </g>
+      <g class="badge" id="chk"><rect x="760" y="136" width="140" height="24" rx="12" fill="#0A7A53"/><text x="830" y="152.5" text-anchor="middle">✓ checked by code</text></g>
+      <g class="badge" id="stopb"><rect x="508" y="317" width="120" height="26" rx="13" fill="#C2410C"/><text x="568" y="334.5" text-anchor="middle">■ stopped · 0.21 s</text></g>
+
+      <!-- cloud modules -->
+      <g class="mod" id="m-cloud"><rect class="box" x="1122" y="56" width="312" height="92" rx="14"/><text class="mt" x="1140" y="88">Cloud mind</text><text class="ms" x="1140" y="112">Gemma 4 26B-A4B · Google API</text><text class="ms" x="1140" y="132">reasons, calls tools, explains</text></g>
+      <g class="mod" id="m-web"><rect class="box" x="1122" y="176" width="312" height="70" rx="14"/><text class="mt" x="1140" y="206">Web answers</text><text class="ms" x="1140" y="228">one grounded Google Search call</text></g>
+      <g class="mod" id="m-st"><rect class="box" x="1122" y="270" width="312" height="70" rx="14"/><text class="mt" x="1140" y="300">SmartThings home</text><text class="ms" x="1140" y="322">real devices · REST API</text></g>
+      <g class="mod" id="m-wx"><rect class="box" x="1122" y="364" width="312" height="70" rx="14"/><text class="mt" x="1140" y="394">Weather</text><text class="ms" x="1140" y="416">Open-Meteo</text></g>
+
+      <g id="pk-flow"></g>
+    </svg>
+
+    <div class="flow-cap">
+      <div class="fc-l">
+        <div class="fc-said"><span class="who">You</span><span class="q" id="fc-you">—</span></div>
+        <div class="fc-said"><span class="who duet">DUET</span><span class="q" id="fc-duet">—</span></div>
+        <div class="fc-label" id="fc-label"></div>
+        <p class="fc-text" id="fc-text"></p>
+      </div>
+      <div class="fc-clock">
+        <div class="k">After you stop speaking</div>
+        <div class="fc-num" id="fc-num">—</div>
+        <ol class="fc-log" id="fc-log"></ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 4 · COORDINATOR ======================= -->
+<section class="slide" id="coord" data-steps="4" data-label="The coordinator">
+  <header class="sh">
+    <div class="eyebrow"><b>2</b>Brief point 2 · Core technology module</div>
+    <h2 class="t">The coordinator: the model proposes, code decides</h2>
+  </header>
+  <div class="g-coord">
+    <svg id="coord-svg" viewBox="0 0 860 560" aria-label="State machine of one proposed action: planned, held at the gate, checked against the ledger, run once, done; or never ran, not repeated, or unknown">
+      <!-- edges -->
+      <path class="wire" d="M 140 280 H 180"/><path class="wire" d="M 320 280 H 360"/><path class="wire" d="M 500 280 H 540"/><path class="wire" d="M 680 280 H 720"/>
+      <path class="wire" d="M 250 245 V 110"/><path class="wire" d="M 430 315 V 455"/><path class="wire" d="M 610 315 V 455"/>
+      <text class="el" x="262" y="182">new words since the plan</text>
+      <text class="el" x="418" y="384" text-anchor="end">identical call</text><text class="el" x="418" y="402" text-anchor="end">already made</text>
+      <text class="el" x="622" y="384">a write</text><text class="el" x="622" y="402">timed out</text>
+      <text class="el" x="70" y="342" text-anchor="middle">from either mind</text>
+      <text class="el" x="340" y="342" text-anchor="middle">quiet for the hold</text>
+      <text class="el" x="520" y="342" text-anchor="middle">first time</text>
+      <text class="el" x="790" y="342" text-anchor="middle">device replied</text>
+      <!-- nodes -->
+      <g class="nd" id="n-plan"><rect x="0" y="245" width="140" height="70" rx="14"/><text class="nt" x="70" y="276" text-anchor="middle">Planned</text><text class="ns" x="70" y="298" text-anchor="middle">a tool call</text></g>
+      <g class="nd gate" id="n-held"><rect x="180" y="245" width="140" height="70" rx="14"/><text class="nt" x="250" y="276" text-anchor="middle">Held</text><text class="ns" x="250" y="298" text-anchor="middle">at the commit gate</text></g>
+      <g class="nd" id="n-ledger"><rect x="360" y="245" width="140" height="70" rx="14"/><text class="nt" x="430" y="276" text-anchor="middle">Ledger</text><text class="ns" x="430" y="298" text-anchor="middle">seen this call?</text></g>
+      <g class="nd" id="n-run"><rect x="540" y="245" width="140" height="70" rx="14"/><text class="nt" x="610" y="276" text-anchor="middle">Runs once</text><text class="ns" x="610" y="298" text-anchor="middle">shielded</text></g>
+      <g class="nd" id="n-done"><rect x="720" y="245" width="140" height="70" rx="14"/><text class="nt" x="790" y="276" text-anchor="middle">Done</text><text class="ns" x="790" y="298" text-anchor="middle">device confirmed</text></g>
+      <g class="nd" id="n-never"><rect x="180" y="40" width="140" height="70" rx="14"/><text class="nt" x="250" y="71" text-anchor="middle">Never ran</text><text class="ns" x="250" y="93" text-anchor="middle">never sent</text></g>
+      <g class="nd" id="n-dup"><rect x="360" y="455" width="140" height="70" rx="14"/><text class="nt" x="430" y="486" text-anchor="middle">Not repeated</text><text class="ns" x="430" y="508" text-anchor="middle">from the ledger</text></g>
+      <g class="nd" id="n-unk"><rect x="540" y="455" width="140" height="70" rx="14"/><text class="nt" x="610" y="486" text-anchor="middle">Unknown</text><text class="ns" x="610" y="508" text-anchor="middle">never re-sent</text></g>
+      <path id="tp-happy" d="M 70 280 H 790" fill="none"/>
+      <path id="tp-void" d="M 70 280 H 250 V 75" fill="none"/>
+      <path id="tp-dup" d="M 70 280 H 430 V 490" fill="none"/>
+      <path id="tp-unk" d="M 70 280 H 610 V 490" fill="none"/>
+      <g id="pk-coord"></g>
+      <text class="el" x="0" y="20" style="font:600 14px var(--f-mono);letter-spacing:.08em">ONE PROPOSED ACTION</text>
+    </svg>
+    <div class="mcs">
+      <div class="mc mc-epoch"><h3>Epochs</h3><p>Every plan carries the epoch of the words it was made on. New words void it, even after the newer turn has closed. A cough brings no words, so it only delays.</p></div>
+      <div class="mc mc-gate"><h3>Commit gate</h3><p>No action while you speak. Thinking starts at once; acting waits until you have been quiet for:</p><div class="holds"><span class="chip">1.4 s</span><span class="chip">1.8 s after “no wait”, “make it”</span><span class="chip">2.2 s after “and…”</span></div></div>
+      <div class="mc mc-ledger"><h3>Idempotency ledger</h3><p>The same call is answered from the ledger, never sent twice. A call past the gate finishes and is recorded even if you barge in.</p></div>
+      <div class="mc mc-fail"><h3>Failure policy</h3><p>A failed read is retried once. A failed or timed-out write is never re-sent: DUET says it may not have gone through.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 5 · TONE ======================= -->
+<section class="slide" id="tone" data-steps="3" data-label="Semantics and acoustics">
+  <header class="sh" style="padding-bottom:14px">
+    <div class="eyebrow"><b>2</b>Brief point 2 · Semantics and acoustics</div>
+    <h2 class="t">It hears what you say and how you say it</h2>
+  </header>
+  <svg id="tone-svg" viewBox="0 0 1456 236" aria-label="The words and the voice of one request are read together into a reading of unsure, which makes the coordinator ask first">
+    <text class="lane-l" x="0" y="44">WORDS</text>
+    <text class="wtxt" x="96" y="46">Set an alarm for <tspan fill="#56607E">…</tspan> 4:30, <tspan class="hedge">I think.</tspan></text>
+    <text class="lane-l" x="0" y="154">VOICE</text>
+    <path id="wave" d=""/>
+    <g data-in="1" style="--d:900ms"><line x1="452" y1="104" x2="452" y2="116" stroke="#A15C07" stroke-width="2"/><line x1="452" y1="110" x2="548" y2="110" stroke="#A15C07" stroke-width="2"/><line x1="548" y1="104" x2="548" y2="116" stroke="#A15C07" stroke-width="2"/><text x="500" y="98" text-anchor="middle" style="font:600 14px var(--f-body);fill:#A15C07">pause 1.1 s</text></g>
+    <g class="mtr">
+      <text class="lane-l" x="790" y="70">AGAINST YOUR OWN USUAL</text>
+      <text class="ml" x="790" y="98">brightness</text><rect class="mb" x="900" y="88" width="160" height="12" rx="6"/><rect class="mf" x="900" y="88" width="74" height="12" rx="6" style="--d:500ms"/>
+      <text class="ml" x="790" y="126">pitch</text><rect class="mb" x="900" y="116" width="160" height="12" rx="6"/><rect class="mf" x="900" y="116" width="82" height="12" rx="6" style="--d:600ms"/>
+      <text class="ml" x="790" y="154">loudness</text><rect class="mb" x="900" y="144" width="160" height="12" rx="6"/><rect class="mf" x="900" y="144" width="70" height="12" rx="6" style="--d:700ms"/>
+      <text class="ml" x="790" y="182">pauses</text><rect class="mb" x="900" y="172" width="160" height="12" rx="6"/><rect class="mf hi" x="900" y="172" width="150" height="12" rx="6" style="--d:900ms"/>
+      <text class="ml" x="790" y="210">emotion</text><rect class="mb" x="900" y="200" width="160" height="12" rx="6"/><rect class="mf" x="900" y="200" width="56" height="12" rx="6" style="--d:800ms"/>
+      <line class="base" x1="980" y1="82" x2="980" y2="218"/><text x="980" y="232" text-anchor="middle" style="font:500 12px var(--f-mono);fill:#56607E">usual</text>
+    </g>
+    <path class="wire" d="M 520 36 C 820 36, 980 56, 1106 70" data-in="1" style="--d:1100ms"/>
+    <path class="wire" d="M 1070 150 C 1092 150, 1090 100, 1106 96" data-in="1" style="--d:1100ms"/>
+    <g class="rd" data-in="1" style="--d:1300ms"><rect x="1110" y="38" width="346" height="80" rx="14"/><text class="rt" x="1130" y="70">Reading: unsure of the value</text><text class="rs" x="1130" y="96">“I think” next to 4:30 · a pause before it</text></g>
+    <path class="wire" d="M 1283 118 V 140" data-in="1" style="--d:1600ms"/>
+    <g class="act" data-in="1" style="--d:1700ms"><rect x="1110" y="142" width="346" height="80" rx="14"/><text class="rt" x="1130" y="174">Coordinator: ask first</text><text class="rs" x="1130" y="200">“4:30 in the afternoon, right?” · holds 1.8 s</text></g>
+  </svg>
+  <div class="tone-rule">Tone may make DUET wait or ask. <span>It never runs or cancels an action on its own: every action still needs words.</span></div>
+  <div class="tcards">
+    <div class="tc" data-in="2" style="--d:0ms"><div class="tch"><h3>Unsure</h3><span class="tag t-built">built</span></div><p class="say">“Set an alarm for 4:30, I think.”</p><p class="does">Asks “4:30 in the afternoon, right?” before acting. “Yes” then sets it, with no model call.</p><p class="cue">words: a hedge next to the value · voice: a long pause before it</p></div>
+    <div class="tc" data-in="2" style="--d:120ms"><div class="tch"><h3>Urgent</h3><span class="tag t-built">built</span></div><p class="say">“No, no, no!” shouted over an answer</p><p class="does">Stops at once and stays quiet. Pending actions wait for the words before anything runs.</p><p class="cue">voice: brighter +13 dB, higher +9 semitones · words: “no”</p></div>
+    <div class="tc" data-in="2" style="--d:240ms"><div class="tch"><h3>Distressed</h3><span class="tag t-built">built</span></div><p class="say">“My knee hurts…” in a low, shaky voice</p><p class="does">Answers gently, asks how they are, offers to call family, and speaks 10% slower.</p><p class="cue">voice: emotion model · words: pain</p></div>
+    <div class="tc next" data-in="3" style="--d:0ms"><div class="tch"><h3>Mixed signals</h3><span class="tag t-next">next</span></div><p class="say">“I'm fine” said shakily</p><p class="does">The words and the voice disagree: check in gently and offer to alert family.</p><p class="cue">the voice must outweigh the words, so it needs care</p></div>
+    <div class="tc next" data-in="3" style="--d:120ms"><div class="tch"><h3>Sarcasm</h3><span class="tag t-next">next</span></div><p class="say">“Oh great, set it for 5 AM.”</p><p class="does">At most a quick yes/no check before acting. Never acted on.</p><p class="cue">a research-grade cue, so advisory only</p></div>
+  </div>
+  <p class="tone-note"><b>Why brightness and pitch, not loudness:</b> a phone's gain control flattens loudness. On CREMA-D actors, angry speech was only +2.3 dB louder after levelling, but +18.9 dB brighter and +14 semitones higher. Each segment is measured in about 12 ms, in parallel with speech recognition.</p>
+</section>
+
+<!-- ======================= 7 · GALAXY ======================= -->
+<section class="slide" id="galaxy" data-steps="3" data-label="On a Galaxy today">
+  <header class="sh" style="padding-bottom:18px">
+    <div class="eyebrow"><b>3</b>Brief point 3 · Relevance to Samsung</div>
+    <h2 class="t">On a Galaxy today: real phone actions, a real SmartThings home</h2>
+  </header>
+  <div class="gpanels">
+    <!-- Care -->
+    <div class="gp f0" id="g-care">
+      <div class="gp-h"><h3>Care</h3><span>an older person living alone</span></div>
+      <svg class="scene" viewBox="0 0 460 280" aria-label="Asha, an older woman, in her armchair talking to DUET on her phone">
+        <defs><filter id="cut" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="1.6" dy="2.6" stdDeviation="0.5" flood-color="#3A2E1F" flood-opacity=".3"/></filter></defs>
+        <rect width="460" height="280" fill="#EDE4D6"/>
+        <rect y="216" width="460" height="64" fill="#D8C7AE"/>
+        <g class="paper"><rect x="318" y="24" width="112" height="94" rx="4" fill="#F7F2E8"/><rect x="326" y="32" width="96" height="78" fill="#BFD6EE"/><line x1="374" y1="32" x2="374" y2="110" stroke="#F7F2E8" stroke-width="5"/><line x1="326" y1="71" x2="422" y2="71" stroke="#F7F2E8" stroke-width="5"/></g>
+        <g class="paper"><rect x="232" y="38" width="56" height="46" rx="3" fill="#8C6A4F"/><rect x="237" y="43" width="46" height="36" fill="#F3D9B8"/><circle cx="252" cy="56" r="6" fill="#B4656F"/><circle cx="268" cy="58" r="5" fill="#3E5BA9"/><rect x="245" y="63" width="14" height="14" rx="5" fill="#B4656F"/><rect x="262" y="64" width="12" height="13" rx="5" fill="#3E5BA9"/></g>
+        <g class="paper"><rect x="300" y="180" width="122" height="12" rx="3" fill="#8C6A4F"/><rect x="310" y="192" width="8" height="40" fill="#7A5A41"/><rect x="404" y="192" width="8" height="40" fill="#7A5A41"/>
+          <rect x="318" y="162" width="86" height="18" rx="4" fill="#FAFAFC" stroke="#9AA1B5" stroke-width="1.5"/><line x1="339" y1="162" x2="339" y2="180" stroke="#9AA1B5"/><line x1="361" y1="162" x2="361" y2="180" stroke="#9AA1B5"/><line x1="383" y1="162" x2="383" y2="180" stroke="#9AA1B5"/>
+          <circle cx="350" cy="171" r="3.6" fill="#C2410C"/><circle cx="372" cy="171" r="3.6" fill="#C2410C"/><circle cx="394" cy="171" r="3.6" fill="#C2410C"/></g>
+        <g class="paper"><rect x="58" y="88" width="176" height="150" rx="34" fill="#3E5BA9"/><rect x="34" y="150" width="44" height="92" rx="18" fill="#2F4889"/><rect x="214" y="150" width="44" height="92" rx="18" fill="#2F4889"/><rect x="50" y="190" width="192" height="46" rx="16" fill="#34509A"/><rect x="62" y="236" width="12" height="24" fill="#26386A"/><rect x="220" y="236" width="12" height="24" fill="#26386A"/></g>
+        <g class="boil paper">
+          <rect x="98" y="142" width="96" height="88" rx="40" fill="#B4656F"/>
+          <path d="M 132 146 L 146 172 L 160 146 Z" fill="#F7F2E8"/>
+          <rect x="106" y="204" width="82" height="32" rx="13" fill="#5B4B6B"/>
+          <circle cx="146" cy="112" r="31" fill="#F1C7A3"/>
+          <path d="M 114 112 C 112 76, 180 76, 178 112 C 172 92, 120 92, 114 112 Z" fill="#D9DCE3"/>
+          <circle cx="146" cy="76" r="13" fill="#D9DCE3"/>
+          <circle cx="135" cy="113" r="8" fill="none" stroke="#33384A" stroke-width="2.5"/><circle cx="157" cy="113" r="8" fill="none" stroke="#33384A" stroke-width="2.5"/><line x1="143" y1="113" x2="149" y2="113" stroke="#33384A" stroke-width="2.5"/>
+          <circle cx="135" cy="114" r="2.2" fill="#33384A"/><circle cx="157" cy="114" r="2.2" fill="#33384A"/>
+          <circle cx="127" cy="125" r="5" fill="#E89A8A" opacity=".55"/><circle cx="165" cy="125" r="5" fill="#E89A8A" opacity=".55"/>
+          <path class="fr fr0 fr1" d="M 138 128 Q 146 134 154 128" fill="none" stroke="#8A3B3B" stroke-width="2.5" stroke-linecap="round"/>
+          <path class="fr fr2" d="M 138 132 Q 146 126 154 132" fill="none" stroke="#8A3B3B" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 110 176 Q 138 200 168 178" fill="none" stroke="#9E5560" stroke-width="15" stroke-linecap="round"/>
+          <circle cx="171" cy="176" r="8" fill="#F1C7A3"/>
+          <rect x="166" y="146" width="20" height="34" rx="4" fill="#1B2140"/><rect x="169" y="150" width="14" height="25" rx="2" fill="#8FB3FF"/>
+        </g>
+        <g class="fr fr1 fr2 paper"><rect x="322" y="130" width="78" height="24" rx="12" fill="#0A7A53"/><text x="361" y="147" text-anchor="middle" style="font:600 13px var(--f-body);fill:#fff">taken 8:10 ✓</text></g>
+        <g class="fr fr2"><path d="M 188 104 q 7 -6 0 -12 q -7 -6 0 -12" fill="none" stroke="#56607E" stroke-width="2.2" stroke-linecap="round"/><path d="M 198 108 q 9 -8 0 -16 q -9 -8 0 -16" fill="none" stroke="#56607E" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+          <path d="M 170 206 l 6 -10 M 178 210 l 11 -3 M 174 216 l 8 7" stroke="#C2410C" stroke-width="3" stroke-linecap="round"/></g>
+        <g class="fr fr2 paper"><rect x="196" y="140" width="98" height="24" rx="12" fill="#1428A0"/><text x="245" y="157" text-anchor="middle" style="font:600 13px var(--f-body);fill:#fff">Call Priya?</text></g>
+      </svg>
+      <div class="gp-say">
+        <div class="fr fr0"><div class="ln"><span class="who">Asha</span><span>“Did I take my tablet? I'll just take one now.”</span></div><div class="ln" style="color:var(--muted)"><span class="who duet">DUET</span><span>checks today's medicine record first…</span></div></div>
+        <div class="fr fr1"><div class="ln"><span class="who">Asha</span><span>“Did I take my tablet? I'll just take one now.”</span></div><div class="ln"><span class="who duet">DUET</span><span>“You took it at 8:10 this morning. The next one is at 8 tonight.”</span></div></div>
+        <div class="fr fr2"><div class="ln"><span class="who">Asha</span><span>“My knee hurts today…” <i style="color:var(--muted)">(low, shaky)</i></span></div><div class="ln"><span class="who duet">DUET</span><span>“I'm sorry it hurts. Is it very painful? Shall I call Priya?”</span></div></div>
+      </div>
+    </div>
+    <!-- Drive -->
+    <div class="gp f0" id="g-drive">
+      <div class="gp-h"><h3>Drive</h3><span>eyes on the road</span></div>
+      <svg class="scene" viewBox="0 0 460 280" aria-label="A map with a car heading home, Google Maps in front, and the home's air conditioner">
+        <rect width="460" height="280" fill="#E6EBF2"/>
+        <rect x="16" y="16" width="140" height="92" rx="8" fill="#D5E6D0"/>
+        <path d="M 0 214 Q 60 196 120 222 T 250 238 L 250 280 L 0 280 Z" fill="#CBDDF0"/>
+        <rect x="292" y="150" width="152" height="112" rx="8" fill="#F0EBE1"/>
+        <path d="M 0 132 H 460" stroke="#FFFFFF" stroke-width="18"/><path d="M 182 0 V 280" stroke="#FFFFFF" stroke-width="16"/><path d="M 330 0 V 280" stroke="#FFFFFF" stroke-width="14"/>
+        <g class="paper"><rect x="356" y="30" width="40" height="52" rx="3" fill="#B7C0D7"/><rect x="363" y="38" width="9" height="8" fill="#F3F5FA"/><rect x="380" y="38" width="9" height="8" fill="#F3F5FA"/><rect x="363" y="54" width="9" height="8" fill="#F3F5FA"/><rect x="380" y="54" width="9" height="8" fill="#F3F5FA"/><text x="376" y="100" text-anchor="middle" style="font:600 13px var(--f-body);fill:#56607E">Office</text></g>
+        <g class="paper"><path d="M 346 196 L 374 172 L 402 196 Z" fill="#C2410C"/><rect x="350" y="195" width="48" height="40" fill="#F7F2E8"/><rect x="366" y="212" width="14" height="23" fill="#8C6A4F"/><rect x="383" y="203" width="12" height="9" rx="2" fill="#FFFFFF" stroke="#9AA1B5"/><text x="374" y="252" text-anchor="middle" style="font:600 13px var(--f-body);fill:#56607E">Home</text></g>
+        <path class="fr fr0" d="M 72 132 H 182 V 64 H 352" fill="none" stroke="#C2410C" stroke-width="5" stroke-dasharray="3 9" stroke-linecap="round" opacity=".85"/>
+        <path d="M 72 132 H 330 V 186 H 344" fill="none" stroke="#1428A0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <g class="fr fr0 boil paper"><rect x="50" y="121" width="38" height="22" rx="7" fill="#0D1530"/><rect x="57" y="114" width="22" height="11" rx="4" fill="#0D1530"/><circle cx="59" cy="144" r="5" fill="#33384A"/><circle cx="80" cy="144" r="5" fill="#33384A"/></g>
+        <g class="fr fr1 fr2 boil paper"><rect x="262" y="121" width="38" height="22" rx="7" fill="#0D1530"/><rect x="269" y="114" width="22" height="11" rx="4" fill="#0D1530"/><circle cx="271" cy="144" r="5" fill="#33384A"/><circle cx="292" cy="144" r="5" fill="#33384A"/></g>
+        <g class="paper"><rect x="12" y="236" width="218" height="28" rx="14" fill="#FFFFFF"/><circle cx="30" cy="250" r="6" fill="#0A7A53"/><text x="44" y="255" style="font:600 13px var(--f-body);fill:#0D1530">Maps in front · DUET listening</text></g>
+        <g class="fr fr1 fr2 paper"><circle cx="428" cy="210" r="11" fill="#F2B233"/><text x="428" y="240" text-anchor="middle" style="font:700 14px var(--f-body);fill:#A15C07">31°</text><rect x="236" y="88" width="88" height="24" rx="12" fill="#1428A0"/><text x="280" y="105" text-anchor="middle" style="font:600 13px var(--f-body);fill:#fff">10 min away</text></g>
+        <g class="fr fr2 paper"><rect x="348" y="142" width="104" height="24" rx="12" fill="#0A7A53"/><text x="400" y="159" text-anchor="middle" style="font:600 13px var(--f-body);fill:#fff">AC on · 22° ✓</text></g>
+      </svg>
+      <div class="gp-say">
+        <div class="fr fr0"><div class="ln"><span class="who">You</span><span>“Take me to the office. No, wait, take me home.”</span></div><div class="ln"><span class="who duet">DUET</span><span>“Heading home.” Only home reaches Google Maps.</span></div></div>
+        <div class="fr fr1"><div class="ln"><span class="who duet">DUET</span><span>“You'll be home in about 10 minutes, and it's 31° outside. Shall I start the living room AC at 24°?”</span></div></div>
+        <div class="fr fr2"><div class="ln"><span class="who">You</span><span>“Yes, make it 22.”</span></div><div class="ln"><span class="who duet">DUET</span><span>“The living room AC is on at 22°.” Confirmed by SmartThings.</span></div></div>
+      </div>
+    </div>
+    <!-- Assistant -->
+    <div class="gp f0" id="g-asst">
+      <div class="gp-h"><h3>Assistant</h3><span>every Galaxy owner</span></div>
+      <svg class="scene" viewBox="0 0 460 280" aria-label="A hand holding a Galaxy phone with DUET open">
+        <rect width="460" height="280" fill="#E7E3EE"/>
+        <rect y="226" width="460" height="54" fill="#D5CFE0"/>
+        <g class="paper"><rect x="176" y="20" width="120" height="240" rx="18" fill="#0D1530"/><rect x="184" y="32" width="104" height="216" rx="12" fill="#F3F5FA"/><text x="196" y="54" style="font:700 14px var(--f-disp);fill:#1428A0">DUET</text><circle cx="276" cy="49" r="4.5" fill="#0A7A53"/></g>
+        <g class="fr fr0"><rect x="296" y="80" width="6" height="34" rx="3" fill="#2F55E4"/><path d="M 340 97 H 310" stroke="#2F55E4" stroke-width="2.5"/><text x="346" y="102" style="font:600 13px var(--f-body);fill:#1428A0">side key</text>
+          <rect x="192" y="70" width="88" height="22" rx="6" fill="#FCE8DA"/><text x="236" y="85" text-anchor="middle" style="font:500 12px var(--f-body);fill:#C2410C">Never ran · 6:30</text>
+          <rect x="192" y="98" width="88" height="22" rx="6" fill="#DCF1E7"/><text x="236" y="113" text-anchor="middle" style="font:500 12px var(--f-body);fill:#0A7A53">Done · 7:00</text>
+          <text x="236" y="176" text-anchor="middle" style="font:700 36px var(--f-disp);fill:#0D1530">07:00</text><text x="236" y="198" text-anchor="middle" style="font:500 12px var(--f-body);fill:#56607E">alarm set</text></g>
+        <g class="fr fr1"><text x="196" y="86" style="font:600 12px var(--f-body);fill:#56607E">battery today</text>
+          <text x="196" y="110" style="font:500 12px var(--f-body);fill:#0D1530">screen</text><rect x="196" y="116" width="78" height="10" rx="5" fill="#A15C07"/>
+          <text x="196" y="144" style="font:500 12px var(--f-body);fill:#0D1530">a game</text><rect x="196" y="150" width="44" height="10" rx="5" fill="#C2410C"/>
+          <text x="196" y="178" style="font:500 12px var(--f-body);fill:#0D1530">other apps</text><rect x="196" y="184" width="20" height="10" rx="5" fill="#8E98B4"/>
+          <text x="236" y="228" text-anchor="middle" style="font:500 11px var(--f-body);fill:#56607E">from the phone's own readings</text></g>
+        <g class="fr fr2"><circle cx="236" cy="110" r="14" fill="#F2B233"/><text x="236" y="150" text-anchor="middle" style="font:600 13px var(--f-body);fill:#0D1530">brightness</text><rect x="196" y="164" width="80" height="8" rx="4" fill="#D3D9E7"/><rect x="196" y="164" width="32" height="8" rx="4" fill="#1428A0"/><circle cx="228" cy="168" r="8" fill="#1428A0"/><text x="236" y="198" text-anchor="middle" style="font:700 16px var(--f-disp);fill:#1428A0">40%</text>
+          <rect x="184" y="32" width="104" height="216" rx="12" fill="#0D1530" opacity=".18"/></g>
+        <g class="boil paper"><ellipse cx="236" cy="268" rx="78" ry="38" fill="#E2AE85"/><rect x="152" y="214" width="26" height="56" rx="13" fill="#D9A07A" transform="rotate(18 165 242)"/><rect x="292" y="196" width="24" height="64" rx="12" fill="#D9A07A" transform="rotate(-16 304 228)"/></g>
+      </svg>
+      <div class="gp-say">
+        <div class="fr fr0"><div class="ln"><span class="who">You</span><span>“Set an alarm for 6:30… no, make it 7.”</span></div><div class="ln"><span class="who duet">DUET</span><span>“Sure. Alarm set for 7 in the morning.”</span></div></div>
+        <div class="fr fr1"><div class="ln"><span class="who">You</span><span>“Why is my battery dying so fast?”</span></div><div class="ln"><span class="who duet">DUET</span><span>“Mostly the screen, at high brightness, and a game running in the background.”</span></div></div>
+        <div class="fr fr2"><div class="ln"><span class="who">You</span><span>“Okay, bring the brightness down to 40.”</span></div><div class="ln"><span class="who duet">DUET</span><span>“Brightness set to 40%.”</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="caps">
+    <span class="k">Built on public Android and Samsung interfaces</span>
+    <span class="chip">DUET's own alarms, on the lock screen</span><span class="chip">timers</span><span class="chip">calendar</span><span class="chip">calls and texts</span><span class="chip">Google Maps, listening behind it</span><span class="chip">brightness · timeout · text size</span><span class="chip">Do Not Disturb</span><span class="chip">torch · media · volume</span><span class="chip">battery and app diagnostics</span><span class="chip st">SmartThings devices</span><span class="chip st">offers when you are nearly home</span><span class="chip">weather</span><span class="chip">web answers</span><span class="chip st">the side-key assistant</span>
+  </div>
+</section>
+
+<!-- ======================= ROADMAP ======================= -->
+<section class="slide" id="roadmap" data-steps="3" data-label="Vision and roadmap">
+  <header class="sh">
+    <div class="eyebrow"><b>3</b>Vision · extensions · roadmap</div>
+    <h2 class="t">From an edge prototype to the safety layer inside Samsung's agents</h2>
+  </header>
+  <div class="rm">
+    <div class="rm-rail" aria-hidden="true"><span class="rm-fill"></span></div>
+    <div class="rm-cols">
+      <div class="rm-col now">
+        <span class="rm-dot" aria-hidden="true"></span>
+        <div class="rm-when">Today</div>
+        <div class="rm-card">
+          <span class="tag t-built" style="align-self:flex-start">built · in the demo</span>
+          <ul>
+            <li><b>Galaxy app:</b> the ears, mouth and hands, on the side key</li>
+            <li><b>Edge:</b> speech, the fast mind, the coordinator, tone</li>
+            <li><b>Cloud:</b> Gemma 4 26B, web answers, SmartThings</li>
+            <li><b>Three modes</b>, skills from a manifest</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rm-col" data-in="1">
+        <span class="rm-dot" aria-hidden="true"></span>
+        <div class="rm-when">Phase 1 · months 0–3</div>
+        <div class="rm-card">
+          <h3>All of it on the phone</h3>
+          <ul>
+            <li>The coordinator in <b>Kotlin</b>, with the same tests</li>
+            <li><b>Gemma 4 E2B on the phone</b> through Google's LiteRT-LM (52 tokens/s published on the Galaxy S26 Ultra)</li>
+            <li>Streaming speech recognition and the tone channel on the phone</li>
+          </ul>
+          <p class="rm-gate"><b>Done when</b>a simple action lands in under 1.5 s with the laptop switched off, and the spoken suite still shows 0 stale and 0 duplicate actions</p>
+        </div>
+      </div>
+      <div class="rm-col" data-in="2">
+        <span class="rm-dot" aria-hidden="true"></span>
+        <div class="rm-when">Phase 2 · months 3–6</div>
+        <div class="rm-card">
+          <h3>Listening like a person</h3>
+          <ul>
+            <li><b>Hindi and Hinglish</b>, in recognition and in the fast mind</li>
+            <li><b>Gemma hears the audio itself:</b> meaning and tone from one model</li>
+            <li>Mixed signals and sarcasm, as cues that can only ask</li>
+            <li>Your voice's baseline kept on the phone, never uploaded</li>
+          </ul>
+          <p class="rm-gate"><b>Done when</b>Hinglish corrections pass at the English rate, and tone asks back on at most 1 plain request in 20</p>
+        </div>
+      </div>
+      <div class="rm-col sam" data-in="3">
+        <span class="rm-dot" aria-hidden="true"></span>
+        <div class="rm-when">Phase 3 · months 6–12 · with Samsung</div>
+        <div class="rm-card">
+          <h3>Inside Samsung's agents</h3>
+          <ul>
+            <li><b>Bixby's device agents and AppFunctions:</b> the coordinator in front of every action</li>
+            <li><b>SmartThings Car-to-Home:</b> offers that start in the car, settled by your words</li>
+            <li><b>Galaxy Watch and Buds:</b> Care check-ins and family alerts</li>
+            <li><b>Samsung SDS voicebots:</b> book once, never twice</li>
+          </ul>
+          <p class="rm-gate"><b>Done when</b>every action an agent takes passes the gate, the ledger and the device's own confirmation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rm-foot" data-in="3" style="--d:300ms">
+    <p class="rm-scale"><b>Why it scales:</b> a new capability is one entry in a manifest, and it inherits the gate, the ledger and the device's confirmation, with no new code.</p>
+    <p class="big">Models are configuration.<br><span>The coordinator is the product.</span></p>
+    <span class="demo-cta">The live demo <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M4 11h13M12 5l6 6-6 6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </div>
+</section>
+
+<!-- ======================= THE DEMO FILM ======================= -->
+<section class="slide film nofoot" id="demo" data-steps="0" data-label="Live demo">
+  <video id="demo-video" src="duet_demo.mp4" poster="duet_demo_poster.jpg" preload="metadata" playsinline controls aria-label="DUET live demo film, 2 minutes 58 seconds"></video>
+  <p class="film-miss" id="film-miss" hidden>The film plays from <code>duet_demo.mp4</code>, kept next to this deck.</p>
+</section>
+
+<!-- ======================= APPENDIX ======================= -->
+<section class="slide night apx" id="appendix" data-steps="0" data-num="A" data-label="Appendix">
+  <header class="sh">
+    <div class="eyebrow">Appendix · for questions</div>
+    <h2 class="t">The detail behind the design</h2>
+  </header>
+  <div class="ap-intro">
+    <div><b>A1</b>Where the time goes, and why the AI runs on the edge today</div>
+    <div><b>A2</b>How the fast mind is kept safe</div>
+    <div><b>A3</b>Tone: what we measured before building it</div>
+    <div><b>A4</b>Tested like a product: suites and failure drills</div>
+    <div><b>A5</b>Full-Duplex-Bench v3 in detail</div>
+    <div><b>A6</b>Where DUET sits among voice agents</div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-latency" data-steps="0" data-num="A1" data-label="Latency">
+  <header class="sh">
+    <div class="eyebrow">A1 · Latency</div>
+    <h2 class="t">Where the time goes, and why the AI runs on the edge today</h2>
+  </header>
+  <div class="two" style="grid-template-columns:780px 1fr">
+    <div>
+      <div class="box-h">A simple action, seconds after your last word</div>
+      <svg viewBox="0 0 780 380" width="780" height="380" aria-label="Timeline of a simple action from the user's last word: silence detected, transcribed, turn closed, fast mind decides, Sure spoken, safety hold, the phone acts, confirmation spoken">
+        <g style="font:400 15px var(--f-body);fill:#2B3453">
+          <text x="0" y="44">Silence detected</text><text x="0" y="84">Whisper transcribes</text><text x="0" y="124">Turn closes</text><text x="0" y="164">Fast mind decides</text><text x="0" y="204">“Sure.” starts</text><text x="0" y="244">Safety hold (1.4 s quiet)</text><text x="0" y="284">The phone acts, replies</text><text x="0" y="324">Confirmation spoken</text>
+        </g>
+        <g stroke="#E5E9F2" stroke-width="1.5"><line x1="190" y1="16" x2="190" y2="336"/><line x1="303" y1="16" x2="303" y2="336"/><line x1="416" y1="16" x2="416" y2="336"/><line x1="529" y1="16" x2="529" y2="336"/><line x1="642" y1="16" x2="642" y2="336"/><line x1="755" y1="16" x2="755" y2="336"/></g>
+        <rect x="190" y="30" width="79" height="20" rx="5" fill="#8E98B4"/>
+        <rect x="269" y="70" width="54" height="20" rx="5" fill="#8E98B4"/>
+        <rect x="323" y="110" width="8" height="20" rx="3" fill="#1428A0"/>
+        <rect x="330" y="150" width="68" height="20" rx="5" fill="#2F55E4"/>
+        <circle cx="416" cy="200" r="9" fill="#1428A0"/>
+        <rect x="269" y="230" width="316" height="20" rx="5" fill="#FBEFD5" stroke="#A15C07" stroke-width="1.5"/>
+        <rect x="585" y="270" width="57" height="20" rx="5" fill="#0A7A53"/>
+        <rect x="642" y="310" width="90" height="20" rx="5" fill="#DCF1E7" stroke="#0A7A53" stroke-width="1.5"/>
+        <g style="font:500 13px var(--f-mono);fill:#56607E" text-anchor="middle"><text x="190" y="362">0 s</text><text x="303" y="362">0.5</text><text x="416" y="362">1.0</text><text x="529" y="362">1.5</text><text x="642" y="362">2.0</text><text x="755" y="362">2.5</text></g>
+      </svg>
+      <p class="small">Medians from our runs. Thinking and the hold overlap: the hold is counted from the end of speech, so safety costs little time. A correction (“no, make it 7”) raises the hold to 1.8 s; a cloud answer adds one Gemma 4 26B call, 1.5–2 s at the median.</p>
+    </div>
+    <div>
+      <div class="box-h">Each module placed by measurement</div>
+      <table class="tbl">
+        <tr><th>Module</th><th>On the edge today</th><th>On the S24 itself</th></tr>
+        <tr><td>Fast mind, Gemma 4 E2B</td><td class="num">0.24 s a decision</td><td>≈3.3 s at published S24-class rates</td></tr>
+        <tr><td>Speech recognition</td><td>Whisper large-v3-turbo</td><td>streaming models ≤0.3 s faster, much less accurate on Indian English</td></tr>
+        <tr><td>Voice</td><td>Kokoro, streamed</td><td>no gain from Android's voice</td></tr>
+        <tr><td>Phone ↔ edge</td><td class="num">90 ms round trip</td><td>an action and its reply: 253 ms</td></tr>
+        <tr><td>Cloud mind</td><td class="num">1.5–2 s a call</td><td>the same call, from the phone</td></tr>
+      </table>
+      <p class="small">The AI moves onto the phone once phones run Gemma fast enough. Gemma 4 E2B runs at 52 tokens/s on the Galaxy S26 Ultra (published), and the coordinator was written to port.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-fast" data-steps="0" data-num="A2" data-label="Fast mind">
+  <header class="sh">
+    <div class="eyebrow">A2 · The fast mind</div>
+    <h2 class="t">How a 2-billion-parameter model is kept safe</h2>
+  </header>
+  <div class="two">
+    <div>
+      <div class="box-h">What the fast mind may do</div>
+      <ul class="lst">
+        <li><b>Answer small talk itself</b> (“Good morning”, “I'm tired”), after a code check: no number, no health advice, no claim, no tool name. 0.25–0.45 s.</li>
+        <li><b>Act</b> on a simple phone action: alarm, timer, torch, brightness, a call, a text, Maps, a home device.</li>
+        <li><b>Keep listening</b> when the words stop mid-phrase (“Call my…”).</li>
+        <li><b>Hand over</b> with a bridge line in its own words and a kind: <b>web</b> → one grounded search · <b>health or talk</b> → one light call · <b>phone</b> → the full cloud mind with tools.</li>
+        <li><b>Plain readings</b> (“How much battery do I have?”) are answered from the reading itself, with no model call.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="box-h">Code checks every plan before it runs</div>
+      <ul class="lst">
+        <li><b>Named in your words:</b> “how many shopping apps do I have?” is not open_app(apps).</li>
+        <li><b>Values you said:</b> a contact, place or number you never said goes to the cloud mind.</li>
+        <li><b>The last value said is in the plan:</b> “3:30, no, cancel that, 4:30 instead” must plan 4:30.</li>
+        <li><b>A question is answered, never acted on:</b> “Is the AC on?”</li>
+        <li><b>Nothing dropped, nothing earlier changed:</b> “…actually never mind” and “make the alarm 7” go to the cloud mind, which has the history.</li>
+      </ul>
+      <p class="small" style="padding-top:18px">Measured: <b style="color:var(--ink)">188 of 190 decisions right, 0 wrong, 2 handed over;</b> actions decided in 0.18–0.24 s. A plan that fails a check costs a second, never a wrong action.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-tone" data-steps="0" data-num="A3" data-label="Tone measurements">
+  <header class="sh">
+    <div class="eyebrow">A3 · Tone</div>
+    <h2 class="t">What we measured before building the tone channel</h2>
+  </header>
+  <div class="two" style="grid-template-columns:860px 1fr">
+    <div>
+      <div class="box-h">Vocal effort that survives a phone's gain control</div>
+      <table class="tbl">
+        <tr><th>CREMA-D actors, levelled</th><th>Brightness</th><th>Pitch</th><th>Loudness</th><th>Marked raised</th></tr>
+        <tr><td>Angry</td><td class="num">+18.9 dB</td><td class="num">+14.0 st</td><td class="num">+2.3 dB</td><td class="num">9 of 10</td></tr>
+        <tr><td>Fearful</td><td class="num">+13.3 dB</td><td class="num">+12.3 st</td><td class="num">+2.5 dB</td><td class="num">7 of 10</td></tr>
+        <tr><td>Happy</td><td class="num">+12.2 dB</td><td class="num">+9.8 st</td><td class="num">+1.3 dB</td><td class="num">8 of 10</td></tr>
+        <tr><td>Sad</td><td class="num">−1.0 dB</td><td class="num">+1.4 st</td><td class="num">−1.0 dB</td><td class="num">0 of 10</td></tr>
+        <tr><td>Neutral</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0 of 10</td></tr>
+      </table>
+      <p class="small">Each take against the same actor's neutral one. Plain speech marked raised: 0 of 13 of our own S24 utterances, 0 of 40 synthetic lines. Excitement sounds like anger, so a raised voice alone changes nothing but the timeline.</p>
+    </div>
+    <div>
+      <div class="box-h">Models and cues we tried</div>
+      <ul class="lst">
+        <li><b>SenseVoice-Small:</b> “unknown” emotion on 49 of 50 English clips. Rejected.</li>
+        <li><b>emotion2vec, distilled to 9.7 MB:</b> 19 of 30 negative clips caught, 1 false alarm in 20. Used only together with distress words.</li>
+        <li><b>A rising pitch at the end:</b> flagged 6 of 29 plain statements; Indian English often ends rising. Off by default.</li>
+        <li><b>Our own pitch tracker</b> made octave errors, so we use Praat.</li>
+        <li><b>Cost:</b> 12 ms a segment at the median, 31 ms at most, in parallel with Whisper.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-tests" data-steps="0" data-num="A4" data-label="Testing">
+  <header class="sh">
+    <div class="eyebrow">A4 · Testing</div>
+    <h2 class="t">Tested like a product, including failures on purpose</h2>
+  </header>
+  <div class="two" style="grid-template-columns:620px 1fr">
+    <div>
+      <div class="box-h">The layers</div>
+      <ul class="lst">
+        <li><b>345 unit tests:</b> the gate, epochs, ledger, guards, routing, key pool and tone.</li>
+        <li><b>66 spoken scenarios:</b> a synthetic voice talks to the full live stack; each scenario says what DUET must do, must never do and must never claim.</li>
+        <li><b>46 of 46 end-to-end cases</b> on Android 16 with the real app, also behind Google Maps.</li>
+        <li><b>190 fast-mind decisions,</b> with held-out sentences written after its checks.</li>
+        <li><b>One command</b> runs all of it and writes one report.</li>
+      </ul>
+      <p class="small">Across 200+ spoken test conversations: 0 stale and 0 duplicate actions.</p>
+    </div>
+    <div>
+      <div class="box-h">Switched off on purpose</div>
+      <table class="tbl">
+        <tr><th>What failed</th><th>What DUET did</th></tr>
+        <tr><td>The cloud mind</td><td>Said so at once; simple actions kept working on the fast mind</td></tr>
+        <tr><td>The fast mind's server</td><td>Every request went to the cloud mind, with no wait</td></tr>
+        <tr><td>One of two API keys</td><td>Every request answered on the good key; the bad one rests</td></tr>
+        <tr><td>The phone refuses</td><td>“I couldn't turn the torch on, but you can allow this in settings.”</td></tr>
+        <tr><td>The phone never answers</td><td>“It may not have gone through”: never claimed, never re-sent</td></tr>
+        <tr><td>The room drops behind Maps</td><td>Rejoined in 3.7 s, still listening</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-fdb" data-steps="0" data-num="A5" data-label="Benchmark detail">
+  <header class="sh">
+    <div class="eyebrow">A5 · Full-Duplex-Bench v3</div>
+    <h2 class="t">The benchmark in detail</h2>
+  </header>
+  <div class="two">
+    <div>
+      <div class="box-h">Pass@1 by kind of disfluency</div>
+      <div class="bars" style="margin-top:0">
+        <div class="bar"><span class="lab">False start</span><span class="trk"><span class="fil" style="display:block;width:92%;background:var(--blue)"></span></span><span class="val">0.92</span></div>
+        <div class="bar"><span class="lab">Self-correction</span><span class="trk"><span class="fil" style="display:block;width:88%;background:var(--blue)"></span></span><span class="val">0.88</span></div>
+        <div class="bar"><span class="lab">Filler</span><span class="trk"><span class="fil" style="display:block;width:83%;background:var(--blue)"></span></span><span class="val">0.83</span></div>
+        <div class="bar"><span class="lab">Hesitation</span><span class="trk"><span class="fil" style="display:block;width:80%;background:var(--blue)"></span></span><span class="val">0.80</span></div>
+        <div class="bar"><span class="lab">Pause</span><span class="trk"><span class="fil" style="display:block;width:72%;background:var(--blue)"></span></span><span class="val">0.72</span></div>
+        <div class="bar"><span class="lab">None</span><span class="trk"><span class="fil" style="display:block;width:68%;background:var(--blue)"></span></span><span class="val">0.68</span></div>
+      </div>
+      <p class="small">By tools expected: 1 tool 0.88 · 2 tools 0.72 · 3 tools 0.62. Model requests: 220 answered, median 3.3 s; 109 backup requests and 221 retried transient errors kept the free tier inside each recording's window.</p>
+    </div>
+    <div>
+      <div class="box-h">The 25 exact-match misses, read from the traces</div>
+      <table class="tbl">
+        <tr><th>Kind</th><th>Items</th><th>What happened</th></tr>
+        <tr><td>Format only</td><td class="num">8</td><td>The right tool and value, worded differently (“the gym” for “Gym”)</td></tr>
+        <tr><td>Heard wrong</td><td class="num">7</td><td>Spelled-out codes the recogniser misheard</td></tr>
+        <tr><td>Provider stalls</td><td class="num">3</td><td>Google answered nothing for 28 s</td></tr>
+        <tr><td>Conditional</td><td class="num">3</td><td>The expected answer contradicts the benchmark's mock data</td></tr>
+        <tr><td>Not passable</td><td class="num">2</td><td>The expected value is never spoken</td></tr>
+        <tr><td>Judgement</td><td class="num">2</td><td>DUET asked a question instead of acting</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="slide apx" id="a-land" data-steps="0" data-num="A6" data-label="Landscape">
+  <header class="sh">
+    <div class="eyebrow">A6 · Landscape</div>
+    <h2 class="t">Where DUET sits among voice agents</h2>
+  </header>
+  <table class="tbl" style="font-size:18px">
+    <tr><th style="width:330px">System</th><th style="width:300px">What it is</th><th>When the user corrects themselves</th><th style="width:230px">FDB-v3 tool use</th></tr>
+    <tr><td>GPT-Realtime</td><td>One speech-to-speech model</td><td>Acts on partial words: self-corrections 0.59</td><td class="num">Pass@1 0.600</td></tr>
+    <tr><td>Gemini Live 3.1</td><td>One speech-to-speech model</td><td>Pre-emptive calls lock in stale values: 0.35</td><td class="num">Pass@1 0.540</td></tr>
+    <tr><td>NVIDIA frontend–backend (2026)</td><td>A fast frontend hands tools to a backend</td><td>The closest design to ours, with no gate on actions</td><td class="num">Pass@1 0.44–0.48</td></tr>
+    <tr><td>Moshi / Unmute, MiniCPM-o</td><td>Open full-duplex models</td><td>Interruptible and often fast; acting safely is not addressed</td><td>not reported</td></tr>
+    <tr><td>LiveKit Agents, Pipecat</td><td>Voice-agent frameworks</td><td>Barge-in, but no commit gate or ledger</td><td>—</td></tr>
+    <tr><td>Hume EVI</td><td>A voice that reads prosody</td><td>Tone shapes the reply, not the actions</td><td>—</td></tr>
+    <tr class="us"><td>DUET</td><td>A cascade with two minds and a coordinator</td><td>Epochs, commit gate, ledger, and tone that may ask before acting</td><td class="num">Pass@1 0.81 · 75/100 exact</td></tr>
+  </table>
+  <p class="small">Baselines from the FDB-v3 paper and the projects' own publications. DUET's 0.81 was judged by Gemma 4 standing in for gpt-4o.</p>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /app -->
+
+<div id="hud" aria-label="Deck controls">
+  <button id="b-prev" type="button" aria-label="Previous step">‹</button>
+  <span class="pos" id="pos"></span>
+  <button id="b-next" type="button" aria-label="Next step">›</button>
+  <button id="b-notes" type="button" aria-label="Speaker notes">N</button>
+  <button id="b-full" type="button" aria-label="Full screen">⛶</button>
+</div>
+<div id="hint">→ or click: next · ← back · F full screen · N speaker notes · R replay</div>
+<div id="notes" hidden><div class="nh"><span id="n-title"></span><span id="n-time"></span></div><div class="nb" id="n-body"></div></div>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+  const NS = "http://www.w3.org/2000/svg";
+  const REDUCED = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const stage = $("#stage");
+  const slides = $$(".slide");
+  const mainSlides = slides.filter((s) => !s.classList.contains("apx"));
+  let cur = 0, step = 0, t0 = 0;
+
+  // ---------------------------------------------------------------- speaker notes (target seconds per slide)
+  const NOTES = {
+    hook: [15, "We're Team SE7EN from SRM, and this is DUET. Our problem fits in one sentence: “Set an alarm for 6:30… no, make it 7.” [click] A typical agent acts on each phrase as it lands: two alarms, and you wake up at 6:30. [click] DUET never runs the 6:30 plan. It sets 7 once, and says so only after the phone confirms it."],
+    problem: [45, "The Full-Duplex-Bench v3 paper, from NTU and NVIDIA, found today's voice agents fail exactly here: they commit values before the correction arrives. On self-corrections GPT-Realtime passes 59 percent, Gemini Live 35. [click] Building DUET we found six caveats. A correction arrives after the plan. Not every sound is a turn. When you cut it off, what did you actually hear? A retry after a timeout can send the same text twice. A quick request needs an answer in a third of a second, while a why-question needs real reasoning, so DUET has two minds and code checks every plan. And the words can hide a doubt that the voice gives away. Each card names the part of DUET that answers it. [click] So the tension: reply within a second, but act only on what you finally mean. On the same items DUET scores 0.88."],
+    flow: [100, "This is the whole system. The phone is the ears, mouth and hands; our edge machine hears, thinks fast and coordinates; the cloud thinks deep. [click] I say “Set an alarm for 6:30…”. Audio streams over WebRTC, Whisper transcribes it, and in parallel the tone channel measures how I said it. [click] The fast mind, Gemma 4 E2B on our GPU, plans 6:30 in 0.3 seconds. Planning starts early; acting waits at the gate. [click] Then “no, make it 7”: new words advance the epoch, so the 6:30 plan is void. It never reaches the phone. [click] The new plan is checked by code, held 1.8 seconds because I just corrected myself, sent once, and confirmed from the phone's reply, about 2.4 seconds after I stop. [click] A harder question goes to the cloud mind; the fast mind covers the wait in its own words, and the battery is read through the same coordinator. [click] I talk over it: it stops in 0.21 seconds and knows how much I heard. [click] A plain mm-hm lets it carry on; wait, go on and what? are handled by code, with no model call."],
+    coord: [35, "The heart of DUET is the coordinator: the model proposes, deterministic code decides. [click] The normal path: planned, held at the gate until you've been quiet long enough, checked against the ledger, run once, done when the device confirms. [click] New words while it's held: it never runs. [click] The identical call again: answered from the ledger, never repeated. [click] A write that times out is never re-sent; DUET tells you."],
+    tone: [45, "DUET also hears how you say things. Each speech segment is measured against your own voice: brightness, pitch, loudness, pauses and an emotion model, in about 12 milliseconds. [click] “4:30, I think” has a hedge next to the value and a pause before it, so DUET asks “4:30 in the afternoon, right?” before acting. [click] A shouted “no, no, no” stops it at once. Distress with words of pain makes it gentle and slower, and it offers to call family. [click] Mixed signals and sarcasm are next, and the rule makes them safe to add: tone can make DUET wait or ask, never act. And we measured why loudness fails on a phone: gain control flattens it, while brightness and pitch survive."],
+    galaxy: [50, "This runs on a Galaxy S24 today, with real Android actions and a real SmartThings home. [click] Asha lives alone: “Did I take my tablet? I'll take one now.” DUET checks the record and gently stops a second dose. When she says her knee hurts, in a shaky voice, it answers gently and offers to call her daughter. [click] Driving, the destination is corrected mid-sentence and only home reaches Maps. Ten minutes from home DUET speaks first and offers the AC; “yes, make it 22” sets it, confirmed by SmartThings. [click] And for every Galaxy owner: corrections, battery help from the phone's real readings, DUET on the side key."],
+    roadmap: [45, "Where this goes. Today everything you will see in the demo is built and running: the Galaxy app, our edge machine and the cloud. [click] Phase 1 moves all of it onto the phone: the coordinator in Kotlin with the same tests, and Gemma 4 E2B through Google's LiteRT-LM. It is done when a simple action lands in under a second and a half with the laptop switched off. [click] Phase 2 makes it listen like a person: Hindi and Hinglish, and Gemma hearing the audio itself, so meaning and tone come from one model. [click] Phase 3 puts DUET inside Samsung's agents: in front of every action Bixby's device agents and AppFunctions take, Car-to-Home offers, Watch and Buds for Care, and SDS voicebots that book once. A new capability is one entry in a manifest, so it scales without new code. Models are configuration; the coordinator is the product. Now, the demo."],
+    demo: [178, "The live demo film, 2 minutes 58. It starts as the slide opens. Space pauses and resumes it; the right arrow moves on to the appendix."],
+    appendix: [0, "For questions only."],
+    "a-latency": [0, "If asked about latency or why there is a laptop: placement was chosen by measurement. The fast mind on the S24 would be about ten times slower today."],
+    "a-fast": [0, "If asked how a small model can be trusted: it never acts on what code cannot check."],
+    "a-tone": [0, "If asked how the tone thresholds were set, or why not just an emotion model."],
+    "a-tests": [0, "If asked how we know it works, or what happens when things fail."],
+    "a-fdb": [0, "If asked about the benchmark's misses: most are recognition or format, not the coordinator."],
+    "a-land": [0, "If asked how DUET compares with GPT-Realtime, Gemini Live or open models."],
+  };
+  const ends = {}; let acc = 0;
+  mainSlides.forEach((s) => { acc += (NOTES[s.id] || [0])[0]; ends[s.id] = acc; });
+
+  // ---------------------------------------------------------------- timers and moving dots
+  const timers = new Set();
+  function later(fn, ms) { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); return t; }
+  function clearTimers() { timers.forEach(clearTimeout); timers.clear(); $$(".pk,.tok").forEach((n) => n.remove()); }
+  function dot(layerSel, path, delay, dur, cls, reverse, r) {
+    if (REDUCED) return;
+    later(() => {
+      const layer = $(layerSel); if (!layer) return;
+      const c = document.createElementNS(NS, "circle");
+      c.setAttribute("r", String(r || 7)); c.setAttribute("class", cls || "pk"); c.setAttribute("cx", "-50"); c.setAttribute("cy", "-50");
+      const am = document.createElementNS(NS, "animateMotion");
+      am.setAttribute("dur", dur + "ms"); am.setAttribute("fill", "freeze"); am.setAttribute("begin", "indefinite");
+      if (reverse) { am.setAttribute("keyPoints", "1;0"); am.setAttribute("keyTimes", "0;1"); am.setAttribute("calcMode", "linear"); }
+      const mp = document.createElementNS(NS, "mpath");
+      mp.setAttribute("href", "#" + path); mp.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + path);
+      am.appendChild(mp); c.appendChild(am); layer.appendChild(c);
+      c.setAttribute("cx", "0"); c.setAttribute("cy", "0");
+      try { am.beginElement(); } catch (e) { c.remove(); return; }
+      later(() => c.remove(), dur + 80);
+    }, delay);
+  }
+
+  // ---------------------------------------------------------------- slide 3: one conversation
+  const FS = [
+    { lit: [], ep: 1, a: "", b: "", c: "", ring: 0, chk: 0, stop: 0, led: 0, ph: [], tone: 0 },
+    { lit: ["ears", "tone"], ep: 1, a: "", b: "", c: "", ring: 0, chk: 0, stop: 0, led: 0, ph: [], tone: 1 },
+    { lit: ["fast", "coord"], ep: 1, a: "held", b: "", c: "", ring: 0.5, chk: 0, stop: 0, led: 0, ph: [], tone: 1 },
+    { lit: ["ears", "coord"], ep: 2, a: "void", b: "", c: "", ring: 0, chk: 0, stop: 0, led: 0, ph: ["never"], tone: 1 },
+    { lit: ["coord", "mouth"], ep: 2, a: "void", b: "done", c: "", ring: 1, chk: 1, stop: 0, led: 1, ph: ["never", "done", "alarm"], tone: 1 },
+    { lit: ["cloud", "coord", "mouth"], ep: 3, a: "", b: "", c: "done", ring: 1, chk: 0, stop: 0, led: 0, ph: ["never", "done", "batt", "bat"], tone: 1 },
+    { lit: ["ears", "mouth"], ep: 4, a: "", b: "", c: "done", ring: 0, chk: 0, stop: 1, led: 0, ph: ["never", "done", "batt", "bat"], tone: 1 },
+    { lit: ["mouth"], ep: 5, a: "", b: "", c: "done", ring: 0, chk: 0, stop: 0, led: 0, ph: ["never", "done", "batt", "bat"], tone: 1 },
+  ];
+  const DUET5 = "“Let me check your battery.” … “Your screen has used most of today's charge at high brightness, and a game kept running in the background.”";
+  const FC = [
+    { you: "—", duet: "—", label: "The system", text: "The phone is the <b>ears, mouth and hands</b>. Two minds think: a <b>fast mind</b> on our own GPU and a <b>cloud mind</b> for depth. One <b>coordinator</b> decides when anything may act.", num: "—", log: [] },
+    { you: "“Set an alarm for 6:30…”", duet: "—", label: "1 · Hearing", text: "Your voice streams to the edge over WebRTC. Whisper transcribes each speech segment, and in parallel the <b>tone channel</b> measures how it was said, against your own voice, in about 12 ms.", num: "…", log: [[700, "speech segment heard"], [1600, "tone: a plain voice"]] },
+    { you: "“Set an alarm for 6:30…”", duet: "—", label: "2 · Plan early", text: "The <b>fast mind</b>, Gemma 4 E2B, drafts <code>set_alarm(06:30)</code> in about 0.3 s. Planning may start early. <b>Acting has to wait at the coordinator's gate.</b>", num: "0.3 s", log: [[900, "0.3 s  plan: set_alarm(06:30)"], [1100, "       held at the gate"]] },
+    { you: "“Set an alarm for 6:30… no, make it 7.”", duet: "—", label: "3 · New words void old plans", text: "Your new words <b>advance the epoch</b>. The 6:30 plan was made on older words, so it is void: it never reaches the phone, which shows it as <b>Never ran</b>.", num: "epoch 2", log: [[1000, "epoch 1 → 2"], [1150, "06:30 plan: never ran"]] },
+    { you: "“Set an alarm for 6:30… no, make it 7.”", duet: "“Sure.” … “Alarm set for 7 in the morning.”", label: "4 · Check, hold, act once, confirm", text: "Code checks the plan: the action is named in your words and the last value you said is in it. The gate holds <b>1.8 s after a correction</b>, the phone acts <b>once</b>, and DUET confirms from the <b>phone's own reply</b>.", num: "2.4 s", count: [2.4, 4900], log: [[900, "0.3 s  plan: set_alarm(07:00)"], [1000, "       ✓ checked by code"], [1350, "1.0 s  “Sure.”"], [2950, "2.2 s  gate opens, sent once"], [4700, "2.4 s  confirmed by the phone"]] },
+    { you: "“My battery drains so fast. What's going on?”", duet: DUET5, label: "5 · Hard questions go to the cloud mind", text: "The fast mind hands anything that needs judgement to <b>Gemma 4 26B</b> and covers the wait in its own words. The cloud mind reads the phone <b>through the same coordinator</b>, then answers from the readings.", num: "≈4 s", count: [4, 7300], log: [[1400, "0.4 s  hand-over to the cloud mind"], [1600, "1.0 s  “Let me check your battery.”"], [5050, "≈2.5 s battery read on the phone"], [6800, "≈4 s   answer from the readings"]] },
+    { you: "“Wait, is it my brightness?”", duet: "<span class=\"heard\">“Let me check your battery.” … “Your screen has used most of today's charge at high brightness,</span><span class=\"mark\">you heard up to here</span><span class=\"cut\">and a game kept running in the background.”</span>", label: "6 · Talk over it", text: "Speak over DUET and it <b>stops 0.21 s</b> after you start. It records how much of the answer you heard, so your question is read together with exactly that.", num: "0.21 s", log: [[0, "you start speaking"], [500, "0.21 s DUET stops talking"], [800, "heard: up to “brightness,”"]] },
+    { you: "“Mm-hm.”", duet: "“Mostly, yes. Turning the brightness down would help the most, <span class=\"bc\">mm-hm</span> and closing that game would help too.”", label: "7 · A backchannel is not an interruption", text: "“Mm-hm” lets the answer <b>carry on</b> from the sentence it was in. “Wait”, “go on” and “what?” are understood <b>by code, with no model call</b>.", num: "0 calls", log: [[300, "“mm-hm”  → carries on"], [600, "“wait”   → stops, stays quiet"], [900, "“go on”  → finishes the answer"], [1200, "“what?”  → says it again"]] },
+  ];
+  const MODS = ["ears", "tone", "fast", "coord", "mouth", "cloud", "web", "st", "wx"];
+  const LABEL = { held: "held", void: "never ran", done: "done once" };
+  function lit(list) { MODS.forEach((m) => { const g = $("#m-" + m); if (g) g.classList.toggle("lit", list.includes(m)); }); }
+  function card(id, st) {
+    const g = $("#card-" + id); if (!g) return;
+    g.classList.remove("held", "void", "done"); if (st) g.classList.add(st);
+    const t = $("#card-" + id + "-t"); if (t) t.textContent = id === "c" && st === "done" ? "done" : (LABEL[st] || "");
+  }
+  function ring(frac, ms, color) {
+    const r = $("#ring"); if (!r) return;
+    r.style.transition = ms ? "stroke-dashoffset " + ms + "ms linear" : "none";
+    r.style.stroke = color || (frac >= 1 ? "#0A7A53" : "#A15C07");
+    r.style.strokeDashoffset = String(125.66 * (1 - frac));
+  }
+  function epoch(n, flash) {
+    $("#ep-t").textContent = "epoch " + n;
+    const g = $("#ep");
+    if (flash && !REDUCED) { g.classList.add("flash"); later(() => g.classList.remove("flash"), 700); } else g.classList.remove("flash");
+  }
+  function badge(id, on) { const g = $("#" + id); if (g) g.classList.toggle("on", !!on); }
+  function phone(list) { ["never", "done", "batt", "alarm", "bat"].forEach((k) => badge("ph-" + k, list.includes(k))); }
+  function tone(on) { $("#tone-read").textContent = on ? "plain" : ""; $("#tone-fill").setAttribute("width", on ? "92" : "0"); }
+  function flowApply(k) {
+    const st = FS[k]; lit(st.lit); epoch(st.ep, false); card("a", st.a); card("b", st.b); card("c", st.c);
+    ring(st.ring, 0); badge("chk", st.chk); badge("stopb", st.stop); badge("ledger", st.led); phone(st.ph); tone(st.tone);
+  }
+  function setHTML(id, html, anim) {
+    const el = $("#" + id); el.innerHTML = html;
+    if (anim) { el.classList.remove("fade-swap"); void el.offsetWidth; el.classList.add("fade-swap"); } else el.classList.remove("fade-swap");
+  }
+  function countTo(to, ms) {
+    const el = $("#fc-num"); const start = performance.now();
+    const fmt = (v) => (to >= 3 ? "≈" + v.toFixed(1) : v.toFixed(1)) + " s";
+    function tick(now) {
+      if (!$("#flow").classList.contains("active")) return;
+      const f = Math.min(1, (now - start) / ms); el.textContent = fmt(to * f);
+      if (f < 1 && el.dataset.run === String(start)) requestAnimationFrame(tick);
+    }
+    el.dataset.run = String(start); requestAnimationFrame(tick);
+  }
+  function flowCap(k, anim) {
+    const c = FC[k], prevC = FC[Math.max(0, k - 1)];
+    setHTML("fc-you", c.you, anim && c.you !== prevC.you);
+    setHTML("fc-duet", c.duet, anim && c.duet !== prevC.duet);
+    setHTML("fc-label", c.label, anim); setHTML("fc-text", c.text, anim);
+    const log = $("#fc-log"); log.innerHTML = ""; $("#fc-num").dataset.run = "";
+    if (!anim || REDUCED) {
+      $("#fc-num").textContent = c.num;
+      c.log.forEach(([, t]) => { const li = document.createElement("li"); li.textContent = t; li.style.animation = "none"; log.appendChild(li); });
+      return;
+    }
+    if (c.count) { $("#fc-num").textContent = "0.0 s"; countTo(c.count[0], c.count[1]); later(() => { $("#fc-num").dataset.run = ""; $("#fc-num").textContent = c.num; }, c.count[1] + 50); }
+    else $("#fc-num").textContent = c.num;
+    c.log.forEach(([ms, t]) => later(() => { const li = document.createElement("li"); li.textContent = t; log.appendChild(li); }, ms));
+  }
+  const L = "#pk-flow";
+  const SEQ = {
+    1: () => { dot(L, "w-in", 0, 850, "pk au"); dot(L, "w-in", 230, 850, "pk au"); dot(L, "w-in", 460, 850, "pk au");
+      later(() => lit(["ears"]), 650); dot(L, "w-et", 1150, 450); later(() => { lit(["ears", "tone"]); tone(1); }, 1550); },
+    2: () => { dot(L, "w-ef", 0, 420); later(() => lit(["fast"]), 380); dot(L, "w-fc", 480, 420);
+      later(() => { lit(["fast", "coord"]); card("a", "held"); ring(0.5, 1300); }, 900); },
+    3: () => { dot(L, "w-in", 0, 850, "pk au"); dot(L, "w-in", 230, 850, "pk au"); dot(L, "w-in", 460, 850, "pk au");
+      later(() => lit(["ears", "coord"]), 650); later(() => epoch(2, true), 950);
+      later(() => { card("a", "void"); ring(0, 300); }, 1100); later(() => phone(["never"]), 1350); },
+    4: () => { dot(L, "w-ef", 0, 420); later(() => lit(["fast", "coord"]), 380); dot(L, "w-fc", 460, 420);
+      later(() => { card("b", "held"); badge("chk", 1); }, 900);
+      later(() => lit(["fast", "coord", "mouth"]), 1050); dot(L, "w-cm", 1050, 350); dot(L, "w-out", 1350, 650, "pk g");
+      later(() => ring(1, 1800, "#A15C07"), 1100);
+      dot(L, "w-rpc", 2950, 800);
+      later(() => phone(["never", "done", "alarm"]), 3750); dot(L, "w-rpc", 3800, 800, "pk g", true);
+      later(() => { card("b", "done"); badge("ledger", 1); ring(1, 0); }, 4600);
+      dot(L, "w-cm", 4650, 350); dot(L, "w-out", 4950, 650, "pk g"); later(() => flowApply(4), 5700); },
+    5: () => { card("a", ""); card("b", ""); badge("ledger", 0); badge("chk", 0); ring(0, 0); phone(["never", "done"]);
+      dot(L, "w-in", 0, 850, "pk au"); dot(L, "w-in", 230, 850, "pk au"); dot(L, "w-in", 460, 850, "pk au");
+      later(() => { lit(["ears"]); epoch(3, true); }, 650); dot(L, "w-ef", 900, 420); later(() => lit(["fast"]), 1280);
+      dot(L, "w-fk", 1350, 900); dot(L, "w-cm", 1500, 350); dot(L, "w-out", 1820, 650, "pk g");
+      later(() => lit(["fast", "cloud", "mouth"]), 1550); later(() => lit(["cloud"]), 2600);
+      dot(L, "w-kc", 2400, 800); later(() => { lit(["cloud", "coord"]); card("c", "held"); ring(1, 1000, "#A15C07"); }, 3200);
+      dot(L, "w-rpc", 4250, 800); later(() => phone(["never", "done", "batt", "bat"]), 5050); dot(L, "w-rpc", 5100, 800, "pk g", true);
+      later(() => { card("c", "done"); ring(1, 0); }, 5900); dot(L, "w-kc", 5950, 800, "pk g", true);
+      later(() => lit(["cloud", "coord", "mouth"]), 6700); dot(L, "w-cm", 6750, 350); dot(L, "w-out", 7050, 650, "pk g");
+      later(() => flowApply(5), 7800); },
+    6: () => { dot(L, "w-in", 0, 800, "pk au"); dot(L, "w-in", 220, 800, "pk au");
+      later(() => { lit(["ears", "mouth"]); badge("stopb", 1); epoch(4, true); ring(0, 0); }, 500); },
+    7: () => { dot(L, "w-in", 0, 800, "pk au"); later(() => { badge("stopb", 0); epoch(5, false); lit(["mouth"]); }, 600);
+      dot(L, "w-out", 900, 650, "pk g"); dot(L, "w-out", 1400, 650, "pk g"); },
+  };
+  function flowHook(k, instant) {
+    if (instant || k === 0 || REDUCED) { flowApply(k); flowCap(k, false); return; }
+    flowApply(k - 1); flowCap(k, true); SEQ[k]();
+  }
+
+  // ---------------------------------------------------------------- slide 4: the coordinator
+  const CS = { 1: ["tp-happy", "n-done", "g", "#0A7A53"], 2: ["tp-void", "n-never", "o", "#C2410C"], 3: ["tp-dup", "n-dup", "b", "#1428A0"], 4: ["tp-unk", "n-unk", "a", "#A15C07"] };
+  function coordHook(k, instant) {
+    $$("#coord-svg .nd").forEach((n) => n.classList.remove("hit-g", "hit-o", "hit-b", "hit-a"));
+    if (!k) return;
+    const [path, node, cls, color] = CS[k];
+    const hit = () => $("#" + node).classList.add("hit-" + cls);
+    if (instant || REDUCED) { hit(); return; }
+    dot("#pk-coord", path, 100, 2000, "tok", false, 13);
+    later(() => { const t = $("#pk-coord .tok"); if (t) t.style.fill = color; }, 120);
+    later(hit, 2100);
+  }
+
+  // ---------------------------------------------------------------- slide 5: the voice lane
+  function buildWave() {
+    const w = $("#wave"); if (!w) return;
+    let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const bursts = [[96, 150], [156, 214], [222, 298], [306, 344], [352, 442], [550, 626], [634, 676], [686, 760]];
+    let d = "M 96 150";
+    for (let x = 96; x <= 760; x += 2) {
+      const b = bursts.find(([a, z]) => x >= a && x <= z);
+      let y = 150;
+      if (b) { const p = (x - b[0]) / (b[1] - b[0]); const env = Math.sin(Math.PI * p); y = 150 + (x % 4 === 0 ? -1 : 1) * env * (8 + 30 * rnd()); }
+      d += " L " + x + " " + y.toFixed(1);
+    }
+    w.setAttribute("d", d);
+    try { w.style.setProperty("--L", String(Math.ceil(w.getTotalLength()))); } catch (e) { w.style.setProperty("--L", "6000"); }
+  }
+
+  // ---------------------------------------------------------------- slide 7: stop-motion scenes
+  function frame(p, n) { p.classList.remove("f0", "f1", "f2"); p.classList.add("f" + n); }
+  function galaxyHook(k, instant) {
+    ["g-care", "g-drive", "g-asst"].forEach((id, i) => {
+      const p = $("#" + id), n = i + 1;
+      if (k > n || (k === n && (instant || REDUCED))) frame(p, 2);
+      else if (k === n) { frame(p, 0); later(() => frame(p, 1), 2600); later(() => frame(p, 2), 5400); }
+      else frame(p, 0);
+    });
+  }
+
+  const HOOKS = { flow: flowHook, coord: coordHook, galaxy: galaxyHook };
+
+  // ---------------------------------------------------------------- the demo film
+  const filmEl = $("#demo-video");
+  if (filmEl) filmEl.addEventListener("error", () => { $("#film-miss").hidden = false; });
+  function film(s, mode) {
+    if (!filmEl) return;
+    if (s.id !== "demo") { if (!filmEl.paused) filmEl.pause(); return; }
+    if (mode === "fwd") { try { filmEl.currentTime = 0; } catch (e) { /* not loaded yet */ } }
+    const p = filmEl.play();
+    if (p && p.catch) p.catch(() => { /* the viewer keeps its play button */ });
+  }
+
+  // ---------------------------------------------------------------- footers
+  slides.forEach((s) => {
+    if (s.classList.contains("nofoot")) return;
+    const f = document.createElement("div"); f.className = "foot";
+    const n = s.classList.contains("apx") ? (s.dataset.num || "A") : String(mainSlides.indexOf(s) + 1).padStart(2, "0") + " / " + String(mainSlides.length).padStart(2, "0");
+    f.innerHTML = "<span>DUET · Team SE7EN, SRM · Samsung PRISM GenAI Hackathon · Theme 05</span><span>" + n + "</span>";
+    s.appendChild(f);
+  });
+
+  // ---------------------------------------------------------------- navigation
+  function fit() {
+    const app = $("#app"), cs = getComputedStyle(app);
+    const w = app.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const h = app.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    stage.style.setProperty("--s", String(Math.max(0.1, Math.min(w / 1600, h / 900))));
+  }
+  function fmtT(sec) { sec = Math.max(0, Math.round(sec)); return Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0"); }
+  function renderNotes() {
+    const s = slides[cur], n = NOTES[s.id] || [0, ""];
+    $("#n-title").textContent = (s.dataset.label || s.id) + (n[0] ? " · about " + n[0] + " s" : "");
+    const el = t0 ? (performance.now() - t0) / 1000 : 0;
+    const target = ends[s.id];
+    $("#n-time").innerHTML = "elapsed " + fmtT(el) + (target ? " · finish this slide by " + fmtT(target) + (t0 && el > target ? " <span class=\"warn\">(behind)</span>" : "") : "");
+    $("#n-body").textContent = n[1];
+  }
+  function show(i, st, mode) {
+    clearTimers();
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    const s = slides[cur], max = +s.dataset.steps || 0;
+    step = Math.max(0, Math.min(max, st));
+    const instant = mode !== "fwd";
+    slides.forEach((x) => x.classList.toggle("active", x === s));
+    s.classList.toggle("instant", instant);
+    for (let k = 1; k <= 9; k++) s.classList.toggle("s" + k, k <= step);
+    if (HOOKS[s.id]) HOOKS[s.id](step, instant);
+    film(s, mode);
+    if (instant) requestAnimationFrame(() => requestAnimationFrame(() => s.classList.remove("instant")));
+    const isApx = s.classList.contains("apx");
+    $("#pos").textContent = (isApx ? (s.dataset.num || "A") : (mainSlides.indexOf(s) + 1) + " / " + mainSlides.length) + (max ? " · " + step + "/" + max : "");
+    try { history.replaceState(null, "", "#" + s.id); } catch (e) { /* the viewer may refuse */ }
+    renderNotes();
+  }
+  function next() {
+    if (!t0) t0 = performance.now();
+    const s = slides[cur], max = +s.dataset.steps || 0;
+    if (step < max) show(cur, step + 1, "fwd"); else if (cur < slides.length - 1) show(cur + 1, 0, "fwd");
+  }
+  function prev() {
+    if (step > 0) show(cur, step - 1, "back");
+    else if (cur > 0) { const p = slides[cur - 1]; show(cur - 1, +p.dataset.steps || 0, "back"); }
+  }
+  function replay() { if (step > 0) { const k = step; show(cur, k - 1, "back"); show(cur, k, "fwd"); } else show(cur, 0, "fwd"); }
+  function toggleFull() {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else { const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => {}); }
+    } catch (e) { /* not allowed here */ }
+  }
+  function toggleNotes() { const n = $("#notes"); n.hidden = !n.hidden; renderNotes(); }
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (filmEl && slides[cur].id === "demo" && (e.key === " " || e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      if (filmEl.paused) { const p = filmEl.play(); if (p && p.catch) p.catch(() => {}); } else filmEl.pause();
+      return;
+    }
+    const k = e.key;
+    if (["ArrowRight", "PageDown", " ", "Enter", "ArrowDown"].includes(k)) { e.preventDefault(); next(); }
+    else if (["ArrowLeft", "PageUp", "Backspace", "ArrowUp"].includes(k)) { e.preventDefault(); prev(); }
+    else if (k === "Home") show(0, 0, "jump");
+    else if (k === "End") { const l = mainSlides[mainSlides.length - 1]; show(slides.indexOf(l), +l.dataset.steps || 0, "jump"); }
+    else if (k === "f" || k === "F") toggleFull();
+    else if (k === "n" || k === "N") toggleNotes();
+    else if (k === "r" || k === "R") replay();
+    else if (k === "t" || k === "T") { t0 = performance.now(); renderNotes(); }
+    else if (k === "Escape") $("#notes").hidden = true;
+  });
+  stage.addEventListener("click", (e) => { if (e.target.closest && e.target.closest("video")) return; next(); });
+  stage.addEventListener("contextmenu", (e) => { e.preventDefault(); prev(); });
+  $("#b-next").addEventListener("click", next);
+  $("#b-prev").addEventListener("click", prev);
+  $("#b-notes").addEventListener("click", toggleNotes);
+  $("#b-full").addEventListener("click", toggleFull);
+  let hudT = 0;
+  document.addEventListener("mousemove", () => { $("#hud").classList.add("show"); clearTimeout(hudT); hudT = setTimeout(() => $("#hud").classList.remove("show"), 2200); });
+  setInterval(() => { if (!$("#notes").hidden) renderNotes(); }, 1000);
+  window.addEventListener("resize", fit);
+  document.addEventListener("fullscreenchange", fit);
+
+  // ---------------------------------------------------------------- start
+  buildWave();
+  fit();
+  if (location.hash === "#print") {
+    document.body.classList.add("print");
+    slides.forEach((s) => {
+      const max = +s.dataset.steps || 0;
+      s.classList.add("instant");
+      for (let k = 1; k <= 9; k++) s.classList.toggle("s" + k, k <= max);
+      if (HOOKS[s.id]) HOOKS[s.id](max, true);
+    });
+    document.documentElement.dataset.ready = "1";
+    return;
+  }
+  const start = Math.max(0, slides.findIndex((s) => "#" + s.id === location.hash));
+  show(start, 0, "jump");
+  setTimeout(() => $("#hint").classList.add("gone"), 5000);
+  document.documentElement.dataset.ready = "1";
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+ "device": "emulator",
+ "quick": false,
+ "verdict": "3 of 11 steps failed",
+ "steps": [
+  {
+   "step": "unit tests",
+   "result": "PASS",
+   "detail": "319 passed, 5 warnings",
+   "seconds": 66
+  },
+  {
+   "step": "stack (/api/health)",
+   "result": "PASS",
+   "detail": "fast_mind ok, cloud_mind ok, livekit ok, tone ok",
+   "seconds": 2
+  },
+  {
+   "step": "SmartThings home",
+   "result": "NOTE",
+   "detail": "the SmartThings token was refused; tokens last 24 hours, so make a new one at account.smar",
+   "seconds": 0
+  },
+  {
+   "step": "phone: install and self-test",
+   "result": "PASS",
+   "detail": "14 of 14 on this phone in 1.3 s",
+   "seconds": 15
+  },
+  {
+   "step": "phone: end to end (assistant)",
+   "result": "FAIL",
+   "detail": "17 of 19 cases",
+   "seconds": 283
+  },
+  {
+   "step": "phone: end to end (drive)",
+   "result": "PASS",
+   "detail": "6 of 6 cases",
+   "seconds": 99
+  },
+  {
+   "step": "phone: end to end (arrival)",
+   "result": "PASS",
+   "detail": "5 of 5 cases",
+   "seconds": 82
+  },
+  {
+   "step": "phone: end to end (washer)",
+   "result": "PASS",
+   "detail": "0 of 0 cases",
+   "seconds": 1
+  },
+  {
+   "step": "phone: end to end (skills)",
+   "result": "FAIL",
+   "detail": "6 of 7 cases",
+   "seconds": 112
+  },
+  {
+   "step": "phone: end to end (newskill)",
+   "result": "PASS",
+   "detail": "2 of 2 cases",
+   "seconds": 42
+  },
+  {
+   "step": "phone: end to end (drills)",
+   "result": "FAIL",
+   "detail": "6 of 7 cases",
+   "seconds": 105
+  },
+  {
+   "step": "phone: resilience behind Maps",
+   "result": "PASS",
+   "detail": "3 of 3",
+   "seconds": 431
+  },
+  {
+   "step": "demo-day preflight",
+   "result": "NOTE",
+   "detail": "red: SmartThings home, Do Not Disturb, media volume on the loudspeaker, call volume on the loudspeaker, demo contacts",
+   "seconds": 7
+  }
+ ],
+ "latency_s": {}
+}
