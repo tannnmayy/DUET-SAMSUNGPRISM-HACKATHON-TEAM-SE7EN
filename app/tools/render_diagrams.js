@@ -11,7 +11,7 @@ const { chromium } = require("playwright-core");
 
 const ROOT = path.resolve(__dirname, "../..");
 const OUT = path.join(ROOT, "docs", "diagrams");
-const DOCS = ["README.md", "docs/ARCHITECTURE.md", "docs/RESULTS.md", "docs/USE_CASE_RESEARCH.md", "app/README.md"];
+const DOCS = ["README.md", "docs/ARCHITECTURE.md", "docs/RESULTS.md", "app/README.md"];
 
 function blocks(file) {
   const text = fs.readFileSync(path.join(ROOT, file), "utf8");

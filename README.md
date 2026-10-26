@@ -6,9 +6,7 @@ https://github.com/user-attachments/assets/258e337e-e1b3-4544-b78d-f4f68e500f93
 
 <p align="center">
   <b><a href="https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN/raw/main/docs/round2/deck/duet_demo.mp4">▶ Watch the full live demo</a></b> in 1080p (2:58, MP4, 70 MB) ·
-  <b><a href="docs/round2/deck/DUET_Round2_Deck.pdf">Pitch deck (PDF)</a></b> ·
-  <a href="docs/round2/deck/DUET_Round2_Deck.html">Animated deck (HTML)</a> ·
-  <a href="docs/round2/DEMO_FILM_NOTES.md">How the film was cut</a>
+  <b><a href="docs/round2/deck/DUET_Round2_Deck.pdf">Pitch deck (PDF)</a></b>
 </p>
 
 <p align="center"><sub>The live demo on a real Galaxy S24, five scenarios from three views kept in sync. At 1:17: <i>"Could you please text Gupta Hostel that I'll be there for dinner at 9, and also set an alarm for 8:50 today. No, no, no, wait, it's okay. Set an alarm for 8:30."</i> DUET sends the text and sets 8:30. The 8:50 alarm never runs.</sub></p>
@@ -224,7 +222,7 @@ free Gemma tier.
 | The spoken suite on the final code (67 runs, 26 Oct) | first word 1.58 s, action 2.15 s, answer 2.02 s (p50) |
 
 Where the time goes, the fast and cloud minds compared, and what changes on the phone itself: appendix slide
-[A1](docs/round2/deck/slides/10_a-latency.png) and [docs/ROUND2_TEST_REPORT.md](docs/ROUND2_TEST_REPORT.md).
+[A1](docs/round2/deck/slides/10_a-latency.png).
 
 ### Full-Duplex-Bench v3 (Round 1)
 
@@ -247,9 +245,8 @@ How we measured, the remaining misses and each kind of disfluency: [docs/RESULTS
 
 ## Run DUET on a Galaxy phone
 
-DUET for Galaxy runs as an Android app on the phone and a stack on a laptop with an NVIDIA GPU (6 GB is enough). The
-full, checked set-up from a fresh clone, Windows laptop and Galaxy S24, is
-**[docs/ROUND2_SETUP.md](docs/ROUND2_SETUP.md)**. In short:
+DUET for Galaxy runs as an Android app on the phone and a stack on a laptop with an NVIDIA GPU (6 GB is enough). In
+short:
 
 ```bash
 python -m venv .venv && .venv/Scripts/pip install -r requirements.txt     # Python 3.11 (.venv/bin on Linux)
@@ -261,8 +258,7 @@ curl http://localhost:8787/api/health         # fast mind, cloud mind, SmartThin
 ```
 
 Then build and install the app ([app/README.md](app/README.md)), set its server address to the laptop, and talk.
-`bash scripts/galaxy_stop.sh` stops everything. The demo-day checklist and script are in
-[docs/ROUND2_DEMO.md](docs/ROUND2_DEMO.md).
+`bash scripts/galaxy_stop.sh` stops everything.
 
 | Mode | For whom | What it does |
 |---|---|---|
@@ -362,10 +358,9 @@ without audio, to [`results/reported/`](results/reported/).
 | The conversation | `scripts/galaxy_suite.py`: 66 spoken scenarios. A scripted voice joins a LiveKit room the way the phone does, interrupts, corrects itself, hesitates and shouts; the whole stack answers | 21 Oct: **64 of 66**, both misses real bugs, fixed and re-run. 26 Oct, final code: **62 of 67** (4 misses: Google's free tier did not answer in time; 1: "Monday" said on a Monday was read as today). Both runs: **0 stale actions, 0 duplicates** |
 | The fast mind alone | `scripts/galaxy_fast_eval.py --repeat 2` | 190 decisions: 188 right, **0 wrong** |
 | The phone | the real app on the Android 16 emulator: end to end in every mode (`scripts/phone_e2e.py`), resilience behind Google Maps (`scripts/phone_resilience.py`). Then the Galaxy S24, live | 46 of 46; 3 of 3 |
-| Failures on purpose | the fast mind killed, the cloud cut, a bad key, every key bad, the phone refusing or not answering, the room dropped | every one survives or fails with a clear message ([report §3](docs/ROUND2_TEST_REPORT.md#3-failure-injection)) |
+| Failures on purpose | the fast mind killed, the cloud cut, a bad key, every key bad, the phone refusing or not answering, the room dropped | every one survives or fails with a clear message |
 
-`python scripts/verify_all.py` runs all of it in one command and writes one dated report to `results/verify/`. The
-day-long failure hunt behind these numbers, with every bug it found: [docs/ROUND2_TEST_REPORT.md](docs/ROUND2_TEST_REPORT.md).
+`python scripts/verify_all.py` runs all of it in one command and writes one dated report to `results/verify/`.
 
 ## Honest limits
 
@@ -405,7 +400,7 @@ bench/                   live runner, warm-up, offline evaluators, judge adapter
 scripts/                 the stack, the spoken suite, phone checks, verify_all, preflight
 tests/                   365 unit tests
 tools/demo_video/        the scripts that cut the Round 2 demo film
-docs/                    architecture, results, Round 2 set-up, demo, tests; round1/ and round2/ deliverables
+docs/                    architecture, benchmark results; round1/ and round2/ deliverables
 results/reported/        the reported benchmark run: reports, traces and logs
 results/verify/          verify_all reports
 AI disclosure/           LangAI 3.0 AI disclosure form (PDF)
@@ -418,18 +413,9 @@ reproduce.sh, Dockerfile one-command benchmark reproduction
 |---|---|
 | [docs/round2/](docs/round2/README.md) | **The Round 2 deck (HTML, PDF, slide images) and the demo film**, with how to present it |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Every component, the turn lifecycle, the coordinator, the model client, the tools, the Galaxy extension (§10) |
-| [docs/ROUND2_SETUP.md](docs/ROUND2_SETUP.md) | Set it up from a fresh clone: laptop and Galaxy S24, every step with a check |
-| [docs/ROUND2_DEMO.md](docs/ROUND2_DEMO.md) | The demo kit: checklist, script, drills |
-| [docs/ROUND2_TEST_REPORT.md](docs/ROUND2_TEST_REPORT.md) | The failure hunt: what was tested, what broke and was fixed, the verdict, the S24 run |
-| [docs/ROUND2_TONE_PLAN.md](docs/ROUND2_TONE_PLAN.md) | The tone channel: research, measurements, design, tests |
-| [docs/ROUND2_CAPABILITIES.md](docs/ROUND2_CAPABILITIES.md) | Every capability of DUET for Galaxy and what it is worth for Theme 05 |
-| [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md) · [EXPANSION_PLAN](docs/ROUND2_EXPANSION_PLAN.md) · [CONVERSATION_PLAN](docs/ROUND2_CONVERSATION_PLAN.md) | The Round 2 plans, in the order they were made, with the measurements behind each decision |
 | [docs/RESULTS.md](docs/RESULTS.md) | The benchmark run in detail: metrics, breakdowns, the remaining misses |
-| [docs/ENGINEERING_NOTES.md](docs/ENGINEERING_NOTES.md) | How the benchmark scores, what we measured, and the decision each measurement led to |
-| [docs/USE_CASE_RESEARCH.md](docs/USE_CASE_RESEARCH.md) | The research behind the Galaxy use cases |
-| [docs/SAMSUNG_REQUIREMENTS.md](docs/SAMSUNG_REQUIREMENTS.md) | Each line of the Theme 05 guide and the hackathon rules, and where it is met |
 | [app/README.md](app/README.md) | The app: build, install, what is real and what is simulated |
-| [docs/round1/](docs/round1/README.md) | The Round 1 submission: deck, 47-page documentation, video script |
+| [docs/round1/](docs/round1/README.md) | The Round 1 submission: deck and 47-page documentation |
 | [`AI disclosure/`](AI%20disclosure/LangAI3.0_AI_Disclosure_SE7EN.pdf) | LangAI 3.0 AI disclosure form |
 
 **Releases.** The Round 1 submission is tag `PRISM_GENAI_HACKATHON_Y2026`; the final state of the project, after Round 2,

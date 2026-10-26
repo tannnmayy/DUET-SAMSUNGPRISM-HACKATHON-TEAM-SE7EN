@@ -125,7 +125,7 @@ python scripts/galaxy_fast_eval.py        # the fast mind's decisions alone
 
 ## Record a run
 
-- **On a phone:** `scrcpy --record=demo.mp4` (with `ADB` pointing at the SDK's adb; see docs/ROUND2_DEMO.md).
+- **On a phone:** `scrcpy --record=demo.mp4` (with `ADB` pointing at the SDK's adb).
 - **Scripted, without a phone:** `app/tools/record_demo.js` plays a scripted user into the real stack in headless
   Chrome (`app/www/demo.html`) and records it; `app/tools/build_film.js` joins the takes (the Round 1 film).
 

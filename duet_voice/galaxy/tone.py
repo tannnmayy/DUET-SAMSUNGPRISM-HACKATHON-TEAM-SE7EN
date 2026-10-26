@@ -5,7 +5,7 @@ worker thread, while Whisper transcribes it. The measurements of a request's seg
 its words into a Reading (urgent, unsure, distressed, frustrated, a raised voice), which the coordinator's hold, the
 toolbox, both minds, the voice and the timeline all use.
 
-What the cues rest on (measured on 21 Oct 2026; docs/ROUND2_TONE_PLAN.md):
+What the cues rest on (measured on 21 Oct 2026):
 - Vocal effort. CREMA-D actors, each clip brought to one level as the phone's gain control does, against the same
   actor's neutral take: angry speech was brighter (energy above 1 kHz against below) by 18.9 dB at the median and
   higher by 14 semitones; its loudness rose by only 2.3 dB. Two of the three cues (brighter, higher, louder), each
@@ -21,7 +21,7 @@ What the cues rest on (measured on 21 Oct 2026; docs/ROUND2_TONE_PLAN.md):
   So it is used only with DUET_TONE_PITCH=1. Unsure rests on the words (a hedge next to the value) and the voice's
   timing (a long pause before the value).
 
-Tone is advisory (rule 5 of docs/ROUND2_PLAN.md): it may hold an action longer, ask before one, change how DUET speaks,
+Tone is advisory: it may hold an action longer, ask before one, change how DUET speaks,
 or stop DUET's own voice. It never runs an action and never cancels one on its own; an action still needs words.
 """
 

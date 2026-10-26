@@ -30,3 +30,19 @@ duet_results_*.tar.gz
 .venv-llm/
 # the reported runs keep their process logs: they are part of the record
 !results/reported/*/*.log
+
+# Working notes and plans, kept locally only (not part of the final repo)
+/docs/ENGINEERING_NOTES.md
+/docs/ROUND2_CAPABILITIES.md
+/docs/ROUND2_CONVERSATION_PLAN.md
+/docs/ROUND2_DEMO.md
+/docs/ROUND2_EXPANSION_PLAN.md
+/docs/ROUND2_PLAN.md
+/docs/ROUND2_SETUP.md
+/docs/ROUND2_TEST_REPORT.md
+/docs/ROUND2_TONE_PLAN.md
+/docs/SAMSUNG_REQUIREMENTS.md
+/docs/USE_CASE_RESEARCH.md
+/docs/round1/VIDEO_SCRIPT.md
+/docs/round2/DEMO_FILM_NOTES.md
+/docs.zip

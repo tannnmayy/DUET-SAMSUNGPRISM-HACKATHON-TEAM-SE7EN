@@ -8,7 +8,6 @@ What Team SE7EN presents in Round 2 of the Samsung PRISM GenAI Hackathon 3.0 (Th
 | [`deck/DUET_Round2_Deck.pdf`](deck/DUET_Round2_Deck.pdf) | The same deck as a PDF, every slide at its last step (15 pages). |
 | [`deck/slides/`](deck/slides/) | Every slide as a 1600×900 picture, rendered from the HTML deck (the README shows them). |
 | [`deck/duet_demo.mp4`](deck/duet_demo.mp4) | The live demo film, 2:57.6, 1080p: five scenarios on a Galaxy S24, from three views kept in sync. |
-| [`DEMO_FILM_NOTES.md`](DEMO_FILM_NOTES.md) | The film's running order, every fast-forward with its real length, and how it was edited. |
 
 ## Presenting
 
