@@ -2,20 +2,16 @@
 
 **Samsung PRISM GenAI Hackathon 3.0 · Theme 05: Interruptible Real-Time Agents · Team SE7EN, SRM Institute of Science and Technology**
 
-<p align="center">
-  <a href="https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN/raw/main/docs/round2/deck/duet_demo.mp4">
-    <img src="docs/round2/deck/duet_demo_preview.gif" width="100%" alt="DUET live on a Galaxy S24: one sentence, two actions, and a corrected alarm that never ran">
-  </a>
-</p>
+https://github.com/user-attachments/assets/258e337e-e1b3-4544-b78d-f4f68e500f93
 
 <p align="center">
-  <b><a href="https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN/raw/main/docs/round2/deck/duet_demo.mp4">▶ Watch the full live demo</a></b> (2:58, 1080p MP4, 70 MB) ·
+  <b><a href="https://github.com/tannnmayy/DUET-SAMSUNGPRISM-HACKATHON-TEAM-SE7EN/raw/main/docs/round2/deck/duet_demo.mp4">▶ Watch the full live demo</a></b> in 1080p (2:58, MP4, 70 MB) ·
   <b><a href="docs/round2/deck/DUET_Round2_Deck.pdf">Pitch deck (PDF)</a></b> ·
   <a href="docs/round2/deck/DUET_Round2_Deck.html">Animated deck (HTML)</a> ·
   <a href="docs/round2/DEMO_FILM_NOTES.md">How the film was cut</a>
 </p>
 
-<p align="center"><sub>The preview is 20 seconds of the film at real speed, on a real Galaxy S24: <i>"Could you please text Gupta Hostel that I'll be there for dinner at 9, and also set an alarm for 8:50 today. No, no, no, wait, it's okay. Set an alarm for 8:30."</i> DUET sends the text and sets 8:30. The 8:50 alarm never runs.</sub></p>
+<p align="center"><sub>The live demo on a real Galaxy S24, five scenarios from three views kept in sync. At 1:17: <i>"Could you please text Gupta Hostel that I'll be there for dinner at 9, and also set an alarm for 8:50 today. No, no, no, wait, it's okay. Set an alarm for 8:30."</i> DUET sends the text and sets 8:30. The 8:50 alarm never runs.</sub></p>
 
 ---
 
