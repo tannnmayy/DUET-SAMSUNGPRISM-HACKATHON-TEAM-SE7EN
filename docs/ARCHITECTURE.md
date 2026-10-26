@@ -429,7 +429,7 @@ flowchart TB
 
 ### 10.1 Round 2: two speeds, real actions, honest failures
 
-Added for the Round 2 live demo (branch `round2`; the benchmark path is unchanged: every new behaviour
+Added for the Round 2 live demo (now on `main`; the benchmark path is unchanged: every new behaviour
 is a hook whose default is the benchmark's).
 
 ```mermaid

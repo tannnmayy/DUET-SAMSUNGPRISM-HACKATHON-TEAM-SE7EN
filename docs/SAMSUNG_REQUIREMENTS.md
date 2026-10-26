@@ -21,7 +21,7 @@ mapped to where this submission meets it.
 | Build a LiveKit voice agent (custom allowed, following the template patterns) | `duet_voice/agent.py`: the templates' tool names, arguments and `/tmp/agent_tool_calls.log` format |
 | Clone FDB-v3 and LiveKit, download the data, run it | `reproduce.sh` and `bench/run_live.py`: all 100 recordings through the official runner, on a local LiveKit server or LiveKit Cloud |
 | Iterate on self-corrections and multi-step chains | `bench/offline_eval.py` (the thinker alone on all 100 requests, officially scored), `bench/failures.py`, `bench/compare_runs.py`, [ENGINEERING_NOTES.md](ENGINEERING_NOTES.md) |
-| One extension use case, end to end, in the video | DUET for Galaxy: `app/`, `duet_voice/galaxy/`, [app/README.md](../app/README.md); recorded demo in `results/galaxy/video/` |
+| One extension use case, end to end, in the video | DUET for Galaxy: `app/`, `duet_voice/galaxy/`, [app/README.md](../app/README.md); the Round 2 demo film on a Galaxy S24: [`round2/deck/duet_demo.mp4`](round2/deck/duet_demo.mp4) |
 
 ## What to submit
 
@@ -61,8 +61,8 @@ mapped to where this submission meets it.
 |---|---|
 | Working prototype code in a public or shared GitHub repository | This repository (public) |
 | README with reproducible setup instructions, Docker files and other requirements | [README.md](../README.md), "Reproduce the benchmark"; [`reproduce.sh`](../reproduce.sh); [`Dockerfile`](../Dockerfile); every package pinned in `requirements*.lock` |
-| Release tag `PRISM_GENAI_HACKATHON_Y2026` on the final commit; everything the submission references is in that commit | The tagged commit holds the code, the documentation, the reported run with its logs and traces, the video script and the extension's demo recordings (`results/galaxy/video/`) |
-| Demo video, at most 5 minutes | Planned in [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md) (4:45) |
+| Release tag `PRISM_GENAI_HACKATHON_Y2026` on the final commit; everything the submission references is in that commit | The tagged commit holds the code, the documentation, the reported run with its logs and traces, the video script and the extension's demo recordings. The Round 1 submission is tag `PRISM_GENAI_HACKATHON_Y2026` (commit `22ca240`); the final state, after Round 2, is tag `final-state-of-duet-a-full-duplex-interruptible-real-time-agent` |
+| Demo video, at most 5 minutes | Round 1: planned in [round1/VIDEO_SCRIPT.md](round1/VIDEO_SCRIPT.md) (4:45). Round 2: the live demo film, [`round2/deck/duet_demo.mp4`](round2/deck/duet_demo.mp4) (2:58) |
 | No keys in the submission | Keys are read from the environment or the git-ignored `.env.local`; no key has ever been committed |
 
 ## Theme 05 FAQ: the organizers' clarifications

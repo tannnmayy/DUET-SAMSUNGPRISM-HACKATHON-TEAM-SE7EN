@@ -242,5 +242,4 @@ Expected on 18 Oct (emulator, live SmartThings): every phone step passes; the sp
 | `docs/ROUND2_DEMO.md` | the demo night checklist and script |
 | `docs/ROUND2_TONE_PLAN.md` | the tone channel: research, measurements, design, how it was tested |
 | `docs/ROUND2_TEST_REPORT.md` | the failure hunt of 21 Oct: what was tested, what broke and was fixed, the verdict |
-| `docs/DUET_Project.html` | the project page (open in a browser) |
-| `docs/ROUND2_WORK_REPORT.md` | what changed on 18 Oct and how it was verified |
+| `docs/round2/` | the Round 2 deck (HTML and PDF) and the demo film |
