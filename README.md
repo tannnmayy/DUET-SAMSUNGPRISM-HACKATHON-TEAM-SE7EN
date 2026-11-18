@@ -421,7 +421,7 @@ reproduce.sh, Dockerfile one-command benchmark reproduction
 **Releases.** The Round 1 submission is tag `PRISM_GENAI_HACKATHON_Y2026`; the final state of the project, after Round 2,
 is tag `final-state-of-duet-a-full-duplex-interruptible-real-time-agent`.
 
-## Team SE7EN
+## Team SE7EN 
 
 Tanmay Singh · Panshul Arora · Naman Rai · Devansh Goenka, SRM Institute of Science and Technology.
 
